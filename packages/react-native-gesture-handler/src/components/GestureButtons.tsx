@@ -36,13 +36,13 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
     delayLongPress: 600,
   };
 
-  private lastActive: boolean;
+  private lastIsPressed: boolean;
   private longPressTimeout: ReturnType<typeof setTimeout> | undefined;
   private longPressDetected: boolean;
 
   constructor(props: BaseButtonWithRefProps) {
     super(props);
-    this.lastActive = false;
+    this.lastIsPressed = false;
     this.longPressDetected = false;
   }
 
@@ -50,23 +50,24 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
     nativeEvent,
   }: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>) => {
     const { state, oldState, pointerInside } = nativeEvent;
-    const active = pointerInside && state === State.ACTIVE;
+    const isPressed =
+      pointerInside && (state === State.BEGAN || state === State.ACTIVE);
 
-    if (active !== this.lastActive && this.props.onActiveStateChange) {
-      this.props.onActiveStateChange(active);
+    if (isPressed !== this.lastIsPressed && this.props.onActiveStateChange) {
+      this.props.onActiveStateChange(isPressed);
     }
 
     if (
       !this.longPressDetected &&
       oldState === State.ACTIVE &&
       state !== State.CANCELLED &&
-      this.lastActive &&
+      this.lastIsPressed &&
       this.props.onPress
     ) {
       this.props.onPress(pointerInside);
     }
 
-    if (!this.lastActive && state === State.BEGAN && pointerInside) {
+    if (!this.lastIsPressed && state === State.BEGAN && pointerInside) {
       this.longPressDetected = false;
       if (this.props.onLongPress) {
         this.longPressTimeout = setTimeout(
@@ -93,7 +94,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
       this.longPressTimeout = undefined;
     }
 
-    this.lastActive = active;
+    this.lastIsPressed = isPressed;
   };
 
   private onLongPress = () => {

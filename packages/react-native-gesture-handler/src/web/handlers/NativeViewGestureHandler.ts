@@ -13,6 +13,10 @@ import {
 import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
 import { NativeGestureRole } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import {
+  dispatchGestureLifecycleEvent,
+  GestureLifecycleEvent,
+} from '../tools/GestureLifecycleEvents';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
@@ -113,6 +117,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
 
     this.begin();
+
+    dispatchGestureLifecycleEvent(
+      this.delegate.view as HTMLElement | null,
+      GestureLifecycleEvent.Began
+    );
 
     const view = this.delegate.view as HTMLElement;
     const isRNGHText = view.hasAttribute('rnghtext');
@@ -225,6 +234,31 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   public isButton(): boolean {
     return this.role === NativeGestureRole.Button;
+  }
+
+  public override shouldBeginWithRecordedHandlers(
+    recorded: IGestureHandler[]
+  ): boolean {
+    if (!this.isButton()) {
+      return true;
+    }
+
+    const self = this as IGestureHandler;
+    return recorded.every(
+      (other) =>
+        other.shouldRecognizeSimultaneously(self) ||
+        self.shouldRecognizeSimultaneously(other) ||
+        other.delegate.view === this.delegate.view ||
+        other.name === SingleGestureName.Hover
+    );
+  }
+
+  protected override onCancel(): void {
+    super.onCancel();
+    dispatchGestureLifecycleEvent(
+      this.delegate.view as HTMLElement | null,
+      GestureLifecycleEvent.Canceled
+    );
   }
 
   protected override transformNativeEvent(): Record<string, unknown> {

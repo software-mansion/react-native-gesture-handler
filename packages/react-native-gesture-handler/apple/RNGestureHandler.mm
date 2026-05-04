@@ -286,12 +286,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
 #if TARGET_OS_OSX
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
                                  withNumberOfTouches:1
                                      withPointerType:RNGestureHandlerMouse];
 #else
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                  withNumberOfTouches:recognizer.numberOfTouches
                                      withPointerType:_pointerType];
@@ -305,6 +305,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (RNGHUIView *)chooseViewForInteraction:(UIGestureRecognizer *)recognizer
 {
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
+}
+
+- (RNGHUIView *)coordinateView
+{
+  RNGHUIView *recognizerView = _recognizer.view;
+  if ([self usesNativeOrVirtualDetector] && recognizerView == self.hostDetectorView &&
+      recognizerView.subviews.count == 1) {
+    return recognizerView.subviews[0];
+  }
+  return recognizerView;
 }
 
 - (BOOL)shouldSuppressActiveEvent:(RNGestureHandlerEventExtraData *)extraData

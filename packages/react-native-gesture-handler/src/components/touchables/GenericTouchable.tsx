@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { Animated, Platform } from 'react-native';
+import { Animated } from 'react-native';
 
 import type {
   GestureEvent,
@@ -174,10 +174,7 @@ export default class GenericTouchable extends Component<
       // Need to handle case with external cancellation (e.g. by ScrollView)
       this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
     } else if (
-      // This platform check is an implication of slightly different behavior of handlers on different platform.
-      // And Android "Active" state is achieving on first move of a finger, not on press in.
-      // On iOS event on "Began" is not delivered.
-      state === (Platform.OS !== 'android' ? State.ACTIVE : State.BEGAN) &&
+      state === State.BEGAN &&
       this.STATE === TOUCHABLE_STATE.UNDETERMINED
     ) {
       // Moving inside requires
