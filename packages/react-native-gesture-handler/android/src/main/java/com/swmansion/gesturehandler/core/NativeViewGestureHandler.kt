@@ -79,11 +79,7 @@ class NativeViewGestureHandler : GestureHandler() {
         return false
       }
     }
-    val canBeInterrupted = !disallowInterruption ||
-      (
-        yieldsToNativeGestures &&
-          (handler is NativeViewGestureHandler || handler is RNGestureHandlerRootHelper.RootViewGestureHandler)
-        )
+    val canBeInterrupted = canBeInterruptedBy(handler)
     val otherState = handler.state
     return if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
       // if both handlers are active and the current handler can be interrupted it we return `false`
@@ -98,10 +94,16 @@ class NativeViewGestureHandler : GestureHandler() {
     // otherwise we can only return `true` if already in an active state
   }
 
-  override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = !disallowInterruption ||
+  override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = canBeInterruptedBy(handler)
+
+  /**
+   * Whether this handler permits [other] to take over the touch stream, given its
+   * `disallowInterruption` and `yieldsToNativeGestures` configuration.
+   */
+  fun canBeInterruptedBy(other: GestureHandler): Boolean = !disallowInterruption ||
     (
       yieldsToNativeGestures &&
-        (handler is NativeViewGestureHandler || handler is RNGestureHandlerRootHelper.RootViewGestureHandler)
+        (other is NativeViewGestureHandler || other is RNGestureHandlerRootHelper.RootViewGestureHandler)
       )
 
   override fun shouldBeginWithRecordedHandlers(recorded: List<GestureHandler>): Boolean =
