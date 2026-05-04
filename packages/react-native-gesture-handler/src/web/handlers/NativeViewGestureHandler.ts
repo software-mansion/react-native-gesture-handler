@@ -251,5 +251,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public override reset(): void {
     super.reset();
     this.lastActiveHandlerData = null;
+    this.role = null;
   }
 }

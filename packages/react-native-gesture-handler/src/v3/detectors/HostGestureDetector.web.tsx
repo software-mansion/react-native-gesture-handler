@@ -131,6 +131,10 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         NativeGestureRole.Button
       );
     }
+
+    return () => {
+      child.removeAttribute(NATIVE_GESTURE_ROLE_ATTRIBUTE);
+    };
   }, [children]);
 
   useEffect(() => {
