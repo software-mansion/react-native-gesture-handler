@@ -28,6 +28,12 @@ const lastUpdateEventMap = Reanimated?.makeMutable(
   new Map<number, ReanimatedContext<unknown>>()
 );
 
+function deleteHandlerEventEntry(handlerTag: number) {
+  'worklet';
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  lastUpdateEventMap!.value.delete(handlerTag);
+}
+
 export function useReanimatedEventHandler<
   THandlerData,
   TExtendedHandlerData extends THandlerData,
@@ -92,6 +98,10 @@ export function useReanimatedEventHandler<
   // ref from what was actually committed.
   useEffect(() => {
     prevHandlerTagRef.current = handlerTag;
+
+    return () => {
+      Reanimated?.runOnUI?.(deleteHandlerEventEntry)(handlerTag);
+    };
   }, [handlerTag]);
 
   const reanimatedEvent = Reanimated?.useEvent(
