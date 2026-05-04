@@ -7,6 +7,8 @@ on:
       - packages/react-native-gesture-handler/RNGestureHandler.podspec
       - packages/react-native-gesture-handler/apple/**
       - apps/basic-example/ios/**
+      - apps/basic-example/package.json
+      - rnrepo.config.json
   push:
     branches:
       - main

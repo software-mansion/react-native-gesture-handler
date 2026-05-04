@@ -6,6 +6,8 @@ on:
       - .github/workflows/android-build.yml
       - packages/react-native-gesture-handler/android/**
       - apps/basic-example/android/**
+      - apps/basic-example/package.json
+      - rnrepo.config.json
   push:
     branches:
       - main
