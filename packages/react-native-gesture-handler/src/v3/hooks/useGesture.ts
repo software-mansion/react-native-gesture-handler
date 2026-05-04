@@ -31,7 +31,11 @@ export function useGesture<
   config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ): SingleGesture<TConfig, THandlerData, TExtendedHandlerData> {
   const handlerTag = useMemo(() => getNextHandlerTag(), []);
-  const previousConfig = useMemo(() => config, []);
+  const previousConfig = useMemo(() => {
+    prepareConfig(config);
+
+    return config;
+  }, []);
 
   if (config.disableReanimated !== previousConfig.disableReanimated) {
     throw new Error(
