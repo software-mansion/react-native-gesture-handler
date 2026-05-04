@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, it } from "@jest/globals";
-import { by, device, element, expect, waitFor } from "detox";
+import { by, device, element, expect} from "detox";
 import { LONG_PRESS_DURATION } from "../../common-app/src/e2e_screens/testConstants";
 
 describe("test long press gesture", () => {

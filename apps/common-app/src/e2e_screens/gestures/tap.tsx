@@ -1,15 +1,16 @@
+import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
+import { Button, Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
   useTapGesture,
 } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
-import { Button, Text, View } from 'react-native';
-import { gestureStyles as styles } from '../gestureStyles';
 import { scheduleOnRN } from 'react-native-worklets';
+
 import GestureBox from '../components/GestureBox';
-import NormalBox from '../components/NormalBox';
 import { WRONG_BOX_COLOR } from '../components/gestureColors';
+import NormalBox from '../components/NormalBox';
+import { gestureStyles as styles } from '../gestureStyles';
 
 export default function TapScreen() {
   const navigation = useNavigation<any>();
@@ -30,8 +31,8 @@ export default function TapScreen() {
         {testID === 'tap-activated' ? 'Tap Activated' : 'Idle'}
       </Text>
       <View style={styles.content}>
-        <GestureBox gesture={tapGesture} testID={testID} />
         <NormalBox color={WRONG_BOX_COLOR} />
+        <GestureBox gesture={tapGesture} testID={testID} />
       </View>
 
       <View style={styles.buttonContainer}>

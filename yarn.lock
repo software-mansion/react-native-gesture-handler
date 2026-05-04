@@ -4858,6 +4858,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-navigation/elements@npm:^2.9.15":
+  version: 2.9.15
+  resolution: "@react-navigation/elements@npm:2.9.15"
+  dependencies:
+    color: "npm:^4.2.3"
+    use-latest-callback: "npm:^0.2.4"
+    use-sync-external-store: "npm:^1.5.0"
+  peerDependencies:
+    "@react-native-masked-view/masked-view": ">= 0.2.0"
+    "@react-navigation/native": ^7.2.2
+    react: ">= 18.2.0"
+    react-native: "*"
+    react-native-safe-area-context: ">= 4.0.0"
+  peerDependenciesMeta:
+    "@react-native-masked-view/masked-view":
+      optional: true
+  checksum: 10c0/0fce662e717573b85028626edfe7100af2bfc5ee32a4ca17f6216ad8091091baa4a14d6acc27ead48d3f700610d81a93dd85013d5643cca2bfeae7bfa88826b2
+  languageName: node
+  linkType: hard
+
 "@react-navigation/native-stack@npm:^7.14.11":
   version: 7.14.11
   resolution: "@react-navigation/native-stack@npm:7.14.11"
@@ -4873,6 +4893,24 @@ __metadata:
     react-native-safe-area-context: ">= 4.0.0"
     react-native-screens: ">= 4.0.0"
   checksum: 10c0/997070ab2350629c6c3b8cfe97bc0fd918caf260343f5cf0dbab061cc0ed6444f36af1c272949ce9893c7fc93b89f8ec1d3e0c6cfd81182d4c81cab0e816aadb
+  languageName: node
+  linkType: hard
+
+"@react-navigation/native-stack@npm:^7.14.12":
+  version: 7.14.12
+  resolution: "@react-navigation/native-stack@npm:7.14.12"
+  dependencies:
+    "@react-navigation/elements": "npm:^2.9.15"
+    color: "npm:^4.2.3"
+    sf-symbols-typescript: "npm:^2.1.0"
+    warn-once: "npm:^0.1.1"
+  peerDependencies:
+    "@react-navigation/native": ^7.2.2
+    react: ">= 18.2.0"
+    react-native: "*"
+    react-native-safe-area-context: ">= 4.0.0"
+    react-native-screens: ">= 4.0.0"
+  checksum: 10c0/abffb7efca6376863b9d7d89418cfe41d149e27a2eee6b611155d8e582a7bde8eb1b314d4c99905be90e64792e23c0347efd226d5ffbbcfa1b2c2f707c596bdc
   languageName: node
   linkType: hard
 
@@ -7318,6 +7356,7 @@ __metadata:
     "@react-native/typescript-config": "npm:0.79.0"
     "@react-navigation/elements": "npm:^2.3.8"
     "@react-navigation/native": "npm:^7.1.6"
+    "@react-navigation/native-stack": "npm:^7.14.12"
     "@react-navigation/stack": "npm:^7.2.10"
     "@swmansion/icons": "npm:^0.0.1"
     "@types/jest": "npm:^29.5.13"

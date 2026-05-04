@@ -1,16 +1,17 @@
+import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
+import { Button, Text, View } from 'react-native';
 import {
   Directions,
   GestureHandlerRootView,
   useFlingGesture,
 } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
-import { Button, Text, View } from 'react-native';
-import { gestureStyles as styles } from '../gestureStyles';
 import { scheduleOnRN } from 'react-native-worklets';
+
 import GestureBox from '../components/GestureBox';
-import NormalBox from '../components/NormalBox';
 import { WRONG_BOX_COLOR } from '../components/gestureColors';
+import NormalBox from '../components/NormalBox';
+import { gestureStyles as styles } from '../gestureStyles';
 
 export default function FlingScreen() {
   const navigation = useNavigation<any>();

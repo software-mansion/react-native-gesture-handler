@@ -8,7 +8,6 @@ describe("test rotation gesture", () => {
     await element(by.id("nav-rotation")).tap();
   });
 
-  const wrongElement = element(by.id("wrong-element"));
   const rotationElement = element(by.id("rotation-idle"));
   const rotationActivatedElement = element(by.id("rotation-activated"));
   const resetButton = element(by.id("reset"));

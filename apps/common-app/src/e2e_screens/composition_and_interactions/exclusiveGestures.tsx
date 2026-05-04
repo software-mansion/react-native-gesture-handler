@@ -1,13 +1,12 @@
-import { View } from 'react-native';
-import {
-  useTapGesture,
-  useExclusiveGestures,
-} from 'react-native-gesture-handler';
 import { useState } from 'react';
-import { Button, StyleSheet } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import {
+  useExclusiveGestures,
+  useTapGesture,
+} from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
+
 import GestureBox from '../components/GestureBox';
-import { Text } from 'react-native';
 
 export default function ExclusiveGestures() {
   const [testID, setTestID] = useState('exclusive-idle');

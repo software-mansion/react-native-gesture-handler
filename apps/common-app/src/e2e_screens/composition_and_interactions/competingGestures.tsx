@@ -1,13 +1,15 @@
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { useState } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import {
   GestureDetector,
   useCompetingGestures,
   useLongPressGesture,
   usePanGesture,
 } from 'react-native-gesture-handler';
-import { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import Animated from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
 export default function CompetingGestures() {
@@ -104,8 +106,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  buttonContainer: {
-    marginTop: 24,
   },
 });

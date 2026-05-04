@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, StyleSheet, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -27,6 +27,13 @@ export default function HomeScreen() {
         style={styles.button}
         onPress={() => navigation.navigate('Composition & Interaction')}>
         <Text style={styles.buttonText}>Composition & Interaction</Text>
+      </Pressable>
+
+      <Pressable
+        testID="nav-detecor-tests"
+        style={styles.button}
+        onPress={() => navigation.navigate('Gesture Detectors')}>
+        <Text style={styles.buttonText}>Gesture Detectors</Text>
       </Pressable>
     </View>
   );

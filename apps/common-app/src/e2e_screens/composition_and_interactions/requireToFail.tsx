@@ -1,7 +1,6 @@
-import { View } from 'react-native';
-import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
 import { useState } from 'react';
-import { Button, StyleSheet, Text } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 
 export default function RequireToFail() {

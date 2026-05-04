@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 type Props = NativeStackScreenProps<any, 'MultipleHandlers'>;
 

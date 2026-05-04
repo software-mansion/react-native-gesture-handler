@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
+
 import { RIGHT_BOX_COLOR } from './gestureColors';
 
 type NormalBoxProps = {

@@ -1,6 +1,6 @@
-import {
+import { StyleSheet } from 'react-native';
+import type {
   FlingGesture,
-  GestureDetector,
   HoverGesture,
   LongPressGesture,
   PanGesture,
@@ -8,8 +8,9 @@ import {
   RotationGesture,
   TapGesture,
 } from 'react-native-gesture-handler';
-import { StyleSheet } from 'react-native';
+import { GestureDetector } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
+
 import { RIGHT_BOX_COLOR } from './gestureColors';
 
 export type AnyGesture =

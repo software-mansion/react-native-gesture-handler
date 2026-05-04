@@ -3,46 +3,51 @@ import { useState } from 'react';
 import { Button, Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
-  usePinchGesture,
+  InterceptingGestureDetector,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import GestureBox from '../components/GestureBox';
-import { WRONG_BOX_COLOR } from '../components/gestureColors';
-import NormalBox from '../components/NormalBox';
 import { gestureStyles as styles } from '../gestureStyles';
 
-export default function PinchScreen() {
+export default function InterceptingGestureDetectorScreen() {
   const navigation = useNavigation<any>();
-  const [testID, setTestID] = useState('pinch-idle');
-  const activatePinch = () => setTestID('pinch-activated');
-  const pinchGesture = usePinchGesture({
+  const [state, setState] = useState('tap-idle');
+
+  const activateGesture = () => setState('tap-activated');
+
+  const tapGesture = useTapGesture({
     onActivate: () => {
       'worklet';
-      scheduleOnRN(activatePinch);
+      scheduleOnRN(activateGesture);
     },
   });
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <Text style={styles.title}>Pinch Gesture</Text>
+      <Text style={styles.title}>Intercepting Gesture Detector</Text>
       <Text style={styles.stateIndicator}>
-        {testID === 'pinch-activated' ? 'Pinch Activated' : 'Idle'}
+        {state === 'tap-activated' ? 'Tap Activated' : 'Idle'}
       </Text>
       <View style={styles.content}>
-        <NormalBox testID="wrong-element" color={WRONG_BOX_COLOR} />
-        <GestureBox gesture={pinchGesture} testID={testID} />
+        <InterceptingGestureDetector gesture={tapGesture}>
+          <View>
+            <Text style={{ fontSize: 18, textAlign: 'center' }} testID={state}>
+              Tap inside this area
+            </Text>
+          </View>
+        </InterceptingGestureDetector>
       </View>
 
       <View style={styles.buttonContainer}>
         <Button
           title="Reset"
-          onPress={() => setTestID('pinch-idle')}
+          onPress={() => setState('tap-idle')}
           testID="reset"
         />
         <Button
           title="Back to main"
-          onPress={() => navigation.navigate('Gesture Tests')}
+          onPress={() => navigation.navigate('Gesture Detectors')}
           testID="back-to-main"
         />
       </View>
