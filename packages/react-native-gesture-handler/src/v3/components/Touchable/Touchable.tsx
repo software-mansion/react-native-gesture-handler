@@ -138,6 +138,7 @@ export const Touchable = (props: TouchableProps) => {
     disableReanimated: true,
     shouldActivateOnStart: false,
     disallowInterruption: true,
+    yieldsToNativeGestures: true,
   });
 
   const rippleProps = shouldUseNativeRipple
