@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 
-import type { ReanimatedHandler } from '../../../handlers/gestures/reanimatedWrapper';
+import type {
+  ReanimatedContext,
+  ReanimatedHandler,
+} from '../../../handlers/gestures/reanimatedWrapper';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import type {
   ChangeCalculatorType,
@@ -20,6 +23,10 @@ const workletNOOP = () => {
   'worklet';
   // no-op
 };
+
+const lastUpdateEventMap = Reanimated?.makeMutable(
+  new Map<number, ReanimatedContext<unknown>>()
+);
 
 export function useReanimatedEventHandler<
   THandlerData,
@@ -53,13 +60,21 @@ export function useReanimatedEventHandler<
     >
   ) => {
     'worklet';
+    // If we're on Reanimated path, lastUpdateEventMap should always be defined
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    let context = lastUpdateEventMap!.value.get(event.handlerTag);
+    if (context === undefined) {
+      context = { lastUpdateEvent: undefined };
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      lastUpdateEventMap!.value.set(event.handlerTag, context);
+    }
+
     eventHandler(
       handlerTag,
       event,
       workletizedHandlers,
       changeEventCalculator,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-      reanimatedHandler?.context!,
+      context as ReanimatedContext<TExtendedHandlerData>,
       false,
       fillInDefaultValues
     );
