@@ -246,14 +246,14 @@
     //   - peer NativeViewGestureHandler recognizers (RNDummyGestureRecognizer), so wrapping
     //     RNGH-managed scrollables/native handlers can still take over
     for (RNGHUITouch *touch in [event allTouches]) {
-      for (UIGestureRecognizer *recogn in [touch gestureRecognizers]) {
+      for (UIGestureRecognizer *recognizer in [touch gestureRecognizers]) {
         if (_yieldsToNativeGestures &&
-            (recogn.gestureHandler == nil || [recogn isKindOfClass:[RNDummyGestureRecognizer class]])) {
+            (recognizer.gestureHandler == nil || [recognizer isKindOfClass:[RNDummyGestureRecognizer class]])) {
           continue;
         }
 
-        recogn.enabled = NO;
-        recogn.enabled = YES;
+        recognizer.enabled = NO;
+        recognizer.enabled = YES;
       }
     }
   }
