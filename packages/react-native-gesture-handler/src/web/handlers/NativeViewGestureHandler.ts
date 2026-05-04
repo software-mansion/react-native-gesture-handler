@@ -220,6 +220,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     );
   }
 
+  public override detach(): void {
+    super.detach();
+    this.role = null;
+  }
+
   public override shouldBeCancelledByOther(_handler: IGestureHandler): boolean {
     return !this.disallowInterruption;
   }
