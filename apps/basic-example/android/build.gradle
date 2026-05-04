@@ -16,6 +16,14 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        // RNRepo plugin in CI builds (plugin applied in app/build.gradle)
+        def rnrepoDir = new File(
+            providers.exec {
+                workingDir(rootDir)
+                commandLine("node", "--print", "require.resolve('@rnrepo/build-tools/package.json')")
+            }.standardOutput.asText.get().trim()
+        ).getParentFile().absolutePath
+        classpath fileTree(dir: "${rnrepoDir}/gradle-plugin/build/libs", include: ["prebuilds-plugin.jar"])
     }
     allprojects {
         project.pluginManager.withPlugin("com.facebook.react") {

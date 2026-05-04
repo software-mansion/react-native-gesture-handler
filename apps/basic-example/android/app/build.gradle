@@ -2,6 +2,11 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+// Use RNRepo in CI builds
+if (System.getenv("CI") == "true") {
+  apply plugin: "org.rnrepo.tools.prebuilds-plugin"
+}
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
