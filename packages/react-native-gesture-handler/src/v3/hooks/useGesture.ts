@@ -43,7 +43,7 @@ export function useGesture<
 
   // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
   //
-  // We only need to prepare config once. If Reanimated is used and we try to preapre the same config again,
+  // We only need to prepare config once. If Reanimated is used and we try to prepare the same config again,
   // it will result in warnings, as config has already been sent to the native side (i.e. config is frozen).
   if (config !== previousConfig) {
     prepareConfig(config);
