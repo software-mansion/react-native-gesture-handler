@@ -40,7 +40,7 @@ module.exports = {
     simulator: {
       type: 'ios.simulator',
       device: {
-        type: 'iPhone 17',
+        type: 'iPhone 1[4567]',
       },
     },
     attached: {
