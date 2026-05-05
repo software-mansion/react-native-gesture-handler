@@ -161,11 +161,15 @@ export function useClonedAndRemappedConfig<
       TExtendedHandlerData
     >(config);
 
-    return propsTransformer(
+    const transformedConfig = propsTransformer(
       remapProps<TConfig, TInternalConfig>(
         clonedConfig as TConfig & TInternalConfig,
         propsMapping
       )
     );
+
+    prepareConfig(transformedConfig);
+
+    return transformedConfig;
   }, [config, propsMapping, propsTransformer]);
 }

@@ -16,7 +16,6 @@ import type {
 import { useGestureCallbacks } from './useGestureCallbacks';
 import {
   bindSharedValues,
-  prepareConfig,
   prepareConfigForNativeSide,
   prepareRelations,
   unbindSharedValues,
@@ -31,24 +30,14 @@ export function useGesture<
   config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ): SingleGesture<TConfig, THandlerData, TExtendedHandlerData> {
   const handlerTag = useMemo(() => getNextHandlerTag(), []);
-  const initialDisableReanimated = useRef(config.disableReanimated);
-  const preparedConfig = useRef<typeof config | null>(null);
+  const disableReanimated = useMemo(() => config.disableReanimated, []);
 
-  if (config.disableReanimated !== initialDisableReanimated.current) {
+  if (config.disableReanimated !== disableReanimated) {
     throw new Error(
       tagMessage(
         'The "disableReanimated" property must not be changed after the handler is created.'
       )
     );
-  }
-
-  // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
-  //
-  // We only need to prepare config once. If Reanimated is used and we try to prepare the same config again,
-  // it will result in warnings, as config has already been sent to the native side (i.e. config is frozen).
-  if (config !== preparedConfig.current) {
-    prepareConfig(config);
-    preparedConfig.current = config;
   }
 
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
