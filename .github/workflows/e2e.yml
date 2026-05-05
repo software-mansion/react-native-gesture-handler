@@ -1,0 +1,38 @@
+name: E2E Test React Native Gesture Handler
+
+on:
+  pull_request:
+    paths:
+      - packages/react-native-gesture-handler/**
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  e2e:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    runs-on: macos-14
+    env:
+      WORKING_DIRECTORY: apps/e2eApp
+    concurrency:
+      group: e2e-app-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Use node 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Install pods
+        working-directory: ${{ env.WORKING_DIRECTORY }}/ios
+        run: pod install
+      - name: Build for iOS
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: detox build --c ios.sim.release
+      - name: Run tests on iOS
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: detox test --c ios.sim.release
