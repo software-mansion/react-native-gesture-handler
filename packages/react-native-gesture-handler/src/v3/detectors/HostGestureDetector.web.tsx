@@ -9,8 +9,8 @@ import type {
 } from '../../handlers/gestureHandlerCommon';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
 import { tagMessage } from '../../utils';
-import { NATIVE_GESTURE_ROLE_ATTRIBUTE } from '../../web/constants';
-import { NativeGestureRole, type PropsRef } from '../../web/interfaces';
+import { type PropsRef } from '../../web/interfaces';
+import { useNativeGestureRole } from './useNativeGestureRole';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
@@ -104,38 +104,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     });
   };
 
-  useEffect(() => {
-    // @ts-ignore This exists on React.ReactNode
-    const displayName = children?.type?.displayName as string;
-
-    // In case of Native gesture detector will have only one child
-    const child = viewRef.current?.firstChild as HTMLElement | undefined;
-
-    if (!child) {
-      return;
-    }
-
-    if (displayName === 'ScrollView') {
-      child.setAttribute(
-        NATIVE_GESTURE_ROLE_ATTRIBUTE,
-        NativeGestureRole.ScrollView
-      );
-    } else if (displayName === 'Switch') {
-      child.setAttribute(
-        NATIVE_GESTURE_ROLE_ATTRIBUTE,
-        NativeGestureRole.Switch
-      );
-    } else if (displayName === 'Button') {
-      child.setAttribute(
-        NATIVE_GESTURE_ROLE_ATTRIBUTE,
-        NativeGestureRole.Button
-      );
-    }
-
-    return () => {
-      child.removeAttribute(NATIVE_GESTURE_ROLE_ATTRIBUTE);
-    };
-  }, [children]);
+  useNativeGestureRole(viewRef, children);
 
   useEffect(() => {
     const shouldUpdateDOMProps =
