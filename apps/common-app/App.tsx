@@ -1,3 +1,5 @@
+/* eslint-disable @eslint-react/no-nested-component-definitions */
+/* eslint-disable @eslint-react/no-nested-components */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ParamListBase } from '@react-navigation/native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -11,8 +13,8 @@ import { useEffect, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
-  RectButton,
   Switch,
+  Touchable,
 } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -123,7 +125,7 @@ export default function App() {
             <MainScreenItem
               name={item.name}
               onPressItem={(name) => navigate(navigation, name)}
-              enabled={!item.unsupportedPlatforms?.has(Platform.OS)}
+              disabled={!!item.unsupportedPlatforms?.has(Platform.OS)}
             />
           )}
           renderSectionHeader={({ section: { sectionTitle } }) => (
@@ -156,7 +158,9 @@ export default function App() {
     }
     return (
       <View style={styles.settings}>
-        <RectButton
+        <Touchable
+          androidRipple={{}}
+          activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
           style={styles.settingsButton}
           onPress={() => {
             updateKeepSetting(!openLastExample);
@@ -175,8 +179,10 @@ export default function App() {
               }}
             />
           </View>
-        </RectButton>
-        <RectButton
+        </Touchable>
+        <Touchable
+          androidRipple={{}}
+          activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
           style={styles.settingsButton}
           onPress={() => {
             updateVersionSetting(!showLegacyVersion);
@@ -195,7 +201,7 @@ export default function App() {
               }}
             />
           </View>
-        </RectButton>
+        </Touchable>
       </View>
     );
   }
@@ -203,20 +209,26 @@ export default function App() {
   interface MainScreenItemProps {
     name: string;
     onPressItem: (name: string) => void;
-    enabled: boolean;
+    disabled: boolean;
   }
 
-  function MainScreenItem({ name, onPressItem, enabled }: MainScreenItemProps) {
+  function MainScreenItem({
+    name,
+    onPressItem,
+    disabled,
+  }: MainScreenItemProps) {
     return (
-      <RectButton
-        enabled={enabled}
-        style={[styles.button, !enabled && styles.unavailableExample]}
+      <Touchable
+        disabled={disabled}
+        style={[styles.button, disabled && styles.unavailableExample]}
+        androidRipple={{}}
+        activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
         onPress={() => onPressItem(name)}>
         <Text style={styles.text}>{name}</Text>
-        {Platform.OS !== 'macos' && enabled && (
+        {Platform.OS !== 'macos' && !disabled && (
           <Icon name="chevron-small-right" size={24} color="#bbb" />
         )}
-      </RectButton>
+      </Touchable>
     );
   }
 }

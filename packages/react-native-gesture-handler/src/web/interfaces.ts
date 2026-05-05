@@ -88,6 +88,7 @@ export interface Config extends Record<string, ConfigArgs> {
   maxDeltaY?: number;
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
+  yieldsToNativeGestures?: boolean;
   direction?: Directions;
   enableTrackpadTwoFingerGesture?: boolean;
 }
