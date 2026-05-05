@@ -179,7 +179,7 @@ export type SVGRef = {
 };
 
 export enum NativeGestureRole {
-  Button = 'Button',
+  Button = 'GestureHandlerButton',
   Switch = 'Switch',
   ScrollView = 'ScrollView',
 }

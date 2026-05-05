@@ -18,17 +18,17 @@ export function useNativeGestureRole(
     // @ts-ignore This exists on React.ReactNode
     const displayName = children?.type?.displayName as string;
 
-    if (displayName === 'ScrollView') {
+    if (displayName === NativeGestureRole.ScrollView) {
       child.setAttribute(
         NATIVE_GESTURE_ROLE_ATTRIBUTE,
         NativeGestureRole.ScrollView
       );
-    } else if (displayName === 'Switch') {
+    } else if (displayName === NativeGestureRole.Switch) {
       child.setAttribute(
         NATIVE_GESTURE_ROLE_ATTRIBUTE,
         NativeGestureRole.Switch
       );
-    } else if (displayName === 'Button') {
+    } else if (displayName === NativeGestureRole.Button) {
       child.setAttribute(
         NATIVE_GESTURE_ROLE_ATTRIBUTE,
         NativeGestureRole.Button
