@@ -12,18 +12,22 @@ buildscript {
         google()
         mavenCentral()
     }
-    dependencies {
-        classpath("com.android.tools.build:gradle")
-        classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-        // RNRepo plugin in CI builds (plugin applied in app/build.gradle)
+    // RNRepo plugin classpath for CI builds (plugin applied in app/build.gradle).
+    // To disable RNRepo support, set DISABLE_RNREPO environment variable to ANY value.
+    def rnrepoClasspath = {
         def rnrepoDir = new File(
             providers.exec {
                 workingDir(rootDir)
                 commandLine("node", "--print", "require.resolve('@rnrepo/build-tools/package.json')")
             }.standardOutput.asText.get().trim()
         ).getParentFile().absolutePath
-        classpath fileTree(dir: "${rnrepoDir}/gradle-plugin/build/libs", include: ["prebuilds-plugin.jar"])
+        return fileTree(dir: "${rnrepoDir}/gradle-plugin/build/libs", include: ["prebuilds-plugin.jar"])
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        classpath rnrepoClasspath()
     }
     allprojects {
         project.pluginManager.withPlugin("com.facebook.react") {
