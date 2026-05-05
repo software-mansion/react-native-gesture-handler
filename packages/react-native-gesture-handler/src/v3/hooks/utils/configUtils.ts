@@ -142,6 +142,11 @@ function remapProps<
   return config;
 }
 
+const DEFAULT_PROPS_MAPPING = new Map<string, string>();
+const DEFAULT_PROPS_TRANSFORMER = <TConfig extends object>(
+  config: TConfig
+): TConfig => config;
+
 export function useClonedAndRemappedConfig<
   TConfig extends Record<string, unknown>,
   THandlerData,
@@ -151,8 +156,10 @@ export function useClonedAndRemappedConfig<
   config: ExcludeInternalConfigProps<
     BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
   >,
-  propsMapping: Map<string, string> = new Map(),
-  propsTransformer: (config: TInternalConfig) => TInternalConfig = (cfg) => cfg
+  propsMapping: Map<string, string> = DEFAULT_PROPS_MAPPING,
+  propsTransformer: (
+    config: TInternalConfig
+  ) => TInternalConfig = DEFAULT_PROPS_TRANSFORMER
 ): BaseGestureConfig<TInternalConfig, THandlerData, TExtendedHandlerData> {
   return useMemo(() => {
     const clonedConfig = cloneConfig<
