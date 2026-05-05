@@ -16,7 +16,7 @@ import {
 } from './propsWhiteList';
 import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
 
-export function prepareConfig<
+export function resolveInternalConfigProps<
   TConfig extends object,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
@@ -168,7 +168,7 @@ export function useClonedAndRemappedConfig<
       )
     );
 
-    prepareConfig(transformedConfig);
+    resolveInternalConfigProps(transformedConfig);
 
     return transformedConfig;
   }, [config, propsMapping, propsTransformer]);
