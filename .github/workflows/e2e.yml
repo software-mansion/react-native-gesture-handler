@@ -36,3 +36,4 @@ jobs:
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: detox test --c ios.sim.release
+#tset
