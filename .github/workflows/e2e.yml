@@ -40,11 +40,14 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}/ios
         run: pod install
 
+      - name : Setup Detox
+        run: brew tap wix/brew && brew install applesimutils
+
       - name: Build for iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: detox build --c ios.sim.release
+        run: npx detox build --c ios.sim.release
 
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: detox test --c ios.sim.release
+        run: npx detox test --c ios.sim.release
 #tset
