@@ -1,5 +1,4 @@
 export {
-  prepareConfig,
   prepareConfigForNativeSide,
   useClonedAndRemappedConfig,
 } from './configUtils';
