@@ -43,8 +43,16 @@ jobs:
       - name : Setup Detox
         run: brew tap wix/brew && brew install applesimutils
 
+      - name: Cache Detox Build
+        id: cache-detox-build
+        uses: actions/cache@v4
+        with:
+          path: ios/build
+          key: ${{ runner.os }}-detox-ios-build-${{ hashFiles('package-lock.json', 'ios/Podfile.lock') }}
+
       - name: Build for iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
+        if: steps.cache-detox-build.outputs.cache-hit != 'true'
         run: npx detox build --c ios.sim.release
 
       - name: Run tests on iOS
