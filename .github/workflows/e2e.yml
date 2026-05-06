@@ -43,9 +43,6 @@ jobs:
       - name : Setup Detox
         run: brew tap wix/brew && brew install applesimutils
 
-      - name: List available simulators
-        run: xcrun simctl list devicetypes
-
       - name: Build for iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: npx detox build --c ios.sim.release
@@ -53,4 +50,3 @@ jobs:
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: npx detox test --c ios.sim.release
-#tset
