@@ -23,6 +23,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   // TODO: Implement logic for activation on start properly
   private shouldActivateOnStart = false;
   private disallowInterruption = false;
+  private yieldsToNativeGestures = false;
 
   private startX = 0;
   private startY = 0;
@@ -66,6 +67,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
     if (config.disallowInterruption !== undefined) {
       this.disallowInterruption = config.disallowInterruption;
+    }
+    if (config.yieldsToNativeGestures !== undefined) {
+      this.yieldsToNativeGestures = config.yieldsToNativeGestures;
     }
 
     const view = this.delegate.view as HTMLElement;
@@ -181,12 +185,16 @@ export default class NativeViewGestureHandler extends GestureHandler {
     if (
       handler instanceof NativeViewGestureHandler &&
       handler.state === State.ACTIVE &&
-      handler.disallowsInterruption()
+      handler.disallowsInterruption() &&
+      !handler.yieldsToOtherNativeGestures()
     ) {
       return false;
     }
 
-    const canBeInterrupted = !this.disallowInterruption;
+    const canBeInterrupted =
+      !this.disallowInterruption ||
+      (this.yieldsToNativeGestures &&
+        handler instanceof NativeViewGestureHandler);
 
     if (
       this.state === State.ACTIVE &&
@@ -201,8 +209,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
     );
   }
 
-  public override shouldBeCancelledByOther(_handler: IGestureHandler): boolean {
-    return !this.disallowInterruption;
+  public override shouldBeCancelledByOther(handler: IGestureHandler): boolean {
+    return (
+      !this.disallowInterruption ||
+      (this.yieldsToNativeGestures &&
+        handler instanceof NativeViewGestureHandler)
+    );
   }
 
   public override shouldAttachGestureToChildView(): boolean {
@@ -211,6 +223,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   public disallowsInterruption(): boolean {
     return this.disallowInterruption;
+  }
+
+  public yieldsToOtherNativeGestures(): boolean {
+    return this.yieldsToNativeGestures;
   }
 
   public isButton(): boolean {

@@ -9,7 +9,6 @@ import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
-import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
@@ -45,6 +44,26 @@ open class GestureHandler {
         hostDetectorView!!
       } else {
         view!!
+      }
+    }
+
+  /**
+   * The view whose coordinate space should be used when reporting event positions to JS.
+   *
+   * Handlers attached via the V3 NativeDetector are registered against the DetectorView wrapper,
+   * which never carries user-applied transforms — those live on its child. When the detector has
+   * exactly one child we descend into it so reported coordinates match the visible (transformed)
+   * view, the same coordinate space V2 and the V3 VirtualGestureDetector report in. With
+   * multiple children there is no JS-side way to disambiguate which child caught the pointer,
+   * so we keep the detector itself as the reference frame.
+   */
+  val coordinateView: View?
+    get() {
+      val v = view
+      return if (v is RNGestureHandlerDetectorView && v.childCount == 1) {
+        v.getChildAt(0)
+      } else {
+        v
       }
     }
 
@@ -387,42 +406,13 @@ open class GestureHandler {
 
     numberOfPointers = adaptedTransformedEvent.pointerCount
 
-    // TODO: this is likely wrong, and the transformed event itself should be
-    // in the coordinate system of the child view, but I'm not sure of the
-    // consequences
-    val detectorView = hostDetectorView
-    if (detectorView != null && view == detectorView && detectorView.isNotEmpty()) {
-      val outPoint = PointF()
-      var foundChild = false
-
-      for (i in 0 until detectorView.childCount) {
-        val child = detectorView.getChildAt(i)
-        GestureHandlerOrchestrator.transformPointToChildViewCoords(
-          adaptedTransformedEvent.x,
-          adaptedTransformedEvent.y,
-          detectorView,
-          child,
-          outPoint,
-        )
-        if (isWithinBounds(child, outPoint.x, outPoint.y)) {
-          x = outPoint.x
-          y = outPoint.y
-          isWithinBounds = true
-          foundChild = true
-          break
-        }
-      }
-
-      if (!foundChild) {
-        x = adaptedTransformedEvent.x
-        y = adaptedTransformedEvent.y
-        isWithinBounds = false
-      }
-    } else {
-      x = adaptedTransformedEvent.x
-      y = adaptedTransformedEvent.y
-      isWithinBounds = isWithinBounds(view, x, y)
-    }
+    x = adaptedTransformedEvent.x
+    y = adaptedTransformedEvent.y
+    // The orchestrator transforms incoming events into the coordinate space of the detector's
+    // child (when the handler is attached to a NativeDetector wrapper), so bounds-checking must
+    // also use that child rather than the wrapper, otherwise hit-testing would ignore the user's
+    // transforms applied to the visible view.
+    isWithinBounds = isWithinBounds(coordinateView, x, y)
 
     if (shouldCancelWhenOutside) {
       if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
@@ -872,7 +862,7 @@ open class GestureHandler {
    * This method modifies and transforms the received point.
    */
   protected fun transformPoint(point: PointF): PointF =
-    orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
+    orchestrator?.transformPointToViewCoords(coordinateView, point) ?: run {
       point.x = Float.NaN
       point.y = Float.NaN
       point
