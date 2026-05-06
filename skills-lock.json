@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "skills": {
+    "argent-create-flow": {
+      "source": "/Users/mateuszkielb/.nvm/versions/node/v25.8.0/lib/node_modules/@swmansion/argent/skills",
+      "sourceType": "local",
+      "computedHash": "8ef5dc1b2b2c09d0cb86ba772848dc24244d9400813cf70a68a799d62eddf59c"
+    },
+    "argent-ios-profiler": {
+      "source": "/Users/mateuszkielb/.nvm/versions/node/v25.8.0/lib/node_modules/@swmansion/argent/skills",
+      "sourceType": "local",
+      "computedHash": "2a5e205a190f24b89a5781a439255ce5ac2b0ad1db62ff68d1aebda06706eb3b"
+    },
+    "argent-metro-debugger": {
+      "source": "/Users/mateuszkielb/.nvm/versions/node/v25.8.0/lib/node_modules/@swmansion/argent/skills",
+      "sourceType": "local",
+      "computedHash": "acc11a68c3db98b18556a121331060c0f7cc48ce535d1e73de6c925fa6452d7c"
+    },
+    "argent-react-native-app-workflow": {
+      "source": "/Users/mateuszkielb/.nvm/versions/node/v25.8.0/lib/node_modules/@swmansion/argent/skills",
+      "sourceType": "local",
+      "computedHash": "2c957274fded16fb8a2183e3a65c02fcb9559461a1a7905d27e0a77c38eda388"
+    },
+    "argent-react-native-optimization": {
+      "source": "/Users/mateuszkielb/.nvm/versions/node/v25.8.0/lib/node_modules/@swmansion/argent/skills",
+      "sourceType": "local",
+      "computedHash": "6b6874240a82ac8b993e13379b801933948139e50d4be1f2f582583cf7f24ab5"
+    },
+    "argent-react-native-profiler": {
+      "source": "/Users/mateuszkielb/.nvm/versions/node/v25.8.0/lib/node_modules/@swmansion/argent/skills",
+      "sourceType": "local",
+      "computedHash": "d63fb53e456219d8157532b462cb4d33e6993aefc09cba9577a16474fc023dc3"
+    },
+    "argent-simulator-interact": {
+      "source": "/Users/mateuszkielb/.nvm/versions/node/v25.8.0/lib/node_modules/@swmansion/argent/skills",
+      "sourceType": "local",
+      "computedHash": "c6c6a3fa8fd08723ffaa06cd6a0af2e7e67a4d74187edb1f43b916694d6c3923"
+    },
+    "argent-simulator-setup": {
+      "source": "/Users/mateuszkielb/.nvm/versions/node/v25.8.0/lib/node_modules/@swmansion/argent/skills",
+      "sourceType": "local",
+      "computedHash": "73f1f2f086b299b0678b5524c331d383f4b22e3ab442f166babf54e33e89ec53"
+    },
+    "argent-test-ui-flow": {
+      "source": "/Users/mateuszkielb/.nvm/versions/node/v25.8.0/lib/node_modules/@swmansion/argent/skills",
+      "sourceType": "local",
+      "computedHash": "bef2df9a308b247b3e42d8f0b5347817dabeb650ecb4d8c0b79a8af04c78957b"
+    }
+  }
+}

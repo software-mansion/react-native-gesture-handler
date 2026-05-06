@@ -8,8 +8,6 @@ import {
 import { scheduleOnRN } from 'react-native-worklets';
 
 import GestureBox from '../components/GestureBox';
-import { WRONG_BOX_COLOR } from '../components/gestureColors';
-import NormalBox from '../components/NormalBox';
 import { gestureStyles as styles } from '../gestureStyles';
 
 export default function RotationScreen() {
@@ -35,7 +33,6 @@ export default function RotationScreen() {
         {testID === 'rotation-activated' ? 'Rotation Activated' : 'Idle'}
       </Text>
       <View style={styles.content}>
-        <NormalBox testID="wrong-element" color={WRONG_BOX_COLOR} />
         <GestureBox gesture={rotationGesture} testID={testID} />
       </View>
 
