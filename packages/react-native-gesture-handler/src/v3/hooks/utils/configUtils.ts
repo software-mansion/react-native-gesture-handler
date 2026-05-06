@@ -125,7 +125,7 @@ function remapProps<
   TInternalConfig extends Record<string, unknown>,
 >(
   config: TConfig & TInternalConfig,
-  propsMapping: Map<string, string>
+  propsMapping: ReadonlyMap<string, string>
 ): TInternalConfig {
   type MergedConfig = TConfig & TInternalConfig;
 
@@ -156,7 +156,7 @@ export function useClonedAndRemappedConfig<
   config: ExcludeInternalConfigProps<
     BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
   >,
-  propsMapping: Map<string, string> = DEFAULT_PROPS_MAPPING,
+  propsMapping: ReadonlyMap<string, string> = DEFAULT_PROPS_MAPPING,
   propsTransformer: (
     config: TInternalConfig
   ) => TInternalConfig = DEFAULT_PROPS_TRANSFORMER
