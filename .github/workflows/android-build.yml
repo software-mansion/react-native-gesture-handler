@@ -6,6 +6,9 @@ on:
       - .github/workflows/android-build.yml
       - packages/react-native-gesture-handler/android/**
       - apps/basic-example/android/**
+      - apps/basic-example/package.json
+      - rnrepo.config.json
+      - yarn.lock
   push:
     branches:
       - main
@@ -45,4 +48,4 @@ jobs:
 
       - name: Build app
         working-directory: ${{ matrix.working-directory }}/android
-        run: ./gradlew assembleDebug --console=plain -PreactNativeArchitectures=arm64-v8a
+        run: ./gradlew :app:assembleDebug --console=plain -PreactNativeArchitectures=arm64-v8a
