@@ -37,7 +37,7 @@ export function VirtualDetector<
   const { register, unregister, setMode } =
     useRequiredInterceptingDetectorContext();
 
-  const viewRef = useRef<HTMLElement | null>(null);
+  const viewRef = useRef<null>(null);
   const [viewTag, setViewTag] = useState<number>(-1);
 
   const handleRef = useCallback(
