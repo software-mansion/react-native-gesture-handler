@@ -87,9 +87,8 @@ export function prepareConfigForNativeSide<
   for (const [key, value] of Object.entries(config)) {
     // @ts-ignore That's the point, we want to see if key exists in the whitelists
     if (allowedNativeProps.has(key) || handlerPropsWhiteList.has(key)) {
-      Object.assign(filteredConfig, {
-        [key]: Reanimated?.isSharedValue(value) ? value.value : value,
-      });
+      (filteredConfig as Record<string, unknown>)[key] =
+        Reanimated?.isSharedValue(value) ? value.value : value;
     } else if (PropsToFilter.has(key)) {
       continue;
     } else {
