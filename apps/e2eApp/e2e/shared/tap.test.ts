@@ -13,7 +13,9 @@ describe('test tap gesture', () => {
   const tapElement = element(by.id('tap-idle'));
   const resetButton = element(by.id('reset'));
 
-  beforeEach(async () => { await resetButton.tap(); });
+  beforeEach(async () => {
+    await resetButton.tap();
+  });
 
   it('shouldn`t register a tap gesture', async () => {
     await expect(wrongElement).toExist();

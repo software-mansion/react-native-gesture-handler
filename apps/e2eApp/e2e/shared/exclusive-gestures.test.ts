@@ -9,8 +9,12 @@ describe('test exclusive gesture composition', () => {
   });
 
   const box = element(by.id('exclusive-idle'));
-  const doubleTapActivatedElement = element(by.id('exclusive-double-tap-activated'));
-  const singleTapActivatedElement = element(by.id('exclusive-single-tap-activated'));
+  const doubleTapActivatedElement = element(
+    by.id('exclusive-double-tap-activated'),
+  );
+  const singleTapActivatedElement = element(
+    by.id('exclusive-single-tap-activated'),
+  );
   const resetButton = element(by.id('reset'));
 
   beforeEach(async () => {

@@ -16,11 +16,9 @@ describe('intercepting gesture detector', () => {
     await resetButton.tap();
   });
 
-
   it('should register a tap gesture', async () => {
     await expect(tapElement).toExist();
     await tapElement.tap();
     await expect(tapActivatedElement).toExist();
   });
-
 });
