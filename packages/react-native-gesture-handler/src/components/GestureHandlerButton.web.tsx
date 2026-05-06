@@ -239,6 +239,7 @@ export const ButtonComponent = ({
 
   return (
     <View
+      {...rest}
       ref={setRef}
       accessibilityRole="button"
       style={[
@@ -256,8 +257,7 @@ export const ButtonComponent = ({
       onPointerDown={pressIn}
       onPointerUp={pressOut}
       onPointerCancel={pressOut}
-      onPointerLeave={handlePointerLeave}
-      {...rest}>
+      onPointerLeave={handlePointerLeave}>
       {hasUnderlay && (
         <View
           style={{
