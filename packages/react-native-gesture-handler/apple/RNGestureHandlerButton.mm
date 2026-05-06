@@ -304,6 +304,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)handleAnimatePressIn
 {
+  if (!_userEnabled) {
+    return;
+  }
+
   if (_pendingPressOutBlock) {
     dispatch_block_cancel(_pendingPressOutBlock);
     _pendingPressOutBlock = nil;
