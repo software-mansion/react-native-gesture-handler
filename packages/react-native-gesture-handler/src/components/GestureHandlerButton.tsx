@@ -89,24 +89,32 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   activeUnderlayOpacity?: number | undefined;
 
   /**
+   * Web only.
+   *
    * Opacity applied to the button when it is hovered. Defaults to
    * `defaultOpacity` when not set.
    */
   hoverOpacity?: number | undefined;
 
   /**
+   * Web only.
+   *
    * Scale applied to the button when it is hovered. Defaults to
    * `defaultScale` when not set.
    */
   hoverScale?: number | undefined;
 
   /**
+   * Web only.
+   *
    * Opacity applied to the underlay when the button is hovered. Defaults
    * to `defaultUnderlayOpacity` when not set.
    */
   hoverUnderlayOpacity?: number | undefined;
 
   /**
+   * Web only.
+   *
    * Duration of the hover animation, in milliseconds. Defaults to
    * `tapAnimationDuration` when not set (or set to any negative value).
    */
