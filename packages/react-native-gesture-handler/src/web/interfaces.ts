@@ -178,3 +178,9 @@ export type GestureHandlerRef = {
 export type SVGRef = {
   elementRef: { current: SVGElement };
 };
+
+export enum NativeGestureRole {
+  Button = 'GestureHandlerButton',
+  Switch = 'Switch',
+  ScrollView = 'ScrollView',
+}

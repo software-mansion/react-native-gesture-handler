@@ -2,6 +2,7 @@ import * as React from 'react';
 import type { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 import { View } from 'react-native';
 
+import { NativeGestureRole } from '../web/interfaces';
 import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
 
 type ButtonProps = ViewProps & {
@@ -215,5 +216,7 @@ export const ButtonComponent = ({
     </View>
   );
 };
+
+ButtonComponent.displayName = NativeGestureRole.Button;
 
 export default ButtonComponent;
