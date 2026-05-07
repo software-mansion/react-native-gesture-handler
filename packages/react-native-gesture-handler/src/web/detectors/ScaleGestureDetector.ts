@@ -45,9 +45,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     const numOfPointers = tracker.trackedPointersCount;
 
     const streamComplete: boolean =
-      action === EventTypes.UP ||
-      action === EventTypes.ADDITIONAL_POINTER_UP ||
-      action === EventTypes.CANCEL;
+      action === EventTypes.UP || action === EventTypes.CANCEL;
 
     if (action === EventTypes.DOWN || streamComplete) {
       if (this.inProgress) {
