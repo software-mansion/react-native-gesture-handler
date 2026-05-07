@@ -9,15 +9,17 @@ on:
       - main
       - "@relextm19/e2e"
   workflow_dispatch:
+
+concurrency:
+  group: e2e-app-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ios-e2e:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: macos-14
     env:
       WORKING_DIRECTORY: apps/e2eApp
-    concurrency:
-      group: e2e-app-${{ github.ref }}
-      cancel-in-progress: true
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -70,9 +72,6 @@ jobs:
     runs-on: macos-14
     env:
       WORKING_DIRECTORY: apps/e2eApp
-    concurrency:
-      group: e2e-app-${{ github.ref }}
-      cancel-in-progress: true
     steps:
       - name: checkout
         uses: actions/checkout@v4
