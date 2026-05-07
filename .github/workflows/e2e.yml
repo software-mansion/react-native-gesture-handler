@@ -41,7 +41,7 @@ jobs:
         run: pod install
 
       - name : Setup Detox
-        run: brew tap wix/brew && brew install applesimutils
+        run: brew tap wix/brew && brew install applesimutils && npm install -g detox-cli
 
       - name: Cache Detox Build
         id: cache-detox-build
@@ -53,7 +53,7 @@ jobs:
       - name: Build for iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
         if: steps.cache-detox-build.outputs.cache-hit != 'true'
-        run: npx detox build --c ios.sim.release
+        run: detox build --c ios.sim.release
 
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
