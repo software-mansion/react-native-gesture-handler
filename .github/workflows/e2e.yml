@@ -76,6 +76,12 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
       - name: Use node 24
         uses: actions/setup-node@v6
         with:
@@ -101,6 +107,12 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: detox build -c android.emu.release
 
-      - name: Run tests on Android
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: yarn test:android
+      - name: Run tests on Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          avd-name: Pixel_9_Pro
+          working-directory: ${{ env.WORKING_DIRECTORY }}
+          script: yarn test:android
