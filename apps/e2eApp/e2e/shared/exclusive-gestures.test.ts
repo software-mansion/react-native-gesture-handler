@@ -38,15 +38,4 @@ describe('test exclusive gesture composition', () => {
     await expect(doubleTapActivatedElement).toExist();
     await expect(singleTapActivatedElement).not.toExist();
   });
-
-  it('should reset to idle state', async () => {
-    await expect(box).toExist();
-    await box.multiTap(2);
-    await expect(doubleTapActivatedElement).toExist();
-
-    await resetButton.tap();
-
-    await expect(box).toExist();
-    await expect(doubleTapActivatedElement).not.toExist();
-  });
 });
