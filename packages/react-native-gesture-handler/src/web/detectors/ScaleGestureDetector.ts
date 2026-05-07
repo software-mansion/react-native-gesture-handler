@@ -42,12 +42,15 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     this.currentTime = event.time;
 
     const action: EventTypes = event.eventType;
+    const numOfPointers = tracker.trackedPointersCount;
 
-    if (action === EventTypes.ADDITIONAL_POINTER_UP) {
+    // When the last second pointer lifts (going down to 1), pause without
+    // touching span/time state so the gesture resumes cleanly on re-add.
+    // When 3+ → 2+ pointers, fall through so configChanged resets the span
+    // baseline to the remaining pointer set and avoids a scale jump.
+    if (action === EventTypes.ADDITIONAL_POINTER_UP && numOfPointers <= 2) {
       return true;
     }
-
-    const numOfPointers = tracker.trackedPointersCount;
 
     const streamComplete: boolean =
       action === EventTypes.UP || action === EventTypes.CANCEL;
@@ -66,27 +69,40 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     const configChanged: boolean =
       action === EventTypes.DOWN ||
+      action === EventTypes.ADDITIONAL_POINTER_UP ||
       action === EventTypes.ADDITIONAL_POINTER_DOWN;
+
+    const pointerUp = action === EventTypes.ADDITIONAL_POINTER_UP;
+
+    const ignoredPointer: number | undefined = pointerUp
+      ? event.pointerId
+      : undefined;
 
     // Determine focal point
 
-    const coordsSum = tracker.getAbsoluteCoordsSum();
+    const div: number = pointerUp ? numOfPointers - 1 : numOfPointers;
 
-    const focusX = coordsSum.x / numOfPointers;
-    const focusY = coordsSum.y / numOfPointers;
+    const coordsSum = tracker.getAbsoluteCoordsSum(ignoredPointer);
+
+    const focusX = coordsSum.x / div;
+    const focusY = coordsSum.y / div;
 
     // Determine average deviation from focal point
 
     let devSumX = 0;
     let devSumY = 0;
 
-    tracker.trackedPointers.forEach((value) => {
+    tracker.trackedPointers.forEach((value, key) => {
+      if (key === ignoredPointer) {
+        return;
+      }
+
       devSumX += Math.abs(value.abosoluteCoords.x - focusX);
       devSumY += Math.abs(value.abosoluteCoords.y - focusY);
     });
 
-    const devX: number = devSumX / numOfPointers;
-    const devY: number = devSumY / numOfPointers;
+    const devX: number = devSumX / div;
+    const devY: number = devSumY / div;
 
     const spanX: number = devX * 2;
     const spanY: number = devY * 2;
