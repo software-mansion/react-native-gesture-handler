@@ -1183,6 +1183,96 @@ For a comparison of both touchable implementations see our [touchables example](
 
 
 ---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/components/wrapped-components
+# Title: Wrapped Components
+
+Some components come with a [`Native`](/docs/gestures/use-native-gesture) gesture pre-applied. This allows them to participate in the gesture recognition process. Have a look at the example below.
+
+```tsx
+import { useState } from 'react';
+import { Switch } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  useTapGesture,
+  Switch as RNGHSwitch,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  const tap1 = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped!');
+    },
+  });
+
+  const tap2 = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped!');
+    },
+  });
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1, paddingTop: 100 }}>
+      <GestureDetector gesture={tap1}>
+        <Switch value={isEnabled} onValueChange={setIsEnabled} />
+      </GestureDetector>
+      <GestureDetector gesture={tap2}>
+        <RNGHSwitch value={isEnabled} onValueChange={setIsEnabled} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+```
+
+On Android, in this scenario, the `Switch` from React Native cannot be toggled on because the `tap1` gesture intercepts it. However, using `RNGHSwitch` makes it capable of participating in the gesture recognition process. This setup allows the switch to be toggled on while still enabling `tap2` to recognize taps on it.
+
+## List of wrapped components
+
+Components listed below come with a pre-applied `Native` gesture.
+
+* `FlatList`
+* `ScrollView`
+* `RefreshControl`
+* `TextInput`
+* `Switch`
+
+## onGestureUpdate\_CAN\_CAUSE\_INFINITE\_RERENDER
+
+> **Danger**
+>
+> This callback may lead to infinite re-renders if not used carefully.
+>
+> ```tsx
+> export default function App() {
+>   const [gesture, setGesture] = useState<NativeGesture | null>(null);
+>
+>   const updateGesture = (g: NativeGesture) => {
+>     // ❌ Wrong usage: calling setState here triggers a re-render,
+>     // which re-creates the ScrollView's Native gesture, which fires
+>     // this callback again → infinite re-render loop.
+>     setGesture(g);
+>   };
+>
+>   return (
+>     <GestureHandlerRootView style={{ flex: 1 }}>
+>       <ScrollView onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture} />
+>     </GestureHandlerRootView>
+>   );
+> }
+> ```
+
+Those components also receive an additional prop named `onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER`.
+
+```ts
+onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (gesture: NativeGesture) => void;
+```
+
+This callback is invoked when the wrapped component's underlying `Native` gesture instance or configuration changes, providing access to the underlying gesture. This can be helpful when setting up [relations](/docs/fundamentals/gesture-composition) with other gestures. You can check example usage in our [`ScrollView`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/v3/components/GestureComponents.tsx#L78) component.
+
+
+---
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/animated-interactions
 # Title: Integration with Animated
 

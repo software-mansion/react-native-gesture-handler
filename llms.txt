@@ -8,6 +8,7 @@
 - [Reanimated Swipeable](https://docs.swmansion.com/react-native-gesture-handler/docs/components/reanimated_swipeable)
 - [Touchable](https://docs.swmansion.com/react-native-gesture-handler/docs/components/touchable)
 - [Legacy Touchables](https://docs.swmansion.com/react-native-gesture-handler/docs/components/touchables)
+- [Wrapped Components](https://docs.swmansion.com/react-native-gesture-handler/docs/components/wrapped-components)
 
 ## fundamentals
 
