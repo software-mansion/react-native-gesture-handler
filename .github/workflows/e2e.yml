@@ -36,6 +36,13 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
+      - name: Cache Pods
+        id: cache-pods
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WORKING_DIRECTORY }}/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles(format('{0}/ios/Podfile.lock', env.WORKING_DIRECTORY)) }}
+
       - name: Install pods
         working-directory: ${{ env.WORKING_DIRECTORY }}/ios
         run: pod install
@@ -43,17 +50,9 @@ jobs:
       - name : Setup Detox
         run: brew tap wix/brew && brew install applesimutils && npm install -g detox-cli
 
-      - name: Cache Detox Build
-        id: cache-detox-build
-        uses: actions/cache@v4
-        with:
-          path: ios/build
-          key: ${{ runner.os }}-detox-ios-build-${{ hashFiles('package-lock.json', 'ios/Podfile.lock') }}
-
       - name: Build for iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        if: steps.cache-detox-build.outputs.cache-hit != 'true'
-        run: detox build --c ios.sim.release
+        run: detox build -c ios.sim.release
 
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
