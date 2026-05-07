@@ -38,12 +38,6 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
     }
   }
 
-  override fun getChildInDrawingOrderAtIndex(parent: ViewGroup, index: Int): View = if (parent is ReactViewGroup) {
-    parent.getChildAt(parent.getZIndexMappedChildIndex(index))
-  } else {
-    parent.getChildAt(index)
-  }
-
   override fun isViewClippingChildren(view: ViewGroup) = when {
     view.clipChildren -> true
     view is ReactScrollView -> view.overflow != "visible"

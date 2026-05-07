@@ -7,7 +7,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
-import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
 import com.swmansion.gesturehandler.react.events.eventbuilders.HoverGestureHandlerEventDataBuilder
 
 class HoverGestureHandler : GestureHandler() {
@@ -44,7 +43,7 @@ class HoverGestureHandler : GestureHandler() {
 
     if (rootView is ViewGroup) {
       for (i in 0 until rootView.childCount) {
-        val child = viewConfigHelper.getChildInDrawingOrderAtIndex(rootView, i)
+        val child = rootView.getChildAt(i)
         return isViewDisplayedOverAnother(view, other, child) ?: continue
       }
     }
@@ -144,9 +143,5 @@ class HoverGestureHandler : GestureHandler() {
     override fun create(context: Context?): HoverGestureHandler = HoverGestureHandler()
 
     override fun createEventBuilder(handler: HoverGestureHandler) = HoverGestureHandlerEventDataBuilder(handler)
-  }
-
-  companion object {
-    private val viewConfigHelper = RNViewConfigurationHelper()
   }
 }
