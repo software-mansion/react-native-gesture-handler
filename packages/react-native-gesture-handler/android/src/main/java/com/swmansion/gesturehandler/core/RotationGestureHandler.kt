@@ -59,9 +59,13 @@ class RotationGestureHandler : GestureHandler() {
     }
 
     if (state == STATE_UNDETERMINED) {
-      initialize(event, sourceEvent)
-      begin()
+      if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+        begin()
+      } else {
+        initialize(event, sourceEvent)
+      }
     }
+
     rotationGestureDetector?.onTouchEvent(sourceEvent)
     rotationGestureDetector?.let {
       val point = transformPoint(PointF(it.anchorX, it.anchorY))
