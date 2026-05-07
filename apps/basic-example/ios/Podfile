@@ -5,24 +5,6 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: ["../../../node_modules"]},
   )', __dir__]).strip
 
-def is_ci_enabled?
-  %w[1 true].include?(ENV['CI'].to_s.downcase)
-end
-
-# ENV['DISABLE_RNREPO'] = "1" # Uncomment to disable RNRepo even in CI
-def is_rnrepo_enabled?
-  ENV['DISABLE_RNREPO'].nil?
-end
-
-# Use RNRepo in CI builds. Set DISABLE_RNREPO to any value to disable RNRepo.
-if is_ci_enabled? && is_rnrepo_enabled?
-  require Pod::Executable.execute_command('node', ['-p',
-    'require.resolve(
-      "@rnrepo/build-tools/cocoapods-plugin/lib/plugin.rb",
-      {paths: [process.argv[1]]},
-    )', __dir__]).strip
-end
-
 require_relative '../../../scripts/clangd-add-xcode-step.rb'
 
 ENV['GH_EXAMPLE_APP_NAME'] = 'BasicExample'
@@ -46,9 +28,6 @@ target 'BasicExample' do
   )
 
   post_install do |installer|
-    if is_ci_enabled? && is_rnrepo_enabled?
-      rnrepo_post_install(installer)
-    end
     react_native_post_install(
       installer,
       config[:reactNativePath],
