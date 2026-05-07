@@ -86,11 +86,11 @@ class PinchGestureHandler : GestureHandler() {
       this.focalPointY = point.y
     }
 
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP && state != STATE_UNDETERMINED) {
-      if (state == STATE_ACTIVE) {
-        end()
-      } else {
-        fail()
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
+      when (state) {
+        STATE_UNDETERMINED -> cancel()
+        STATE_ACTIVE -> end()
+        else -> fail()
       }
     }
   }
