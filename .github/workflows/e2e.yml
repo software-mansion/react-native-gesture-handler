@@ -53,7 +53,7 @@ jobs:
         run: brew tap wix/brew && brew install applesimutils && npm install -g detox-cli
 
       - name: Install argent
-        run: npm install -g argent
+        run: npm install -g @swmansion/argent
 
       - name: Cache IOS build
         uses: actions/cache@v4
