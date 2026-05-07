@@ -68,9 +68,13 @@ class PinchGestureHandler : GestureHandler() {
     }
 
     if (state == STATE_UNDETERMINED) {
-      initialize(event, sourceEvent)
-      begin()
+      if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+        begin()
+      } else {
+        initialize(event, sourceEvent)
+      }
     }
+
     scaleGestureDetector?.onTouchEvent(sourceEvent)
     scaleGestureDetector?.let {
       val point = transformPoint(PointF(it.focusX, it.focusY))
@@ -78,7 +82,7 @@ class PinchGestureHandler : GestureHandler() {
       this.focalPointY = point.y
     }
 
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP && state != STATE_UNDETERMINED) {
       if (state == STATE_ACTIVE) {
         end()
       } else {
