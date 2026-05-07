@@ -91,8 +91,8 @@ export default class PinchGestureHandler extends GestureHandler {
   protected override onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
-    this.tryBegin();
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.tryBegin();
   }
 
   protected override onPointerUp(event: AdaptedEvent): void {
