@@ -740,6 +740,8 @@ class RNGestureHandlerButtonViewManager :
       isTouched = false
     }
 
+    override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
+
     override fun shouldBeginWithRecordedHandlers(
       recorded: List<GestureHandler>,
       handler: NativeViewGestureHandler,
