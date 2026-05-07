@@ -50,6 +50,14 @@ jobs:
       - name : Setup Detox
         run: brew tap wix/brew && brew install applesimutils && npm install -g detox-cli
 
+      - name: Cache Xcode DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WORKING_DIRECTORY }}/ios/build
+          key: ${{ runner.os }}-xcode-build-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-build-
+
       - name: Build for iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: detox build -c ios.sim.release
