@@ -66,6 +66,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   internal inner class RootViewGestureHandler(handlerTag: Int) : GestureHandler() {
+    override val isContinuous = true
+
     init {
       this.tag = handlerTag
     }

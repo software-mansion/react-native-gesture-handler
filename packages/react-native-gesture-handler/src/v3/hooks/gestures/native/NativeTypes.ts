@@ -23,16 +23,20 @@ export type NativeGestureNativeProperties = {
 
   /**
    * Composes with `disallowInterruption`. When both are `true`, the handler still
-   * resists generic gesture peers (Pan, Tap, etc.) but yields to other
-   * `NativeViewGestureHandler` peers such as a wrapping ScrollView. No-op when
-   * `disallowInterruption` is `false`.
+   * resists discrete gestures but yields to continuous gestures, so a wrapping
+   * gesture can take over the touch stream. No-op when `disallowInterruption` is
+   * `false`.
    */
-  yieldsToNativeGestures?: boolean;
+  yieldsToContinuousGestures?: boolean;
 };
 
 export const NativeHandlerNativeProperties = new Set<
   keyof NativeGestureNativeProperties
->(['shouldActivateOnStart', 'disallowInterruption', 'yieldsToNativeGestures']);
+>([
+  'shouldActivateOnStart',
+  'disallowInterruption',
+  'yieldsToContinuousGestures',
+]);
 
 export type NativeHandlerData = {
   pointerInside: boolean;

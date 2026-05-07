@@ -113,7 +113,7 @@
 @implementation RNNativeViewGestureHandler {
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
-  BOOL _yieldsToNativeGestures;
+  BOOL _yieldsToContinuousGestures;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
 }
 
@@ -130,7 +130,7 @@
   [super updateConfig:config];
   _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
   _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
-  _yieldsToNativeGestures = [RCTConvert BOOL:config[@"yieldsToNativeGestures"]];
+  _yieldsToContinuousGestures = [RCTConvert BOOL:config[@"yieldsToContinuousGestures"]];
 }
 
 #if !TARGET_OS_OSX
@@ -241,14 +241,13 @@
 
   if (_disallowInterruption) {
     // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
-    // gets DOWN event. When `yieldsToNativeGestures` is also set we leave alone:
+    // gets DOWN event. When `yieldsToContinuousGestures` is also set we leave alone:
     //   - non-RNGH recognizers (e.g. UIScrollView's pan), so native containers can take over
-    //   - peer NativeViewGestureHandler recognizers (RNDummyGestureRecognizer), so wrapping
-    //     RNGH-managed scrollables/native handlers can still take over
+    //   - continuous RNGH recognizers, so other continuous gestures wrapping the touchable can still take over
     for (RNGHUITouch *touch in [event allTouches]) {
       for (UIGestureRecognizer *recognizer in [touch gestureRecognizers]) {
-        if (_yieldsToNativeGestures &&
-            (recognizer.gestureHandler == nil || [recognizer isKindOfClass:[RNDummyGestureRecognizer class]])) {
+        if (_yieldsToContinuousGestures &&
+            (recognizer.gestureHandler == nil || [recognizer.gestureHandler isContinuous])) {
           continue;
         }
 
@@ -357,6 +356,11 @@
   return [RNGestureHandlerEventExtraData forPointerInside:[self containsPointInView]
                                       withNumberOfTouches:1
                                           withPointerType:RNGestureHandlerMouse];
+}
+
+- (BOOL)isContinuous
+{
+  return YES;
 }
 
 @end

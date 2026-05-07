@@ -161,6 +161,11 @@
   return self;
 }
 
+- (BOOL)isContinuous
+{
+  return YES;
+}
+
 #if !TARGET_OS_TV
 
 #if TARGET_OS_OSX

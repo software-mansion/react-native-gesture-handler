@@ -8,6 +8,8 @@ import com.swmansion.gesturehandler.react.events.eventbuilders.PinchGestureHandl
 import kotlin.math.abs
 
 class PinchGestureHandler : GestureHandler() {
+  override val isContinuous = true
+
   var scale = 0.0
     private set
   var velocity = 0.0

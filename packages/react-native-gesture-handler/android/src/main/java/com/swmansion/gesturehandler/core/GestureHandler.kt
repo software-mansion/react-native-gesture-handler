@@ -132,6 +132,11 @@ open class GestureHandler {
   var isAwaiting = false
   var shouldResetProgress = false
 
+  /**
+   * Whether the handler represents a continuous gesture rather than a discrete one.
+   */
+  open val isContinuous: Boolean = false
+
   open fun dispatchStateChange(newState: Int, prevState: Int) {
     onTouchEventListener?.onStateChange(this, newState, prevState)
   }

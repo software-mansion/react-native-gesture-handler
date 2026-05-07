@@ -10,6 +10,8 @@ import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
 export default class PinchGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   private scale = 1;
   private velocity = 0;
 
