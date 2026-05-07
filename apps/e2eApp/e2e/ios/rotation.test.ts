@@ -11,8 +11,7 @@ type RotationArgs = {
 };
 
 function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
-  const child = spawn('npx', [
-    'argent',
+  const child = spawn('argent', [
     'run',
     'gesture-rotate',
     '--udid',
