@@ -132,7 +132,7 @@ export default class RotationGestureDetector
         }
 
         if (this.keyPointers.indexOf(event.pointerId) >= 0) {
-          this.finish();
+          this.reset();
         }
 
         break;
