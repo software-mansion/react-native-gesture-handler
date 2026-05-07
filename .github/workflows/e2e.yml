@@ -10,7 +10,7 @@ on:
       - "@relextm19/e2e"
   workflow_dispatch:
 jobs:
-  e2e:
+  ios-e2e:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: macos-14
     env:
@@ -65,3 +65,43 @@ jobs:
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn test:ios
+  android-e2e:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    runs-on: macos-14
+    env:
+      WORKING_DIRECTORY: apps/e2eApp
+    concurrency:
+      group: e2e-app-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use node 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name : Setup Detox
+        run: npm install -g detox-cli
+
+      - name: Cache Android build
+        id: cache-android-build
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WORKING_DIRECTORY }}/android/app/build
+          key: ${{ runner.os }}-android-build-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-android-build-
+
+      - name: Build for Android
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: detox build -c android.emu.release
+
+      - name: Run tests on Android
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: yarn test:android
