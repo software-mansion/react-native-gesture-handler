@@ -848,4 +848,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return NO;
 }
 
+- (BOOL)isContinuous
+{
+  return NO;
+}
+
 @end

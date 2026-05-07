@@ -8,6 +8,8 @@ import com.swmansion.gesturehandler.react.events.eventbuilders.RotationGestureHa
 import kotlin.math.abs
 
 class RotationGestureHandler : GestureHandler() {
+  override val isContinuous = true
+
   private var rotationGestureDetector: RotationGestureDetector? = null
   var rotation = 0.0
     private set

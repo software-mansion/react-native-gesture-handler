@@ -11,6 +11,8 @@ import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
 import com.swmansion.gesturehandler.react.events.eventbuilders.HoverGestureHandlerEventDataBuilder
 
 class HoverGestureHandler : GestureHandler() {
+  override val isContinuous = true
+
   private var handler: Handler? = null
   private var finishRunnable = Runnable { finish() }
   var stylusData: StylusData = StylusData()

@@ -17,13 +17,15 @@ import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
 export default class NativeViewGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   private buttonRole!: boolean;
   private switchRole!: boolean;
 
   // TODO: Implement logic for activation on start properly
   private shouldActivateOnStart = false;
   private disallowInterruption = false;
-  private yieldsToNativeGestures = false;
+  private yieldsToContinuousGestures = false;
 
   private startX = 0;
   private startY = 0;
@@ -68,8 +70,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
     if (config.disallowInterruption !== undefined) {
       this.disallowInterruption = config.disallowInterruption;
     }
-    if (config.yieldsToNativeGestures !== undefined) {
-      this.yieldsToNativeGestures = config.yieldsToNativeGestures;
+    if (config.yieldsToContinuousGestures !== undefined) {
+      this.yieldsToContinuousGestures = config.yieldsToContinuousGestures;
     }
 
     const view = this.delegate.view as HTMLElement;
@@ -186,15 +188,14 @@ export default class NativeViewGestureHandler extends GestureHandler {
       handler instanceof NativeViewGestureHandler &&
       handler.state === State.ACTIVE &&
       handler.disallowsInterruption() &&
-      !handler.yieldsToOtherNativeGestures()
+      !handler.yieldsToContinuousGestures
     ) {
       return false;
     }
 
     const canBeInterrupted =
       !this.disallowInterruption ||
-      (this.yieldsToNativeGestures &&
-        handler instanceof NativeViewGestureHandler);
+      (this.yieldsToContinuousGestures && handler.isContinuous);
 
     if (
       this.state === State.ACTIVE &&
@@ -212,8 +213,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public override shouldBeCancelledByOther(handler: IGestureHandler): boolean {
     return (
       !this.disallowInterruption ||
-      (this.yieldsToNativeGestures &&
-        handler instanceof NativeViewGestureHandler)
+      (this.yieldsToContinuousGestures && handler.isContinuous)
     );
   }
 
@@ -223,10 +223,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   public disallowsInterruption(): boolean {
     return this.disallowInterruption;
-  }
-
-  public yieldsToOtherNativeGestures(): boolean {
-    return this.yieldsToNativeGestures;
   }
 
   public isButton(): boolean {

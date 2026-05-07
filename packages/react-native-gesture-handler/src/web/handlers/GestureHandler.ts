@@ -1098,6 +1098,11 @@ export default abstract class GestureHandler implements IGestureHandler {
     this._name = value;
   }
 
+  /**
+   * Whether the handler represents a continuous gesture rather than a discrete one.
+   */
+  public readonly isContinuous: boolean = false;
+
   public getTrackedPointersID(): number[] {
     return this.tracker.trackedPointersIDs;
   }
