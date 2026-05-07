@@ -60,6 +60,25 @@ Components listed below come with a pre-applied `Native` gesture.
 
 :::danger
 This callback may lead to infinite re-renders if not used carefully.
+
+```tsx
+export default function App() {
+  const [gesture, setGesture] = useState<NativeGesture | null>(null);
+
+  const updateGesture = (g: NativeGesture) => {
+    // ❌ Wrong usage: calling setState here triggers a re-render,
+    // which re-creates the ScrollView's Native gesture, which fires
+    // this callback again → infinite re-render loop.
+    setGesture(g);
+  };
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ScrollView onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture} />
+    </GestureHandlerRootView>
+  );
+}
+```
 :::
 
 Those components also receive an additional prop named `onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER`.
