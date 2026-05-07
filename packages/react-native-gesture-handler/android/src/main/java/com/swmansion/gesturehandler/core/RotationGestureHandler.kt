@@ -59,10 +59,14 @@ class RotationGestureHandler : GestureHandler() {
     }
 
     if (state == STATE_UNDETERMINED) {
-      if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-        begin()
-      } else {
-        initialize(event, sourceEvent)
+      when (sourceEvent.actionMasked) {
+        MotionEvent.ACTION_DOWN -> {
+          initialize(event, sourceEvent)
+        }
+
+        MotionEvent.ACTION_POINTER_DOWN -> {
+          begin()
+        }
       }
     }
 
