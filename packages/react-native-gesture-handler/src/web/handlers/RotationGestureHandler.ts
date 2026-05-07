@@ -11,6 +11,8 @@ import type IGestureHandler from './IGestureHandler';
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
 export default class RotationGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   private rotation = 0;
   private velocity = 0;
 

@@ -102,6 +102,7 @@ open class GestureHandler {
   var needsPointerData = false
   var dispatchesAnimatedEvents = false
   var dispatchesReanimatedEvents = false
+  var cancelsJSResponder = true
 
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
@@ -132,6 +133,11 @@ open class GestureHandler {
   var isAwaiting = false
   var shouldResetProgress = false
 
+  /**
+   * Whether the handler represents a continuous gesture rather than a discrete one.
+   */
+  open val isContinuous: Boolean = false
+
   open fun dispatchStateChange(newState: Int, prevState: Int) {
     onTouchEventListener?.onStateChange(this, newState, prevState)
   }
@@ -156,6 +162,7 @@ open class GestureHandler {
     mouseButton = DEFAULT_MOUSE_BUTTON
     dispatchesAnimatedEvents = DEFAULT_DISPATCHES_ANIMATED_EVENTS
     dispatchesReanimatedEvents = DEFAULT_DISPATCHES_REANIMATED_EVENTS
+    cancelsJSResponder = DEFAULT_CANCELS_JS_RESPONDER
   }
 
   fun hasCommonPointers(other: GestureHandler): Boolean {
@@ -953,6 +960,9 @@ open class GestureHandler {
       if (config.hasKey(KEY_TEST_ID)) {
         handler.testID = config.getString(KEY_TEST_ID)
       }
+      if (config.hasKey(KEY_CANCELS_JS_RESPONDER)) {
+        handler.cancelsJSResponder = config.getBoolean(KEY_CANCELS_JS_RESPONDER)
+      }
     }
 
     abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
@@ -975,6 +985,7 @@ open class GestureHandler {
       private const val KEY_HIT_SLOP_WIDTH = "width"
       private const val KEY_HIT_SLOP_HEIGHT = "height"
       private const val KEY_TEST_ID = "testID"
+      private const val KEY_CANCELS_JS_RESPONDER = "cancelsJSResponder"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
@@ -1038,6 +1049,7 @@ open class GestureHandler {
     private const val DEFAULT_MOUSE_BUTTON = 0
     private const val DEFAULT_DISPATCHES_ANIMATED_EVENTS = false
     private const val DEFAULT_DISPATCHES_REANIMATED_EVENTS = false
+    private const val DEFAULT_CANCELS_JS_RESPONDER = true
 
     const val STATE_UNDETERMINED = 0
     const val STATE_FAILED = 1

@@ -362,6 +362,11 @@
   return self;
 }
 
+- (BOOL)isContinuous
+{
+  return YES;
+}
+
 - (void)resetConfig
 {
   [super resetConfig];

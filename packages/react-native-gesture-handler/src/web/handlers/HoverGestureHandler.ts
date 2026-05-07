@@ -8,6 +8,8 @@ import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
 export default class HoverGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   private stylusData: StylusData | undefined;
 
   public constructor(
