@@ -117,6 +117,28 @@
   [_underlayLayer removeAllAnimations];
 }
 
+- (void)prepareForRecycle
+{
+  // Fabric reuses the same wrapper + button instance across mounts. Without
+  // this reset, residual press-in transform/alpha/underlay-opacity from a
+  // prior use leaks into the recycled view, and `updateProps:` won't undo it
+  // when defaults are unchanged between mounts.
+  [self cancelPendingPressOutAnimation];
+
+  RNGHUIView *target = self.animationTarget ?: self;
+  target.layer.transform = CATransform3DIdentity;
+#if !TARGET_OS_OSX
+  target.alpha = 1.0;
+#else
+  target.alphaValue = 1.0;
+#endif
+  _underlayLayer.opacity = 0;
+
+  _isTouchInsideBounds = NO;
+  _suppressSuperControlActionDispatch = NO;
+  _pressInTimestamp = 0;
+}
+
 #if TARGET_OS_OSX
 - (void)viewWillMoveToWindow:(RNGHWindow *)newWindow
 {

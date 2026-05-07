@@ -161,7 +161,7 @@
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSRotationGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forRotation:-recognizer.rotation
-                                     withAnchorPoint:[recognizer locationInView:recognizer.view]
+                                     withAnchorPoint:[recognizer locationInView:self.coordinateView]
                                         withVelocity:((RNBetterRotationRecognizer *)recognizer).velocity
                                  withNumberOfTouches:2
                                      withPointerType:RNGestureHandlerMouse];
@@ -170,7 +170,7 @@
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation
-                                     withAnchorPoint:[recognizer locationInView:recognizer.view]
+                                     withAnchorPoint:[recognizer locationInView:self.coordinateView]
                                         withVelocity:recognizer.velocity
                                  withNumberOfTouches:recognizer.numberOfTouches
                                      withPointerType:_pointerType];

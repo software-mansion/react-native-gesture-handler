@@ -45,6 +45,7 @@
     "@typescript-eslint/ban-types": "warn",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/consistent-type-exports": "error",
+    "@typescript-eslint/no-unsafe-enum-comparison": "off",
 
     // common
     "@typescript-eslint/explicit-module-boundary-types": "off",

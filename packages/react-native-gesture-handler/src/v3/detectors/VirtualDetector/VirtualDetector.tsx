@@ -6,6 +6,7 @@ import { tagMessage } from '../../../utils';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import type { DetectorCallbacks, VirtualChild } from '../../types';
 import type { VirtualDetectorProps } from '../common';
+import { useNativeGestureRole } from '../useNativeGestureRole';
 import { configureRelations } from '../utils';
 import {
   InterceptingDetectorMode,
@@ -53,6 +54,8 @@ export function VirtualDetector<
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.children]
   );
+
+  useNativeGestureRole(viewRef, props.children);
 
   useEffect(() => {
     if (viewTag === -1) {

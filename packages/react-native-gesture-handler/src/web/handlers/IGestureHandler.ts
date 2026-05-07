@@ -53,6 +53,7 @@ export default interface IGestureHandler {
   shouldRequireToWaitForFailure: (handler: IGestureHandler) => boolean;
   shouldRecognizeSimultaneously: (handler: IGestureHandler) => boolean;
   shouldBeCancelledByOther: (handler: IGestureHandler) => boolean;
+  shouldBeginWithRecordedHandlers: (recorded: IGestureHandler[]) => boolean;
   shouldAttachGestureToChildView: () => boolean;
 
   sendEvent: (newState: State, oldState: State) => void;

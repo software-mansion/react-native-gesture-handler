@@ -59,9 +59,17 @@ class RotationGestureHandler : GestureHandler() {
     }
 
     if (state == STATE_UNDETERMINED) {
-      initialize(event, sourceEvent)
-      begin()
+      when (sourceEvent.actionMasked) {
+        MotionEvent.ACTION_DOWN -> {
+          initialize(event, sourceEvent)
+        }
+
+        MotionEvent.ACTION_POINTER_DOWN -> {
+          begin()
+        }
+      }
     }
+
     rotationGestureDetector?.onTouchEvent(sourceEvent)
     rotationGestureDetector?.let {
       val point = transformPoint(PointF(it.anchorX, it.anchorY))
@@ -71,8 +79,11 @@ class RotationGestureHandler : GestureHandler() {
 
     // ACTION_UP is already handled in rotationGestureDetector.onTouchEvent (and effectively in onRotationEnd)
     // if more than one pointer was used
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP && state == STATE_BEGAN) {
-      fail()
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
+      when (state) {
+        STATE_UNDETERMINED -> cancel()
+        STATE_BEGAN -> fail()
+      }
     }
   }
 

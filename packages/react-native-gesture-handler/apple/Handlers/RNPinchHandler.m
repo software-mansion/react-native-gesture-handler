@@ -167,7 +167,7 @@
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSMagnificationGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forPinch:recognizer.magnification
-                                   withFocalPoint:[recognizer locationInView:recognizer.view]
+                                   withFocalPoint:[recognizer locationInView:self.coordinateView]
                                      withVelocity:((RNBetterPinchRecognizer *)recognizer).velocity
                               withNumberOfTouches:2
                                   withPointerType:RNGestureHandlerMouse];
@@ -177,12 +177,13 @@
 {
   CGPoint focalPoint;
   NSUInteger numberOfTouches = recognizer.numberOfTouches;
+  RNGHUIView *coordinateView = self.coordinateView;
 
   if (numberOfTouches > 0) {
     CGPoint accumulatedPoint = CGPointZero;
 
     for (int i = 0; i < numberOfTouches; i++) {
-      CGPoint location = [recognizer locationOfTouch:i inView:recognizer.view];
+      CGPoint location = [recognizer locationOfTouch:i inView:coordinateView];
       accumulatedPoint.x += location.x;
       accumulatedPoint.y += location.y;
     }
@@ -190,7 +191,7 @@
     focalPoint = CGPointMake(accumulatedPoint.x / numberOfTouches, accumulatedPoint.y / numberOfTouches);
   } else {
     // Trackpad pinch gestures may report 0 touches - use the recognizer's location instead
-    focalPoint = [recognizer locationInView:recognizer.view];
+    focalPoint = [recognizer locationInView:coordinateView];
   }
 
   return [RNGestureHandlerEventExtraData forPinch:recognizer.scale

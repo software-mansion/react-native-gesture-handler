@@ -46,7 +46,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
-  private actionType: ActionType | null = null;
+  protected actionType: ActionType | null = null;
   private forAnimated: boolean = false;
   private forReanimated: boolean = false;
   private _handlerTag!: number;
@@ -303,6 +303,12 @@ export default abstract class GestureHandler implements IGestureHandler {
     );
   }
 
+  public shouldBeginWithRecordedHandlers(
+    _recorded: IGestureHandler[]
+  ): boolean {
+    return true;
+  }
+
   public shouldAttachGestureToChildView(): boolean {
     return false;
   }
@@ -356,8 +362,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected onPointerCancel(_event: AdaptedEvent): void {
     // No need to send a cancel touch event explicitly here. `cancel` will
     // handle cancelling all tracked touches if the handler expects pointer data.
-    this.cancel();
-    this.reset();
+    if (GestureHandlerOrchestrator.instance.isHandlerRecorded(this)) {
+      this.cancel();
+    }
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(true, event);
@@ -763,7 +770,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     const enabledChanged = this.maybeUpdateEnabled(config.enabled);
 
     if (config.hitSlop !== undefined) {
-      this.hitSlop = config.hitSlop;
       this.hitSlop = config.hitSlop;
       this.validateHitSlops();
     }

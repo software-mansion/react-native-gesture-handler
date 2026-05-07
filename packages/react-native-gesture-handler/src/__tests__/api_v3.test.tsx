@@ -134,7 +134,7 @@ describe('[API v3] Components', () => {
       >;
       const { jsEventHandler } = gesture.detectorCallbacks;
 
-      // Fire BEGAN
+      // Fire BEGAN — long press timer starts here
       act(() => {
         jsEventHandler?.({
           oldState: State.UNDETERMINED,
@@ -145,7 +145,7 @@ describe('[API v3] Components', () => {
         });
       });
 
-      // Fire ACTIVE — long press timer starts here (on iOS / non-Android)
+      // Fire ACTIVE
       act(() => {
         jsEventHandler?.({
           oldState: State.BEGAN,

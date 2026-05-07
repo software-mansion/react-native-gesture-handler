@@ -69,16 +69,16 @@ export const BaseButton = (props: BaseButtonProps) => {
   };
 
   const onDeactivate = (e: EndCallbackEventType) => {
+    props.onDeactivate?.(e);
+  };
+
+  const onFinalize = (e: EndCallbackEventType) => {
     onActiveStateChange?.(false);
 
     if (!e.canceled && !longPressDetected.current) {
       onPress?.(e.pointerInside);
     }
 
-    props.onDeactivate?.(e);
-  };
-
-  const onFinalize = (e: EndCallbackEventType) => {
     if (longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
