@@ -90,12 +90,15 @@ export default class RotationGestureDetector
     }
 
     let assigned = 0;
+
     for (const id of tracker.trackedPointers.keys()) {
-      if (id !== excludeId) {
-        this.keyPointers[assigned++] = id;
-        if (assigned === 2) {
-          break;
-        }
+      if (id === excludeId) {
+        continue;
+      }
+
+      this.keyPointers[assigned++] = id;
+      if (assigned === 2) {
+        break;
       }
     }
   }
