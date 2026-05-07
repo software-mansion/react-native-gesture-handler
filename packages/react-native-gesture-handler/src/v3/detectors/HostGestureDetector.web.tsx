@@ -9,7 +9,8 @@ import type {
 } from '../../handlers/gestureHandlerCommon';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
 import { tagMessage } from '../../utils';
-import type { PropsRef } from '../../web/interfaces';
+import { type PropsRef } from '../../web/interfaces';
+import { useNativeGestureRole } from './useNativeGestureRole';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
@@ -102,6 +103,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       });
     });
   };
+
+  useNativeGestureRole(viewRef, children);
 
   useEffect(() => {
     const shouldUpdateDOMProps =
