@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import HostGestureDetector from './HostGestureDetector';
 import { configureRelations, ensureNativeDetectorComponent } from './utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
@@ -9,6 +9,7 @@ import {
 } from './common';
 import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
 import { Platform } from 'react-native';
+import { SingleGestureName } from '../types';
 
 export function NativeDetector<
   TConfig,
@@ -57,8 +58,20 @@ export function NativeDetector<
             gesture.detectorCallbacks.reanimatedEventHandler,
         };
 
+  const isTapGesture =
+    !isComposedGesture(gesture) && gesture.type === SingleGestureName.Tap;
+
+  const handleStartShouldSetResponder = useCallback(() => {
+    if (__DEV__ && isTapGesture) {
+      console.log('[GH NativeDetector] onStartShouldSetResponder -> true');
+    }
+
+    return isTapGesture;
+  }, [isTapGesture]);
+
   return (
     <NativeDetectorComponent
+      onStartShouldSetResponder={handleStartShouldSetResponder}
       touchAction={touchAction}
       userSelect={userSelect}
       enableContextMenu={enableContextMenu}
