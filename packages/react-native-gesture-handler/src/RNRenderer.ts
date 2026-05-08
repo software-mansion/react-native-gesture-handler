@@ -11,5 +11,4 @@ try {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-const RNRenderer = rendererModule.default ?? rendererModule;
-export { RNRenderer };
+export const RNRenderer = rendererModule.default ?? rendererModule;
