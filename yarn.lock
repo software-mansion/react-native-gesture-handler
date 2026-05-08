@@ -6579,17 +6579,16 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@babel/preset-env": "npm:^7.25.3"
     "@babel/runtime": "npm:^7.25.0"
-    "@react-native-community/cli": "npm:20.1.0"
-    "@react-native-community/cli-platform-android": "npm:20.1.0"
-    "@react-native-community/cli-platform-ios": "npm:20.1.0"
-    "@react-native/babel-preset": "npm:0.85.2"
-    "@react-native/eslint-config": "npm:0.85.2"
-    "@react-native/jest-preset": "npm:0.85.2"
-    "@react-native/metro-config": "npm:0.85.2"
-    "@react-native/typescript-config": "npm:0.85.2"
+    "@react-native-community/cli": "npm:18.0.1"
+    "@react-native-community/cli-platform-android": "npm:18.0.0"
+    "@react-native-community/cli-platform-ios": "npm:18.0.0"
+    "@react-native/babel-preset": "npm:0.79.0"
+    "@react-native/eslint-config": "npm:0.79.0"
+    "@react-native/metro-config": "npm:0.79.0"
+    "@react-native/typescript-config": "npm:0.79.0"
     "@types/jest": "npm:^29.5.13"
-    "@types/react": "npm:^19.2.0"
-    "@types/react-test-renderer": "npm:^19.1.0"
+    "@types/react": "npm:^19.0.12"
+    "@types/react-test-renderer": "npm:^19.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^6.9.0"
     "@typescript-eslint/parser": "npm:^6.9.0"
     eslint: "npm:^8.57.0"
@@ -6602,10 +6601,10 @@ __metadata:
     prettier: "npm:3.3.3"
     react: "npm:19.2.3"
     react-native: "npm:0.85.2"
-    react-native-gesture-handler: "workspace:*"
+    react-native-gesture-handler: "npm:3.0.0-beta.3"
     react-native-reanimated: "npm:^4.3.0"
     react-native-worklets: "npm:^0.8.1"
-    react-test-renderer: "npm:19.2.3"
+    react-test-renderer: "npm:19.0.0"
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
@@ -15467,6 +15466,19 @@ __metadata:
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
+
+"react-native-gesture-handler@npm:3.0.0-beta.3":
+  version: 3.0.0-beta.3
+  resolution: "react-native-gesture-handler@npm:3.0.0-beta.3"
+  dependencies:
+    "@types/react-test-renderer": "npm:^19.1.0"
+    invariant: "npm:^2.2.4"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/c087452eb0d69c8fabbdc3d11ede3ac033ca5ac724a37e22979af4b9a2e4272202ac4aefec8d21f16308a15b05a00a5d41a1f2468540f16b96b2a937d6e01a79
+  languageName: node
+  linkType: hard
 
 "react-native-gesture-handler@workspace:*, react-native-gesture-handler@workspace:packages/react-native-gesture-handler":
   version: 0.0.0-use.local

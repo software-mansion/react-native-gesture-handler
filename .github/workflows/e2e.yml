@@ -1,4 +1,4 @@
-name: E2E Test React Native Gesture Handler
+name: E2E Test
 
 on:
   pull_request:
