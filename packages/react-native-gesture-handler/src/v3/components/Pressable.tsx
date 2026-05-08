@@ -373,8 +373,8 @@ const Pressable = (props: PressableProps) => {
     if (__DEV__) {
       console.log('[GH Pressable] onStartShouldSetResponder -> true');
     }
-    return true;
-  }, []);
+    return !disabled;
+  }, [disabled]);
 
   return (
     <GestureDetector gesture={gesture}>
