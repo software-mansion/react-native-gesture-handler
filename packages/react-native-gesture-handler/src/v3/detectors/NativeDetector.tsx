@@ -60,10 +60,6 @@ export function NativeDetector<
     !isComposedGesture(gesture) && gesture.type === SingleGestureName.Tap;
 
   const handleStartShouldSetResponder = useCallback(() => {
-    if (__DEV__ && isTapGesture) {
-      console.log('[GH NativeDetector] onStartShouldSetResponder -> true');
-    }
-
     return isTapGesture;
   }, [isTapGesture]);
 

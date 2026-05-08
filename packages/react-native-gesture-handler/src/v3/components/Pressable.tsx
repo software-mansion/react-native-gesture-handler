@@ -370,9 +370,6 @@ const Pressable = (props: PressableProps) => {
   // release-time TextInput blur. The GH tap still fires via the native
   // recognizer; when it does, UIKit cancels touches.
   const handleStartShouldSetResponder = useCallback(() => {
-    if (__DEV__) {
-      console.log('[GH Pressable] onStartShouldSetResponder -> true');
-    }
     return !disabled;
   }, [disabled]);
 
