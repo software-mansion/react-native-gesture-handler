@@ -1,6 +1,7 @@
 import React from 'react';
-import { Reanimated } from '../reanimatedWrapper';
+
 import { tagMessage } from '../../../utils';
+import { Reanimated } from '../reanimatedWrapper';
 
 export class Wrap extends React.Component<{
   onGestureHandlerEvent?: unknown;

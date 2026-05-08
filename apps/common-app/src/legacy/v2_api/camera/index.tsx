@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
-  SharedValue,
   runOnJS,
   useAnimatedProps,
   useAnimatedStyle,
@@ -10,6 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Circle, Svg } from 'react-native-svg';
+
 import AnimatedCameraView from '../../../common_assets/AnimatedCameraView/AnimatedCameraView';
 
 const FILTERS = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];

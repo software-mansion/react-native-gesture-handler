@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
-import { PressableEvent } from './PressableProps';
-import { StateDefinition } from './StateMachine';
+
+import type { PressableEvent } from './PressableProps';
+import type { StateDefinition } from './StateMachine';
 
 export enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',
@@ -59,6 +60,9 @@ function getIosStatesConfig(
     {
       eventName: StateMachineEvent.NATIVE_BEGIN,
       callback: handlePressIn,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_START,
     },
     {
       eventName: StateMachineEvent.FINALIZE,

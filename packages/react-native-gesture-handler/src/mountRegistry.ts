@@ -1,4 +1,4 @@
-import { GestureType } from './handlers/gestures/gesture';
+import type { GestureType } from './handlers/gestures/gesture';
 
 interface ReactComponentWithHandlerTag extends React.Component {
   handlerTag: number;

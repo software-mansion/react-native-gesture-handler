@@ -1,10 +1,16 @@
-import React, { Ref, RefObject, useEffect, useMemo, useRef } from 'react';
-import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
-import { ActionType } from '../../ActionType';
-import { PropsRef } from '../../web/interfaces';
+import type { Ref, RefObject } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
+
+import { ActionType } from '../../ActionType';
+import type {
+  TouchAction,
+  UserSelect,
+} from '../../handlers/gestureHandlerCommon';
+import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
 import { tagMessage } from '../../utils';
-import { TouchAction, UserSelect } from '../../handlers/gestureHandlerCommon';
+import { type PropsRef } from '../../web/interfaces';
+import { useNativeGestureRole } from './useNativeGestureRole';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
@@ -97,6 +103,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       });
     });
   };
+
+  useNativeGestureRole(viewRef, children);
 
   useEffect(() => {
     const shouldUpdateDOMProps =

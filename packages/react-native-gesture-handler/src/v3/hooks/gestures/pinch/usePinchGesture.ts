@@ -1,10 +1,11 @@
-import { GestureEvent, HandlerData, SingleGestureName } from '../../../types';
+import type { GestureEvent, HandlerData } from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
-  useClonedAndRemappedConfig,
   getChangeEventCalculator,
+  useClonedAndRemappedConfig,
 } from '../../utils';
-import {
+import type {
   PinchExtendedHandlerData,
   PinchGesture,
   PinchGestureConfig,
@@ -39,7 +40,11 @@ function transformPinchProps(
 
 const PinchPropsMapping = new Map<string, string>();
 
-export function usePinchGesture(config: PinchGestureConfig): PinchGesture {
+const EMPTY_PINCH_CONFIG: PinchGestureConfig = {};
+
+export function usePinchGesture(
+  config: PinchGestureConfig = EMPTY_PINCH_CONFIG
+): PinchGesture {
   const pinchConfig = useClonedAndRemappedConfig<
     PinchGestureProperties,
     PinchHandlerData,

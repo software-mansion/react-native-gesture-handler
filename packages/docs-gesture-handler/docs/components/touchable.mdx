@@ -1,0 +1,345 @@
+---
+id: touchable
+title: Touchable
+sidebar_label: Touchable
+---
+
+:::note
+This section refers to new `Touchable` component, meant to replace both buttons and touchables. If you are looking for documentation for the deprecated touchable components, check out the [Legacy Touchables](/docs/components/legacy-touchables) section.
+:::
+
+`Touchable` is a versatile new component introduced in Gesture Handler 3 to supersede previous button implementations. Designed for maximum flexibility, it provides a highly customizable interface for native touch handling while ensuring consistent behavior across platforms.
+
+`Touchable` provides a simple interface for the common animations like opacity, underlay, and scale, implemented entirely on the platform. On Android, it also exposes the native ripple effect on press (turned off by default).
+
+If the provided animations are not sufficient, it's possible to use `Touchable` to create fully custom interactions using either [Reanimated](https://docs.swmansion.com/react-native-reanimated/) or [Animated API](https://reactnative.dev/docs/animated).
+
+## Replacing old buttons
+
+If you were using `RectButton` or `BorderlessButton` in your app, you should replace them with `Touchable`. Check out the full code in the [example](#example) section below.
+
+### RectButton
+
+To replace `RectButton` with `Touchable`, simply add `activeUnderlayOpacity={0.105}` to your `Touchable`. This will animate the underlay when the button is pressed.
+
+```tsx
+<Touchable
+  ...
+  activeUnderlayOpacity={0.105}/>
+```
+
+### BorderlessButton
+
+Replacing `BorderlessButton` with `Touchable` is as easy as replacing `RectButton`. Just add `activeOpacity={0.3}` to your `Touchable`. This will animate the whole component when the button is pressed.
+
+```tsx
+<Touchable
+  ...
+  activeOpacity={0.3}/>
+```
+
+## Migrating from legacy Touchable variants
+
+If you were using the specialized touchable components (`TouchableOpacity`, `TouchableHighlight`, `TouchableWithoutFeedback`, or `TouchableNativeFeedback`), you can replicate their behavior with the unified `Touchable` component.
+
+### TouchableOpacity
+
+To replace `TouchableOpacity`, add `activeOpacity={0.2}`.
+
+```tsx
+<Touchable
+  ...
+  activeOpacity={0.2}/>
+```
+
+### TouchableHighlight
+
+To replace `TouchableHighlight`, add `activeUnderlayOpacity={1}`.
+
+```tsx
+<Touchable
+  ...
+  activeUnderlayOpacity={1}/>
+```
+
+### TouchableWithoutFeedback
+
+To replace `TouchableWithoutFeedback`, use a plain `Touchable`.
+
+```tsx
+<Touchable ... />
+```
+
+### TouchableNativeFeedback
+
+To replicate `TouchableNativeFeedback` behavior, use the [`androidRipple`](#androidripple) prop. Make sure to set `foreground={true}`.
+
+```tsx
+<Touchable
+  ...
+  androidRipple={{
+    foreground: true,
+  }}/>
+```
+
+## Example 
+
+In this example we will demonstrate how to recreate `RectButton` and `BorderlessButton` effects using the `Touchable` component.
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[7, 40]}
+src={`
+import React from 'react';
+import { StyleSheet, Text } from 'react-native';
+import {
+  GestureHandlerRootView,
+  Touchable,
+} from 'react-native-gesture-handler';
+
+export default function TouchableExample() {
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <Touchable
+        onPress={() => {
+          console.log('BaseButton built with Touchable');
+        }}
+        style={[styles.button, { backgroundColor: '#7d63d9' }]}>
+        <Text style={styles.buttonText}>BaseButton</Text>
+      </Touchable>
+
+      <Touchable
+        onPress={() => {
+          console.log('RectButton built with Touchable');
+        }}
+        style={[styles.button, { backgroundColor: '#4f9a84' }]}
+        activeUnderlayOpacity={0.105}>
+        <Text style={styles.buttonText}>RectButton</Text>
+      </Touchable>
+
+      <Touchable
+        onPress={() => {
+          console.log('BorderlessButton built with Touchable');
+        }}
+        style={[styles.button, { backgroundColor: '#5f97c8' }]}
+        activeOpacity={0.3}>
+        <Text style={styles.buttonText}>BorderlessButton</Text>
+      </Touchable>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    gap: 20,
+  },
+  button: {
+    width: 200,
+    height: 70,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+});
+`}/>
+
+
+## Properties
+
+### activeOpacity
+
+```ts
+activeOpacity?: number;
+```
+
+Defines the opacity of the whole component when the button is active.
+
+### defaultOpacity
+
+```ts
+defaultOpacity?: number;
+```
+
+Defines the opacity of the whole component when the button is active. By default set to `1`.
+
+### activeUnderlayOpacity
+
+```ts
+activeUnderlayOpacity?: number;
+```
+
+Defines the opacity of the underlay when the button is active. By default set to `0`.
+
+### defaultUnderlayOpacity
+
+```ts
+defaultUnderlayOpacity?: number;
+```
+
+Defines the initial opacity of underlay when the button is inactive. By default set to `0`.
+
+### underlayColor
+
+```ts
+underlayColor?: string;
+```
+
+Background color of the underlay. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set.
+
+### exclusive
+
+```ts
+exclusive?: boolean;
+```
+
+Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
+
+<Badges platforms={['android']}>
+### touchSoundDisabled
+</Badges>
+
+```ts
+touchSoundDisabled?: boolean;
+```
+
+If set to `true`, the system will not play a sound when the button is pressed.
+
+### onPressIn
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onPressIn?: (e: GestureEvent<NativeHandlerData>) => void;
+
+type GestureEvent<NativeHandlerData> = {
+    handlerTag: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+    pointerInside: boolean;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
+
+Triggered when the button gets pressed (analogous to `onPressIn` in `Pressable` from RN core).
+
+### onPressOut
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onPressOut?: (e: GestureEvent<NativeHandlerData>) => void;
+
+type GestureEvent<NativeHandlerData> = {
+    handlerTag: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+    pointerInside: boolean;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
+
+Triggered when the button gets released or the pointer moves outside of the button area (analogous to `onPressOut` in `Pressable` from RN core).
+
+### onPress
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onPress?: (e: GestureEvent<NativeHandlerData>) => void;
+
+type GestureEvent<NativeHandlerData> = {
+    handlerTag: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+    pointerInside: boolean;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
+
+Triggered when the button gets pressed (analogous to `onPress` in `Pressable` from RN core).
+
+### onLongPress
+
+```ts
+onLongPress?: () => void;
+```
+
+Triggered when the button gets pressed for at least [`delayLongPress`](#delaylongpress) milliseconds.
+
+
+### delayLongPress
+
+```ts
+delayLongPress?: number;
+```
+
+Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress) callback gets called. By default set to `600`.
+
+
+<Badges platforms={['android']}>
+### androidRipple
+</Badges>
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+androidRipple?: PressableAndroidRippleConfig;
+
+type PressableAndroidRippleConfig = {
+    color?: (string | OpaqueColorValue);
+    borderless?: boolean;
+    radius?: number;
+    foreground?: boolean;
+}
+`}/>
+
+Configuration for the ripple effect on Android. If not provided, the ripple effect will be disabled. If `{}` is provided, the ripple effect will be enabled with default configuration.
+
+<Badges platforms={['android', 'ios']}>
+### cancelOnLeave
+</Badges>
+
+```ts
+cancelOnLeave?: boolean;
+```
+
+Whether the touch should be canceled when the pointer leaves the component. By default set to `true`. On web this prop doesn't have any effect and behaves as if `true` was set.

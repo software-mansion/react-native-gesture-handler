@@ -1,11 +1,9 @@
+import type { CameraViewProps } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import React from 'react';
-import { CameraView, useCameraPermissions, CameraViewProps } from 'expo-camera';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import Animated, {
-  SharedValue,
-  useAnimatedProps,
-  AnimatedRef,
-} from 'react-native-reanimated';
+import type { AnimatedRef, SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedProps } from 'react-native-reanimated';
 
 const AnimatedCameraView = Animated.createAnimatedComponent(CameraView);
 

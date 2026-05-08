@@ -1,15 +1,10 @@
-import { commonStyles } from '../../../common';
 import React from 'react';
-import {
-  Text,
-  View,
-  Pressable,
-  PressableProps as RNPressableProps,
-} from 'react-native';
-import {
-  Pressable as GesturizedPressable,
-  PressableProps as GHPressableProps,
-} from 'react-native-gesture-handler';
+import type { PressableProps as RNPressableProps } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import type { PressableProps as GHPressableProps } from 'react-native-gesture-handler';
+import { Pressable as GesturizedPressable } from 'react-native-gesture-handler';
+
+import { commonStyles } from '../../../common';
 
 const TestingBase = (props: GHPressableProps & RNPressableProps) => (
   <>

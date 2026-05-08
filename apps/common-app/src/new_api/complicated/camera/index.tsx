@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
-  useLongPressGesture,
-  usePinchGesture,
-  useTapGesture,
-  useCompetingGestures,
   GestureDetector,
-  useSimultaneousGestures,
-  usePanGesture,
+  useCompetingGestures,
   useExclusiveGestures,
+  useLongPressGesture,
+  usePanGesture,
+  usePinchGesture,
+  useSimultaneousGestures,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 import { runOnJS, useSharedValue, withTiming } from 'react-native-reanimated';
-import AnimatedCameraView from '../../../common_assets/AnimatedCameraView/AnimatedCameraView';
+
 import { COLORS } from '../../../common';
-import { FilterCarousel, FilterOverlay } from './filters';
+import AnimatedCameraView from '../../../common_assets/AnimatedCameraView/AnimatedCameraView';
 import { CaptureButton } from './capture';
+import { FilterCarousel, FilterOverlay } from './filters';
 
 const FILTERS = [
   COLORS.RED,

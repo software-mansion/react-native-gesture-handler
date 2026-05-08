@@ -1,7 +1,11 @@
-import { BaseGesture, BaseGestureConfig } from './gesture';
-import { LongPressGestureConfig } from '../LongPressGestureHandler';
 import type { LongPressGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
+import type { LongPressGestureConfig } from '../LongPressGestureHandler';
+import type { BaseGestureConfig } from './gesture';
+import { BaseGesture } from './gesture';
 
+/**
+ * @deprecated `LongPressGesture` is deprecated and will be removed in the future. Please use `useLongPressGesture` instead.
+ */
 export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPayload> {
   public override config: BaseGestureConfig & LongPressGestureConfig = {};
 
@@ -42,4 +46,7 @@ export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPa
   }
 }
 
+/**
+ * @deprecated `LongPressGestureType` is deprecated and will be removed in the future. Please use `LongPressGesture` instead.
+ */
 export type LongPressGestureType = InstanceType<typeof LongPressGesture>;

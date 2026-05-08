@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -7,8 +7,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const GH = require('../../../common_assets/hoverable_icons/gh.png');
+import GH from '../../../common_assets/hoverable_icons/gh.png';
 
 export default function StylusData() {
   const scaleFactor = useSharedValue(0);

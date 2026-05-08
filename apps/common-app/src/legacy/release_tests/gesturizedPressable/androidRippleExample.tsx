@@ -1,5 +1,6 @@
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
+
 import TestingBase from './testingBase';
 
 export function RippleExample() {

@@ -24,21 +24,21 @@ Set the callback that is being called when the gesture is recognized by the hand
 
 {
 <CodeBlock className="language-ts">
-    {`onDeactivate: (event: ${props.gesture}HandlerData, didSucceed: boolean) => void`}
+    {`onDeactivate: (event: ${props.gesture}HandlerData & { canceled: boolean }) => void`}
 </CodeBlock>
 }
 
-Set the callback that is being called when the gesture that was recognized by the handler finishes. It will be called only if the handler was previously in the active state.
+Set the callback that is being called when the gesture that was recognized by the handler finishes. It will be called only if the handler was previously in the active state. The event object contains a `canceled` property — if the gesture was interrupted, `canceled` is set to `true`. Otherwise it is set to `false`.
 
 ### onFinalize
 
 {
 <CodeBlock className="language-ts">
-    {`onFinalize: (event: ${props.gesture}HandlerData, didSucceed: boolean) => void`}
+    {`onFinalize: (event: ${props.gesture}HandlerData & { canceled: boolean }) => void`}
 </CodeBlock>
 }
 
-Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize.
+Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize. The event object contains a `canceled` property — if the gesture failed to activate or was interrupted, `canceled` is set to `true`. Otherwise it is set to `false`.
 
 ### onTouchesDown
 

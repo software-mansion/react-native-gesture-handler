@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Platform, StyleSheet } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   Easing,
-  SharedValue,
   interpolate,
   measure,
   useAnimatedRef,
@@ -11,12 +11,10 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { COLORS } from '../common';
 
-// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const SIGNET = require('./signet.png');
-// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const TEXT = require('./text.png');
+import { COLORS } from '../common';
+import SIGNET from './signet.png';
+import TEXT from './text.png';
 
 export const HEADER_HEIGHT =
   Platform.OS === 'web' || Platform.OS === 'macos' ? 64 : 192;

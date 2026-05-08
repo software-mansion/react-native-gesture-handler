@@ -287,7 +287,7 @@
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                  withNumberOfTouches:recognizer.numberOfTouches
                                         withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]
@@ -298,7 +298,7 @@
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
                                  withNumberOfTouches:1
                                         withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]

@@ -1,7 +1,10 @@
 import { isTestEnv } from '../utils';
-import { GestureType } from './gestures/gesture';
-import { GestureEvent, HandlerStateChangeEvent } from './gestureHandlerCommon';
-import { SingleGesture } from '../v3/types';
+import type { SingleGesture } from '../v3/types';
+import type {
+  GestureEvent,
+  HandlerStateChangeEvent,
+} from './gestureHandlerCommon';
+import type { GestureType } from './gestures/gesture';
 
 export const handlerIDToTag: Record<string, number> = {};
 

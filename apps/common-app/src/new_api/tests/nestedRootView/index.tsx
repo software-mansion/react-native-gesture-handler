@@ -1,22 +1,19 @@
 import * as React from 'react';
-import { useState, useRef } from 'react';
-import { StyleSheet, Modal, View, Text } from 'react-native';
+import { useRef, useState } from 'react';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 import {
+  GestureDetector,
   GestureHandlerRootView,
   RectButton,
-  GestureDetector,
   usePanGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import {
-  Feedback,
-  FeedbackHandle,
-  COLORS,
-  commonStyles,
-} from '../../../common';
+
+import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 interface DraggableBoxProps {
   minDist?: number;

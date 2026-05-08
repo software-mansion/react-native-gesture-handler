@@ -1,11 +1,10 @@
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-
-import React from 'react';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 const BOX_SIZE = 270;
 

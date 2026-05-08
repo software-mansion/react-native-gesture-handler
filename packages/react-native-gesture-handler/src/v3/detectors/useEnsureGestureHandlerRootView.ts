@@ -1,5 +1,6 @@
 import { use } from 'react';
 import { Platform } from 'react-native';
+
 import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
 
 export function useEnsureGestureHandlerRootView() {

@@ -1,6 +1,6 @@
-import { NativeProxy } from '../../NativeProxy';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import {
+import { NativeProxy } from '../../NativeProxy';
+import type {
   BaseGestureConfig,
   GestureCallbacks,
   SharedValue,

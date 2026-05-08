@@ -1,5 +1,5 @@
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import {
+import type {
   BaseGestureConfig,
   GestureRelations,
   SingleGestureName,

@@ -1,19 +1,13 @@
 import React, { useRef } from 'react';
-import { StyleSheet, Text, View, I18nManager } from 'react-native';
-
-import { FlatList, Pressable, RectButton } from 'react-native-gesture-handler';
-
-import Reanimated, {
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import { I18nManager, Platform, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, Touchable } from 'react-native-gesture-handler';
+import type { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import type { SharedValue } from 'react-native-reanimated';
+import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';
-
-import ReanimatedSwipeable, {
-  SwipeableMethods,
-} from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 //  To toggle LTR/RTL change to `true`
 I18nManager.allowRTL(false);
@@ -25,14 +19,18 @@ type DataRow = {
 };
 
 const Row = ({ item }: { item: DataRow }) => (
-  // eslint-disable-next-line no-alert
-  <RectButton style={styles.rectButton} onPress={() => window.alert(item.from)}>
+  <Touchable
+    style={styles.rectButton}
+    // eslint-disable-next-line no-alert
+    onPress={() => window.alert(item.from)}
+    activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
+    androidRipple={{}}>
     <Text style={styles.fromText}>{item.from}</Text>
     <Text numberOfLines={2} style={styles.messageText}>
       {item.message}
     </Text>
     <Text style={styles.dateText}>{item.when} ❭</Text>
-  </RectButton>
+  </Touchable>
 );
 
 const SwipeableRow = ({ item, index }: { item: DataRow; index: number }) => {

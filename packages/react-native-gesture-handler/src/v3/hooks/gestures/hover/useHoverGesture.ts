@@ -1,10 +1,11 @@
-import { GestureEvent, HandlerData, SingleGestureName } from '../../../types';
+import type { GestureEvent, HandlerData } from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
-  useClonedAndRemappedConfig,
   getChangeEventCalculator,
+  useClonedAndRemappedConfig,
 } from '../../utils';
-import {
+import type {
   HoverExtendedHandlerData,
   HoverGesture,
   HoverGestureConfig,
@@ -43,7 +44,11 @@ function transformHoverProps(
 
 const HoverPropsMapping = new Map<string, string>([['effect', 'hoverEffect']]);
 
-export function useHoverGesture(config: HoverGestureConfig): HoverGesture {
+const EMPTY_HOVER_CONFIG: HoverGestureConfig = {};
+
+export function useHoverGesture(
+  config: HoverGestureConfig = EMPTY_HOVER_CONFIG
+): HoverGesture {
   const hoverConfig = useClonedAndRemappedConfig<
     HoverGestureProperties,
     HoverHandlerData,

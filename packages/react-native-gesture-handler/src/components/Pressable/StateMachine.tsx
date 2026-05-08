@@ -1,4 +1,4 @@
-import { PressableEvent } from './PressableProps';
+import type { PressableEvent } from './PressableProps';
 
 export interface StateDefinition {
   eventName: string;
