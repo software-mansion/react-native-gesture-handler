@@ -1,13 +1,23 @@
 import React, { useCallback, useMemo } from 'react';
 import { Platform } from 'react-native';
 
+import { maybeUnpackValue } from '../hooks/utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
+import type { SingleGesture } from '../types';
 import { SingleGestureName } from '../types';
 import type { NativeDetectorProps } from './common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
 import HostGestureDetector from './HostGestureDetector';
 import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
 import { configureRelations, ensureNativeDetectorComponent } from './utils';
+
+function isGestureEnabled<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(gesture: SingleGesture<TConfig, THandlerData, TExtendedHandlerData>) {
+  return maybeUnpackValue(gesture.config.enabled) !== false;
+}
 
 export function NativeDetector<
   TConfig,
@@ -56,12 +66,14 @@ export function NativeDetector<
             gesture.detectorCallbacks.reanimatedEventHandler,
         };
 
-  const isTapGesture =
-    !isComposedGesture(gesture) && gesture.type === SingleGestureName.Tap;
-
   const handleStartShouldSetResponder = useCallback(() => {
-    return isTapGesture;
-  }, [isTapGesture]);
+    const isTapGesture =
+      !isComposedGesture(gesture) && gesture.type === SingleGestureName.Tap;
+
+    return (
+      isTapGesture && !isComposedGesture(gesture) && isGestureEnabled(gesture)
+    );
+  }, [gesture]);
 
   return (
     <NativeDetectorComponent
