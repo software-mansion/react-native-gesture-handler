@@ -1,16 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let RNRenderer: any;
+let rendererModule: any;
 
 try {
   // React Native >= 0.86 removed `Libraries/Renderer/shims/ReactNative`.
-  RNRenderer = require('react-native/Libraries/ReactNative/RendererProxy');
-} catch (e) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const shim = require('react-native/Libraries/Renderer/shims/ReactNative');
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  RNRenderer = shim.default;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  rendererModule = require('react-native/Libraries/ReactNative/RendererProxy');
+} catch {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  rendererModule = require('react-native/Libraries/Renderer/shims/ReactNative');
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+const RNRenderer = rendererModule.default ?? rendererModule;
 export { RNRenderer };
