@@ -1,7 +1,13 @@
 import type { ForwardedRef } from 'react';
-import { useCallback, useImperativeHandle, useMemo } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react';
 import type { LayoutChangeEvent } from 'react-native';
-import { I18nManager, StyleSheet, View } from 'react-native';
+import { I18nManager, NativeModules, StyleSheet, View } from 'react-native';
 import Animated, {
   interpolate,
   measure,
@@ -31,6 +37,43 @@ const DEFAULT_DRAG_OFFSET = 10;
 const DEFAULT_ENABLE_TRACKING_TWO_FINGER_GESTURE = false;
 
 const Swipeable = (props: SwipeableProps) => {
+  const containerRef = useRef<View>(null);
+  const isOpenRef = useRef(false);
+  const swipeableRegistry = NativeModules.RNSSwipeableRegistry as
+    | {
+        setOpenSwipeableFrame?: (
+          x: number,
+          y: number,
+          width: number,
+          height: number
+        ) => void;
+        clearOpenSwipeable?: () => void;
+      }
+    | undefined;
+
+  const syncOpenSwipeableFrame = useCallback(() => {
+    if (!containerRef.current) {
+      return;
+    }
+    containerRef.current.measureInWindow((x, y, width, height) => {
+      swipeableRegistry?.setOpenSwipeableFrame?.(x, y, width, height);
+    });
+  }, [swipeableRegistry]);
+
+  const clearOpenSwipeableFrame = useCallback(() => {
+    swipeableRegistry?.clearOpenSwipeable?.();
+  }, [swipeableRegistry]);
+
+  const markOpen = useCallback(() => {
+    isOpenRef.current = true;
+    syncOpenSwipeableFrame();
+  }, [syncOpenSwipeableFrame]);
+
+  const markClosed = useCallback(() => {
+    isOpenRef.current = false;
+    clearOpenSwipeableFrame();
+  }, [clearOpenSwipeableFrame]);
+
   const {
     ref,
     leftThreshold,
@@ -154,8 +197,14 @@ const Swipeable = (props: SwipeableProps) => {
           fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT
         );
       }
+
+      if (toValue !== 0) {
+        runOnJS(markOpen)();
+      } else {
+        runOnJS(markClosed)();
+      }
     },
-    [onSwipeableWillClose, onSwipeableWillOpen]
+    [markClosed, markOpen, onSwipeableWillClose, onSwipeableWillOpen]
   );
 
   const dispatchEndEvents = useCallback(
@@ -337,9 +386,20 @@ const Swipeable = (props: SwipeableProps) => {
   const onRowLayout = useCallback(
     ({ nativeEvent }: LayoutChangeEvent) => {
       rowWidth.value = nativeEvent.layout.width;
+      if (isOpenRef.current) {
+        syncOpenSwipeableFrame();
+      }
     },
-    [rowWidth]
+    [rowWidth, syncOpenSwipeableFrame]
   );
+
+  useEffect(() => {
+    return () => {
+      if (isOpenRef.current) {
+        clearOpenSwipeableFrame();
+      }
+    };
+  }, [clearOpenSwipeableFrame]);
 
   // As stated in `Dimensions.get` docstring, this function should be called on every render
   // since dimensions may change (e.g. orientation change)
@@ -523,6 +583,7 @@ const Swipeable = (props: SwipeableProps) => {
   const swipeableComponent = (
     <GestureDetector gesture={panGesture} touchAction="pan-y">
       <Animated.View
+        ref={containerRef}
         {...remainingProps}
         onLayout={onRowLayout}
         style={[styles.container, containerStyle]}>
