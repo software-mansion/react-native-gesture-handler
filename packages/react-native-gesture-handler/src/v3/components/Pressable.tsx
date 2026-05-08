@@ -368,7 +368,7 @@ const Pressable = (props: PressableProps) => {
   // Claim the JS responder in the bubble phase so an ancestor RN ScrollView
   // with keyboardShouldPersistTaps='handled' or 'always' cannot run its
   // release-time TextInput blur. The GH tap still fires via the native
-  // recognizer; when it does, UIKit cancels touches.
+  // recognizer when activated.
   const handleStartShouldSetResponder = useCallback(() => {
     return !disabled;
   }, [disabled]);

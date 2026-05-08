@@ -70,9 +70,7 @@ export function NativeDetector<
     const isTapGesture =
       !isComposedGesture(gesture) && gesture.type === SingleGestureName.Tap;
 
-    return (
-      isTapGesture && !isComposedGesture(gesture) && isGestureEnabled(gesture)
-    );
+    return isTapGesture && isGestureEnabled(gesture);
   }, [gesture]);
 
   return (
