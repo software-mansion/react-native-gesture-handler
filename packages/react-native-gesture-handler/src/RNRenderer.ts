@@ -10,6 +10,6 @@ try {
   rendererModule = require('react-native/Libraries/Renderer/shims/ReactNative');
 }
 
-// eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 const RNRenderer = rendererModule.default ?? rendererModule;
 export { RNRenderer };
