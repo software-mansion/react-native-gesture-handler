@@ -66,16 +66,18 @@ export function NativeDetector<
             gesture.detectorCallbacks.reanimatedEventHandler,
         };
 
-  const handleStartShouldSetResponder = useCallback(() => {
-    const isTapGesture =
-      !isComposedGesture(gesture) && gesture.type === SingleGestureName.Tap;
+  const isTapGesture =
+    !isComposedGesture(gesture) && gesture.type === SingleGestureName.Tap;
 
-    return isTapGesture && isGestureEnabled(gesture);
+  const handleStartShouldSetResponder = useCallback(() => {
+    return !isComposedGesture(gesture) && isGestureEnabled(gesture);
   }, [gesture]);
 
   return (
     <NativeDetectorComponent
-      onStartShouldSetResponder={handleStartShouldSetResponder}
+      onStartShouldSetResponder={
+        isTapGesture ? handleStartShouldSetResponder : undefined
+      }
       touchAction={touchAction}
       userSelect={userSelect}
       enableContextMenu={enableContextMenu}
