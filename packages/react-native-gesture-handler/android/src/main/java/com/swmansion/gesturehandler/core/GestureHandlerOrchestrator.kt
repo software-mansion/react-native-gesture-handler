@@ -596,7 +596,7 @@ class GestureHandlerOrchestrator(
 
     val childrenCount = viewGroup.childCount
     for (i in childrenCount - 1 downTo 0) {
-      val child = viewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i)
+      val child = viewGroup.getChildAt(i)
       if (canReceiveEvents(child)) {
         val childPoint = tempPoint
         transformPointToChildViewCoords(coords[0], coords[1], viewGroup, child, childPoint)
