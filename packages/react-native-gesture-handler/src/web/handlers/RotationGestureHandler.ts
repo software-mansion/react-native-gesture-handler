@@ -100,11 +100,12 @@ export default class RotationGestureHandler extends GestureHandler {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
 
-    this.tryBegin();
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+    this.tryBegin();
   }
 
   protected override onPointerMove(event: AdaptedEvent): void {
+    this.tracker.track(event);
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
@@ -112,8 +113,6 @@ export default class RotationGestureHandler extends GestureHandler {
     const anchor = this.getAnchor();
     this.cachedAnchorX = anchor.x;
     this.cachedAnchorY = anchor.y;
-
-    this.tracker.track(event);
 
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
@@ -121,6 +120,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected override onPointerOutOfBounds(event: AdaptedEvent): void {
+    this.tracker.track(event);
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
@@ -128,8 +128,6 @@ export default class RotationGestureHandler extends GestureHandler {
     const anchor = this.getAnchor();
     this.cachedAnchorX = anchor.x;
     this.cachedAnchorY = anchor.y;
-
-    this.tracker.track(event);
 
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
