@@ -1,25 +1,34 @@
 import React, { useRef, useState } from 'react';
-
 import {
+  Keyboard,
   Pressable as RNPressable,
   ScrollView as RNScrollView,
-  TextInput as RNTextInput,
-  Keyboard,
   StyleSheet,
   Text,
+  TextInput as RNTextInput,
   View,
 } from 'react-native';
 import {
+  GestureDetector,
   Pressable as RNGHPressable,
   ScrollView as RNGHScrollView,
   TextInput as RNGHTextInput,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 
-import { COLORS, Feedback, FeedbackHandle, InfoSection } from '../../../common';
+import type { FeedbackHandle } from '../../../common';
+import { COLORS, Feedback, InfoSection } from '../../../common';
 
 type Mode = 'never' | 'handled' | 'always';
+type Example = 'pressable' | 'tap';
 
 const MODES: Mode[] = ['never', 'handled', 'always'];
+const EXAMPLES: Example[] = ['pressable', 'tap'];
+
+const EXAMPLE_LABELS: Record<Example, string> = {
+  pressable: 'GH Pressable',
+  tap: 'useTapGesture',
+};
 
 const MODE_DESCRIPTIONS: Record<Mode, string> = {
   never:
@@ -32,6 +41,7 @@ const MODE_DESCRIPTIONS: Record<Mode, string> = {
 
 export default function KeyboardShouldPersistTapsExample() {
   const [mode, setMode] = useState<Mode>('handled');
+  const [example, setExample] = useState<Example>('pressable');
   const feedbackRef = useRef<FeedbackHandle>(null);
 
   const report = (message: string) => {
@@ -46,6 +56,8 @@ export default function KeyboardShouldPersistTapsExample() {
           <Text style={styles.dismissText}>Dismiss KB</Text>
         </RNPressable>
       </View>
+
+      <ExampleSelector value={example} onChange={setExample} />
 
       <View style={styles.panelRow}>
         <Panel
@@ -73,7 +85,7 @@ export default function KeyboardShouldPersistTapsExample() {
         </Panel>
 
         <Panel
-          title="Gesture Handler"
+          title={EXAMPLE_LABELS[example]}
           accent={COLORS.DARK_GREEN}
           ScrollViewComponent={RNGHScrollView}
           mode={mode}>
@@ -82,16 +94,22 @@ export default function KeyboardShouldPersistTapsExample() {
             placeholder="GH input"
             placeholderTextColor={COLORS.GRAY}
           />
-          <RNGHPressable
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: pressed ? COLORS.KINDA_GREEN : COLORS.GREEN,
-              },
-            ]}
-            onPress={() => report('GH Pressable onPress')}>
-            <Text style={styles.buttonText}>Press me</Text>
-          </RNGHPressable>
+          {example === 'pressable' ? (
+            <RNGHPressable
+              style={({ pressed }) => [
+                styles.button,
+                {
+                  backgroundColor: pressed ? COLORS.KINDA_GREEN : COLORS.GREEN,
+                },
+              ]}
+              onPress={() => report('GH Pressable onPress')}>
+              <Text style={styles.buttonText}>Press me</Text>
+            </RNGHPressable>
+          ) : (
+            <GestureTapButton
+              onTap={() => report('useTapGesture onActivate')}
+            />
+          )}
         </Panel>
       </View>
 
@@ -101,6 +119,69 @@ export default function KeyboardShouldPersistTapsExample() {
         <Feedback ref={feedbackRef} duration={1500} />
       </View>
     </View>
+  );
+}
+
+type ExampleSelectorProps = {
+  value: Example;
+  onChange: (next: Example) => void;
+};
+
+function ExampleSelector({ value, onChange }: ExampleSelectorProps) {
+  return (
+    <View style={styles.exampleRow}>
+      {EXAMPLES.map((example) => {
+        const active = example === value;
+        return (
+          <RNPressable
+            key={example}
+            onPress={() => onChange(example)}
+            style={[styles.exampleTab, active && styles.exampleTabActive]}>
+            <Text
+              style={[
+                styles.exampleTabLabel,
+                active && styles.exampleTabLabelActive,
+              ]}>
+              {EXAMPLE_LABELS[example]}
+            </Text>
+          </RNPressable>
+        );
+      })}
+    </View>
+  );
+}
+
+type GestureTapButtonProps = {
+  onTap: () => void;
+};
+
+function GestureTapButton({ onTap }: GestureTapButtonProps) {
+  const [pressed, setPressed] = useState(false);
+
+  const tap = useTapGesture({
+    disableReanimated: true,
+    onBegin: () => {
+      setPressed(true);
+    },
+    onActivate: onTap,
+    onFinalize: () => {
+      setPressed(false);
+    },
+  });
+
+  return (
+    <GestureDetector gesture={tap}>
+      <View
+        collapsable={false}
+        style={[
+          styles.button,
+          {
+            backgroundColor: pressed ? COLORS.KINDA_GREEN : COLORS.GREEN,
+          },
+        ]}>
+        <Text style={styles.buttonText}>Tap me</Text>
+      </View>
+    </GestureDetector>
   );
 }
 
@@ -209,6 +290,30 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: '700',
     fontSize: 12,
+  },
+  exampleRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  exampleTab: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: COLORS.DARK_GREEN,
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  exampleTabActive: {
+    backgroundColor: COLORS.DARK_GREEN,
+  },
+  exampleTabLabel: {
+    color: COLORS.DARK_GREEN,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  exampleTabLabelActive: {
+    color: '#ffffff',
   },
   panelRow: {
     flexDirection: 'row',
