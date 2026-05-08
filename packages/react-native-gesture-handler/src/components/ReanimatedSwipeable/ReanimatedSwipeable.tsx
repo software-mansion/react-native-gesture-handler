@@ -52,16 +52,26 @@ const Swipeable = (props: SwipeableProps) => {
     | undefined;
 
   const syncOpenSwipeableFrame = useCallback(() => {
-    if (!containerRef.current) {
+    const setOpenSwipeableFrame = swipeableRegistry?.setOpenSwipeableFrame;
+    if (!containerRef.current || !setOpenSwipeableFrame) {
       return;
     }
-    containerRef.current.measureInWindow((x, y, width, height) => {
-      swipeableRegistry?.setOpenSwipeableFrame?.(x, y, width, height);
-    });
+
+    containerRef.current.measureInWindow(
+      (x: number, y: number, width: number, height: number) => {
+        setOpenSwipeableFrame(x, y, width, height);
+      }
+    );
   }, [swipeableRegistry]);
 
+  // Current coordination stores one active open swipeable frame.
+  // Multi-open ownership scoping (token/reactTag) can be added in follow-up.
   const clearOpenSwipeableFrame = useCallback(() => {
-    swipeableRegistry?.clearOpenSwipeable?.();
+    const clearOpenSwipeable = swipeableRegistry?.clearOpenSwipeable;
+    if (!clearOpenSwipeable) {
+      return;
+    }
+    clearOpenSwipeable();
   }, [swipeableRegistry]);
 
   const markOpen = useCallback(() => {
@@ -369,6 +379,7 @@ const Swipeable = (props: SwipeableProps) => {
         showLeftProgress.value = 0;
         appliedTranslation.value = 0;
         rowState.value = 0;
+        runOnJS(markClosed)();
       },
     }),
     [
