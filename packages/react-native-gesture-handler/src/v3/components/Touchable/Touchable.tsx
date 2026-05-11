@@ -25,6 +25,15 @@ export const Touchable = (props: TouchableProps) => {
     defaultUnderlayOpacity = 0,
     activeUnderlayOpacity = 0.105,
     defaultOpacity = 1,
+    tapAnimationDuration: tapAnimationDurationProp = 100,
+    pressAndHoldAnimationDuration: pressAndHoldAnimationDurationProp = -1,
+    hoverAnimationDuration: hoverAnimationDurationProp = -1,
+    tapAnimationInDuration: tapAnimationInDurationProp = -1,
+    tapAnimationOutDuration: tapAnimationOutDurationProp = -1,
+    pressAndHoldAnimationInDuration: pressAndHoldAnimationInDurationProp = -1,
+    pressAndHoldAnimationOutDuration: pressAndHoldAnimationOutDurationProp = -1,
+    hoverAnimationInDuration: hoverAnimationInDurationProp = -1,
+    hoverAnimationOutDuration: hoverAnimationOutDurationProp = -1,
     androidRipple,
     delayLongPress = 600,
     onLongPress,
@@ -37,6 +46,42 @@ export const Touchable = (props: TouchableProps) => {
     ref,
     ...rest
   } = props;
+
+  const tapAnimationDuration =
+    tapAnimationDurationProp < 0 ? 0 : tapAnimationDurationProp;
+  const tapAnimationInDuration =
+    tapAnimationInDurationProp < 0
+      ? tapAnimationDuration
+      : tapAnimationInDurationProp;
+  const tapAnimationOutDuration =
+    tapAnimationOutDurationProp < 0
+      ? tapAnimationDuration
+      : tapAnimationOutDurationProp;
+
+  const pressAndHoldAnimationInDuration =
+    pressAndHoldAnimationInDurationProp >= 0
+      ? pressAndHoldAnimationInDurationProp
+      : pressAndHoldAnimationDurationProp >= 0
+        ? pressAndHoldAnimationDurationProp
+        : tapAnimationInDuration;
+  const pressAndHoldAnimationOutDuration =
+    pressAndHoldAnimationOutDurationProp >= 0
+      ? pressAndHoldAnimationOutDurationProp
+      : pressAndHoldAnimationDurationProp >= 0
+        ? pressAndHoldAnimationDurationProp
+        : tapAnimationOutDuration;
+  const hoverAnimationInDuration =
+    hoverAnimationInDurationProp >= 0
+      ? hoverAnimationInDurationProp
+      : hoverAnimationDurationProp >= 0
+        ? hoverAnimationDurationProp
+        : tapAnimationInDuration;
+  const hoverAnimationOutDuration =
+    hoverAnimationOutDurationProp >= 0
+      ? hoverAnimationOutDurationProp
+      : hoverAnimationDurationProp >= 0
+        ? hoverAnimationDurationProp
+        : tapAnimationOutDuration;
 
   const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
@@ -161,7 +206,13 @@ export const Touchable = (props: TouchableProps) => {
         defaultOpacity={defaultOpacity}
         defaultUnderlayOpacity={defaultUnderlayOpacity}
         activeUnderlayOpacity={activeUnderlayOpacity}
-        underlayColor={underlayColor}>
+        underlayColor={underlayColor}
+        tapAnimationInDuration={tapAnimationInDuration}
+        tapAnimationOutDuration={tapAnimationOutDuration}
+        pressAndHoldAnimationInDuration={pressAndHoldAnimationInDuration}
+        pressAndHoldAnimationOutDuration={pressAndHoldAnimationOutDuration}
+        hoverAnimationInDuration={hoverAnimationInDuration}
+        hoverAnimationOutDuration={hoverAnimationOutDuration}>
         {children}
       </GestureHandlerButton>
     </NativeDetector>

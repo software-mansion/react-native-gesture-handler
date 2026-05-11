@@ -27,8 +27,10 @@
 @property (nonatomic) BOOL userEnabled;
 @property (nonatomic, assign) RNGestureHandlerPointerEvents pointerEvents;
 
-@property (nonatomic, assign) NSInteger pressAndHoldAnimationDuration;
-@property (nonatomic, assign) NSInteger tapAnimationDuration;
+@property (nonatomic, assign) NSInteger pressAndHoldAnimationInDuration;
+@property (nonatomic, assign) NSInteger pressAndHoldAnimationOutDuration;
+@property (nonatomic, assign) NSInteger tapAnimationInDuration;
+@property (nonatomic, assign) NSInteger tapAnimationOutDuration;
 @property (nonatomic, assign) CGFloat activeOpacity;
 @property (nonatomic, assign) CGFloat defaultOpacity;
 @property (nonatomic, assign) CGFloat activeScale;
