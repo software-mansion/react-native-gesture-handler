@@ -110,12 +110,22 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: detox build -c android.emu.release
 
+      - name: create AVD
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          force-avd-creation: false
+          avd-name: Pixel_9_Pro
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD "
+
       - name: Run tests on Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
-          target: default
-          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           avd-name: Pixel_9_Pro
           working-directory: ${{ env.WORKING_DIRECTORY }}
           script: yarn test:android
