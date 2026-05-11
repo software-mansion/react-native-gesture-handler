@@ -30,15 +30,16 @@ type InOutDuration = { in: number; out: number };
  *
  * - A single number applies to every phase of every category.
  * - An object with top-level `in` / `out` sets the baseline; `tap` and
- *   `hover` may override it.
- * - Alternatively, both categories may be specified explicitly without
- *   a top-level baseline.
+ *   `hover` may override either side or both — any field left out
+ *   inherits the top-level value.
+ * - Alternatively, both categories may be specified in full without a
+ *   top-level baseline.
  */
 export type AnimationDuration =
   | number
   | (InOutDuration & {
-      tap?: InOutDuration;
-      hover?: InOutDuration;
+      tap?: Partial<InOutDuration>;
+      hover?: Partial<InOutDuration>;
     })
   | {
       tap: InOutDuration;
