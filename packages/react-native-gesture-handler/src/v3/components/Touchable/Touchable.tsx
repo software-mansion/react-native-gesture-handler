@@ -21,8 +21,9 @@ enum PointerState {
 
 export const Touchable = (props: TouchableProps) => {
   const {
-    underlayColor = 'black',
+    underlayColor = 'transparent',
     defaultUnderlayOpacity = 0,
+    activeUnderlayOpacity = 0.105,
     defaultOpacity = 1,
     androidRipple,
     delayLongPress = 600,
@@ -159,6 +160,7 @@ export const Touchable = (props: TouchableProps) => {
         enabled={!disabled}
         defaultOpacity={defaultOpacity}
         defaultUnderlayOpacity={defaultUnderlayOpacity}
+        activeUnderlayOpacity={activeUnderlayOpacity}
         underlayColor={underlayColor}>
         {children}
       </GestureHandlerButton>
