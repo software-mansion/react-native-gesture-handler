@@ -22,6 +22,13 @@ enum PointerState {
   OUTSIDE,
 }
 
+// Clamp user-supplied durations to finite, non-negative milliseconds.
+// Negative, NaN, or Infinity values would produce invalid CSS transitions
+// on web and negative setTimeout delays in branch 3 of the press-out path.
+function sanitizeDuration(value: number): number {
+  return Number.isFinite(value) && value >= 0 ? value : 0;
+}
+
 function resolveAnimationDuration(value: AnimationDuration | undefined) {
   if (value === undefined) {
     return {
@@ -33,11 +40,12 @@ function resolveAnimationDuration(value: AnimationDuration | undefined) {
   }
 
   if (typeof value === 'number') {
+    const sanitized = sanitizeDuration(value);
     return {
-      tapAnimationInDuration: value,
-      tapAnimationOutDuration: value,
-      hoverAnimationInDuration: value,
-      hoverAnimationOutDuration: value,
+      tapAnimationInDuration: sanitized,
+      tapAnimationOutDuration: sanitized,
+      hoverAnimationInDuration: sanitized,
+      hoverAnimationOutDuration: sanitized,
     };
   }
 
@@ -48,10 +56,10 @@ function resolveAnimationDuration(value: AnimationDuration | undefined) {
   const baseOut = 'out' in value ? value.out : 0;
 
   return {
-    tapAnimationInDuration: value.tap?.in ?? baseIn,
-    tapAnimationOutDuration: value.tap?.out ?? baseOut,
-    hoverAnimationInDuration: value.hover?.in ?? baseIn,
-    hoverAnimationOutDuration: value.hover?.out ?? baseOut,
+    tapAnimationInDuration: sanitizeDuration(value.tap?.in ?? baseIn),
+    tapAnimationOutDuration: sanitizeDuration(value.tap?.out ?? baseOut),
+    hoverAnimationInDuration: sanitizeDuration(value.hover?.in ?? baseIn),
+    hoverAnimationOutDuration: sanitizeDuration(value.hover?.out ?? baseOut),
   };
 }
 
