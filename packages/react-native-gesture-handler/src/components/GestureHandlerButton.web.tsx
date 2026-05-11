@@ -10,9 +10,13 @@ type ButtonProps = ViewProps & {
   enabled?: boolean;
   pressAndHoldAnimationDuration?: number;
   tapAnimationDuration?: number;
+  hoverAnimationDuration?: number;
   activeOpacity?: number;
   activeScale?: number;
   activeUnderlayOpacity?: number;
+  hoverOpacity?: number;
+  hoverScale?: number;
+  hoverUnderlayOpacity?: number;
   defaultOpacity?: number;
   defaultScale?: number;
   defaultUnderlayOpacity?: number;
@@ -24,9 +28,13 @@ export const ButtonComponent = ({
   enabled = true,
   pressAndHoldAnimationDuration: pressAndHoldAnimationDurationProp = -1,
   tapAnimationDuration: tapAnimationDurationProp = 100,
+  hoverAnimationDuration: hoverAnimationDurationProp = -1,
   activeOpacity = 1,
   activeScale = 1,
   activeUnderlayOpacity = 0,
+  hoverOpacity: hoverOpacityProp,
+  hoverScale: hoverScaleProp,
+  hoverUnderlayOpacity: hoverUnderlayOpacityProp,
   defaultOpacity = 1,
   defaultScale = 1,
   defaultUnderlayOpacity = 0,
@@ -41,8 +49,18 @@ export const ButtonComponent = ({
     pressAndHoldAnimationDurationProp < 0
       ? tapAnimationDuration
       : pressAndHoldAnimationDurationProp;
+  const hoverAnimationDuration =
+    hoverAnimationDurationProp < 0
+      ? tapAnimationDuration
+      : hoverAnimationDurationProp;
+
+  const hoverOpacity = hoverOpacityProp ?? defaultOpacity;
+  const hoverScale = hoverScaleProp ?? defaultScale;
+  const hoverUnderlayOpacity =
+    hoverUnderlayOpacityProp ?? defaultUnderlayOpacity;
 
   const [pressed, setPressed] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
   const [currentDuration, setCurrentDuration] = React.useState(
     pressAndHoldAnimationDuration
   );
@@ -157,14 +175,58 @@ export const ButtonComponent = ({
     [pressAndHoldAnimationDuration, tapAnimationDuration]
   );
 
+  const handlePointerEnter = React.useCallback(
+    (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
+      if (!enabled || event.nativeEvent.pointerType === 'touch') {
+        return;
+      }
+      // Skip duration update while pressed so the press transition owns it.
+      if (!pressed) {
+        setCurrentDuration(hoverAnimationDuration);
+      }
+      setHovered(true);
+    },
+    [enabled, pressed, hoverAnimationDuration]
+  );
+
+  const handlePointerLeave = React.useCallback(
+    (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
+      pressOut(event);
+      if (event.nativeEvent.pointerType === 'touch') {
+        return;
+      }
+      if (!pressed) {
+        setCurrentDuration(hoverAnimationDuration);
+      }
+      setHovered(false);
+    },
+    [pressOut, pressed, hoverAnimationDuration]
+  );
+
+  // Mask hover at render rather than clearing the state. Avoids a state
+  // write inside an effect, and lets hover resume naturally when `enabled`
+  // flips back to true while the pointer is still inside.
+  const effectiveHovered = hovered && enabled;
+
   const currentUnderlayOpacity = pressed
     ? activeUnderlayOpacity
-    : defaultUnderlayOpacity;
+    : effectiveHovered
+      ? hoverUnderlayOpacity
+      : defaultUnderlayOpacity;
   const hasUnderlay = underlayColor != null;
-  const hasOpacity = activeOpacity !== 1 || defaultOpacity !== 1;
-  const currentOpacity = pressed ? activeOpacity : defaultOpacity;
-  const hasScale = activeScale !== 1 || defaultScale !== 1;
-  const currentScale = pressed ? activeScale : defaultScale;
+  const hasOpacity =
+    activeOpacity !== 1 || hoverOpacity !== 1 || defaultOpacity !== 1;
+  const currentOpacity = pressed
+    ? activeOpacity
+    : effectiveHovered
+      ? hoverOpacity
+      : defaultOpacity;
+  const hasScale = activeScale !== 1 || hoverScale !== 1 || defaultScale !== 1;
+  const currentScale = pressed
+    ? activeScale
+    : effectiveHovered
+      ? hoverScale
+      : defaultScale;
 
   const easing = 'cubic-bezier(0.5, 1, 0.89, 1)';
   const transitionProps: string[] = [];
@@ -178,6 +240,7 @@ export const ButtonComponent = ({
 
   return (
     <View
+      {...rest}
       ref={setRef}
       accessibilityRole="button"
       style={[
@@ -191,11 +254,11 @@ export const ButtonComponent = ({
           ...(hasUnderlay && { overflow: 'hidden' }),
         },
       ]}
+      onPointerEnter={handlePointerEnter}
       onPointerDown={pressIn}
       onPointerUp={pressOut}
       onPointerCancel={pressOut}
-      onPointerLeave={pressOut}
-      {...rest}>
+      onPointerLeave={handlePointerLeave}>
       {hasUnderlay && (
         <View
           style={{

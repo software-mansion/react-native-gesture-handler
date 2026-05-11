@@ -93,6 +93,60 @@ export default function TouchableExample() {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionHeader}>Hover states</Text>
+          <Text>Hover-only feedback (web).</Text>
+
+          <View style={styles.row}>
+            <TouchableWrapper
+              name="Opacity"
+              color={COLORS.WEB_BLUE}
+              hoverOpacity={0.7}
+            />
+
+            <TouchableWrapper
+              name="Scale"
+              color={COLORS.RED}
+              hoverScale={1.05}
+            />
+
+            <TouchableWrapper
+              name="Underlay"
+              color={COLORS.YELLOW}
+              hoverUnderlayOpacity={0.3}
+              underlayColor={COLORS.DARK_GREEN}
+            />
+          </View>
+
+          <Text>Hover + press combined.</Text>
+
+          <View style={styles.row}>
+            <TouchableWrapper
+              name="Opacity"
+              color={COLORS.LIGHT_BLUE}
+              hoverOpacity={0.85}
+              activeOpacity={0.6}
+            />
+
+            <TouchableWrapper
+              name="Scale"
+              color={COLORS.DARK_SALMON}
+              hoverScale={1.05}
+              activeScale={0.95}
+            />
+
+            <TouchableWrapper
+              name="All"
+              color={COLORS.NAVY}
+              hoverScale={1.05}
+              hoverUnderlayOpacity={0.2}
+              activeScale={0.95}
+              activeUnderlayOpacity={0.5}
+              underlayColor={COLORS.DARK_GREEN}
+            />
+          </View>
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionHeader}>Android ripple</Text>
           <Text>Configurable ripple effect on Touchable component.</Text>
 
