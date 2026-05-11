@@ -60,18 +60,16 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   touchSoundDisabled?: boolean | undefined;
 
   /**
-   * Duration of the press-in animation when the button is held down, in
-   * milliseconds. Defaults to `tapAnimationDuration` when not set (or set
-   * to any negative value).
+   * Minimum duration (in milliseconds) of the press-in animation on a
+   * quick tap. Defaults to 50ms.
    */
-  pressAndHoldAnimationDuration?: number | undefined;
+  tapAnimationInDuration?: number | undefined;
 
   /**
-   * Minimum duration (in milliseconds) that the press animation must run
-   * before the press-out animation is allowed to start. Ensures the pressed
-   * state is visible on quick taps. Defaults to 100ms.
+   * Minimum duration (in milliseconds) of the press-out animation on a
+   * quick tap. Defaults to 100ms.
    */
-  tapAnimationDuration?: number | undefined;
+  tapAnimationOutDuration?: number | undefined;
 
   /**
    * Opacity applied to the button when it is pressed.
@@ -115,10 +113,16 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   /**
    * Web only.
    *
-   * Duration of the hover animation, in milliseconds. Defaults to
-   * `tapAnimationDuration` when not set (or set to any negative value).
+   * Duration of the hover-in animation, in milliseconds. Defaults to 50ms.
    */
-  hoverAnimationDuration?: number | undefined;
+  hoverAnimationInDuration?: number | undefined;
+
+  /**
+   * Web only.
+   *
+   * Duration of the hover-out animation, in milliseconds. Defaults to 100ms.
+   */
+  hoverAnimationOutDuration?: number | undefined;
 
   /**
    * Opacity applied to the button when it is not pressed.

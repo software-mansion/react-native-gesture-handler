@@ -147,6 +147,87 @@ export default function TouchableExample() {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionHeader}>Animation timing</Text>
+          <Text>
+            Customize press and hover animation durations via the unified
+            `animationDuration` prop.
+          </Text>
+
+          <Text>Single number: applied to every phase.</Text>
+
+          <View style={styles.row}>
+            <TouchableWrapper
+              name="Snappy"
+              color={COLORS.DARK_PURPLE}
+              activeOpacity={0.3}
+              animationDuration={0}
+            />
+
+            <TouchableWrapper
+              name="Sluggish"
+              color={COLORS.WEB_BLUE}
+              activeOpacity={0.3}
+              animationDuration={600}
+            />
+          </View>
+
+          <Text>Object with top-level in / out applies to every category.</Text>
+
+          <View style={styles.row}>
+            <TouchableWrapper
+              name="Quick in / slow out"
+              color={COLORS.RED}
+              activeOpacity={0.3}
+              hoverOpacity={0.6}
+              animationDuration={{ in: 0, out: 600 }}
+            />
+          </View>
+
+          <Text>Per-category overrides — slower hover than tap.</Text>
+
+          <View style={styles.row}>
+            <TouchableWrapper
+              name="Slow hover"
+              color={COLORS.YELLOW}
+              activeOpacity={0.3}
+              hoverOpacity={0.5}
+              animationDuration={{
+                in: 50,
+                out: 100,
+                hover: { in: 400, out: 400 },
+              }}
+            />
+
+            <TouchableWrapper
+              name="Partial hover override"
+              color={COLORS.LIGHT_BLUE}
+              activeOpacity={0.3}
+              hoverOpacity={0.5}
+              animationDuration={{
+                in: 50,
+                out: 100,
+                hover: { in: 400 },
+              }}
+            />
+          </View>
+
+          <Text>All categories specified, no shared baseline.</Text>
+
+          <View style={styles.row}>
+            <TouchableWrapper
+              name="Fully custom"
+              color={COLORS.NAVY}
+              activeOpacity={0.3}
+              hoverOpacity={0.5}
+              animationDuration={{
+                tap: { in: 0, out: 250 },
+                hover: { in: 300, out: 300 },
+              }}
+            />
+          </View>
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionHeader}>Android ripple</Text>
           <Text>Configurable ripple effect on Touchable component.</Text>
 
@@ -210,5 +291,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: '600',
+    textAlign: 'center',
   },
 });
