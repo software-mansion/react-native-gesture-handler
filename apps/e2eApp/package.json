@@ -8,8 +8,8 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "test:ios": "detox test -c ios.sim.debug e2e/ios e2e/shared",
-    "test:android": "detox test -c android.emu.debug e2e/shared e2e/android"
+    "test:ios": "detox test -c ios.sim.release e2e/ios e2e/shared",
+    "test:android": "detox test -c android.emu.release e2e/shared e2e/android"
   },
   "dependencies": {
     "@react-navigation/native": "^7.2.2",
