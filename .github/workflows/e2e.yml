@@ -56,7 +56,7 @@ jobs:
         run: npm install -g @swmansion/argent
 
       - name: Cache IOS build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.WORKING_DIRECTORY }}/ios/build
           key: ${{ runner.os }}-xcode-build-${{ github.sha }}
@@ -79,12 +79,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
       - name: Use node 24
         uses: actions/setup-node@v6
         with:
@@ -97,9 +91,18 @@ jobs:
       - name : Setup Detox
         run: npm install -g detox-cli
 
+      - name: AVD cache
+        uses: actions/cache@v5
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-Pixel_9_Pro
+
       - name: Cache Android build
         id: cache-android-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.WORKING_DIRECTORY }}/android/app/build
           key: ${{ runner.os }}-android-build-${{ github.sha }}
@@ -110,22 +113,24 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: detox build -c android.emu.release
 
-      - name: create AVD
+      - name: create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
           force-avd-creation: false
-          avd-name: Pixel_9_Pro
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          script: echo "Generated AVD "
+          avd-name: Pixel_9_Pro
+          script: echo "Generated AVD snapshot for caching."
 
-      - name: Run tests on Android Emulator
+      - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
           avd-name: Pixel_9_Pro
           working-directory: ${{ env.WORKING_DIRECTORY }}
           script: yarn test:android
