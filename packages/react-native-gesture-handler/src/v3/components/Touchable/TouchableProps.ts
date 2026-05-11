@@ -20,8 +20,6 @@ type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 type DurationProps =
   | 'tapAnimationInDuration'
   | 'tapAnimationOutDuration'
-  | 'pressAndHoldAnimationInDuration'
-  | 'pressAndHoldAnimationOutDuration'
   | 'hoverAnimationInDuration'
   | 'hoverAnimationOutDuration';
 
@@ -31,9 +29,9 @@ type InOutDuration = { in: number; out: number };
  * Configuration for press / hover animation timing.
  *
  * - A single number applies to every phase of every category.
- * - An object with top-level `in` / `out` sets the baseline; any of `tap`,
- *   `hover`, `pressAndHold` may override it.
- * - Alternatively, all three categories may be specified explicitly without
+ * - An object with top-level `in` / `out` sets the baseline; `tap` and
+ *   `hover` may override it.
+ * - Alternatively, both categories may be specified explicitly without
  *   a top-level baseline.
  */
 export type AnimationDuration =
@@ -41,12 +39,10 @@ export type AnimationDuration =
   | (InOutDuration & {
       tap?: InOutDuration;
       hover?: InOutDuration;
-      pressAndHold?: InOutDuration;
     })
   | {
       tap: InOutDuration;
       hover: InOutDuration;
-      pressAndHold: InOutDuration;
     };
 
 export type TouchableProps = Omit<

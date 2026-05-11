@@ -60,19 +60,6 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   touchSoundDisabled?: boolean | undefined;
 
   /**
-   * Duration of the press-in animation, in milliseconds, when the button
-   * is held down. Defaults to 100ms.
-   */
-  pressAndHoldAnimationInDuration?: number | undefined;
-
-  /**
-   * Duration of the press-out animation, in milliseconds, when the
-   * button is released after the press-in animation completed. Defaults
-   * to 100ms.
-   */
-  pressAndHoldAnimationOutDuration?: number | undefined;
-
-  /**
    * Minimum duration (in milliseconds) of the press-in animation on a
    * quick tap. Defaults to 100ms.
    */

@@ -27,8 +27,6 @@ function resolveAnimationDuration(value: AnimationDuration | undefined) {
     return {
       tapAnimationInDuration: d,
       tapAnimationOutDuration: d,
-      pressAndHoldAnimationInDuration: d,
-      pressAndHoldAnimationOutDuration: d,
       hoverAnimationInDuration: d,
       hoverAnimationOutDuration: d,
     };
@@ -38,15 +36,13 @@ function resolveAnimationDuration(value: AnimationDuration | undefined) {
     return {
       tapAnimationInDuration: value,
       tapAnimationOutDuration: value,
-      pressAndHoldAnimationInDuration: value,
-      pressAndHoldAnimationOutDuration: value,
       hoverAnimationInDuration: value,
       hoverAnimationOutDuration: value,
     };
   }
 
   // The union guarantees variant 2 supplies top-level `in`/`out`, variant 3
-  // supplies all three category objects — so per-category fallback to base is
+  // supplies both category objects — so per-category fallback to base is
   // always defined for well-typed input; the 0 fallbacks here are unreachable.
   const baseIn = 'in' in value ? value.in : 0;
   const baseOut = 'out' in value ? value.out : 0;
@@ -54,8 +50,6 @@ function resolveAnimationDuration(value: AnimationDuration | undefined) {
   return {
     tapAnimationInDuration: value.tap?.in ?? baseIn,
     tapAnimationOutDuration: value.tap?.out ?? baseOut,
-    pressAndHoldAnimationInDuration: value.pressAndHold?.in ?? baseIn,
-    pressAndHoldAnimationOutDuration: value.pressAndHold?.out ?? baseOut,
     hoverAnimationInDuration: value.hover?.in ?? baseIn,
     hoverAnimationOutDuration: value.hover?.out ?? baseOut,
   };

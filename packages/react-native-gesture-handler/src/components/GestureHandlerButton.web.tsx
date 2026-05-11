@@ -8,8 +8,6 @@ import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
   enabled?: boolean;
-  pressAndHoldAnimationInDuration?: number;
-  pressAndHoldAnimationOutDuration?: number;
   tapAnimationInDuration?: number;
   tapAnimationOutDuration?: number;
   hoverAnimationInDuration?: number;
@@ -29,8 +27,6 @@ type ButtonProps = ViewProps & {
 export const ButtonComponent = ({
   ref: externalRef,
   enabled = true,
-  pressAndHoldAnimationInDuration = 100,
-  pressAndHoldAnimationOutDuration = 100,
   tapAnimationInDuration = 100,
   tapAnimationOutDuration = 100,
   hoverAnimationInDuration = 100,
@@ -57,7 +53,7 @@ export const ButtonComponent = ({
   const [pressed, setPressed] = React.useState(false);
   const [hovered, setHovered] = React.useState(false);
   const [currentDuration, setCurrentDuration] = React.useState(
-    pressAndHoldAnimationInDuration
+    tapAnimationInDuration
   );
   const pressInTimestamp = React.useRef(0);
   const pressOutTimer = React.useRef<ReturnType<typeof setTimeout> | null>(
@@ -127,10 +123,10 @@ export const ButtonComponent = ({
         pressOutTimer.current = null;
       }
       pressInTimestamp.current = performance.now();
-      setCurrentDuration(pressAndHoldAnimationInDuration);
+      setCurrentDuration(tapAnimationInDuration);
       setPressed(true);
     },
-    [enabled, pressAndHoldAnimationInDuration]
+    [enabled, tapAnimationInDuration]
   );
 
   const pressOut = React.useCallback(
@@ -150,8 +146,9 @@ export const ButtonComponent = ({
       const elapsed = performance.now() - pressInTimestamp.current;
       pressInTimestamp.current = 0;
 
-      if (elapsed >= pressAndHoldAnimationInDuration) {
-        setCurrentDuration(pressAndHoldAnimationOutDuration);
+      if (elapsed >= tapAnimationInDuration) {
+        // Press-in animation fully finished - release with the configured out duration.
+        setCurrentDuration(tapAnimationOutDuration);
         setPressed(false);
         // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
       } else if (elapsed * 2 >= tapAnimationOutDuration) {
@@ -159,9 +156,7 @@ export const ButtonComponent = ({
         setPressed(false);
       } else {
         // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time.
-        // Clamp to 0 because tapAnimationInDuration and tapAnimationOutDuration are independent —
-        // elapsed can exceed tapAnimationInDuration while still being below tapAnimationOutDuration / 2.
-        const remaining = Math.max(0, tapAnimationInDuration - elapsed);
+        const remaining = tapAnimationInDuration - elapsed;
         pressOutTimer.current = setTimeout(() => {
           pressOutTimer.current = null;
           setCurrentDuration(tapAnimationOutDuration);
@@ -169,12 +164,7 @@ export const ButtonComponent = ({
         }, remaining);
       }
     },
-    [
-      pressAndHoldAnimationInDuration,
-      pressAndHoldAnimationOutDuration,
-      tapAnimationInDuration,
-      tapAnimationOutDuration,
-    ]
+    [tapAnimationInDuration, tapAnimationOutDuration]
   );
 
   const handlePointerEnter = React.useCallback(

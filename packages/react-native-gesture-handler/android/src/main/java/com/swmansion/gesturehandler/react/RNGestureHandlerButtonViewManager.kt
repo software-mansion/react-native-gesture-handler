@@ -269,16 +269,6 @@ class RNGestureHandlerButtonViewManager :
     view.isSoundEffectsEnabled = !touchSoundDisabled
   }
 
-  @ReactProp(name = "pressAndHoldAnimationInDuration")
-  override fun setPressAndHoldAnimationInDuration(view: ButtonViewGroup, value: Int) {
-    view.pressAndHoldAnimationInDuration = value
-  }
-
-  @ReactProp(name = "pressAndHoldAnimationOutDuration")
-  override fun setPressAndHoldAnimationOutDuration(view: ButtonViewGroup, value: Int) {
-    view.pressAndHoldAnimationOutDuration = value
-  }
-
   @ReactProp(name = "tapAnimationInDuration")
   override fun setTapAnimationInDuration(view: ButtonViewGroup, value: Int) {
     view.tapAnimationInDuration = if (value > 0) value else 0
@@ -366,10 +356,6 @@ class RNGestureHandlerButtonViewManager :
     var exclusive = true
     var tapAnimationInDuration: Int = 100
     var tapAnimationOutDuration: Int = 100
-    var pressAndHoldAnimationInDuration: Int = -1
-      get() = if (field < 0) tapAnimationInDuration else field
-    var pressAndHoldAnimationOutDuration: Int = -1
-      get() = if (field < 0) tapAnimationOutDuration else field
     var activeOpacity: Float = 1.0f
     var defaultOpacity: Float = 1.0f
     var activeScale: Float = 1.0f
@@ -572,26 +558,23 @@ class RNGestureHandlerButtonViewManager :
         pendingPressOut = null
       }
       pressInTimestamp = SystemClock.uptimeMillis()
-      animateTo(activeOpacity, activeScale, activeUnderlayOpacity, pressAndHoldAnimationInDuration.toLong())
+      animateTo(activeOpacity, activeScale, activeUnderlayOpacity, tapAnimationInDuration.toLong())
     }
 
     private fun animatePressOut() {
       pendingPressOut?.let { handler.removeCallbacks(it) }
-      val pressAndHoldInMs = pressAndHoldAnimationInDuration.toLong()
-      val pressAndHoldOutMs = pressAndHoldAnimationOutDuration.toLong()
       val tapInMs = tapAnimationInDuration.toLong()
       val tapOutMs = tapAnimationOutDuration.toLong()
       val elapsed = SystemClock.uptimeMillis() - pressInTimestamp
 
-      if (elapsed >= pressAndHoldInMs) {
-        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, pressAndHoldOutMs)
+      if (elapsed >= tapInMs) {
+        // Press-in animation fully finished — release with the configured out duration.
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
         // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
       } else if (elapsed * 2 >= tapOutMs) {
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, elapsed)
       } else {
-        // Clamp to 0 because tapAnimationInDuration and tapAnimationOutDuration are independent —
-        // elapsed can exceed tapAnimationInDuration while still being below tapAnimationOutDuration / 2.
-        val remaining = (tapInMs - elapsed).coerceAtLeast(0)
+        val remaining = tapInMs - elapsed
         animateTo(activeOpacity, activeScale, activeUnderlayOpacity, remaining)
 
         val runnable = Runnable {
