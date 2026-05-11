@@ -13,7 +13,8 @@ import type {
 
 const isAndroid = Platform.OS === 'android';
 const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
-const DEFAULT_ANIMATION_DURATION_MS = 100;
+const DEFAULT_IN_DURATION_MS = 50;
+const DEFAULT_OUT_DURATION_MS = 100;
 
 enum PointerState {
   UNKNOWN,
@@ -23,12 +24,11 @@ enum PointerState {
 
 function resolveAnimationDuration(value: AnimationDuration | undefined) {
   if (value === undefined) {
-    const d = DEFAULT_ANIMATION_DURATION_MS;
     return {
-      tapAnimationInDuration: d,
-      tapAnimationOutDuration: d,
-      hoverAnimationInDuration: d,
-      hoverAnimationOutDuration: d,
+      tapAnimationInDuration: DEFAULT_IN_DURATION_MS,
+      tapAnimationOutDuration: DEFAULT_OUT_DURATION_MS,
+      hoverAnimationInDuration: DEFAULT_IN_DURATION_MS,
+      hoverAnimationOutDuration: DEFAULT_OUT_DURATION_MS,
     };
   }
 

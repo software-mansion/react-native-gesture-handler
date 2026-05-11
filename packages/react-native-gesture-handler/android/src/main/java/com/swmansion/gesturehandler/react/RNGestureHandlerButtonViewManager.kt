@@ -354,7 +354,7 @@ class RNGestureHandlerButtonViewManager :
     var useBorderlessDrawable = false
 
     var exclusive = true
-    var tapAnimationInDuration: Int = 100
+    var tapAnimationInDuration: Int = 50
     var tapAnimationOutDuration: Int = 100
     var activeOpacity: Float = 1.0f
     var defaultOpacity: Float = 1.0f

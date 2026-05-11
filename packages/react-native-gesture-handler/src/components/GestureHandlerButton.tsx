@@ -61,7 +61,7 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
 
   /**
    * Minimum duration (in milliseconds) of the press-in animation on a
-   * quick tap. Defaults to 100ms.
+   * quick tap. Defaults to 50ms.
    */
   tapAnimationInDuration?: number | undefined;
 
@@ -113,7 +113,7 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   /**
    * Web only.
    *
-   * Duration of the hover-in animation, in milliseconds. Defaults to 100ms.
+   * Duration of the hover-in animation, in milliseconds. Defaults to 50ms.
    */
   hoverAnimationInDuration?: number | undefined;
 

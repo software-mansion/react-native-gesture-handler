@@ -27,9 +27,9 @@ type ButtonProps = ViewProps & {
 export const ButtonComponent = ({
   ref: externalRef,
   enabled = true,
-  tapAnimationInDuration = 100,
+  tapAnimationInDuration = 50,
   tapAnimationOutDuration = 100,
-  hoverAnimationInDuration = 100,
+  hoverAnimationInDuration = 50,
   hoverAnimationOutDuration = 100,
   activeOpacity = 1,
   activeScale = 1,

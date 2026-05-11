@@ -57,7 +57,8 @@ export type TouchableProps = Omit<
     /**
      * Press and hover animation durations, in milliseconds. Pass a single
      * number to apply it to every phase, or an object to customize per phase
-     * and per category. Defaults to 100ms across the board.
+     * and per category. Defaults to 50ms for the in phase and 100ms for the
+     * out phase.
      */
     animationDuration?: AnimationDuration | undefined;
     /**

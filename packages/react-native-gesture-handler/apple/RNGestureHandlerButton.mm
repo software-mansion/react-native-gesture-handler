@@ -55,7 +55,7 @@
   _hitTestEdgeInsets = UIEdgeInsetsZero;
   _userEnabled = YES;
   _pointerEvents = RNGestureHandlerPointerEventsAuto;
-  _tapAnimationInDuration = 100;
+  _tapAnimationInDuration = 50;
   _tapAnimationOutDuration = 100;
   _activeOpacity = 1.0;
   _defaultOpacity = 1.0;
