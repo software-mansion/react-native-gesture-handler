@@ -114,7 +114,7 @@ export default function TouchableExample() {
           console.log('RectButton built with Touchable');
         }}
         style={[styles.button, { backgroundColor: '#4f9a84' }]}
-        activeUnderlayOpacity={0.105}>
+        underlayColor="black">
         <Text style={styles.buttonText}>RectButton</Text>
       </Touchable>
 
@@ -194,7 +194,7 @@ Defines the scale of the whole component when the button is inactive. By default
 activeUnderlayOpacity?: number;
 ```
 
-Defines the opacity of the underlay when the button is active. By default set to `0`.
+Defines the opacity of the underlay when the button is active. By default set to `0.105`.
 
 ### defaultUnderlayOpacity
 
@@ -250,7 +250,7 @@ Duration of the hover animation, in milliseconds. By default falls back to [`tap
 underlayColor?: string;
 ```
 
-Background color of the underlay. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set.
+Background color of the underlay, default is `transparent`. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set.
 
 ### exclusive
 
