@@ -67,11 +67,40 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   pressAndHoldAnimationDuration?: number | undefined;
 
   /**
+   * Duration of the press-in animation, in milliseconds, when the button
+   * is held down. Defaults to `pressAndHoldAnimationDuration` when not
+   * set (or set to any negative value).
+   */
+  pressAndHoldAnimationInDuration?: number | undefined;
+
+  /**
+   * Duration of the press-out animation, in milliseconds, when the
+   * button is released after the press-in animation completed. Defaults
+   * to `pressAndHoldAnimationDuration` when not set (or set to any
+   * negative value).
+   */
+  pressAndHoldAnimationOutDuration?: number | undefined;
+
+  /**
    * Minimum duration (in milliseconds) that the press animation must run
    * before the press-out animation is allowed to start. Ensures the pressed
    * state is visible on quick taps. Defaults to 100ms.
    */
   tapAnimationDuration?: number | undefined;
+
+  /**
+   * Minimum duration (in milliseconds) of the press-in animation on a
+   * quick tap. Defaults to `tapAnimationDuration` when not set (or set
+   * to any negative value).
+   */
+  tapAnimationInDuration?: number | undefined;
+
+  /**
+   * Minimum duration (in milliseconds) of the press-out animation on a
+   * quick tap. Defaults to `tapAnimationDuration` when not set (or set
+   * to any negative value).
+   */
+  tapAnimationOutDuration?: number | undefined;
 
   /**
    * Opacity applied to the button when it is pressed.
@@ -119,6 +148,22 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    * `tapAnimationDuration` when not set (or set to any negative value).
    */
   hoverAnimationDuration?: number | undefined;
+
+  /**
+   * Web only.
+   *
+   * Duration of the hover-in animation, in milliseconds. Defaults to
+   * `hoverAnimationDuration` when not set (or set to any negative value).
+   */
+  hoverAnimationInDuration?: number | undefined;
+
+  /**
+   * Web only.
+   *
+   * Duration of the hover-out animation, in milliseconds. Defaults to
+   * `hoverAnimationDuration` when not set (or set to any negative value).
+   */
+  hoverAnimationOutDuration?: number | undefined;
 
   /**
    * Opacity applied to the button when it is not pressed.
