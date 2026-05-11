@@ -98,6 +98,22 @@ defaultOpacity?: number;
 
 Defines the opacity of the whole component when the button is active. By default set to `1`.
 
+### activeScale
+
+```ts
+activeScale?: number;
+```
+
+Defines the scale of the whole component when the button is active.
+
+### defaultScale
+
+```ts
+defaultScale?: number;
+```
+
+Defines the scale of the whole component when the button is inactive. By default set to `1`.
+
 ### activeUnderlayOpacity
 
 ```ts
@@ -113,6 +129,38 @@ defaultUnderlayOpacity?: number;
 ```
 
 Defines the initial opacity of underlay when the button is inactive. By default set to `0`.
+
+### hoverOpacity
+
+```ts
+hoverOpacity?: number;
+```
+
+Defines the opacity of the whole component when the button is hovered. By default falls back to [`defaultOpacity`](#defaultopacity).
+
+### hoverScale
+
+```ts
+hoverScale?: number;
+```
+
+Defines the scale of the whole component when the button is hovered. By default falls back to [`defaultScale`](#defaultscale).
+
+### hoverUnderlayOpacity
+
+```ts
+hoverUnderlayOpacity?: number;
+```
+
+Defines the opacity of the underlay when the button is hovered. By default falls back to [`defaultUnderlayOpacity`](#defaultunderlayopacity).
+
+### hoverAnimationDuration
+
+```ts
+hoverAnimationDuration?: number;
+```
+
+Duration of the hover animation, in milliseconds. By default falls back to [`tapAnimationDuration`](#tapanimationduration).
 
 ### underlayColor
 
