@@ -113,6 +113,7 @@
 @implementation RNNativeViewGestureHandler {
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
+  BOOL _yieldsToContinuousGestures;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
 }
 
@@ -129,6 +130,7 @@
   [super updateConfig:config];
   _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
   _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
+  _yieldsToContinuousGestures = [RCTConvert BOOL:config[@"yieldsToContinuousGestures"]];
 }
 
 #if !TARGET_OS_OSX
@@ -192,13 +194,22 @@
   [super unbindFromView];
 }
 
-- (void)sendActiveStateEventIfChangedForView:(UIView *)sender extraData:(RNGestureHandlerEventExtraData *)extraData
+- (BOOL)shouldSuppressActiveEvent:(RNGestureHandlerEventExtraData *)extraData
 {
-  if ([_lastActiveExtraData.data isEqualToDictionary:extraData.data]) {
-    return;
+  if (_lastActiveExtraData != nil && [_lastActiveExtraData.data isEqualToDictionary:extraData.data]) {
+    return YES;
   }
 
   _lastActiveExtraData = extraData;
+  return NO;
+}
+
+- (void)sendActiveStateEventIfChangedForView:(UIView *)sender extraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  if ([self shouldSuppressActiveEvent:extraData]) {
+    return;
+  }
+
   [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:sender.reactTag withExtraData:extraData];
 }
 
@@ -230,11 +241,18 @@
 
   if (_disallowInterruption) {
     // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
-    // gets DOWN event
+    // gets DOWN event. When `yieldsToContinuousGestures` is also set we leave alone:
+    //   - non-RNGH recognizers (e.g. UIScrollView's pan), so native containers can take over
+    //   - continuous RNGH recognizers, so other continuous gestures wrapping the touchable can still take over
     for (RNGHUITouch *touch in [event allTouches]) {
-      for (UIGestureRecognizer *recogn in [touch gestureRecognizers]) {
-        recogn.enabled = NO;
-        recogn.enabled = YES;
+      for (UIGestureRecognizer *recognizer in [touch gestureRecognizers]) {
+        if (_yieldsToContinuousGestures &&
+            (recognizer.gestureHandler == nil || [recognizer.gestureHandler isContinuous])) {
+          continue;
+        }
+
+        recognizer.enabled = NO;
+        recognizer.enabled = YES;
       }
     }
   }
@@ -244,12 +262,6 @@
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
                                                        withNumberOfTouches:event.allTouches.count
                                                            withPointerType:_pointerType]];
-
-  _lastActiveExtraData = nil;
-  [self sendActiveStateEventIfChangedForView:sender
-                                   extraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                                          withNumberOfTouches:event.allTouches.count
-                                                                              withPointerType:_pointerType]];
 }
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
@@ -267,11 +279,12 @@
 
 - (void)handleTouchUpInside:(UIView *)sender forEvent:(UIEvent *)event
 {
-  [self sendEventsInState:RNGestureHandlerStateEnd
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:event.allTouches.count
-                                                           withPointerType:_pointerType]];
+  RNGestureHandlerEventExtraData *extraData = [RNGestureHandlerEventExtraData forPointerInside:YES
+                                                                           withNumberOfTouches:event.allTouches.count
+                                                                               withPointerType:_pointerType];
+
+  [self sendActiveStateEventIfChangedForView:sender extraData:extraData];
+  [self sendEventsInState:RNGestureHandlerStateEnd forViewWithTag:sender.reactTag withExtraData:extraData];
 }
 
 - (void)handleDragExit:(UIView *)sender forEvent:(UIEvent *)event
@@ -330,7 +343,13 @@
   return YES;
 }
 
-#else
+- (void)reset
+{
+  [super reset];
+  _lastActiveExtraData = nil;
+}
+
+#endif
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNDummyGestureRecognizer *)recognizer
 {
@@ -339,6 +358,9 @@
                                           withPointerType:RNGestureHandlerMouse];
 }
 
-#endif
+- (BOOL)isContinuous
+{
+  return YES;
+}
 
 @end

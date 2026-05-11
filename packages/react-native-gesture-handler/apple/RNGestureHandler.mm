@@ -14,10 +14,6 @@
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
 
-@interface UIGestureRecognizer (GestureHandler)
-@property (nonatomic, readonly) RNGestureHandler *gestureHandler;
-@end
-
 @implementation UIGestureRecognizer (GestureHandler)
 
 - (RNGestureHandler *)gestureHandler
@@ -105,6 +101,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.testID = nil;
   self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
+  _cancelsJSResponder = YES;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
   _dispatchesAnimatedEvents = NO;
@@ -162,6 +159,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   prop = config[@"manualActivation"];
   if (prop != nil) {
     self.manualActivation = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"cancelsJSResponder"];
+  if (prop != nil) {
+    _cancelsJSResponder = [RCTConvert BOOL:prop];
   }
 
   prop = config[@"hitSlop"];
@@ -286,12 +288,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
 #if TARGET_OS_OSX
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
                                  withNumberOfTouches:1
                                      withPointerType:RNGestureHandlerMouse];
 #else
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                  withNumberOfTouches:recognizer.numberOfTouches
                                      withPointerType:_pointerType];
@@ -305,6 +307,21 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (RNGHUIView *)chooseViewForInteraction:(UIGestureRecognizer *)recognizer
 {
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
+}
+
+- (RNGHUIView *)coordinateView
+{
+  RNGHUIView *recognizerView = _recognizer.view;
+  if ([self usesNativeOrVirtualDetector] && recognizerView == self.hostDetectorView &&
+      recognizerView.subviews.count == 1) {
+    return recognizerView.subviews[0];
+  }
+  return recognizerView;
+}
+
+- (BOOL)shouldSuppressActiveEvent:(RNGestureHandlerEventExtraData *)extraData
+{
+  return NO;
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
@@ -367,6 +384,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _state = state;
 
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
+
+  if (state == RNGestureHandlerStateActive && [self shouldSuppressActiveEvent:eventData]) {
+    return;
+  }
 
   NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
 
@@ -829,6 +850,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 }
 
 - (BOOL)wantsToAttachDirectlyToView
+{
+  return NO;
+}
+
+- (BOOL)isContinuous
 {
   return NO;
 }

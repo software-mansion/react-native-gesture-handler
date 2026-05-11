@@ -10,6 +10,8 @@ import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
 export default class PinchGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   private scale = 1;
   private velocity = 0;
 
@@ -89,8 +91,8 @@ export default class PinchGestureHandler extends GestureHandler {
   protected override onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
-    this.tryBegin();
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.tryBegin();
   }
 
   protected override onPointerUp(event: AdaptedEvent): void {
@@ -111,26 +113,22 @@ export default class PinchGestureHandler extends GestureHandler {
     super.onPointerRemove(event);
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     this.tracker.removeFromTracker(event.pointerId);
-
-    if (this.state === State.ACTIVE && this.tracker.trackedPointersCount < 2) {
-      this.end();
-    }
   }
 
   protected override onPointerMove(event: AdaptedEvent): void {
+    this.tracker.track(event);
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
-    this.tracker.track(event);
 
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     super.onPointerMove(event);
   }
   protected override onPointerOutOfBounds(event: AdaptedEvent): void {
+    this.tracker.track(event);
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
-    this.tracker.track(event);
 
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     super.onPointerOutOfBounds(event);

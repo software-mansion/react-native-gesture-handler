@@ -19,6 +19,7 @@ class GestureHandlerOrchestrator(
   private val handlerRegistry: GestureHandlerRegistry,
   private val viewConfigHelper: ViewConfigurationHelper,
   private val rootView: ViewGroup,
+  private val onJSResponderCancelListener: OnJSResponderCancelListener,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -143,6 +144,14 @@ class GestureHandlerOrchestrator(
   /*package*/
   fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
+
+    if (isFinished(newState) && handler.isActive && handler.cancelsJSResponder) {
+      // Check if there are any other active handlers that still request the JS responder to be cancelled.
+      if (gestureHandlers.none { it !== handler && it.isActive && it.cancelsJSResponder }) {
+        onJSResponderCancelListener?.onCancelJSResponderReleased(handler)
+      }
+    }
+
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
       // while iterating over its elements
@@ -241,6 +250,10 @@ class GestureHandlerOrchestrator(
       return
     }
 
+    if (handler.cancelsJSResponder) {
+      onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
+    }
+
     handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)
 
     if (currentState != GestureHandler.STATE_ACTIVE) {
@@ -297,7 +310,7 @@ class GestureHandlerOrchestrator(
     }
 
     val action = sourceEvent.actionMasked
-    val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
+    val event = transformEventToViewCoords(handler.coordinateView, MotionEvent.obtain(sourceEvent))
 
     if (handler.needsPointerData) {
       handler.updatePointerData(event, sourceEvent)
@@ -448,11 +461,16 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    gestureHandlers.add(handler)
     handler.isActive = false
     handler.isAwaiting = false
     handler.activationIndex = Int.MAX_VALUE
     handler.prepare(view, this)
+
+    if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
+      handler.cancel()
+    }
+
+    gestureHandlers.add(handler)
   }
 
   private fun isViewOverflowingParent(view: View): Boolean {
@@ -606,7 +624,7 @@ class GestureHandlerOrchestrator(
 
     val childrenCount = viewGroup.childCount
     for (i in childrenCount - 1 downTo 0) {
-      val child = viewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i)
+      val child = viewGroup.getChildAt(i)
       if (canReceiveEvents(child)) {
         val childPoint = tempPoint
         transformPointToChildViewCoords(coords[0], coords[1], viewGroup, child, childPoint)

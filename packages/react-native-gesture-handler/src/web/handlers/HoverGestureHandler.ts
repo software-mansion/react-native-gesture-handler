@@ -8,6 +8,8 @@ import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
 export default class HoverGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   private stylusData: StylusData | undefined;
 
   public constructor(
@@ -51,10 +53,5 @@ export default class HoverGestureHandler extends GestureHandler {
     this.stylusData = event.stylusData;
 
     super.onPointerMove(event);
-  }
-
-  protected override onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.reset();
   }
 }

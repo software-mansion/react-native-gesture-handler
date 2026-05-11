@@ -81,12 +81,24 @@
 @property (nonatomic) BOOL shouldCancelWhenOutside;
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
+@property (nonatomic) BOOL cancelsJSResponder;
 @property (nonatomic) BOOL dispatchesAnimatedEvents;
 @property (nonatomic) BOOL dispatchesReanimatedEvents;
 @property (nonatomic, weak, nullable) RNGHUIView *hostDetectorView;
 @property (nonatomic, nullable, assign) NSNumber *virtualViewTag;
 @property (nonatomic, copy, nullable) NSNumber *viewTag;
 @property (nonatomic, readonly) RNGestureHandlerState lastState;
+
+/**
+ The view whose coordinate space should be used when reporting event positions to JS.
+ Handlers attached via the V3 NativeDetector are bound to the `RNGestureHandlerDetector` wrapper,
+ which never carries user-applied transforms — those live on its child. When the detector has
+ exactly one subview we descend into it so reported coordinates match the visible (transformed)
+ view, the same coordinate space V2 and the V3 VirtualGestureDetector report in. With multiple
+ subviews there is no JS-side way to disambiguate which child caught the pointer, so we keep
+ the detector itself as the reference frame.
+ */
+@property (nonatomic, readonly, nullable) RNGHUIView *coordinateView;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
@@ -96,6 +108,7 @@
 - (void)setConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateRelations:(nonnull NSDictionary *)relations;
+- (BOOL)shouldSuppressActiveEvent:(nonnull RNGestureHandlerEventExtraData *)extraData;
 - (void)handleGesture:(nonnull id)recognizer;
 - (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(nonnull id)recognizer
@@ -125,6 +138,7 @@
 - (nonnull RNGHUIView *)findViewForEvents;
 - (BOOL)wantsToAttachDirectlyToView;
 - (BOOL)usesNativeOrVirtualDetector;
+- (BOOL)isContinuous;
 
 #if !TARGET_OS_OSX
 - (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;
@@ -139,4 +153,8 @@
 - (void)setCurrentPointerTypeToMouse;
 #endif
 
+@end
+
+@interface UIGestureRecognizer (GestureHandler)
+@property (nonatomic, readonly, nullable) RNGestureHandler *gestureHandler;
 @end

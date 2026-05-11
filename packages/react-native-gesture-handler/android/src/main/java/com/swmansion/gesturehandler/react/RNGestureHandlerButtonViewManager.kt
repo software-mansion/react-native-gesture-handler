@@ -42,6 +42,8 @@ import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
+import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
@@ -493,7 +495,9 @@ class RNGestureHandlerButtonViewManager :
               if (inside != isPointerInsideBounds) {
                 isPointerInsideBounds = inside
                 if (inside) {
-                  animatePressIn()
+                  // Re-establish View's pressed flag to restore ripple and the
+                  // UP handler runs its normal release cleanup.
+                  setPressed(true)
                 } else {
                   animatePressOut()
                 }
@@ -734,6 +738,16 @@ class RNGestureHandlerButtonViewManager :
     override fun afterGestureEnd(event: MotionEvent) {
       tryFreeingResponder()
       isTouched = false
+    }
+
+    override fun shouldBeginWithRecordedHandlers(
+      recorded: List<GestureHandler>,
+      handler: NativeViewGestureHandler,
+    ): Boolean = recorded.all {
+      it.shouldRecognizeSimultaneously(handler) ||
+        handler.shouldRecognizeSimultaneously(it) ||
+        it.view == this ||
+        it is HoverGestureHandler
     }
 
     private fun tryFreeingResponder() {
