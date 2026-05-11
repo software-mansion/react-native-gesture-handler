@@ -213,7 +213,7 @@ export const ButtonComponent = ({
     : effectiveHovered
       ? hoverUnderlayOpacity
       : defaultUnderlayOpacity;
-  const hasUnderlay = underlayColor !== 'transparent';
+  const hasUnderlay = underlayColor != null && underlayColor !== 'transparent';
   const hasOpacity =
     activeOpacity !== 1 || hoverOpacity !== 1 || defaultOpacity !== 1;
   const currentOpacity = pressed
