@@ -14,12 +14,12 @@ If you were using `RectButton` or `BorderlessButton` in your app, you should rep
 
 ### RectButton
 
-To replace `RectButton` with `Touchable`, simply add `activeUnderlayOpacity={0.105}` to your `Touchable`. This will animate the underlay when the button is pressed.
+To replace `RectButton` with `Touchable`, simply add `underlayColor="black"` to your `Touchable`. This will animate the underlay when the button is pressed.
 
 ```tsx
 <Touchable
   ...
-  activeUnderlayOpacity={0.105}/>
+  underlayColor="black"/>
 ```
 
 ### BorderlessButton
@@ -120,7 +120,7 @@ Defines the scale of the whole component when the button is inactive. By default
 activeUnderlayOpacity?: number;
 ```
 
-Defines the opacity of the underlay when the button is active. By default set to `0`.
+Defines the opacity of the underlay when the button is active. By default set to `0.105`.
 
 ### defaultUnderlayOpacity
 
@@ -168,7 +168,7 @@ Duration of the hover animation, in milliseconds. By default falls back to [`tap
 underlayColor?: string;
 ```
 
-Background color of the underlay. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set.
+Background color of the underlay. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set. By default set to `transparent`.
 
 ### exclusive
 
