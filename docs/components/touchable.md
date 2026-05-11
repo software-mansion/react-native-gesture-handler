@@ -154,13 +154,45 @@ hoverUnderlayOpacity?: number;
 
 Defines the opacity of the underlay when the button is hovered. By default falls back to [`defaultUnderlayOpacity`](#defaultunderlayopacity).
 
-### hoverAnimationDuration
+### animationDuration
 
-```ts
-hoverAnimationDuration?: number;
+Press and hover animation timing, in milliseconds. Defaults to 50ms for the in phase and 100ms for the out phase.
+
+Each animation has two phases — `in` (running while the pointer engages the component) and `out` (running after the pointer releases) — across two categories:
+
+* `tap` — applies to presses.
+* `hover` — pointer hover (web only).
+
+Three input shapes are accepted:
+
+1. A single number applied to every phase of every category:
+
+```tsx
+<Touchable animationDuration={200} />
 ```
 
-Duration of the hover animation, in milliseconds. By default falls back to [`tapAnimationDuration`](#tapanimationduration).
+2. A baseline `in` / `out` with optional per-category overrides — categories that aren't specified inherit the baseline, and within a category any field left out also inherits from the baseline:
+
+```tsx
+<Touchable
+  animationDuration={{
+    in: 50,
+    out: 200,
+    hover: { in: 400 },
+  }}
+/>
+```
+
+3. Both categories specified explicitly (no baseline) — every field must be supplied:
+
+```tsx
+<Touchable
+  animationDuration={{
+    tap: { in: 0, out: 200 },
+    hover: { in: 300, out: 300 },
+  }}
+/>
+```
 
 ### underlayColor
 
