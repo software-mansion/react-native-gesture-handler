@@ -259,9 +259,9 @@ type AnimationDuration =
 
 Press and hover animation timing, in milliseconds. Defaults to 50ms for the in phase and 100ms for the out phase.
 
-Each animation has two phases — \`in\` (running while the pointer engages the component) and \`out\` (running after the pointer releases) — across two categories:
-- \`tap\` — applies to presses.
-- \`hover\` — pointer hover (web only).
+Each animation has two phases — `in` (running while the pointer engages the component) and `out` (running after the pointer releases) — across two categories:
+- `tap` — applies to presses.
+- `hover` — pointer hover (web only).
 
 Three input shapes are accepted:
 
@@ -271,7 +271,7 @@ Three input shapes are accepted:
 <Touchable animationDuration={200} />
 ```
 
-2. A baseline \`in\` / \`out\` with optional per-category overrides — categories that aren't specified inherit the baseline, and within a category any field left out also inherits from the baseline:
+2. A baseline `in` / `out` with optional per-category overrides — categories that aren't specified inherit the baseline, and within a category any field left out also inherits from the baseline:
 
 ```tsx
 <Touchable
