@@ -17,11 +17,52 @@ type PressableAndroidRippleConfig = {
 
 type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 
-export type TouchableProps = Omit<ButtonProps, RippleProps | 'enabled'> &
+type DurationProps =
+  | 'tapAnimationInDuration'
+  | 'tapAnimationOutDuration'
+  | 'pressAndHoldAnimationInDuration'
+  | 'pressAndHoldAnimationOutDuration'
+  | 'hoverAnimationInDuration'
+  | 'hoverAnimationOutDuration';
+
+type InOutDuration = { in: number; out: number };
+
+/**
+ * Configuration for press / hover animation timing.
+ *
+ * - A single number applies to every phase of every category.
+ * - An object with top-level `in` / `out` sets the baseline; any of `tap`,
+ *   `hover`, `pressAndHold` may override it.
+ * - Alternatively, all three categories may be specified explicitly without
+ *   a top-level baseline.
+ */
+export type AnimationDuration =
+  | number
+  | (InOutDuration & {
+      tap?: InOutDuration;
+      hover?: InOutDuration;
+      pressAndHold?: InOutDuration;
+    })
+  | {
+      tap: InOutDuration;
+      hover: InOutDuration;
+      pressAndHold: InOutDuration;
+    };
+
+export type TouchableProps = Omit<
+  ButtonProps,
+  RippleProps | 'enabled' | DurationProps
+> &
   Omit<
     BaseButtonProps,
     keyof RawButtonProps | 'onActiveStateChange' | 'onPress'
   > & {
+    /**
+     * Press and hover animation durations, in milliseconds. Pass a single
+     * number to apply it to every phase, or an object to customize per phase
+     * and per category. Defaults to 100ms across the board.
+     */
+    animationDuration?: AnimationDuration | undefined;
     /**
      * Configuration for the ripple effect on Android.
      */
