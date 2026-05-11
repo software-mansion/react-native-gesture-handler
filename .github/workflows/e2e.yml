@@ -65,7 +65,7 @@ jobs:
 
       - name: Build for iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: detox build -c ios.sim.release
+        run: detox build -c ios.sim.debug
 
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
@@ -108,7 +108,7 @@ jobs:
 
       - name: Build for Android
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: detox build -c android.emu.release
+        run: detox build -c android.emu.debug
 
       - name: Run tests on Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
