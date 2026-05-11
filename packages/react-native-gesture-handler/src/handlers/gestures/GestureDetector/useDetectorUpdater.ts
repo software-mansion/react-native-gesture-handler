@@ -10,7 +10,7 @@ import { dropHandlers } from './dropHandlers';
 import { needsToReattach } from './needsToReattach';
 import type { AttachedGestureState, GestureDetectorState } from './types';
 import { updateHandlers } from './updateHandlers';
-import { useForceRender, validateDetectorChildren } from './utils';
+import { useForceRender } from './utils';
 
 // Returns a function that's responsible for updating the attached gestures
 // If the view has changed, it will reattach the handlers to the new view
@@ -34,7 +34,6 @@ export function useDetectorUpdater(
         didUnderlyingViewChange ||
         needsToReattach(preparedGesture, gesturesToAttach)
       ) {
-        validateDetectorChildren(state.viewRef);
         dropHandlers(preparedGesture);
         attachHandlers({
           preparedGesture,
