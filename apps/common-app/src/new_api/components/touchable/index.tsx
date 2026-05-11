@@ -41,7 +41,7 @@ export default function TouchableExample() {
             <TouchableWrapper
               name="Rect"
               color={COLORS.WEB_BLUE}
-              activeUnderlayOpacity={0.105}
+              underlayColor="black"
             />
 
             <TouchableWrapper
@@ -60,6 +60,7 @@ export default function TouchableExample() {
             <TouchableWrapper
               name="Click me!"
               color={COLORS.YELLOW}
+              underlayColor="black"
               activeUnderlayOpacity={0.3}
             />
 
