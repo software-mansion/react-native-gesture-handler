@@ -70,6 +70,7 @@ jobs:
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn test:ios
+
   android-e2e:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: macos-14
