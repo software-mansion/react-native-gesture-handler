@@ -70,13 +70,13 @@ export interface SwipeableProps {
    * Distance that the panel must be dragged from the left edge to be considered
    * a swipe. The default value is 10.
    */
-  dragOffsetFromLeftEdge?: number;
+  dragOffsetFromLeft?: number;
 
   /**
    * Distance that the panel must be dragged from the right edge to be considered
    * a swipe. The default value is 10.
    */
-  dragOffsetFromRightEdge?: number;
+  dragOffsetFromRight?: number;
 
   /**
    * Value indicating if the swipeable panel can be pulled further than the left
