@@ -67,13 +67,13 @@ export interface SwipeableProps {
   rightThreshold?: number;
 
   /**
-   * Distance that the panel must be dragged from the left edge to be considered
+   * Distance that the panel must be dragged from the left to be considered
    * a swipe. The default value is 10.
    */
   dragOffsetFromLeft?: number;
 
   /**
-   * Distance that the panel must be dragged from the right edge to be considered
+   * Distance that the panel must be dragged from the right to be considered
    * a swipe. The default value is 10.
    */
   dragOffsetFromRight?: number;
