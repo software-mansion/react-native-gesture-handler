@@ -27,9 +27,12 @@ function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
     '--radius',
     ra.radius,
   ]);
+
+  //w sumie to nwm czt on exituje z 0 czy na stdout
   return new Promise((resolve, reject) => {
     child.on('exit', code => {
       if (code === 0) {
+        console.log('Argent process exited successfully');
         resolve(true);
       } else {
         reject(new Error(`Argent process exited with code ${code}`));
@@ -44,7 +47,7 @@ function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
   });
 }
 
-describe('test long press gesture', () => {
+describe('test rotation gesture', () => {
   beforeAll(async () => {
     await device.launchApp({ newInstance: false });
     await element(by.id('nav-gesture-tests')).tap();

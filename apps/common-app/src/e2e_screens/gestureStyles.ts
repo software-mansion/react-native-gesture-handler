@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 export const gestureStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
   },
   title: {
     fontWeight: '700',

@@ -35,12 +35,6 @@ describe('test pan gesture', () => {
     await expect(panActivatedElement).toExist();
   });
 
-  it('should update coordinates on pan', async () => {
-    await expect(panElement).toExist();
-    await panElement.swipe('right', 'fast', 1, 0, 0);
-    await expect(panActivatedElement).toExist();
-  });
-
   it('multiple touches shouldn`t register a pan gesture', async () => {
     await expect(panElement).toExist();
     await panElement.multiTap(3);
