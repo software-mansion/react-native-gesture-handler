@@ -11,28 +11,30 @@ type RotationArgs = {
 };
 
 function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
-  const child = spawn('argent', [
-    'run',
-    'gesture-rotate',
-    '--udid',
-    udid,
-    '--centerX',
-    ra.centerX,
-    '--centerY',
-    ra.centerY,
-    '--startAngle',
-    ra.startAngle,
-    '--endAngle',
-    ra.endAngle,
-    '--radius',
-    ra.radius,
-  ]);
+  const child = spawn(
+    'argent',
+    [
+      'run',
+      'gesture-rotate',
+      '--udid',
+      udid,
+      '--centerX',
+      ra.centerX,
+      '--centerY',
+      ra.centerY,
+      '--startAngle',
+      ra.startAngle,
+      '--endAngle',
+      ra.endAngle,
+      '--radius',
+      ra.radius,
+    ],
+    { stdio: 'inherit' },
+  );
 
-  //w sumie to nwm czt on exituje z 0 czy na stdout
   return new Promise((resolve, reject) => {
     child.on('exit', code => {
       if (code === 0) {
-        console.log('Argent process exited successfully');
         resolve(true);
       } else {
         reject(new Error(`Argent process exited with code ${code}`));
@@ -40,9 +42,6 @@ function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
     });
     child.on('error', err => {
       reject(err);
-    });
-    child.stderr.on('data', data => {
-      reject(new Error(`Argent stderr: ${data}`));
     });
   });
 }
@@ -75,6 +74,7 @@ describe('test rotation gesture', () => {
     const udid = device.id;
 
     await expect(rotationElement).toExist();
+
     const res = await argentRotate(udid, {
       centerX: '0.5',
       centerY: '0.5',
@@ -82,6 +82,7 @@ describe('test rotation gesture', () => {
       endAngle: '90',
       radius: '0.05',
     });
+
     console.log('Rotation result:', res);
     await expect(rotationActivatedElement).toExist();
   });

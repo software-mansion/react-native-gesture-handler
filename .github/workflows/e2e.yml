@@ -97,7 +97,7 @@ jobs:
         id: avd-cache
         with:
           path: |
-            ~/.android/avd/*
+            ~/.android/avd
             ~/.android/adb*
           key: avd-Pixel_9_Pro
 
@@ -114,6 +114,20 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: detox build -c android.emu.release
 
+      - name: Android SDK env check
+        shell: bash
+        run: |
+          set -euxo pipefail
+          echo "Runner: $(uname -a)"
+          echo "PWD: $PWD"
+          echo "JAVA_HOME=$JAVA_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          which sdkmanager || true
+          sdkmanager --list || true
+          which avdmanager || true
+          avdmanager list || true
+          ls -la ~/.android || true
+
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
@@ -123,7 +137,12 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           avd-name: Pixel_9_Pro
-          script: echo "Generated AVD snapshot for caching."
+          script: |
+            set -euxo pipefail
+            echo "=== AVD creation diagnostics ==="
+            sdkmanager --list || true
+            avdmanager list || true
+            echo "Generated AVD snapshot for caching."
 
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
