@@ -1,11 +1,5 @@
-import {
-  beforeAll,
-  beforeEach,
-  describe,
-  expect as jestExpect,
-  it,
-} from '@jest/globals';
-import { by, device, element, expect as detoxExpect } from 'detox';
+import { beforeAll, beforeEach, describe, it } from '@jest/globals';
+import { by, device, element, expect as expect } from 'detox';
 import { IosElementAttributes } from 'detox/detox';
 
 describe('test pan gesture', () => {
@@ -23,14 +17,18 @@ describe('test pan gesture', () => {
     await resetButton.tap();
   });
 
-  it('should update coordinates on pan (for iphone 15)', async () => {
-    await detoxExpect(containerElement).toExist();
+  it('should update coordinates on pan', async () => {
+    await expect(containerElement).toExist();
     await containerElement.swipe('right', 'slow', 1, 0, 0.5);
 
     const attributes =
       (await xDistanceElement.getAttributes()) as IosElementAttributes;
     const xDistanceText = attributes.text;
     const xDistanceValue = parseFloat(xDistanceText!.split(': ')[1]);
-    jestExpect(xDistanceValue).toEqual(372.2); //this is constant for iphone 15
+    if (xDistanceValue !== 372.2) {
+      throw new Error(
+        `Expected x distance to be 372.2 make sure the test runs on iphone 15`,
+      );
+    }
   });
 });
