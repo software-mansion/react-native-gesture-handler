@@ -1,4 +1,5 @@
 import React, {
+  use,
   useCallback,
   useEffect,
   useMemo,
@@ -40,6 +41,7 @@ import {
   useNativeGesture,
   useSimultaneousGestures,
 } from '../hooks';
+import { JSResponderContext } from '../JSResponderContext';
 import { PureNativeButton } from './GestureButtons';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
@@ -78,6 +80,7 @@ const Pressable = (props: PressableProps) => {
   const longPressTimeoutRef = useRef<number | null>(null);
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
+  const jsResponderContext = use(JSResponderContext);
   const isCurrentlyPressed = useRef<boolean>(false);
   const dimensions = useRef<PressableDimensions>({
     width: 0,
@@ -365,13 +368,20 @@ const Pressable = (props: PressableProps) => {
     [onLayout]
   );
 
-  // Claim the JS responder in the bubble phase so an ancestor RN ScrollView
-  // with keyboardShouldPersistTaps='handled' or 'always' cannot run its
-  // release-time TextInput blur. The GH tap still fires via the native
-  // recognizer when activated.
+  // Let RN components higher in the tree handle JS responder negotiation.
+  // RNGH ScrollView uses this marker to preserve keyboardShouldPersistTaps='handled'
+  // when there are no RN responder components between it and this Pressable.
   const handleStartShouldSetResponder = useCallback(() => {
-    return !disabled;
-  }, [disabled]);
+    if (!disabled) {
+      const responderEventRef = jsResponderContext?.isRNGHResponderEvent;
+
+      if (responderEventRef) {
+        responderEventRef.current = true;
+      }
+    }
+
+    return false;
+  }, [disabled, jsResponderContext]);
 
   return (
     <GestureDetector gesture={gesture}>

@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { use, useCallback, useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import { maybeUnpackValue } from '../hooks/utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
+import { JSResponderContext } from '../JSResponderContext';
 import type { SingleGesture } from '../types';
 import { SingleGestureName } from '../types';
 import type { NativeDetectorProps } from './common';
@@ -30,6 +31,8 @@ export function NativeDetector<
   userSelect,
   enableContextMenu,
 }: NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
+  const jsResponderContext = use(JSResponderContext);
+
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
     : gesture.config.shouldUseReanimatedDetector
@@ -70,8 +73,19 @@ export function NativeDetector<
     !isComposedGesture(gesture) && gesture.type === SingleGestureName.Tap;
 
   const handleStartShouldSetResponder = useCallback(() => {
-    return !isComposedGesture(gesture) && isGestureEnabled(gesture);
-  }, [gesture]);
+    const shouldHandleResponderEvent =
+      !isComposedGesture(gesture) && isGestureEnabled(gesture);
+
+    if (shouldHandleResponderEvent) {
+      const responderEventRef = jsResponderContext?.isRNGHResponderEvent;
+
+      if (responderEventRef) {
+        responderEventRef.current = true;
+      }
+    }
+
+    return false;
+  }, [gesture, jsResponderContext]);
 
   return (
     <NativeDetectorComponent
