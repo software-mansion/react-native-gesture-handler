@@ -72,6 +72,21 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   tapAnimationOutDuration?: number | undefined;
 
   /**
+   * Threshold (in milliseconds) at which the press-out animation
+   * switches from the tap-out timing to `longPressAnimationOutDuration`.
+   * Set to any negative value to disable the switch.
+   */
+  longPressDuration?: number | undefined;
+
+  /**
+   * Duration of the press-out animation, in milliseconds, when the
+   * button is released after being held past `longPressDuration`.
+   * Defaults to `tapAnimationOutDuration` when not set (or set to any
+   * negative value).
+   */
+  longPressAnimationOutDuration?: number | undefined;
+
+  /**
    * Opacity applied to the button when it is pressed.
    */
   activeOpacity?: number | undefined;

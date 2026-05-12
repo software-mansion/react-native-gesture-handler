@@ -49,6 +49,8 @@
   dispatch_block_t _pendingPressOutBlock;
 }
 
+@synthesize longPressAnimationOutDuration = _longPressAnimationOutDuration;
+
 - (void)commonInit
 {
   _isTouchInsideBounds = NO;
@@ -57,6 +59,8 @@
   _pointerEvents = RNGestureHandlerPointerEventsAuto;
   _tapAnimationInDuration = 50;
   _tapAnimationOutDuration = 100;
+  _longPressDuration = -1;
+  _longPressAnimationOutDuration = -1;
   _activeOpacity = 1.0;
   _defaultOpacity = 1.0;
   _activeScale = 1.0;
@@ -154,6 +158,11 @@
   }
 }
 #endif
+
+- (NSInteger)longPressAnimationOutDuration
+{
+  return _longPressAnimationOutDuration < 0 ? _tapAnimationOutDuration : _longPressAnimationOutDuration;
+}
 
 - (void)setUnderlayColor:(RNGHColor *)underlayColor
 {
@@ -317,7 +326,15 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   NSTimeInterval elapsed = (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
 
-  if (elapsed >= _tapAnimationInDuration) {
+  if (_longPressDuration >= 0 && elapsed >= _longPressDuration) {
+    // Long-press release - use the configured long-press out duration.
+    NSInteger longPressOut = self.longPressAnimationOutDuration;
+    RNGHUIView *target = self.animationTarget ?: self;
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:longPressOut];
+    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:longPressOut];
+    }
+  } else if (elapsed >= _tapAnimationInDuration) {
     // Press-in animation fully finished - release with the configured out duration.
     RNGHUIView *target = self.animationTarget ?: self;
     [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:_tapAnimationOutDuration];
