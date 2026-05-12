@@ -90,7 +90,7 @@ export const Touchable = (props: TouchableProps) => {
   } = props;
 
   const resolvedDurations = resolveAnimationDuration(animationDuration);
-  const longPressDuration = sanitizeDuration(delayLongPress);
+  const resolvedDelayLongPress = sanitizeDuration(delayLongPress);
 
   const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
@@ -109,9 +109,12 @@ export const Touchable = (props: TouchableProps) => {
     longPressDetected.current = false;
 
     if (onLongPress && !longPressTimeout.current) {
-      longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
+      longPressTimeout.current = setTimeout(
+        wrappedLongPress,
+        resolvedDelayLongPress
+      );
     }
-  }, [onLongPress, delayLongPress, wrappedLongPress]);
+  }, [onLongPress, resolvedDelayLongPress, wrappedLongPress]);
 
   const onBegin = useCallback(
     (e: CallbackEventType) => {
@@ -217,7 +220,7 @@ export const Touchable = (props: TouchableProps) => {
         defaultUnderlayOpacity={defaultUnderlayOpacity}
         activeUnderlayOpacity={activeUnderlayOpacity}
         underlayColor={underlayColor}
-        longPressDuration={longPressDuration}>
+        longPressDuration={resolvedDelayLongPress}>
         {children}
       </GestureHandlerButton>
     </NativeDetector>
