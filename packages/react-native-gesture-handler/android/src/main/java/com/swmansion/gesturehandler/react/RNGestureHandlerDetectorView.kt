@@ -255,6 +255,10 @@ class RNGestureHandlerDetectorView(context: Context) :
   // any ReactCompoundView descendants (e.g. ReactTextView for inline text spans). This correctly
   // resolves virtual tags that have no backing native View.
   override fun reactTagForTouch(x: Float, y: Float): Int {
+    if (attachedVirtualHandlers.isEmpty()) {
+      return id
+    }
+
     val touchedTag = TouchTargetHelper.findTargetTagForTouch(x, y, this)
     return if (attachedVirtualHandlers.containsKey(touchedTag)) touchedTag else id
   }
