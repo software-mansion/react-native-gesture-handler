@@ -345,8 +345,12 @@ class NativeViewGestureHandler : GestureHandler() {
 
     // recognize alongside every handler besides RootViewGestureHandler;
     // also if other handler is NativeViewGestureHandler then don't override the default implementation
-    override fun shouldRecognizeSimultaneously(handler: GestureHandler) =
-      handler !is RNGestureHandlerRootHelper.RootViewGestureHandler && handler !is NativeViewGestureHandler
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler): Boolean? =
+      if (handler is NativeViewGestureHandler) {
+        null
+      } else {
+        handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
+      }
 
     override fun wantsToHandleEventBeforeActivation() = true
 
