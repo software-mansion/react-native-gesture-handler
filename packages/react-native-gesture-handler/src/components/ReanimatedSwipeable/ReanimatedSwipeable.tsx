@@ -47,7 +47,7 @@ const Swipeable = (props: SwipeableProps) => {
     children,
     enableTrackpadTwoFingerGesture = DEFAULT_ENABLE_TRACKING_TWO_FINGER_GESTURE,
     dragOffsetFromLeft = DEFAULT_DRAG_OFFSET,
-    dragOffsetFromRight = DEFAULT_DRAG_OFFSET,
+    dragOffsetFromRight = -DEFAULT_DRAG_OFFSET,
     friction = DEFAULT_FRICTION,
     overshootFriction = DEFAULT_OVERSHOOT_FRICTION,
     onSwipeableOpenStartDrag,
