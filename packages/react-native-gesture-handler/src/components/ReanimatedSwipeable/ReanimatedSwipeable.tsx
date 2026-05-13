@@ -1,5 +1,5 @@
 import type { ForwardedRef } from 'react';
-import { useCallback, useImperativeHandle, useMemo } from 'react';
+import { useCallback, useEffect, useImperativeHandle, useMemo } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 import { I18nManager, StyleSheet, View } from 'react-native';
 import Animated, {
@@ -14,9 +14,11 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import { tagMessage } from '../../utils';
 import { GestureDetector } from '../../v3/detectors';
 import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../../v3/hooks/gestures';
+import { maybeUnpackValue } from '../../v3/hooks/utils';
 import type {
   SwipeableMethods,
   SwipeableProps,
@@ -62,6 +64,18 @@ const Swipeable = (props: SwipeableProps) => {
     hitSlop,
     ...remainingProps
   } = props;
+
+  useEffect(() => {
+    if (__DEV__) {
+      const value = maybeUnpackValue<number>(dragOffsetFromRight);
+
+      if (value > 0) {
+        throw new Error(
+          tagMessage('dragOffsetFromRight should be non-positive.')
+        );
+      }
+    }
+  }, [dragOffsetFromRight]);
 
   const shouldEnableTap = useSharedValue<boolean>(false);
   const rowState = useSharedValue<number>(0);
@@ -470,7 +484,7 @@ const Swipeable = (props: SwipeableProps) => {
   const panGesture = usePanGesture({
     enabled: enabled !== false,
     enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
-    activeOffsetX: [-dragOffsetFromRight, dragOffsetFromLeft],
+    activeOffsetX: [dragOffsetFromRight, dragOffsetFromLeft],
     simultaneousWith,
     requireToFail,
     block,
