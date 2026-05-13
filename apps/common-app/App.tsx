@@ -160,7 +160,7 @@ export default function App() {
       <View style={styles.settings}>
         <Touchable
           androidRipple={{}}
-          activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
+          underlayColor={Platform.OS === 'android' ? 'transparent' : 'black'}
           style={styles.settingsButton}
           onPress={() => {
             updateKeepSetting(!openLastExample);
@@ -182,7 +182,7 @@ export default function App() {
         </Touchable>
         <Touchable
           androidRipple={{}}
-          activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
+          underlayColor={Platform.OS === 'android' ? 'transparent' : 'black'}
           style={styles.settingsButton}
           onPress={() => {
             updateVersionSetting(!showLegacyVersion);
@@ -222,7 +222,7 @@ export default function App() {
         disabled={disabled}
         style={[styles.button, disabled && styles.unavailableExample]}
         androidRipple={{}}
-        activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
+        underlayColor={Platform.OS === 'android' ? 'transparent' : 'black'}
         onPress={() => onPressItem(name)}>
         <Text style={styles.text}>{name}</Text>
         {Platform.OS !== 'macos' && !disabled && (
