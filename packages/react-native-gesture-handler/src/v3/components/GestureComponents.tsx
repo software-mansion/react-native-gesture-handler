@@ -81,7 +81,7 @@ const GHScrollViewResponder = ({
   }, [keyboardShouldPersistTaps]);
 
   return (
-    <JSResponderContext.Provider value={contextValue}>
+    <JSResponderContext value={contextValue}>
       <View
         collapsable={false}
         onStartShouldSetResponderCapture={resetRNGHResponderEvent}
@@ -90,7 +90,7 @@ const GHScrollViewResponder = ({
         style={styles.logicalResponder}>
         {children}
       </View>
-    </JSResponderContext.Provider>
+    </JSResponderContext>
   );
 };
 
