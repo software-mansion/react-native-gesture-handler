@@ -4,8 +4,7 @@ import { Platform } from 'react-native';
 import { maybeUnpackValue } from '../hooks/utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 import { JSResponderContext } from '../JSResponderContext';
-import type { SingleGesture } from '../types';
-import { SingleGestureName } from '../types';
+import type { Gesture } from '../types';
 import type { NativeDetectorProps } from './common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
 import HostGestureDetector from './HostGestureDetector';
@@ -16,7 +15,12 @@ function isGestureEnabled<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
->(gesture: SingleGesture<TConfig, THandlerData, TExtendedHandlerData>) {
+>(gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>): boolean {
+  if (isComposedGesture(gesture)) {
+    // For composed gestures, we need to check if at least one of the composed gestures is enabled
+    return gesture.gestures.some(isGestureEnabled);
+  }
+
   return maybeUnpackValue(gesture.config.enabled) !== false;
 }
 
@@ -69,14 +73,12 @@ export function NativeDetector<
             gesture.detectorCallbacks.reanimatedEventHandler,
         };
 
-  const isTapGesture =
-    !isComposedGesture(gesture) && gesture.type === SingleGestureName.Tap;
+  const shouldHandleJSResponderEvent = useCallback(() => {
+    return isGestureEnabled(gesture);
+  }, [gesture]);
 
   const handleStartShouldSetResponder = useCallback(() => {
-    const shouldHandleResponderEvent =
-      !isComposedGesture(gesture) && isGestureEnabled(gesture);
-
-    if (shouldHandleResponderEvent) {
+    if (shouldHandleJSResponderEvent()) {
       const responderEventRef = jsResponderContext?.isRNGHResponderEvent;
 
       if (responderEventRef) {
@@ -85,13 +87,11 @@ export function NativeDetector<
     }
 
     return false;
-  }, [gesture, jsResponderContext]);
+  }, [jsResponderContext, shouldHandleJSResponderEvent]);
 
   return (
     <NativeDetectorComponent
-      onStartShouldSetResponder={
-        isTapGesture ? handleStartShouldSetResponder : undefined
-      }
+      onStartShouldSetResponder={handleStartShouldSetResponder}
       touchAction={touchAction}
       userSelect={userSelect}
       enableContextMenu={enableContextMenu}

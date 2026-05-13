@@ -7,6 +7,7 @@ import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
 import { Pressable, RectButton, ScrollView, Touchable } from '../v3/components';
 import { GestureDetector } from '../v3/detectors';
+import { useSimultaneousGestures } from '../v3/hooks';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
 import type { SingleGesture } from '../v3/types';
 
@@ -65,6 +66,40 @@ describe('[API v3] Components', () => {
 
     return (
       <GestureDetector gesture={tap}>
+        <View />
+      </GestureDetector>
+    );
+  };
+
+  const PanGestureDetectorExample = () => {
+    const pan = usePanGesture({ disableReanimated: true });
+
+    return (
+      <GestureDetector gesture={pan}>
+        <View />
+      </GestureDetector>
+    );
+  };
+
+  const SimultaneousGestureDetectorExample = () => {
+    const tap = useTapGesture({ disableReanimated: true });
+    const pan = usePanGesture({ disableReanimated: true });
+    const simultaneous = useSimultaneousGestures(tap, pan);
+
+    return (
+      <GestureDetector gesture={simultaneous}>
+        <View />
+      </GestureDetector>
+    );
+  };
+
+  const DisabledSimultaneousGestureDetectorExample = () => {
+    const tap = useTapGesture({ disableReanimated: true, enabled: false });
+    const pan = usePanGesture({ disableReanimated: true, enabled: false });
+    const simultaneous = useSimultaneousGestures(tap, pan);
+
+    return (
+      <GestureDetector gesture={simultaneous}>
         <View />
       </GestureDetector>
     );
@@ -167,6 +202,77 @@ describe('[API v3] Components', () => {
       ).toBe(false);
       expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+    });
+
+    test('handles responder event passed through NativeDetector for non-tap gestures', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <PanGestureDetectorExample />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+
+      expect(nativeDetector).toBeDefined();
+      expect(scrollViewResponder).toBeDefined();
+      expect(
+        scrollViewResponder?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+    });
+
+    test('handles responder event passed through NativeDetector for composed gestures', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <SimultaneousGestureDetectorExample />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+
+      expect(nativeDetector).toBeDefined();
+      expect(scrollViewResponder).toBeDefined();
+      expect(
+        scrollViewResponder?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+    });
+
+    test('does not handle responder event passed through NativeDetector for disabled composed gestures', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <DisabledSimultaneousGestureDetectorExample />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+
+      expect(nativeDetector).toBeDefined();
+      expect(scrollViewResponder).toBeDefined();
+      expect(
+        scrollViewResponder?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
+        false
+      );
     });
   });
 
