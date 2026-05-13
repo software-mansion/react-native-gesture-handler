@@ -43,6 +43,10 @@ function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
     child.on('error', err => {
       reject(err);
     });
+    child.stdout?.on('data', data => {
+      console.log(`Argent output: ${data}`);
+      resolve(true);
+    });
   });
 }
 
