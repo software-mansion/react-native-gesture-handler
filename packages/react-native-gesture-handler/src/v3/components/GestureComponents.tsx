@@ -52,14 +52,14 @@ const GHScrollView = createNativeWrapper<
   GestureDetectorType.Intercepting
 );
 
-type GHScrollViewResponderProps = PropsWithChildren<{
+type GHScrollViewResponderInterceptorProps = PropsWithChildren<{
   keyboardShouldPersistTaps?: RNScrollViewProps['keyboardShouldPersistTaps'];
 }>;
 
-const GHScrollViewResponder = ({
+const GHScrollViewResponderInterceptor = ({
   children,
   keyboardShouldPersistTaps,
-}: GHScrollViewResponderProps) => {
+}: GHScrollViewResponderInterceptorProps) => {
   const isRNGHResponderEvent = useRef(false);
   const contextValue = useMemo(
     () => ({ isRNGHResponderEvent }),
@@ -80,6 +80,12 @@ const GHScrollViewResponder = ({
     return shouldHandleRNGHEvent;
   }, [keyboardShouldPersistTaps]);
 
+  // RNGH tap responders need to let RN components higher in the tree handle
+  // the JS responder event first. If no RN component claims it, this logical
+  // ScrollView child consumes the marked event before ScrollView's own
+  // keyboardShouldPersistTaps='handled' responder logic handles it.
+  // For more information check this comment:
+  // https://github.com/software-mansion/react-native-gesture-handler/pull/4158#issuecomment-4431632964
   return (
     <JSResponderContext value={contextValue}>
       <View
@@ -136,10 +142,10 @@ export const ScrollView = (
             )
           : undefined
       }>
-      <GHScrollViewResponder
+      <GHScrollViewResponderInterceptor
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
         {children}
-      </GHScrollViewResponder>
+      </GHScrollViewResponderInterceptor>
     </GHScrollView>
   );
 };
