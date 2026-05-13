@@ -20,12 +20,12 @@ If you were using `RectButton` or `BorderlessButton` in your app, you should rep
 
 ### RectButton
 
-To replace `RectButton` with `Touchable`, simply add `activeUnderlayOpacity={0.105}` to your `Touchable`. This will animate the underlay when the button is pressed.
+To replace `RectButton` with `Touchable`, simply add `underlayColor="black"` to your `Touchable`. This will animate the underlay when the button is pressed.
 
 ```tsx
 <Touchable
   ...
-  activeUnderlayOpacity={0.105}/>
+  underlayColor="black"/>
 ```
 
 ### BorderlessButton
@@ -114,7 +114,7 @@ export default function TouchableExample() {
           console.log('RectButton built with Touchable');
         }}
         style={[styles.button, { backgroundColor: '#4f9a84' }]}
-        activeUnderlayOpacity={0.105}>
+        underlayColor="black">
         <Text style={styles.buttonText}>RectButton</Text>
       </Touchable>
 
@@ -172,13 +172,29 @@ defaultOpacity?: number;
 
 Defines the opacity of the whole component when the button is active. By default set to `1`.
 
+### activeScale
+
+```ts
+activeScale?: number;
+```
+
+Defines the scale of the whole component when the button is active.
+
+### defaultScale
+
+```ts
+defaultScale?: number;
+```
+
+Defines the scale of the whole component when the button is inactive. By default set to `1`.
+
 ### activeUnderlayOpacity
 
 ```ts
 activeUnderlayOpacity?: number;
 ```
 
-Defines the opacity of the underlay when the button is active. By default set to `0`.
+Defines the opacity of the underlay when the button is active. By default set to `0.105`.
 
 ### defaultUnderlayOpacity
 
@@ -188,13 +204,103 @@ defaultUnderlayOpacity?: number;
 
 Defines the initial opacity of underlay when the button is inactive. By default set to `0`.
 
+<Badges platforms={['web']}>
+### hoverOpacity
+</Badges>
+
+```ts
+hoverOpacity?: number;
+```
+
+Defines the opacity of the whole component when the button is hovered. By default falls back to [`defaultOpacity`](#defaultopacity).
+
+<Badges platforms={['web']}>
+### hoverScale
+</Badges>
+
+```ts
+hoverScale?: number;
+```
+
+Defines the scale of the whole component when the button is hovered. By default falls back to [`defaultScale`](#defaultscale).
+
+<Badges platforms={['web']}>
+### hoverUnderlayOpacity
+</Badges>
+
+```ts
+hoverUnderlayOpacity?: number;
+```
+
+Defines the opacity of the underlay when the button is hovered. By default falls back to [`defaultUnderlayOpacity`](#defaultunderlayopacity).
+
+### animationDuration
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+animationDuration?: AnimationDuration;
+
+type InOutDuration = { in: number; out: number };
+
+type AnimationDuration =
+  | number
+  | (InOutDuration & {
+      tap?: Partial<InOutDuration>;
+      hover?: Partial<InOutDuration>;
+    })
+  | {
+      tap: InOutDuration;
+      hover: InOutDuration;
+    };
+`}/>
+
+Press and hover animation timing, in milliseconds. Defaults to 50ms for the in phase and 100ms for the out phase.
+
+Each animation has two phases — `in` (running while the pointer engages the component) and `out` (running after the pointer releases) — across two categories:
+- `tap` — applies to presses.
+- `hover` — pointer hover (web only).
+
+Three input shapes are accepted:
+
+1. A single number applied to every phase of every category:
+
+```tsx
+<Touchable animationDuration={200} />
+```
+
+2. A baseline `in` / `out` with optional per-category overrides — categories that aren't specified inherit the baseline, and within a category any field left out also inherits from the baseline:
+
+```tsx
+<Touchable
+  animationDuration={{
+    in: 50,
+    out: 200,
+    hover: { in: 400 },
+  }}
+/>
+```
+
+3. Both categories specified explicitly (no baseline) — every field must be supplied:
+
+```tsx
+<Touchable
+  animationDuration={{
+    tap: { in: 0, out: 200 },
+    hover: { in: 300, out: 300 },
+  }}
+/>
+```
+
 ### underlayColor
 
 ```ts
 underlayColor?: string;
 ```
 
-Background color of the underlay. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set.
+Background color of the underlay. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set. By default set to `transparent`.
 
 ### exclusive
 
