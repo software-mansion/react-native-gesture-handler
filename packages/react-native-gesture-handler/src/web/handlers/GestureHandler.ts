@@ -46,7 +46,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
-  private actionType: ActionType | null = null;
+  protected actionType: ActionType | null = null;
   private forAnimated: boolean = false;
   private forReanimated: boolean = false;
   private _handlerTag!: number;
@@ -771,7 +771,6 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (config.hitSlop !== undefined) {
       this.hitSlop = config.hitSlop;
-      this.hitSlop = config.hitSlop;
       this.validateHitSlops();
     }
 
@@ -1097,6 +1096,11 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected set name(value: SingleGestureName) {
     this._name = value;
   }
+
+  /**
+   * Whether the handler represents a continuous gesture rather than a discrete one.
+   */
+  public readonly isContinuous: boolean = false;
 
   public getTrackedPointersID(): number[] {
     return this.tracker.trackedPointersIDs;

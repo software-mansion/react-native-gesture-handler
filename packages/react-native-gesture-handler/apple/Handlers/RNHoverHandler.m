@@ -172,6 +172,11 @@ API_AVAILABLE(ios(13.4))
                                      withPointerType:_pointerType];
 }
 
+- (BOOL)isContinuous
+{
+  return YES;
+}
+
 @end
 
 #else
@@ -189,6 +194,11 @@ API_AVAILABLE(ios(13.4))
   }
 
   return self;
+}
+
+- (BOOL)isContinuous
+{
+  return YES;
 }
 
 - (void)bindToView:(RNGHUIView *)view

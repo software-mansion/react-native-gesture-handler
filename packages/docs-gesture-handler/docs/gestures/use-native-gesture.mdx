@@ -115,13 +115,13 @@ disallowInterruption: boolean | SharedValue<boolean>;
 
 When `true`, this handler cancels all other gesture handlers when it activates.
 
-### yieldsToNativeGestures
+### yieldsToContinuousGestures
 
 ```ts
-yieldsToNativeGestures: boolean | SharedValue<boolean>;
+yieldsToContinuousGestures: boolean | SharedValue<boolean>;
 ```
 
-Composes with [`disallowInterruption`](#disallowinterruption). When both are `true`, this handler still cancels other gestures (such as `Pan` or `Tap`) on activation but allows other native gestures — for example a wrapping `ScrollView` — to interrupt it. No-op when `disallowInterruption` is `false`. Defaults to `false`.
+Composes with [`disallowInterruption`](#disallowinterruption). When both are `true`, this handler still cancels discrete gestures (`Tap`, `LongPress`, `Fling`) on activation but allows continuous gestures (`Pan`, `Pinch`, `Rotation`, `Native`, `Manual`, `Hover`) to interrupt it. No-op when `disallowInterruption` is `false`. Defaults to `false`.
 
 <BaseGestureConfig />
 

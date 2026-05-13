@@ -16,7 +16,6 @@ import type {
 import { useGestureCallbacks } from './useGestureCallbacks';
 import {
   bindSharedValues,
-  prepareConfig,
   prepareConfigForNativeSide,
   prepareRelations,
   unbindSharedValues,
@@ -40,9 +39,6 @@ export function useGesture<
       )
     );
   }
-
-  // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
-  prepareConfig(config);
 
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const { jsEventHandler, reanimatedEventHandler, animatedEventHandler } =
