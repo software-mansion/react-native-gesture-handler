@@ -681,21 +681,21 @@ rightThreshold?: number;
 
 Distance from the right edge at which released panel will animate to the open state (or the open panel will animate into the closed state). By default it's a half of the panel's width.
 
-### dragOffsetFromLeftEdge
+### dragOffsetFromLeft
 
 ```ts
-dragOffsetFromLeftEdge?: number;
+dragOffsetFromLeft?: number;
 ```
 
-Distance that the panel must be dragged from the left edge to be considered a swipe. The default value is `10`.
+The minimum horizontal distance from the starting point required to trigger a right-swipe gesture. Defaults to `10`.
 
-### dragOffsetFromRightEdge
+### dragOffsetFromRight
 
 ```ts
-dragOffsetFromRightEdge?: number;
+dragOffsetFromRight?: number;
 ```
 
-Distance that the panel must be dragged from the right edge to be considered a swipe. The default value is `10`.
+The minimum horizontal distance from the starting point required to trigger a left-swipe gesture. Defaults to `10`.
 
 ### overshootLeft
 
