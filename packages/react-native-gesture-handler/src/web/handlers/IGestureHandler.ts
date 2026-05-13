@@ -22,6 +22,7 @@ export default interface IGestureHandler {
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
   readonly name: SingleGestureName;
+  readonly isContinuous: boolean;
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;

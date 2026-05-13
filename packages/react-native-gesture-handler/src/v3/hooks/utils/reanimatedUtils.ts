@@ -2,7 +2,6 @@ import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { NativeProxy } from '../../NativeProxy';
 import type {
   BaseGestureConfig,
-  GestureCallbacks,
   SharedValue,
   SharedValueOrT,
 } from '../../types';
@@ -101,14 +100,15 @@ export function hasWorkletEventHandlers<
   THandlerData,
   TExtendedHandlerData extends THandlerData,
 >(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
-  return Object.entries(config).some(
-    ([key, value]) =>
-      HandlerCallbacks.has(
-        key as keyof GestureCallbacks<THandlerData, TExtendedHandlerData>
-      ) &&
-      typeof value === 'function' &&
-      '__workletHash' in value
-  );
+  for (const key of HandlerCallbacks) {
+    const value = config[key];
+
+    if (typeof value === 'function' && '__workletHash' in value) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function maybeUnpackValue<T>(
