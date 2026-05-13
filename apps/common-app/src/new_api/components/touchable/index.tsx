@@ -225,6 +225,25 @@ export default function TouchableExample() {
               }}
             />
           </View>
+
+          <Text>
+            Long-press override — release timing switches once held past
+            `delayLongPress`.
+          </Text>
+
+          <View style={styles.row}>
+            <TouchableWrapper
+              name="Hold"
+              color={COLORS.DARK_SALMON}
+              activeOpacity={0.3}
+              delayLongPress={400}
+              animationDuration={{
+                in: 50,
+                out: 100,
+                longPress: { out: 800 },
+              }}
+            />
+          </View>
         </View>
 
         <View style={styles.section}>

@@ -34,6 +34,7 @@ function resolveAnimationDuration(value: AnimationDuration | undefined) {
     return {
       tapAnimationInDuration: DEFAULT_IN_DURATION_MS,
       tapAnimationOutDuration: DEFAULT_OUT_DURATION_MS,
+      longPressAnimationOutDuration: DEFAULT_OUT_DURATION_MS,
       hoverAnimationInDuration: DEFAULT_IN_DURATION_MS,
       hoverAnimationOutDuration: DEFAULT_OUT_DURATION_MS,
     };
@@ -44,6 +45,7 @@ function resolveAnimationDuration(value: AnimationDuration | undefined) {
     return {
       tapAnimationInDuration: sanitized,
       tapAnimationOutDuration: sanitized,
+      longPressAnimationOutDuration: sanitized,
       hoverAnimationInDuration: sanitized,
       hoverAnimationOutDuration: sanitized,
     };
@@ -54,10 +56,14 @@ function resolveAnimationDuration(value: AnimationDuration | undefined) {
   // always defined for well-typed input; the 0 fallbacks here are unreachable.
   const baseIn = 'in' in value ? value.in : 0;
   const baseOut = 'out' in value ? value.out : 0;
+  const tapOut = value.tap?.out ?? baseOut;
 
   return {
     tapAnimationInDuration: sanitizeDuration(value.tap?.in ?? baseIn),
-    tapAnimationOutDuration: sanitizeDuration(value.tap?.out ?? baseOut),
+    tapAnimationOutDuration: sanitizeDuration(tapOut),
+    longPressAnimationOutDuration: sanitizeDuration(
+      value.longPress?.out ?? tapOut
+    ),
     hoverAnimationInDuration: sanitizeDuration(value.hover?.in ?? baseIn),
     hoverAnimationOutDuration: sanitizeDuration(value.hover?.out ?? baseOut),
   };
@@ -84,6 +90,7 @@ export const Touchable = (props: TouchableProps) => {
   } = props;
 
   const resolvedDurations = resolveAnimationDuration(animationDuration);
+  const resolvedDelayLongPress = sanitizeDuration(delayLongPress);
 
   const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
@@ -102,9 +109,12 @@ export const Touchable = (props: TouchableProps) => {
     longPressDetected.current = false;
 
     if (onLongPress && !longPressTimeout.current) {
-      longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
+      longPressTimeout.current = setTimeout(
+        wrappedLongPress,
+        resolvedDelayLongPress
+      );
     }
-  }, [onLongPress, delayLongPress, wrappedLongPress]);
+  }, [onLongPress, resolvedDelayLongPress, wrappedLongPress]);
 
   const onBegin = useCallback(
     (e: CallbackEventType) => {
@@ -209,7 +219,8 @@ export const Touchable = (props: TouchableProps) => {
         defaultOpacity={defaultOpacity}
         defaultUnderlayOpacity={defaultUnderlayOpacity}
         activeUnderlayOpacity={activeUnderlayOpacity}
-        underlayColor={underlayColor}>
+        underlayColor={underlayColor}
+        longPressDuration={resolvedDelayLongPress}>
         {children}
       </GestureHandlerButton>
     </NativeDetector>

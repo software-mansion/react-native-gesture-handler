@@ -10,6 +10,8 @@ type ButtonProps = ViewProps & {
   enabled?: boolean;
   tapAnimationInDuration?: number;
   tapAnimationOutDuration?: number;
+  longPressDuration?: number;
+  longPressAnimationOutDuration?: number;
   hoverAnimationInDuration?: number;
   hoverAnimationOutDuration?: number;
   activeOpacity?: number;
@@ -29,6 +31,8 @@ export const ButtonComponent = ({
   enabled = true,
   tapAnimationInDuration = 50,
   tapAnimationOutDuration = 100,
+  longPressDuration = -1,
+  longPressAnimationOutDuration = 100,
   hoverAnimationInDuration = 50,
   hoverAnimationOutDuration = 100,
   activeOpacity = 1,
@@ -146,7 +150,11 @@ export const ButtonComponent = ({
       const elapsed = performance.now() - pressInTimestamp.current;
       pressInTimestamp.current = 0;
 
-      if (elapsed >= tapAnimationInDuration) {
+      if (longPressDuration >= 0 && elapsed >= longPressDuration) {
+        // Long-press release — use the configured long-press out duration.
+        setCurrentDuration(longPressAnimationOutDuration);
+        setPressed(false);
+      } else if (elapsed >= tapAnimationInDuration) {
         // Press-in animation fully finished - release with the configured out duration.
         setCurrentDuration(tapAnimationOutDuration);
         setPressed(false);
@@ -164,7 +172,12 @@ export const ButtonComponent = ({
         }, remaining);
       }
     },
-    [tapAnimationInDuration, tapAnimationOutDuration]
+    [
+      longPressDuration,
+      longPressAnimationOutDuration,
+      tapAnimationInDuration,
+      tapAnimationOutDuration,
+    ]
   );
 
   const handlePointerEnter = React.useCallback(
