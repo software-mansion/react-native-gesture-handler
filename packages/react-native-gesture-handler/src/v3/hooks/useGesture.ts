@@ -96,8 +96,7 @@ export function useGesture<
   );
 
   useEffect(() => {
-    // React StrictMode replays effects without re-rendering, while the native
-    // detector can keep the same handler tag attached during that replay.
+    // React StrictMode replays effects without recreating the hook instance.
     // Delay dropping the native handler so the replayed mount can cancel it.
     dropGestureHandlerTokenRef.current += 1;
 
