@@ -77,6 +77,7 @@ let Reanimated:
       runOnUI<A extends any[], R>(
         fn: (...args: A) => R
       ): (...args: Parameters<typeof fn>) => void;
+      makeMutable<T>(value: T): { value: T };
     }
   | undefined;
 
