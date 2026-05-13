@@ -105,7 +105,12 @@ export function useGesture<
       const dropGestureHandlerToken = ++dropGestureHandlerTokenRef.current;
 
       ghQueueMicrotask(() => {
-        if (dropGestureHandlerTokenRef.current !== dropGestureHandlerToken) {
+        const wasSameHandlerRecreated =
+          dropGestureHandlerTokenRef.current !== dropGestureHandlerToken &&
+          currentGestureRef.current.handlerTag === handlerTag &&
+          currentGestureRef.current.type === type;
+
+        if (wasSameHandlerRecreated) {
           return;
         }
 
