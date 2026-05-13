@@ -273,7 +273,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   if ([view respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
     auto emitter = [(id<RCTTouchableComponentViewProtocol>)view touchEventEmitterAtPoint:point];
-    if (emitter != nil && emitter->getEventTarget()->getTag() == [virtualViewTag intValue]) {
+    if (emitter->getEventTarget()->getTag() == [virtualViewTag intValue]) {
       return YES;
     }
   }
