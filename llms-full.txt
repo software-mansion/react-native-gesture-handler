@@ -1111,6 +1111,8 @@ Each animation has two phases — `in` (running while the pointer engages the co
 * `tap` — applies to presses.
 * `hover` — pointer hover (web only).
 
+`longPress` is an optional override for the press-out timing once the press has been held past [`delayLongPress`](#delaylongpress). It only has an `out` field (the press-in is always the `tap` in duration). If omitted, the long-press release uses the resolved `tap` out duration.
+
 Three input shapes are accepted:
 
 1. A single number applied to every phase of every category:
@@ -1138,6 +1140,20 @@ Three input shapes are accepted:
   animationDuration={{
     tap: { in: 0, out: 200 },
     hover: { in: 300, out: 300 },
+  }}
+/>
+```
+
+To give a long press its own release timing, add `longPress.out`. The switch fires when the press is held past [`delayLongPress`](#delaylongpress):
+
+```tsx
+<Touchable
+  delayLongPress={400}
+  onLongPress={() => {}}
+  animationDuration={{
+    in: 50,
+    out: 100,
+    longPress: { out: 500 },
   }}
 />
 ```
