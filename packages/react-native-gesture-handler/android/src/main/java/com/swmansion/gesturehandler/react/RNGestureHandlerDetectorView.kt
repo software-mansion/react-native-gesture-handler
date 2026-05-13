@@ -7,6 +7,7 @@ import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.TouchTargetHelper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
@@ -249,34 +250,13 @@ class RNGestureHandlerDetectorView(context: Context) :
 
   // The orchestrator's BOX_NONE special-case always calls recordViewHandlersForPointer on any
   // RNGestureHandlerDetectorView, which in turn triggers this ReactCompoundView path.
+  //
+  // We delegate to TouchTargetHelper which walks the view subtree and calls reactTagForTouch on
+  // any ReactCompoundView descendants (e.g. ReactTextView for inline text spans). This correctly
+  // resolves virtual tags that have no backing native View.
   override fun reactTagForTouch(x: Float, y: Float): Int {
-    for ((viewTag, _) in attachedVirtualHandlers) {
-      val childView = findViewById<View>(viewTag)
-        // If no native view found for this tag (e.g. inline text span without its own
-        // native view), skip bounds-checking for this child and continue to the next.
-        ?: continue
-
-      if (isPointInVirtualChild(x, y, childView)) {
-        return viewTag
-      }
-    }
-    return id
-  }
-
-  private fun isPointInVirtualChild(detectorLocalX: Float, detectorLocalY: Float, childView: View): Boolean {
-    val detectorLoc = IntArray(2)
-    getLocationInWindow(detectorLoc)
-
-    val childLoc = IntArray(2)
-    childView.getLocationInWindow(childLoc)
-
-    val childLocalX = detectorLocalX + detectorLoc[0] - childLoc[0]
-    val childLocalY = detectorLocalY + detectorLoc[1] - childLoc[1]
-
-    return childLocalX >= 0f &&
-      childLocalX <= childView.width &&
-      childLocalY >= 0f &&
-      childLocalY <= childView.height
+    val touchedTag = TouchTargetHelper.findTargetTagForTouch(x, y, this)
+    return if (attachedVirtualHandlers.containsKey(touchedTag)) touchedTag else id
   }
 
   fun dispatchEvent(event: Event<*>) {
