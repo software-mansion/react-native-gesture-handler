@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 
+import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import {
   registerGesture,
@@ -62,6 +63,7 @@ export function useGesture<
   );
 
   const currentGestureRef = useRef({ type: '', handlerTag: -1 });
+  const dropGestureHandlerTokenRef = useRef(0);
   if (
     currentGestureRef.current.handlerTag !== handlerTag ||
     currentGestureRef.current.type !== (type as string)
@@ -94,13 +96,26 @@ export function useGesture<
   );
 
   useEffect(() => {
-    return () => {
-      if (currentGestureRef.current.handlerTag === handlerTag) {
-        currentGestureRef.current = { type: '', handlerTag: -1 };
-      }
+    // React StrictMode replays effects without re-rendering, while the native
+    // detector can keep the same handler tag attached during that replay.
+    // Delay dropping the native handler so the replayed mount can cancel it.
+    dropGestureHandlerTokenRef.current += 1;
 
-      NativeProxy.dropGestureHandler(handlerTag);
-      scheduleFlushOperations();
+    return () => {
+      const dropGestureHandlerToken = ++dropGestureHandlerTokenRef.current;
+
+      ghQueueMicrotask(() => {
+        if (dropGestureHandlerTokenRef.current !== dropGestureHandlerToken) {
+          return;
+        }
+
+        if (currentGestureRef.current.handlerTag === handlerTag) {
+          currentGestureRef.current = { type: '', handlerTag: -1 };
+        }
+
+        NativeProxy.dropGestureHandler(handlerTag);
+        scheduleFlushOperations();
+      });
     };
   }, [type, handlerTag]);
 
