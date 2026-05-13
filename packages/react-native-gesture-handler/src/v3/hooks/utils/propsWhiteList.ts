@@ -23,6 +23,7 @@ const CommonConfig = new Set<keyof CommonGestureConfig>([
   'mouseButton',
   'testID',
   'cancelsTouchesInView',
+  'cancelsJSResponder',
   'manualActivation',
 ]);
 

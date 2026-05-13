@@ -1,0 +1,6 @@
+{
+  "denyList": {
+    "android": ["react-native-gesture-handler"],
+    "ios": ["react-native-gesture-handler"]
+  }
+}

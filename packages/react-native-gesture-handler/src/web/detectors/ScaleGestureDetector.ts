@@ -44,10 +44,16 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     const action: EventTypes = event.eventType;
     const numOfPointers = tracker.trackedPointersCount;
 
+    // When the last second pointer lifts (going down to 1), pause without
+    // touching span/time state so the gesture resumes cleanly on re-add.
+    // When 3+ → 2+ pointers, fall through so configChanged resets the span
+    // baseline to the remaining pointer set and avoids a scale jump.
+    if (action === EventTypes.ADDITIONAL_POINTER_UP && numOfPointers <= 2) {
+      return true;
+    }
+
     const streamComplete: boolean =
-      action === EventTypes.UP ||
-      action === EventTypes.ADDITIONAL_POINTER_UP ||
-      action === EventTypes.CANCEL;
+      action === EventTypes.UP || action === EventTypes.CANCEL;
 
     if (action === EventTypes.DOWN || streamComplete) {
       if (this.inProgress) {

@@ -40,6 +40,7 @@ import PointerTypeExample from './tests/pointerType';
 import PressableExample from './tests/pressable';
 import ReattachingExample from './tests/reattaching';
 import RectButtonExample from './tests/rectButton';
+import RNResponderCancellationExample from './tests/rnResponderCancellation';
 import TwoFingerPanExample from './tests/twoFingerPan';
 import WebStylesResetExample from './tests/webStylesReset';
 
@@ -127,6 +128,10 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Nested pressables', component: NestedPressablesExample },
       { name: 'Nested touchables', component: NestedTouchablesExample },
       { name: 'Pressable', component: PressableExample },
+      {
+        name: 'RN responder cancellation',
+        component: RNResponderCancellationExample,
+      },
     ],
   },
 ];
