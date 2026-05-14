@@ -92,15 +92,6 @@ jobs:
       - name : Setup Detox
         run: npm install -g detox-cli
 
-      - name: AVD cache
-        uses: actions/cache@v5
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-Pixel_9_Pro
-
       - name: Cache Android build
         id: cache-android-build
         uses: actions/cache@v5
@@ -114,28 +105,15 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: detox build -c android.emu.release
 
-      - name: create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 33
-          arch: x86_64
-          google-apis: true
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          avd-name: Pixel_9_Pro
-          script: echo "Generated AVD snapshot for caching."
-
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
           google-apis: true
           arch: x86_64
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          force-avd-creation: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -ports 5554,5555
           disable-animations: true
           avd-name: Pixel_9_Pro
           working-directory: ${{ env.WORKING_DIRECTORY }}
-          script: yarn test:android
+          script: adb devices && yarn test:android
