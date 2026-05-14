@@ -16,9 +16,9 @@ This component is a drop-in replacement for the `Swipeable` component, rewritten
 </GifGallery>
 
 
-Reanimated `Swipeable` is designed for implementing swipeable rows or similar interactions. It places its children inside a pannable container that enables horizontal swiping to the left and right. Depending on the direction of the swipe, one of two "action" containers will be displayed, which can be configured using the [`renderLeftActions`](#renderleftactions) or [`renderRightActions`](#renderrightactions) props.
+`ReanimatedSwipeable` is designed for implementing swipeable rows or similar interactions. It places its children inside a pannable container that enables horizontal swiping to the left and right. Depending on the direction of the swipe, one of two "action" containers will be displayed, which can be configured using the [`renderLeftActions`](#renderleftactions) or [`renderRightActions`](#renderrightactions) props.
 
-To use Reanimated `Swipeable`, first ensure that Reanimated is installed and that your app is wrapped in `GestureHandlerRootView`. You can then import it as follows:
+To use `ReanimatedSwipeable`, first ensure that Reanimated is installed and that your app is wrapped in `GestureHandlerRootView`. You can then import it as follows:
 
 ```ts
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -58,7 +58,7 @@ Distance from the right edge at which released panel will animate to the open st
 dragOffsetFromLeft?: number | SharedValue<number>;
 ```
 
-he horizontal offset from the starting point required to trigger a right-swipe gesture. Defaults to 10.
+he horizontal offset from the starting point required to trigger a right-swipe gesture. Defaults to `10`.
 
 ### dragOffsetFromRight
 
@@ -66,7 +66,7 @@ he horizontal offset from the starting point required to trigger a right-swipe g
 dragOffsetFromRight?: number | SharedValue<number>;
 ```
 
-The horizontal offset from the starting point required to trigger a left-swipe gesture. Defaults to -10.
+The horizontal offset from the starting point required to trigger a left-swipe gesture. Defaults to `-10`.
 
 ### overshootLeft
 
