@@ -225,6 +225,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
 
     for (tag in nativeHandlers) {
+      if (attachedHandlers.contains(tag)) {
+        continue
+      }
+
       registry.attachHandlerToView(tag, id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, this)
 
       attachedHandlers.add(tag)

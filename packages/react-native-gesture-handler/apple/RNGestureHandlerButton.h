@@ -29,6 +29,8 @@
 
 @property (nonatomic, assign) NSInteger tapAnimationInDuration;
 @property (nonatomic, assign) NSInteger tapAnimationOutDuration;
+@property (nonatomic, assign) NSInteger longPressDuration;
+@property (nonatomic, assign) NSInteger longPressAnimationOutDuration;
 @property (nonatomic, assign) CGFloat activeOpacity;
 @property (nonatomic, assign) CGFloat defaultOpacity;
 @property (nonatomic, assign) CGFloat activeScale;

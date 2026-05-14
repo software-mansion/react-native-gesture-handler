@@ -21,6 +21,8 @@ interface NativeProps extends ViewProps {
   >;
   tapAnimationInDuration?: WithDefault<Int32, 50>;
   tapAnimationOutDuration?: WithDefault<Int32, 100>;
+  longPressDuration?: WithDefault<Int32, -1>;
+  longPressAnimationOutDuration?: WithDefault<Int32, -1>;
   activeOpacity?: WithDefault<Float, 1>;
   activeScale?: WithDefault<Float, 1>;
   activeUnderlayOpacity?: WithDefault<Float, 0>;
