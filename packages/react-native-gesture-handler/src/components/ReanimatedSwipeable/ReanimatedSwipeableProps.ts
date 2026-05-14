@@ -67,12 +67,12 @@ export interface SwipeableProps {
   rightThreshold?: number;
 
   /**
-   * The minimum horizontal distance from the starting point required to trigger a right-swipe gesture. Defaults to `10`.
+   * The horizontal offset from the starting point required to trigger a right-swipe gesture. Defaults to 10.
    */
   dragOffsetFromLeft?: number | SharedValue<number>;
 
   /**
-   * The minimum horizontal distance from the starting point required to trigger a left-swipe gesture. Defaults to `10`.
+   * The horizontal offset from the starting point required to trigger a left-swipe gesture. Defaults to -10.
    */
   dragOffsetFromRight?: number | SharedValue<number>;
 
