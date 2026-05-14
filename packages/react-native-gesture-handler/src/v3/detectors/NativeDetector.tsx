@@ -1,9 +1,9 @@
 import React, { use, useCallback, useMemo } from 'react';
 import { Platform } from 'react-native';
 
+import { JSResponderContext } from '../components/ScrollViewResponderInterceptor';
 import { maybeUnpackValue } from '../hooks/utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
-import { JSResponderContext } from '../JSResponderContext';
 import type { Gesture } from '../types';
 import type { NativeDetectorProps } from './common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from './common';

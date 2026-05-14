@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import type {
   FlatListProps as RNFlatListProps,
   RefreshControlProps as RNRefreshControlProps,
@@ -11,10 +11,8 @@ import {
   FlatList as RNFlatList,
   RefreshControl as RNRefreshControl,
   ScrollView as RNScrollView,
-  StyleSheet,
   Switch as RNSwitch,
   TextInput as RNTextInput,
-  View,
 } from 'react-native';
 
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
@@ -22,8 +20,8 @@ import createNativeWrapper from '../createNativeWrapper';
 import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from '../hooks/utils';
-import { JSResponderContext } from '../JSResponderContext';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
+import ScrollViewResponderInterceptor from './ScrollViewResponderInterceptor';
 
 export const RefreshControl = createNativeWrapper<
   RNRefreshControl,
@@ -51,54 +49,6 @@ const GHScrollView = createNativeWrapper<
   },
   GestureDetectorType.Intercepting
 );
-
-type GHScrollViewResponderInterceptorProps = PropsWithChildren<{
-  keyboardShouldPersistTaps?: RNScrollViewProps['keyboardShouldPersistTaps'];
-}>;
-
-const GHScrollViewResponderInterceptor = ({
-  children,
-  keyboardShouldPersistTaps,
-}: GHScrollViewResponderInterceptorProps) => {
-  const isRNGHResponderEvent = useRef(false);
-  const contextValue = useMemo(
-    () => ({ isRNGHResponderEvent }),
-    [isRNGHResponderEvent]
-  );
-
-  const resetRNGHResponderEvent = useCallback(() => {
-    isRNGHResponderEvent.current = false;
-    return false;
-  }, []);
-
-  const handleStartShouldSetResponder = useCallback(() => {
-    const shouldHandleRNGHEvent =
-      keyboardShouldPersistTaps === 'handled' && isRNGHResponderEvent.current;
-
-    isRNGHResponderEvent.current = false;
-
-    return shouldHandleRNGHEvent;
-  }, [keyboardShouldPersistTaps]);
-
-  // RNGH tap responders need to let RN components higher in the tree handle
-  // the JS responder event first. If no RN component claims it, this logical
-  // ScrollView child consumes the marked event before ScrollView's own
-  // keyboardShouldPersistTaps='handled' responder logic handles it.
-  // For more information check this comment:
-  // https://github.com/software-mansion/react-native-gesture-handler/pull/4158#issuecomment-4431632964
-  return (
-    <JSResponderContext value={contextValue}>
-      <View
-        collapsable={false}
-        onStartShouldSetResponderCapture={resetRNGHResponderEvent}
-        onStartShouldSetResponder={handleStartShouldSetResponder}
-        pointerEvents="box-none"
-        style={styles.logicalResponder}>
-        {children}
-      </View>
-    </JSResponderContext>
-  );
-};
 
 export const ScrollView = (
   props: RNScrollViewProps & NativeWrapperProperties<RNScrollView | null>
@@ -142,22 +92,16 @@ export const ScrollView = (
             )
           : undefined
       }>
-      <GHScrollViewResponderInterceptor
+      <ScrollViewResponderInterceptor
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
         {children}
-      </GHScrollViewResponderInterceptor>
+      </ScrollViewResponderInterceptor>
     </GHScrollView>
   );
 };
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type ScrollView = typeof ScrollView & RNScrollView;
-
-const styles = StyleSheet.create({
-  logicalResponder: {
-    display: 'contents',
-  },
-});
 
 export const Switch = createNativeWrapper<RNSwitch, RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,

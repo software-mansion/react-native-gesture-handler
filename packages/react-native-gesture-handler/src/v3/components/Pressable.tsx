@@ -41,8 +41,8 @@ import {
   useNativeGesture,
   useSimultaneousGestures,
 } from '../hooks';
-import { JSResponderContext } from '../JSResponderContext';
 import { PureNativeButton } from './GestureButtons';
+import { JSResponderContext } from './ScrollViewResponderInterceptor';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
