@@ -112,7 +112,7 @@ jobs:
           google-apis: true
           arch: x86_64
           force-avd-creation: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -ports 5554,5555
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           avd-name: Pixel_9_Pro
           working-directory: ${{ env.WORKING_DIRECTORY }}
