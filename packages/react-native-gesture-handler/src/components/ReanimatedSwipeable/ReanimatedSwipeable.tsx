@@ -482,7 +482,7 @@ const Swipeable = (props: SwipeableProps) => {
   });
 
   const panGesture = usePanGesture({
-    enabled: enabled !== false,
+    enabled: enabled ?? true,
     enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
     activeOffsetX: [dragOffsetFromRight, dragOffsetFromLeft],
     simultaneousWith,
