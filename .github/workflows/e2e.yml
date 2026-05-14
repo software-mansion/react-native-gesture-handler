@@ -17,7 +17,7 @@ concurrency:
 jobs:
   ios-e2e:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
-    runs-on: macos-14
+    runs-on: macos-26
     env:
       WORKING_DIRECTORY: apps/e2eApp
     steps:
@@ -73,7 +73,7 @@ jobs:
 
   android-e2e:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
-    runs-on: macos-14
+    runs-on: macos-26
     env:
       WORKING_DIRECTORY: apps/e2eApp
     steps:

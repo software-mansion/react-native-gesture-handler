@@ -11,6 +11,8 @@ type RotationArgs = {
 };
 
 function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
+  console.log('Starting argent with udid=', udid);
+
   const child = spawn(
     'argent',
     [
@@ -29,11 +31,29 @@ function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
       '--radius',
       ra.radius,
     ],
-    { stdio: 'inherit' },
+    { stdio: ['ignore', 'pipe', 'pipe'] },
   );
 
   return new Promise((resolve, reject) => {
+    const timeoutMs = 30000;
+    const timeout = setTimeout(() => {
+      try {
+        child.kill('SIGKILL');
+      } catch (e) {
+        console.error('Failed to kill Argent process:', e);
+      }
+      reject(new Error(`Argent timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    child.stdout?.on('data', data => {
+      console.log(`Argent stdout: ${data.toString().trim()}`);
+    });
+    child.stderr?.on('data', data => {
+      console.error(`Argent stderr: ${data.toString().trim()}`);
+    });
+
     child.on('exit', code => {
+      clearTimeout(timeout);
       if (code === 0) {
         resolve(true);
       } else {
@@ -41,11 +61,8 @@ function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
       }
     });
     child.on('error', err => {
+      clearTimeout(timeout);
       reject(err);
-    });
-    child.stdout?.on('data', data => {
-      console.log(`Argent output: ${data}`);
-      resolve(true);
     });
   });
 }
