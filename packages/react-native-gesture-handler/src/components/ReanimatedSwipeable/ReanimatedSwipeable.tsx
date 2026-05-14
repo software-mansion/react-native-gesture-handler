@@ -14,11 +14,11 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
 import { GestureDetector } from '../../v3/detectors';
 import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../../v3/hooks/gestures';
-import { maybeUnpackValue } from '../../v3/hooks/utils';
 import type {
   SwipeableMethods,
   SwipeableProps,
@@ -65,17 +65,29 @@ const Swipeable = (props: SwipeableProps) => {
     ...remainingProps
   } = props;
 
-  useEffect(() => {
-    if (__DEV__) {
-      const value = maybeUnpackValue<number>(dragOffsetFromRight);
-
-      if (value > 0) {
-        throw new Error(
-          tagMessage('dragOffsetFromRight should be non-positive.')
-        );
-      }
+  if (__DEV__) {
+    if (Reanimated?.isSharedValue<number>(dragOffsetFromRight)) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      Reanimated?.useDerivedValue(() => {
+        'worklet';
+        if (dragOffsetFromRight.value > 0) {
+          throw new Error(
+            tagMessage('dragOffsetFromRight should be non-positive.')
+          );
+        }
+        return dragOffsetFromRight.value;
+      });
+    } else {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useEffect(() => {
+        if ((dragOffsetFromRight as number) > 0) {
+          throw new Error(
+            tagMessage('dragOffsetFromRight should be non-positive.')
+          );
+        }
+      }, [dragOffsetFromRight]);
     }
-  }, [dragOffsetFromRight]);
+  }
 
   const shouldEnableTap = useSharedValue<boolean>(false);
   const rowState = useSharedValue<number>(0);
