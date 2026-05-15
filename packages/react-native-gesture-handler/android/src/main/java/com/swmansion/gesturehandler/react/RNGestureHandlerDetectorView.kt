@@ -5,9 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.ThemedReactContext
-import com.facebook.react.uimanager.TouchTargetHelper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
@@ -15,12 +13,7 @@ import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 
-// Implements ReactCompoundView so that virtual gesture handlers registered to child view tags
-// are discoverable by the orchestrator's recordViewHandlersForPointer even when this detector
-// is not a direct ancestor of the view that received the touch in the traversal path.
-class RNGestureHandlerDetectorView(context: Context) :
-  ReactViewGroup(context),
-  ReactCompoundView {
+class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
   private var handlersToAttach: List<Int>? = null
@@ -232,6 +225,10 @@ class RNGestureHandlerDetectorView(context: Context) :
     }
 
     for (tag in nativeHandlers) {
+      if (attachedHandlers.contains(tag)) {
+        continue
+      }
+
       registry.attachHandlerToView(tag, id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, this)
 
       attachedHandlers.add(tag)
@@ -246,21 +243,6 @@ class RNGestureHandlerDetectorView(context: Context) :
       registry.detachHandlerFromHostDetector(tag, this)
       attachedHandlers.remove(tag)
     }
-  }
-
-  // The orchestrator's BOX_NONE special-case always calls recordViewHandlersForPointer on any
-  // RNGestureHandlerDetectorView, which in turn triggers this ReactCompoundView path.
-  //
-  // We delegate to TouchTargetHelper which walks the view subtree and calls reactTagForTouch on
-  // any ReactCompoundView descendants (e.g. ReactTextView for inline text spans). This correctly
-  // resolves virtual tags that have no backing native View.
-  override fun reactTagForTouch(x: Float, y: Float): Int {
-    if (attachedVirtualHandlers.isEmpty()) {
-      return id
-    }
-
-    val touchedTag = TouchTargetHelper.findTargetTagForTouch(x, y, this)
-    return if (attachedVirtualHandlers.containsKey(touchedTag)) touchedTag else id
   }
 
   fun dispatchEvent(event: Event<*>) {
