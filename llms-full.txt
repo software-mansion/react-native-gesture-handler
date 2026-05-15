@@ -562,7 +562,7 @@ A function is called when the status of the drawer changes, taking `newState` to
 ### enableTrackpadTwoFingerGesture
 
 ```ts
-enableTrackpadTwoFingerGesture?: boolean;
+enableTrackpadTwoFingerGesture?: boolean | SharedValue<boolean>;
 ```
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
@@ -594,7 +594,7 @@ This parameter allows specifying which `userSelect` property should be applied t
 ### activeCursor
 
 ```ts
-activeCursor: ActiveCursor;
+activeCursor?: ActiveCursor | SharedValue<ActiveCursor>;
 ```
 
 This parameter allows specifying which cursor should be used when the gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
