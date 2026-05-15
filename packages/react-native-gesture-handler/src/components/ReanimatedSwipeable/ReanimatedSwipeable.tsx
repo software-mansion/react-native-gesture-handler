@@ -1,5 +1,10 @@
 import type { ForwardedRef } from 'react';
-import { useCallback, useEffect, useImperativeHandle, useMemo } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 import { I18nManager, StyleSheet, View } from 'react-native';
 import Animated, {
@@ -19,6 +24,7 @@ import { tagMessage } from '../../utils';
 import { GestureDetector } from '../../v3/detectors';
 import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../../v3/hooks/gestures';
+import { SHARED_VALUE_OFFSET } from '../../v3/hooks/utils/reanimatedUtils';
 import type {
   SwipeableMethods,
   SwipeableProps,
@@ -66,26 +72,36 @@ const Swipeable = (props: SwipeableProps) => {
   } = props;
 
   if (__DEV__) {
+    const checkValue = (value: number) => {
+      'worklet';
+      if (value > 0) {
+        throw new Error(
+          tagMessage('dragOffsetFromLeft should be non-negative.')
+        );
+      }
+    };
+
     if (Reanimated?.isSharedValue<number>(dragOffsetFromRight)) {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      Reanimated?.useDerivedValue(() => {
-        'worklet';
-        if (dragOffsetFromRight.value > 0) {
-          throw new Error(
-            tagMessage('dragOffsetFromRight should be non-positive.')
-          );
-        }
-        return dragOffsetFromRight.value;
-      });
-    } else {
+      checkValue(dragOffsetFromRight.value);
+
+      const listenerId = Math.random() + SHARED_VALUE_OFFSET;
+
       // eslint-disable-next-line react-hooks/rules-of-hooks
       useEffect(() => {
-        if ((dragOffsetFromRight as number) > 0) {
-          throw new Error(
-            tagMessage('dragOffsetFromRight should be non-positive.')
-          );
-        }
-      }, [dragOffsetFromRight]);
+        Reanimated?.runOnUI(() => {
+          'worklet';
+          dragOffsetFromRight.addListener(listenerId, checkValue);
+        })();
+
+        return () => {
+          Reanimated?.runOnUI(() => {
+            'worklet';
+            dragOffsetFromRight.removeListener(listenerId);
+          })();
+        };
+      }, [dragOffsetFromRight, checkValue, listenerId]);
+    } else {
+      checkValue(dragOffsetFromRight as number);
     }
   }
 
