@@ -279,6 +279,16 @@ class RNGestureHandlerButtonViewManager :
     view.tapAnimationOutDuration = if (value > 0) value else 0
   }
 
+  @ReactProp(name = "longPressDuration")
+  override fun setLongPressDuration(view: ButtonViewGroup, value: Int) {
+    view.longPressDuration = value
+  }
+
+  @ReactProp(name = "longPressAnimationOutDuration")
+  override fun setLongPressAnimationOutDuration(view: ButtonViewGroup, value: Int) {
+    view.longPressAnimationOutDuration = value
+  }
+
   @ReactProp(name = "defaultOpacity")
   override fun setDefaultOpacity(view: ButtonViewGroup, defaultOpacity: Float) {
     view.defaultOpacity = defaultOpacity
@@ -356,6 +366,9 @@ class RNGestureHandlerButtonViewManager :
     var exclusive = true
     var tapAnimationInDuration: Int = 50
     var tapAnimationOutDuration: Int = 100
+    var longPressDuration: Int = -1
+    var longPressAnimationOutDuration: Int = -1
+      get() = if (field < 0) tapAnimationOutDuration else field
     var activeOpacity: Float = 1.0f
     var defaultOpacity: Float = 1.0f
     var activeScale: Float = 1.0f
@@ -565,9 +578,14 @@ class RNGestureHandlerButtonViewManager :
       pendingPressOut?.let { handler.removeCallbacks(it) }
       val tapInMs = tapAnimationInDuration.toLong()
       val tapOutMs = tapAnimationOutDuration.toLong()
+      val longPressMs = longPressDuration.toLong()
+      val longPressOutMs = longPressAnimationOutDuration.toLong()
       val elapsed = SystemClock.uptimeMillis() - pressInTimestamp
 
-      if (elapsed >= tapInMs) {
+      if (longPressMs >= 0 && elapsed >= longPressMs) {
+        // Long-press release - use the configured long-press out duration.
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, longPressOutMs)
+      } else if (elapsed >= tapInMs) {
         // Press-in animation fully finished — release with the configured out duration.
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
         // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play

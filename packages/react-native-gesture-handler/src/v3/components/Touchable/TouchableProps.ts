@@ -20,10 +20,13 @@ type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 type DurationProps =
   | 'tapAnimationInDuration'
   | 'tapAnimationOutDuration'
+  | 'longPressDuration'
+  | 'longPressAnimationOutDuration'
   | 'hoverAnimationInDuration'
   | 'hoverAnimationOutDuration';
 
 type InOutDuration = { in: number; out: number };
+type LongPressDuration = { out: number };
 
 /**
  * Configuration for press / hover animation timing.
@@ -34,16 +37,22 @@ type InOutDuration = { in: number; out: number };
  *   inherits the top-level value.
  * - Alternatively, both categories may be specified in full without a
  *   top-level baseline.
+ *
+ * `longPress` optionally customizes the press-out duration once the
+ * press has been held past `delayLongPress`. If omitted, the long-press
+ * release falls back to the resolved tap-out timing.
  */
 export type AnimationDuration =
   | number
   | (InOutDuration & {
       tap?: Partial<InOutDuration>;
       hover?: Partial<InOutDuration>;
+      longPress?: LongPressDuration;
     })
   | {
       tap: InOutDuration;
       hover: InOutDuration;
+      longPress?: LongPressDuration;
     };
 
 export type TouchableProps = Omit<

@@ -250,10 +250,12 @@ type AnimationDuration =
   | (InOutDuration & {
       tap?: Partial<InOutDuration>;
       hover?: Partial<InOutDuration>;
+      longPress?: { out: number };
     })
   | {
       tap: InOutDuration;
       hover: InOutDuration;
+      longPress?: { out: number };
     };
 `}/>
 
@@ -262,6 +264,8 @@ Press and hover animation timing, in milliseconds. Defaults to 50ms for the in p
 Each animation has two phases — `in` (running while the pointer engages the component) and `out` (running after the pointer releases) — across two categories:
 - `tap` — applies to presses.
 - `hover` — pointer hover (web only).
+
+`longPress` is an optional override for the press-out timing once the press has been held past [`delayLongPress`](#delaylongpress). It only has an `out` field (the press-in is always the `tap` in duration). If omitted, the long-press release uses the resolved `tap` out duration.
 
 Three input shapes are accepted:
 
@@ -290,6 +294,20 @@ Three input shapes are accepted:
   animationDuration={{
     tap: { in: 0, out: 200 },
     hover: { in: 300, out: 300 },
+  }}
+/>
+```
+
+To give a long press its own release timing, add `longPress.out`. The switch fires when the press is held past [`delayLongPress`](#delaylongpress):
+
+```tsx
+<Touchable
+  delayLongPress={400}
+  onLongPress={() => {}}
+  animationDuration={{
+    in: 50,
+    out: 100,
+    longPress: { out: 500 },
   }}
 />
 ```
