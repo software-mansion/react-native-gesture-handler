@@ -362,11 +362,19 @@ class GestureHandlerOrchestrator(
     if (view === wrapperView) {
       return true
     }
-    var parent = view.parent
-    while (parent != null && parent !== wrapperView) {
-      parent = parent.parent
+    var current: View = view
+    while (true) {
+      val parent = current.parent as? ViewGroup ?: return false
+
+      when {
+        // A disappearing child (kept drawable for an exit animation, e.g. RNScreens during a
+        // navigation transition) still has `parent` set but is gone from `mChildren`. Treat as
+        // detached - `cancelTouchTarget` already synthesized ACTION_CANCEL into this subtree.
+        parent.indexOfChild(current) < 0 -> return false
+        parent === wrapperView -> return true
+        else -> current = parent
+      }
     }
-    return parent === wrapperView
   }
 
   fun isAnyHandlerActive() = gestureHandlers.any { it.state == GestureHandler.STATE_ACTIVE }
