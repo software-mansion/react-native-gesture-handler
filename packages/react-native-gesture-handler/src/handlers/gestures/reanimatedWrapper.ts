@@ -74,10 +74,6 @@ let Reanimated:
       useComposedEventHandler<T>(
         handlers: (((event: T) => void) | null)[]
       ): (event: T) => void;
-      useDerivedValue<T>(
-        updater: () => T,
-        dependencies?: readonly unknown[]
-      ): SharedValue<T>; // Not exactly, but we don't need that anyway
       runOnUI<A extends any[], R>(
         fn: (...args: A) => R
       ): (...args: Parameters<typeof fn>) => void;
