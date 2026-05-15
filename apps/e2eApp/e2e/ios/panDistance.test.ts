@@ -25,9 +25,9 @@ describe('test pan gesture', () => {
       (await xDistanceElement.getAttributes()) as IosElementAttributes;
     const xDistanceText = attributes.text;
     const xDistanceValue = parseFloat(xDistanceText!.split(': ')[1]);
-    if (xDistanceValue !== 372.2) {
+    if (xDistanceValue !== 380.98) {
       throw new Error(
-        `Expected x distance to be 372.2 make sure the test runs on iphone 15`,
+        `Expected diffrent x distance make sure the test runs on iphone 17`,
       );
     }
   });
