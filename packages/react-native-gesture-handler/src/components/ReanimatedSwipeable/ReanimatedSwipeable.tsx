@@ -24,7 +24,11 @@ import { tagMessage } from '../../utils';
 import { GestureDetector } from '../../v3/detectors';
 import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../../v3/hooks/gestures';
-import { SHARED_VALUE_OFFSET } from '../../v3/hooks/utils/reanimatedUtils';
+import {
+  maybeUnpackValue,
+  SHARED_VALUE_OFFSET,
+} from '../../v3/hooks/utils/reanimatedUtils';
+import type { SharedValueOrT } from '../../v3/types';
 import type {
   SwipeableMethods,
   SwipeableProps,
@@ -72,37 +76,37 @@ const Swipeable = (props: SwipeableProps) => {
   } = props;
 
   if (__DEV__) {
-    const checkValue = (value: number) => {
+    const checkValue = (value: SharedValueOrT<number>) => {
       'worklet';
-      if (value > 0) {
+      if (maybeUnpackValue<number>(value) > 0) {
         throw new Error(
-          tagMessage('dragOffsetFromLeft should be non-negative.')
+          tagMessage('dragOffsetFromRight should be non-negative.')
         );
       }
     };
 
-    if (Reanimated?.isSharedValue<number>(dragOffsetFromRight)) {
-      checkValue(dragOffsetFromRight.value);
+    checkValue(dragOffsetFromRight);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      if (!Reanimated?.isSharedValue<number>(dragOffsetFromRight)) {
+        return;
+      }
 
       const listenerId = Math.random() + SHARED_VALUE_OFFSET;
 
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      useEffect(() => {
+      Reanimated?.runOnUI(() => {
+        'worklet';
+        dragOffsetFromRight.addListener(listenerId, checkValue);
+      })();
+
+      return () => {
         Reanimated?.runOnUI(() => {
           'worklet';
-          dragOffsetFromRight.addListener(listenerId, checkValue);
+          dragOffsetFromRight.removeListener(listenerId);
         })();
-
-        return () => {
-          Reanimated?.runOnUI(() => {
-            'worklet';
-            dragOffsetFromRight.removeListener(listenerId);
-          })();
-        };
-      }, [dragOffsetFromRight, checkValue, listenerId]);
-    } else {
-      checkValue(dragOffsetFromRight as number);
-    }
+      };
+    }, [dragOffsetFromRight, checkValue]);
   }
 
   const shouldEnableTap = useSharedValue<boolean>(false);
