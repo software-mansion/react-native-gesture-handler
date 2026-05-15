@@ -1,12 +1,27 @@
 import { render, renderHook } from '@testing-library/react-native';
-import { act } from 'react';
+import React, { act } from 'react';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
+import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
 import { RectButton, Touchable } from '../v3/components';
 import { usePanGesture } from '../v3/hooks/gestures';
 import type { SingleGesture } from '../v3/types';
+
+async function flushQueuedOperations() {
+  await act(async () => {
+    await new Promise<void>((resolve) => {
+      setImmediate(() => resolve());
+    });
+  });
+}
+
+afterEach(async () => {
+  await flushQueuedOperations();
+  await flushQueuedOperations();
+  jest.restoreAllMocks();
+});
 
 describe('[API v3] Hooks', () => {
   test('Pan gesture', () => {
@@ -30,6 +45,32 @@ describe('[API v3] Hooks', () => {
 
     expect(onBegin).toHaveBeenCalledTimes(1);
     expect(onStart).toHaveBeenCalledTimes(1);
+  });
+
+  test('does not drop native handler during StrictMode effect replay', async () => {
+    const dropGestureHandlerSpy = jest.spyOn(
+      RNGestureHandlerModule,
+      'dropGestureHandler'
+    );
+
+    const StrictModeWrapper = ({ children }: React.PropsWithChildren) => (
+      <React.StrictMode>{children}</React.StrictMode>
+    );
+
+    const { unmount } = renderHook(
+      () => usePanGesture({ disableReanimated: true }),
+      { wrapper: StrictModeWrapper }
+    );
+
+    await flushQueuedOperations();
+
+    expect(dropGestureHandlerSpy).not.toHaveBeenCalled();
+
+    unmount();
+    await flushQueuedOperations();
+    await flushQueuedOperations();
+
+    expect(dropGestureHandlerSpy).toHaveBeenCalledTimes(1);
   });
 });
 
