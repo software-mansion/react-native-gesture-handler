@@ -16,8 +16,9 @@
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
 
 @property (nonatomic, nonnull) NSMutableSet *nativeHandlers;
+@property (nonatomic, nonnull) NSMutableSet *subscribedHandlers;
 @property (nonatomic, nonnull) NSMutableSet *attachedHandlers;
-@property (nonatomic) std::unordered_map<int, NSMutableSet *> attachedVirtualHandlers;
+@property (nonatomic) std::unordered_map<int, NSMutableSet *> subscribedVirtualHandlers;
 
 @end
 
@@ -49,25 +50,23 @@
     RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
     react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
 
-    const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
+    [handlerManager.registry cancelAllObservationsForOwner:self];
 
-    for (const auto handler : props.handlerTags) {
-      NSNumber *handlerTag = [NSNumber numberWithInt:handler];
+    for (NSNumber *handlerTag in _attachedHandlers) {
       [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
     }
-    for (const auto &child : _attachedVirtualHandlers) {
-      for (id handlerTag : child.second) {
-        [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
-      }
-    }
-    _attachedVirtualHandlers.clear();
-    _attachedHandlers = [NSMutableSet set];
+
+    [_attachedHandlers removeAllObjects];
+    _subscribedVirtualHandlers.clear();
+    [_subscribedHandlers removeAllObjects];
+    [_nativeHandlers removeAllObjects];
   } else {
     const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
     [self attachHandlers:props.handlerTags
-              actionType:RNGestureHandlerActionTypeNativeDetector
-                 viewTag:-1
-        attachedHandlers:_attachedHandlers];
+                actionType:RNGestureHandlerActionTypeNativeDetector
+                   viewTag:-1
+        subscribedHandlers:_subscribedHandlers];
+    [self updateVirtualChildren:props.virtualChildren];
   }
 }
 
@@ -77,6 +76,7 @@
   _props = defaultProps;
   _moduleId = -1;
   _nativeHandlers = [NSMutableSet set];
+  _subscribedHandlers = [NSMutableSet set];
   _attachedHandlers = [NSMutableSet set];
 }
 
@@ -140,13 +140,6 @@
   }
 }
 
-- (BOOL)shouldAttachGestureToSubview:(NSNumber *)handlerTag
-{
-  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-
-  return [[[handlerManager registry] handlerWithTag:handlerTag] wantsToAttachDirectlyToView];
-}
-
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
@@ -194,62 +187,85 @@
 - (void)attachHandlers:(const std::vector<int> &)handlerTags
             actionType:(RNGestureHandlerActionType)actionType
                viewTag:(const int)viewTag
-      attachedHandlers:(NSMutableSet *)attachedHandlers
+    subscribedHandlers:(NSMutableSet *)subscribedHandlers
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
 
-  NSMutableSet *handlersToDetach = [attachedHandlers mutableCopy];
+  NSMutableSet *handlersToDetach = [subscribedHandlers mutableCopy];
+
+  __weak __typeof(self) weakSelf = self;
+  const int capturedViewTag = viewTag;
+  const RNGestureHandlerActionType capturedActionType = actionType;
 
   for (const int tag : handlerTags) {
     [handlersToDetach removeObject:@(tag)];
-    if (![attachedHandlers containsObject:@(tag)]) {
-      if ([self shouldAttachGestureToSubview:@(tag)] && actionType == RNGestureHandlerActionTypeNativeDetector) {
-        // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
-        // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
-        react_native_assert(
-            self.subviews.count <= 1 &&
-            "Cannot attach native gesture handlers when the detector has multiple children");
-        [_nativeHandlers addObject:@(tag)];
-      } else {
-        if (actionType == RNGestureHandlerActionTypeVirtualDetector) {
-          RNGHUIView *targetView = [handlerManager viewForReactTag:@(viewTag)];
-
-          if (targetView != nil) {
-            [handlerManager attachGestureHandler:@(tag)
-                                   toViewWithTag:@(viewTag)
-                                  withActionType:actionType
-                                withHostDetector:self];
-          } else {
-            // Let's assume that if the native view for the virtual detector hasn't been found, the hierarchy was folded
-            // into a single UIView.
-            [handlerManager.registry attachHandlerWithTag:@(tag)
-                                                   toView:self
-                                           withActionType:actionType
-                                         withHostDetector:self];
-            [[handlerManager registry] handlerWithTag:@(tag)].virtualViewTag = @(viewTag);
-          }
-        } else {
-          [handlerManager.registry attachHandlerWithTag:@(tag)
-                                                 toView:self
-                                         withActionType:actionType
-                                       withHostDetector:self];
-        }
-        [attachedHandlers addObject:@(tag)];
-      }
+    if ([subscribedHandlers containsObject:@(tag)]) {
+      continue;
     }
+    [handlerManager.registry observeHandlerWithTag:@(tag)
+                                             owner:self
+                                        usingBlock:^(RNGestureHandler *handler) {
+                                          __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                          if (strongSelf == nil) {
+                                            return;
+                                          }
+                                          [strongSelf attachReadyHandler:handler
+                                                              actionType:capturedActionType
+                                                                 viewTag:capturedViewTag];
+                                        }];
+    [subscribedHandlers addObject:@(tag)];
   }
 
   for (const id tag : handlersToDetach) {
-    [handlerManager.registry detachHandlerWithTag:tag fromHostDetector:self];
-    [attachedHandlers removeObject:tag];
+    [handlerManager.registry cancelObservationForTag:tag owner:self];
+    if ([_attachedHandlers containsObject:tag]) {
+      [handlerManager.registry detachHandlerWithTag:tag fromHostDetector:self];
+      [_attachedHandlers removeObject:tag];
+    }
+    [subscribedHandlers removeObject:tag];
     [_nativeHandlers removeObject:tag];
   }
+}
 
-  // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
-  if (self.subviews.count != 0) {
-    [self tryAttachNativeHandlersToChildView];
+// Invoked from the registry's `observeHandlerWithTag:` block once the handler is known to exist.
+// Branches on handler kind + actionType to pick the right binding flow. May be called multiple
+// times for the same tag (handler re-registration), so each branch must be idempotent.
+- (void)attachReadyHandler:(RNGestureHandler *)handler
+                actionType:(RNGestureHandlerActionType)actionType
+                   viewTag:(int)viewTag
+{
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  react_native_assert(manager != nullptr && "Tried to access a non-existent handler manager");
+
+  if ([handler wantsToAttachDirectlyToView] && actionType == RNGestureHandlerActionTypeNativeDetector) {
+    react_native_assert(
+        self.subviews.count <= 1 && "Cannot attach native gesture handlers when the detector has multiple children");
+    [_nativeHandlers addObject:handler.tag];
+    if (self.subviews.count != 0) {
+      [self tryAttachNativeHandlersToChildView];
+    }
+    return;
   }
+
+  if (actionType == RNGestureHandlerActionTypeVirtualDetector) {
+    RNGHUIView *targetView = [manager viewForReactTag:@(viewTag)];
+    if (targetView != nil) {
+      [manager attachGestureHandler:handler.tag
+                      toViewWithTag:@(viewTag)
+                     withActionType:actionType
+                   withHostDetector:self];
+    } else {
+      // Hierarchy was folded into a single UIView.
+      [manager.registry attachHandlerWithTag:handler.tag toView:self withActionType:actionType withHostDetector:self];
+      handler.virtualViewTag = @(viewTag);
+    }
+    [_attachedHandlers addObject:handler.tag];
+    return;
+  }
+
+  [manager.registry attachHandlerWithTag:handler.tag toView:self withActionType:actionType withHostDetector:self];
+  [_attachedHandlers addObject:handler.tag];
 }
 
 - (void)updateProps:(const Props::Shared &)propsBase oldProps:(const Props::Shared &)oldPropsBase
@@ -258,9 +274,9 @@
   _moduleId = newProps.moduleId;
 
   [self attachHandlers:newProps.handlerTags
-            actionType:RNGestureHandlerActionTypeNativeDetector
-               viewTag:-1
-      attachedHandlers:_attachedHandlers];
+              actionType:RNGestureHandlerActionTypeNativeDetector
+                 viewTag:-1
+      subscribedHandlers:_subscribedHandlers];
 
   [super updateProps:propsBase oldProps:oldPropsBase];
   [self updateVirtualChildren:newProps.virtualChildren];
@@ -275,7 +291,7 @@
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
 
   NSMutableSet *virtualChildrenToDetach = [NSMutableSet set];
-  for (const auto &child : _attachedVirtualHandlers) {
+  for (const auto &child : _subscribedVirtualHandlers) {
     [virtualChildrenToDetach addObject:@(child.first)];
   }
 
@@ -284,20 +300,24 @@
   }
 
   for (const NSNumber *tag : virtualChildrenToDetach) {
-    for (id handlerTag : _attachedVirtualHandlers[tag.intValue]) {
-      [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
+    for (id handlerTag : _subscribedVirtualHandlers[tag.intValue]) {
+      [handlerManager.registry cancelObservationForTag:handlerTag owner:self];
+      if ([_attachedHandlers containsObject:handlerTag]) {
+        [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
+        [_attachedHandlers removeObject:handlerTag];
+      }
     }
-    _attachedVirtualHandlers.erase(tag.intValue);
+    _subscribedVirtualHandlers.erase(tag.intValue);
   }
 
   for (const auto &child : virtualChildren) {
-    if (_attachedVirtualHandlers.find(child.viewTag) == _attachedVirtualHandlers.end()) {
-      _attachedVirtualHandlers[child.viewTag] = [NSMutableSet set];
+    if (_subscribedVirtualHandlers.find(child.viewTag) == _subscribedVirtualHandlers.end()) {
+      _subscribedVirtualHandlers[child.viewTag] = [NSMutableSet set];
     }
     [self attachHandlers:child.handlerTags
-              actionType:RNGestureHandlerActionTypeVirtualDetector
-                 viewTag:child.viewTag
-        attachedHandlers:_attachedVirtualHandlers[child.viewTag]];
+                actionType:RNGestureHandlerActionTypeVirtualDetector
+                   viewTag:child.viewTag
+        subscribedHandlers:_subscribedVirtualHandlers[child.viewTag]];
   }
 }
 
@@ -329,15 +349,15 @@
   }
 
   for (NSNumber *handlerTag in _nativeHandlers) {
-    if ([_attachedHandlers containsObject:handlerTag]) {
+    // Defensive: a tag may be in `_nativeHandlers` from an earlier block fire but the underlying
+    // handler may have been dropped since. Skip; a re-registration will fire the block again.
+    if ([handlerManager.registry handlerWithTag:handlerTag] == nil) {
       continue;
     }
-
     [handlerManager.registry attachHandlerWithTag:handlerTag
                                            toView:view
                                    withActionType:RNGestureHandlerActionTypeNativeDetector
                                  withHostDetector:self];
-
     [_attachedHandlers addObject:handlerTag];
   }
 }
@@ -347,6 +367,9 @@
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
   for (NSNumber *handlerTag in _nativeHandlers) {
+    if (![_attachedHandlers containsObject:handlerTag]) {
+      continue;
+    }
     [[handlerManager registry] detachHandlerWithTag:handlerTag fromHostDetector:self];
     [_attachedHandlers removeObject:handlerTag];
   }

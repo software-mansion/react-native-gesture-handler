@@ -16,11 +16,13 @@ export const NativeProxy = {
     handlerTag: number,
     config?: T
   ) => {
-    RNGestureHandlerModule.createGestureHandler(
-      handlerName,
-      handlerTag,
-      config || {}
-    );
+    scheduleOperationToBeFlushed(() => {
+      RNGestureHandlerModule.createGestureHandler(
+        handlerName,
+        handlerTag,
+        config || {}
+      );
+    });
   },
   setGestureHandlerConfig: <
     TConfig,

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import {
@@ -61,15 +61,6 @@ export function useGesture<
     [handlerTag, config.simultaneousWith, config.requireToFail, config.block]
   );
 
-  const currentGestureRef = useRef({ type: '', handlerTag: -1 });
-  if (
-    currentGestureRef.current.handlerTag !== handlerTag ||
-    currentGestureRef.current.type !== (type as string)
-  ) {
-    currentGestureRef.current = { type, handlerTag };
-    NativeProxy.createGestureHandler(type, handlerTag, {});
-  }
-
   const gesture = useMemo(
     () => ({
       handlerTag,
@@ -94,11 +85,9 @@ export function useGesture<
   );
 
   useEffect(() => {
+    NativeProxy.createGestureHandler(type, handlerTag, {});
+    scheduleFlushOperations();
     return () => {
-      if (currentGestureRef.current.handlerTag === handlerTag) {
-        currentGestureRef.current = { type: '', handlerTag: -1 };
-      }
-
       NativeProxy.dropGestureHandler(handlerTag);
       scheduleFlushOperations();
     };
