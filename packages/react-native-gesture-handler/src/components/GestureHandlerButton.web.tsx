@@ -8,11 +8,18 @@ import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
   enabled?: boolean;
-  pressAndHoldAnimationDuration?: number;
-  tapAnimationDuration?: number;
+  tapAnimationInDuration?: number;
+  tapAnimationOutDuration?: number;
+  longPressDuration?: number;
+  longPressAnimationOutDuration?: number;
+  hoverAnimationInDuration?: number;
+  hoverAnimationOutDuration?: number;
   activeOpacity?: number;
   activeScale?: number;
   activeUnderlayOpacity?: number;
+  hoverOpacity?: number;
+  hoverScale?: number;
+  hoverUnderlayOpacity?: number;
   defaultOpacity?: number;
   defaultScale?: number;
   defaultUnderlayOpacity?: number;
@@ -22,11 +29,18 @@ type ButtonProps = ViewProps & {
 export const ButtonComponent = ({
   ref: externalRef,
   enabled = true,
-  pressAndHoldAnimationDuration: pressAndHoldAnimationDurationProp = -1,
-  tapAnimationDuration: tapAnimationDurationProp = 100,
+  tapAnimationInDuration = 50,
+  tapAnimationOutDuration = 100,
+  longPressDuration = -1,
+  longPressAnimationOutDuration = 100,
+  hoverAnimationInDuration = 50,
+  hoverAnimationOutDuration = 100,
   activeOpacity = 1,
   activeScale = 1,
   activeUnderlayOpacity = 0,
+  hoverOpacity: hoverOpacityProp,
+  hoverScale: hoverScaleProp,
+  hoverUnderlayOpacity: hoverUnderlayOpacityProp,
   defaultOpacity = 1,
   defaultScale = 1,
   defaultUnderlayOpacity = 0,
@@ -35,16 +49,15 @@ export const ButtonComponent = ({
   children,
   ...rest
 }: ButtonProps) => {
-  const tapAnimationDuration =
-    tapAnimationDurationProp < 0 ? 0 : tapAnimationDurationProp;
-  const pressAndHoldAnimationDuration =
-    pressAndHoldAnimationDurationProp < 0
-      ? tapAnimationDuration
-      : pressAndHoldAnimationDurationProp;
+  const hoverOpacity = hoverOpacityProp ?? defaultOpacity;
+  const hoverScale = hoverScaleProp ?? defaultScale;
+  const hoverUnderlayOpacity =
+    hoverUnderlayOpacityProp ?? defaultUnderlayOpacity;
 
   const [pressed, setPressed] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
   const [currentDuration, setCurrentDuration] = React.useState(
-    pressAndHoldAnimationDuration
+    tapAnimationInDuration
   );
   const pressInTimestamp = React.useRef(0);
   const pressOutTimer = React.useRef<ReturnType<typeof setTimeout> | null>(
@@ -114,10 +127,10 @@ export const ButtonComponent = ({
         pressOutTimer.current = null;
       }
       pressInTimestamp.current = performance.now();
-      setCurrentDuration(pressAndHoldAnimationDuration);
+      setCurrentDuration(tapAnimationInDuration);
       setPressed(true);
     },
-    [enabled, pressAndHoldAnimationDuration]
+    [enabled, tapAnimationInDuration]
   );
 
   const pressOut = React.useCallback(
@@ -137,34 +150,88 @@ export const ButtonComponent = ({
       const elapsed = performance.now() - pressInTimestamp.current;
       pressInTimestamp.current = 0;
 
-      if (elapsed >= pressAndHoldAnimationDuration) {
-        setCurrentDuration(pressAndHoldAnimationDuration);
+      if (longPressDuration >= 0 && elapsed >= longPressDuration) {
+        // Long-press release — use the configured long-press out duration.
+        setCurrentDuration(longPressAnimationOutDuration);
         setPressed(false);
-        // elapsed * 2 to ensure there is at least half of the tapAnimationDuration left for the animation to play
-      } else if (elapsed * 2 >= tapAnimationDuration) {
+      } else if (elapsed >= tapAnimationInDuration) {
+        // Press-in animation fully finished - release with the configured out duration.
+        setCurrentDuration(tapAnimationOutDuration);
+        setPressed(false);
+        // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
+      } else if (elapsed * 2 >= tapAnimationOutDuration) {
         setCurrentDuration(elapsed);
         setPressed(false);
       } else {
-        // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time
-        const remaining = tapAnimationDuration - elapsed;
+        // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time.
+        const remaining = tapAnimationInDuration - elapsed;
         pressOutTimer.current = setTimeout(() => {
           pressOutTimer.current = null;
-          setCurrentDuration(tapAnimationDuration);
+          setCurrentDuration(tapAnimationOutDuration);
           setPressed(false);
         }, remaining);
       }
     },
-    [pressAndHoldAnimationDuration, tapAnimationDuration]
+    [
+      longPressDuration,
+      longPressAnimationOutDuration,
+      tapAnimationInDuration,
+      tapAnimationOutDuration,
+    ]
   );
+
+  const handlePointerEnter = React.useCallback(
+    (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
+      if (!enabled || event.nativeEvent.pointerType === 'touch') {
+        return;
+      }
+      // Skip duration update while pressed so the press transition owns it.
+      if (!pressed) {
+        setCurrentDuration(hoverAnimationInDuration);
+      }
+      setHovered(true);
+    },
+    [enabled, pressed, hoverAnimationInDuration]
+  );
+
+  const handlePointerLeave = React.useCallback(
+    (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
+      pressOut(event);
+      if (event.nativeEvent.pointerType === 'touch') {
+        return;
+      }
+      if (!pressed) {
+        setCurrentDuration(hoverAnimationOutDuration);
+      }
+      setHovered(false);
+    },
+    [pressOut, pressed, hoverAnimationOutDuration]
+  );
+
+  // Mask hover at render rather than clearing the state. Avoids a state
+  // write inside an effect, and lets hover resume naturally when `enabled`
+  // flips back to true while the pointer is still inside.
+  const effectiveHovered = hovered && enabled;
 
   const currentUnderlayOpacity = pressed
     ? activeUnderlayOpacity
-    : defaultUnderlayOpacity;
-  const hasUnderlay = underlayColor != null;
-  const hasOpacity = activeOpacity !== 1 || defaultOpacity !== 1;
-  const currentOpacity = pressed ? activeOpacity : defaultOpacity;
-  const hasScale = activeScale !== 1 || defaultScale !== 1;
-  const currentScale = pressed ? activeScale : defaultScale;
+    : effectiveHovered
+      ? hoverUnderlayOpacity
+      : defaultUnderlayOpacity;
+  const hasUnderlay = underlayColor != null && underlayColor !== 'transparent';
+  const hasOpacity =
+    activeOpacity !== 1 || hoverOpacity !== 1 || defaultOpacity !== 1;
+  const currentOpacity = pressed
+    ? activeOpacity
+    : effectiveHovered
+      ? hoverOpacity
+      : defaultOpacity;
+  const hasScale = activeScale !== 1 || hoverScale !== 1 || defaultScale !== 1;
+  const currentScale = pressed
+    ? activeScale
+    : effectiveHovered
+      ? hoverScale
+      : defaultScale;
 
   const easing = 'cubic-bezier(0.5, 1, 0.89, 1)';
   const transitionProps: string[] = [];
@@ -178,6 +245,7 @@ export const ButtonComponent = ({
 
   return (
     <View
+      {...rest}
       ref={setRef}
       accessibilityRole="button"
       style={[
@@ -191,11 +259,11 @@ export const ButtonComponent = ({
           ...(hasUnderlay && { overflow: 'hidden' }),
         },
       ]}
+      onPointerEnter={handlePointerEnter}
       onPointerDown={pressIn}
       onPointerUp={pressOut}
       onPointerCancel={pressOut}
-      onPointerLeave={pressOut}
-      {...rest}>
+      onPointerLeave={handlePointerLeave}>
       {hasUnderlay && (
         <View
           style={{

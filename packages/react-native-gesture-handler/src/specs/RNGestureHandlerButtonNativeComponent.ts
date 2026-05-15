@@ -19,8 +19,10 @@ interface NativeProps extends ViewProps {
     'box-none' | 'none' | 'box-only' | 'auto',
     'auto'
   >;
-  pressAndHoldAnimationDuration?: WithDefault<Int32, -1>;
-  tapAnimationDuration?: WithDefault<Int32, 100>;
+  tapAnimationInDuration?: WithDefault<Int32, 50>;
+  tapAnimationOutDuration?: WithDefault<Int32, 100>;
+  longPressDuration?: WithDefault<Int32, -1>;
+  longPressAnimationOutDuration?: WithDefault<Int32, -1>;
   activeOpacity?: WithDefault<Float, 1>;
   activeScale?: WithDefault<Float, 1>;
   activeUnderlayOpacity?: WithDefault<Float, 0>;

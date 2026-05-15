@@ -329,6 +329,10 @@
   }
 
   for (NSNumber *handlerTag in _nativeHandlers) {
+    if ([_attachedHandlers containsObject:handlerTag]) {
+      continue;
+    }
+
     [handlerManager.registry attachHandlerWithTag:handlerTag
                                            toView:view
                                    withActionType:RNGestureHandlerActionTypeNativeDetector

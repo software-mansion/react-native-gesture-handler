@@ -219,12 +219,12 @@ export enum DrawerState {
 
 A function is called when the status of the drawer changes, taking `newState` to represent the drawer's interaction state and `drawerWillShow`, which is `true` when the drawer starts animating towards the open position and `false` otherwise.
 
-<Badges platforms={['ios']}>
+<Badges platforms={['ios', 'web']}>
 ### enableTrackpadTwoFingerGesture
 </Badges>
 
 ```ts
-enableTrackpadTwoFingerGesture?: boolean;
+enableTrackpadTwoFingerGesture?: boolean | SharedValue<boolean>;
 ```
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
@@ -265,7 +265,7 @@ This parameter allows specifying which `userSelect` property should be applied t
 </Badges>
 
 ```ts
-activeCursor: ActiveCursor;
+activeCursor?: ActiveCursor | SharedValue<ActiveCursor>;
 ```
 
 This parameter allows specifying which cursor should be used when the gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.

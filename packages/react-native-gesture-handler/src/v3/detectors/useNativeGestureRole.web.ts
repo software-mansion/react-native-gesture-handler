@@ -9,9 +9,9 @@ export function useNativeGestureRole(
   children: ReactNode
 ): void {
   useEffect(() => {
-    const child = viewRef.current?.firstChild as HTMLElement | undefined;
+    const child = viewRef.current?.firstChild;
 
-    if (!child) {
+    if (!(child instanceof HTMLElement)) {
       return;
     }
 
