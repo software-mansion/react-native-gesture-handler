@@ -19,9 +19,10 @@ import Header, { HEADER_HEIGHT } from './Header';
 
 const IS_ANDROID = Platform.OS === 'android';
 
-export function ListWithHeader<ItemT, SectionT>(
-  props: SectionListProps<ItemT, SectionT>
-) {
+export function ListWithHeader<ItemT, SectionT>({
+  scrollViewTestID,
+  ...props
+}: SectionListProps<ItemT, SectionT> & { scrollViewTestID?: string }) {
   const scrollOffset = useSharedValue(0);
   const scrollEnabled = useSharedValue(true);
   const androidDragDist = useSharedValue(0);
@@ -89,6 +90,7 @@ export function ListWithHeader<ItemT, SectionT>(
           renderScrollComponent={(props) => (
             <ScrollComponentWithOffset
               {...props}
+              testID={scrollViewTestID}
               scrollOffset={scrollOffset}
               dragGesture={dragGesture}
               animatedScrollEnabled={scrollEnabled}

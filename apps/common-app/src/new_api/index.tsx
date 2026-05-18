@@ -1,4 +1,8 @@
 import type { ExamplesSection } from '../common';
+import ExclusiveGesturesScreen from '../e2e_screens/composition_and_interactions/exclusiveGestures';
+import RequireToFailScreen from '../e2e_screens/composition_and_interactions/requireToFail';
+import InterceptingGestureDetectorScreen from '../e2e_screens/gestureDetectors/interceptingGestureDetector';
+import VirtualGestureDetectorScreen from '../e2e_screens/gestureDetectors/virtualGestureDetector';
 import flingE2E from '../e2e_screens/gestures/fling';
 import hoverE2E from '../e2e_screens/gestures/hover';
 import longPressE2E from '../e2e_screens/gestures/long_press';
@@ -151,6 +155,16 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Pan Gesture', component: panE2E },
       { name: 'Rotation Gesture', component: rotationE2E },
       { name: 'Tap Gesture', component: tapE2E },
+      { name: 'Exclusive Gestures', component: ExclusiveGesturesScreen },
+      { name: 'Require to Fail', component: RequireToFailScreen },
+      {
+        name: 'Intercepting Gesture Detector',
+        component: InterceptingGestureDetectorScreen,
+      },
+      {
+        name: 'Virtual Gesture Detector',
+        component: VirtualGestureDetectorScreen,
+      },
     ],
   },
 ];

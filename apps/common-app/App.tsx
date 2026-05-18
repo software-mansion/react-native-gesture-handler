@@ -113,6 +113,7 @@ export default function App() {
     return (
       <View style={styles.container}>
         <ListWithHeader
+          scrollViewTestID="examples-list"
           style={styles.list}
           sections={showLegacyVersion ? OLD_EXAMPLES : NEW_EXAMPLES}
           keyExtractor={(example) => example.name}

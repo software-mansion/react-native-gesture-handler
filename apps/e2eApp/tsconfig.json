@@ -1,8 +1,0 @@
-{
-  "extends": "@react-native/typescript-config",
-  "compilerOptions": {
-    "types": ["jest"]
-  },
-  "include": ["**/*.ts", "**/*.tsx", "../common-app/src/e2e_screens/testConstants.ts"],
-  "exclude": ["**/node_modules", "**/Pods"]
-}

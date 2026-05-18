@@ -1,13 +1,12 @@
 name: E2E Test
 
 on:
-  pull_request:
-    paths:
-      - packages/react-native-gesture-handler/**
+  # pull_request:
+  #   paths:
+  #     - packages/react-native-gesture-handler/**
   push:
     branches:
       - main
-      - "@relextm19/e2e"
   workflow_dispatch:
 
 concurrency:
@@ -19,7 +18,7 @@ jobs:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: macos-26
     env:
-      WORKING_DIRECTORY: apps/e2eApp
+      WORKING_DIRECTORY: apps/expo-example
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -49,7 +48,7 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}/ios
         run: pod install
 
-      - name : Setup Detox
+      - name: Setup Detox
         run: brew tap wix/brew && brew install applesimutils && npm install -g detox-cli
 
       - name: Install argent
@@ -75,7 +74,7 @@ jobs:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: macos-26
     env:
-      WORKING_DIRECTORY: apps/e2eApp
+      WORKING_DIRECTORY: apps/expo-example
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -89,7 +88,7 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name : Setup Detox
+      - name: Setup Detox
         run: npm install -g detox-cli
 
       - name: Cache Android build
