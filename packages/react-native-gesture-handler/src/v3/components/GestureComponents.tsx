@@ -21,6 +21,7 @@ import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from '../hooks/utils';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
+import ScrollViewResponderInterceptor from './ScrollViewResponderInterceptor';
 
 export const RefreshControl = createNativeWrapper<
   RNRefreshControl,
@@ -53,8 +54,11 @@ export const ScrollView = (
   props: RNScrollViewProps & NativeWrapperProperties<RNScrollView | null>
 ) => {
   const {
+    children,
     refreshControl,
     onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER,
+    horizontal,
+    keyboardShouldPersistTaps,
     ...rest
   } = props;
 
@@ -75,6 +79,8 @@ export const ScrollView = (
     <GHScrollView
       {...rest}
       ref={props.ref}
+      horizontal={horizontal}
+      keyboardShouldPersistTaps={keyboardShouldPersistTaps}
       onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
@@ -85,8 +91,12 @@ export const ScrollView = (
               scrollGesture ? { block: scrollGesture } : {}
             )
           : undefined
-      }
-    />
+      }>
+      <ScrollViewResponderInterceptor
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
+        {children}
+      </ScrollViewResponderInterceptor>
+    </GHScrollView>
   );
 };
 

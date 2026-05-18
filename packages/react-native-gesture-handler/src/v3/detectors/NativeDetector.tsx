@@ -1,12 +1,28 @@
-import React, { useMemo } from 'react';
+import React, { use, useCallback, useMemo } from 'react';
 import { Platform } from 'react-native';
 
+import { JSResponderContext } from '../components/ScrollViewResponderInterceptor';
+import { maybeUnpackValue } from '../hooks/utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
+import type { Gesture } from '../types';
 import type { NativeDetectorProps } from './common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
 import HostGestureDetector from './HostGestureDetector';
 import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
 import { configureRelations, ensureNativeDetectorComponent } from './utils';
+
+function isGestureEnabled<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>): boolean {
+  if (isComposedGesture(gesture)) {
+    // For composed gestures, we need to check if at least one of the composed gestures is enabled
+    return gesture.gestures.some(isGestureEnabled);
+  }
+
+  return maybeUnpackValue(gesture.config.enabled) !== false;
+}
 
 export function NativeDetector<
   TConfig,
@@ -19,6 +35,8 @@ export function NativeDetector<
   userSelect,
   enableContextMenu,
 }: NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
+  const jsResponderContext = use(JSResponderContext);
+
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
     : gesture.config.shouldUseReanimatedDetector
@@ -55,8 +73,25 @@ export function NativeDetector<
             gesture.detectorCallbacks.reanimatedEventHandler,
         };
 
+  const shouldHandleJSResponderEvent = useCallback(() => {
+    return isGestureEnabled(gesture);
+  }, [gesture]);
+
+  const handleStartShouldSetResponder = useCallback(() => {
+    if (shouldHandleJSResponderEvent()) {
+      const responderEventRef = jsResponderContext?.isRNGHResponderEvent;
+
+      if (responderEventRef) {
+        responderEventRef.current = true;
+      }
+    }
+
+    return false;
+  }, [jsResponderContext, shouldHandleJSResponderEvent]);
+
   return (
     <NativeDetectorComponent
+      onStartShouldSetResponder={handleStartShouldSetResponder}
       touchAction={touchAction}
       userSelect={userSelect}
       enableContextMenu={enableContextMenu}

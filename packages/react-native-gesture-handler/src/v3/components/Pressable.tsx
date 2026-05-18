@@ -1,4 +1,5 @@
 import React, {
+  use,
   useCallback,
   useEffect,
   useMemo,
@@ -41,6 +42,7 @@ import {
   useSimultaneousGestures,
 } from '../hooks';
 import { PureNativeButton } from './GestureButtons';
+import { JSResponderContext } from './ScrollViewResponderInterceptor';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
@@ -78,6 +80,7 @@ const Pressable = (props: PressableProps) => {
   const longPressTimeoutRef = useRef<number | null>(null);
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
+  const jsResponderContext = use(JSResponderContext);
   const isCurrentlyPressed = useRef<boolean>(false);
   const dimensions = useRef<PressableDimensions>({
     width: 0,
@@ -365,9 +368,25 @@ const Pressable = (props: PressableProps) => {
     [onLayout]
   );
 
+  // Let RN components higher in the tree handle JS responder negotiation.
+  // RNGH ScrollView uses this marker to preserve keyboardShouldPersistTaps='handled'
+  // when there are no RN responder components between it and this Pressable.
+  const handleStartShouldSetResponder = useCallback(() => {
+    if (!disabled) {
+      const responderEventRef = jsResponderContext?.isRNGHResponderEvent;
+
+      if (responderEventRef) {
+        responderEventRef.current = true;
+      }
+    }
+
+    return false;
+  }, [disabled, jsResponderContext]);
+
   return (
     <GestureDetector gesture={gesture}>
       <PureNativeButton
+        onStartShouldSetResponder={handleStartShouldSetResponder}
         {...remainingProps}
         onLayout={setDimensions}
         accessible={accessible !== false}

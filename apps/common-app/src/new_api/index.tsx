@@ -33,6 +33,7 @@ import PanExample from './simple/pan';
 import PinchExample from './simple/pinch';
 import RotationExample from './simple/rotation';
 import TapExample from './simple/tap';
+import KeyboardShouldPersistTapsExample from './tests/keyboardShouldPersistTaps';
 import NestedPressablesExample from './tests/nestedPressables';
 import NestedRootViewExample from './tests/nestedRootView';
 import NestedTouchablesExample from './tests/nestedTouchables';
@@ -131,6 +132,10 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       {
         name: 'RN responder cancellation',
         component: RNResponderCancellationExample,
+      },
+      {
+        name: 'Keyboard Should Persist Taps',
+        component: KeyboardShouldPersistTapsExample,
       },
     ],
   },
