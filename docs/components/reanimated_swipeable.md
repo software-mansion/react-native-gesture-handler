@@ -2,9 +2,9 @@
 >
 > This component is a drop-in replacement for the `Swipeable` component, rewritten using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started).
 
-Reanimated `Swipeable` is designed for implementing swipeable rows or similar interactions. It places its children inside a pannable container that enables horizontal swiping to the left and right. Depending on the direction of the swipe, one of two "action" containers will be displayed, which can be configured using the [`renderLeftActions`](#renderleftactions) or [`renderRightActions`](#renderrightactions) props.
+`ReanimatedSwipeable` is designed for implementing swipeable rows or similar interactions. It places its children inside a pannable container that enables horizontal swiping to the left and right. Depending on the direction of the swipe, one of two "action" containers will be displayed, which can be configured using the [`renderLeftActions`](#renderleftactions) or [`renderRightActions`](#renderrightactions) props.
 
-To use Reanimated `Swipeable`, first ensure that Reanimated is installed and that your app is wrapped in `GestureHandlerRootView`. You can then import it as follows:
+To use `ReanimatedSwipeable`, first ensure that Reanimated is installed and that your app is wrapped in `GestureHandlerRootView`. You can then import it as follows:
 
 ```ts
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -41,18 +41,18 @@ Distance from the right edge at which released panel will animate to the open st
 ### dragOffsetFromLeft
 
 ```ts
-dragOffsetFromLeft?: number;
+dragOffsetFromLeft?: number | SharedValue<number>;
 ```
 
-The minimum horizontal distance from the starting point required to trigger a right-swipe gesture. Defaults to `10`.
+The horizontal offset from the starting point required to trigger a right-swipe gesture. Defaults to `10`.
 
 ### dragOffsetFromRight
 
 ```ts
-dragOffsetFromRight?: number;
+dragOffsetFromRight?: number | SharedValue<number>;
 ```
 
-The minimum horizontal distance from the starting point required to trigger a left-swipe gesture. Defaults to `10`.
+The horizontal offset from the starting point required to trigger a left-swipe gesture. Defaults to `-10`.
 
 ### overshootLeft
 
@@ -227,7 +227,7 @@ Gestures that `Swipeable` will prevent from activating (see [gesture composition
 ### enableTrackpadTwoFingerGesture
 
 ```ts
-enableTrackpadTwoFingerGesture?: boolean;
+enableTrackpadTwoFingerGesture?: boolean | SharedValue<boolean>;
 ```
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
@@ -235,7 +235,7 @@ Enables two-finger gestures on supported devices, for example iPads with trackpa
 ### enabled
 
 ```ts
-enabled: boolean;
+enabled?: boolean | SharedValue<boolean>;
 ```
 
 Indicates whether `ReanimatedSwipeable` should be analyzing the stream of touch events or not. Defaults to `true`.
@@ -243,7 +243,7 @@ Indicates whether `ReanimatedSwipeable` should be analyzing the stream of touch 
 ### testID
 
 ```ts
-testID: string;
+testID?: string;
 ```
 
 Sets a `testID` property, allowing for querying `ReanimatedSwipeable` for it in tests.

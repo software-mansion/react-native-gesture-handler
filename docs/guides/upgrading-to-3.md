@@ -117,6 +117,12 @@ Legacy buttons
 | `BorderlessButton`    | `LegacyBorderlessButton`    |
 | `PureNativeButton`    | *Not available in Gesture Handler 3*    |
 
+### ReanimatedSwipeable
+
+`ReanimatedSwipeable` has been rewritten using the new hook API. Additionally, `enabled`, `hitSlop`, `enableTrackpadTwoFingerGesture`, `dragOffsetFromLeft` and `dragOffsetFromRight` props now accept [`SharedValues`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value).
+
+`dragOffsetFromRight` now accepts negative values. If you were using it with positive values, make sure to change the sign when migrating.
+
 ### Touchables
 
 [`Touchable`](/docs/components/touchable) can also be used as a substitute for old, deprecated `Touchables`.
