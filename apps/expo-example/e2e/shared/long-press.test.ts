@@ -1,15 +1,11 @@
 import { beforeAll, beforeEach, describe, it } from '@jest/globals';
-import { by, device, element, expect, waitFor } from 'detox';
+import { by, element, expect } from 'detox';
 import { LONG_PRESS_DURATION } from '../../../common-app/src/e2e_screens/testConstants';
+import { navigateTo } from './utils';
 
 describe('test long press gesture', () => {
   beforeAll(async () => {
-    await device.launchApp({ newInstance: true });
-    await waitFor(element(by.text('Long Press Gesture')))
-      .toBeVisible()
-      .whileElement(by.id('examples-list'))
-      .scroll(500, 'down');
-    await element(by.text('Long Press Gesture')).tap();
+    await navigateTo('Long Press Gesture');
   });
 
   const wrongElement = element(by.id('wrong-element'));
@@ -35,7 +31,7 @@ describe('test long press gesture', () => {
 
   it('should register a long press gesture with correct duration', async () => {
     await expect(longPressElement).toExist();
-    await longPressElement.longPress(LONG_PRESS_DURATION + 10); // Adding a small buffer to ensure the gesture is recognized
+    await longPressElement.longPress(LONG_PRESS_DURATION + 10);
     await expect(longPressActivatedElement).toExist();
   });
 

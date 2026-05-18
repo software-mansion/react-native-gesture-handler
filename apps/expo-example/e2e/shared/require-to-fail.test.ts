@@ -1,14 +1,10 @@
 import { beforeAll, beforeEach, describe, it } from '@jest/globals';
-import { by, device, element, expect, waitFor } from 'detox';
+import { by, element, expect } from 'detox';
+import { navigateTo } from './utils';
 
 describe('test require to fail gesture composition', () => {
   beforeAll(async () => {
-    await device.launchApp({ newInstance: true });
-    await waitFor(element(by.text('Require to Fail')))
-      .toBeVisible()
-      .whileElement(by.id('examples-list'))
-      .scroll(500, 'down');
-    await element(by.text('Require to Fail')).tap();
+    await navigateTo('Require to Fail');
   });
 
   const innerElement = element(by.id('inner-idle'));
@@ -23,18 +19,14 @@ describe('test require to fail gesture composition', () => {
 
   it('should activate the outer tap when the inner double tap fails', async () => {
     await expect(innerElement).toExist();
-
     await innerElement.tap();
-
     await expect(outerActivatedElement).toExist();
     await expect(innerActivatedElement).not.toExist();
   });
 
   it('should activate the inner tap on a double tap', async () => {
     await expect(outerElement).toExist();
-
     await innerElement.multiTap(2);
-
     await expect(innerActivatedElement).toExist();
     await expect(outerActivatedElement).not.toExist();
   });

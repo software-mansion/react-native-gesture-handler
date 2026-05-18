@@ -1,14 +1,10 @@
 import { beforeAll, beforeEach, describe, it } from '@jest/globals';
-import { by, device, element, expect, waitFor } from 'detox';
+import { by, element, expect } from 'detox';
+import { navigateTo } from './utils';
 
 describe('test fling gesture', () => {
   beforeAll(async () => {
-    await device.launchApp({ newInstance: true });
-    await waitFor(element(by.text('Fling Gesture')))
-      .toBeVisible()
-      .whileElement(by.id('examples-list'))
-      .scroll(500, 'down');
-    await element(by.text('Fling Gesture')).tap();
+    await navigateTo('Fling Gesture');
   });
 
   const wrongElement = element(by.id('wrong-element'));

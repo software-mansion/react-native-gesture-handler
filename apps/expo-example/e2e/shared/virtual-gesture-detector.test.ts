@@ -1,14 +1,10 @@
 import { beforeAll, beforeEach, describe, it } from '@jest/globals';
-import { by, device, element, expect, waitFor } from 'detox';
+import { by, element, expect } from 'detox';
+import { navigateTo } from './utils';
 
 describe('virtual gesture detector', () => {
   beforeAll(async () => {
-    await device.launchApp({ newInstance: true });
-    await waitFor(element(by.text('Virtual Gesture Detector')))
-      .toBeVisible()
-      .whileElement(by.id('examples-list'))
-      .scroll(500, 'down');
-    await element(by.text('Virtual Gesture Detector')).tap();
+    await navigateTo('Virtual Gesture Detector');
   });
 
   const text = element(by.id('text'));
