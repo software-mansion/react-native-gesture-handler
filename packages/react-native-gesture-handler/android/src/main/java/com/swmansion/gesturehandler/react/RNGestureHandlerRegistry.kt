@@ -19,8 +19,23 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
       observers[handler.tag]?.values?.toList().orEmpty()
     }
 
-    for (block in blocks) {
-      block(handler)
+    if (blocks.isEmpty()) {
+      return
+    }
+
+    // `createGestureHandler` runs on the JS thread, but observer callbacks read detector
+    // view state (childCount, getChildAt) and may attach native handlers, so they must run
+    // on the UI thread.
+    val notify = {
+      for (block in blocks) {
+        block(handler)
+      }
+    }
+
+    if (UiThreadUtil.isOnUiThread()) {
+      notify()
+    } else {
+      UiThreadUtil.runOnUiThread(notify)
     }
   }
 
