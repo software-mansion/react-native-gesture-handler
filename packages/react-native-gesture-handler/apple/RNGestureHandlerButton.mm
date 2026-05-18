@@ -49,7 +49,7 @@
   dispatch_block_t _pendingPressOutBlock;
 }
 
-@synthesize pressAndHoldAnimationDuration = _pressAndHoldAnimationDuration;
+@synthesize longPressAnimationOutDuration = _longPressAnimationOutDuration;
 
 - (void)commonInit
 {
@@ -57,8 +57,10 @@
   _hitTestEdgeInsets = UIEdgeInsetsZero;
   _userEnabled = YES;
   _pointerEvents = RNGestureHandlerPointerEventsAuto;
-  _pressAndHoldAnimationDuration = -1;
-  _tapAnimationDuration = 100;
+  _tapAnimationInDuration = 50;
+  _tapAnimationOutDuration = 100;
+  _longPressDuration = -1;
+  _longPressAnimationOutDuration = -1;
   _activeOpacity = 1.0;
   _defaultOpacity = 1.0;
   _activeScale = 1.0;
@@ -157,9 +159,9 @@
 }
 #endif
 
-- (NSInteger)pressAndHoldAnimationDuration
+- (NSInteger)longPressAnimationOutDuration
 {
-  return _pressAndHoldAnimationDuration < 0 ? _tapAnimationDuration : _pressAndHoldAnimationDuration;
+  return _longPressAnimationOutDuration < 0 ? _tapAnimationOutDuration : _longPressAnimationOutDuration;
 }
 
 - (void)setUnderlayColor:(RNGHColor *)underlayColor
@@ -310,9 +312,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
   _pressInTimestamp = CACurrentMediaTime();
   RNGHUIView *target = self.animationTarget ?: self;
-  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:self.pressAndHoldAnimationDuration];
+  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:_tapAnimationInDuration];
   if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-    [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:self.pressAndHoldAnimationDuration];
+    [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:_tapAnimationInDuration];
   }
 }
 
@@ -323,17 +325,24 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   NSTimeInterval elapsed = (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
-  NSInteger pressAndHoldAnimationDuration = self.pressAndHoldAnimationDuration;
 
-  if (elapsed >= pressAndHoldAnimationDuration) {
-    // Press-in animation fully finished, animate out in pressAndHoldAnimationDuration
+  if (_longPressDuration >= 0 && elapsed >= _longPressDuration) {
+    // Long-press release - use the configured long-press out duration.
+    NSInteger longPressOut = self.longPressAnimationOutDuration;
     RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:pressAndHoldAnimationDuration];
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:longPressOut];
     if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:pressAndHoldAnimationDuration];
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:longPressOut];
     }
-    // elapsed * 2 to ensure there is at least half of the minDuration left for the animation to play
-  } else if (elapsed * 2 >= _tapAnimationDuration) {
+  } else if (elapsed >= _tapAnimationInDuration) {
+    // Press-in animation fully finished - release with the configured out duration.
+    RNGHUIView *target = self.animationTarget ?: self;
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:_tapAnimationOutDuration];
+    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:_tapAnimationOutDuration];
+    }
+    // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
+  } else if (elapsed * 2 >= _tapAnimationOutDuration) {
     // Past minimum but press-in animation still playing, animate out in elapsed time
     RNGHUIView *target = self.animationTarget ?: self;
     [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:elapsed];
@@ -341,8 +350,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:elapsed];
     }
   } else {
-    // Before minimum duration, finish press-in in remaining time then animate out in minDuration
-    NSTimeInterval remaining = _tapAnimationDuration - elapsed;
+    // Before minimum duration, finish press-in in remaining time then animate out in tapAnimationOutDuration.
+    NSTimeInterval remaining = _tapAnimationInDuration - elapsed;
 
     RNGHUIView *target = self.animationTarget ?: self;
     [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:remaining];
@@ -359,10 +368,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         [strongSelf animateTarget:target
                         toOpacity:strongSelf->_defaultOpacity
                             scale:strongSelf->_defaultScale
-                         duration:strongSelf->_tapAnimationDuration];
+                         duration:strongSelf->_tapAnimationOutDuration];
         if (strongSelf->_activeUnderlayOpacity != strongSelf->_defaultUnderlayOpacity) {
           [strongSelf animateUnderlayToOpacity:strongSelf->_defaultUnderlayOpacity
-                                      duration:strongSelf->_tapAnimationDuration];
+                                      duration:strongSelf->_tapAnimationOutDuration];
         }
       }
     });
