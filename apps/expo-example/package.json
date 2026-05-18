@@ -16,7 +16,6 @@
   "dependencies": {
     "@expo/metro-runtime": "~55.0.11",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-native-community/viewpager": "5.0.11",
     "@react-native/new-app-screen": "0.85.2",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
@@ -31,6 +30,7 @@
     "react-dom": "19.2.0",
     "react-native": "0.83.6",
     "react-native-gesture-handler": "workspace:*",
+    "react-native-pager-view": "^8.0.1",
     "react-native-reanimated": "4.2.1",
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.23.0",
