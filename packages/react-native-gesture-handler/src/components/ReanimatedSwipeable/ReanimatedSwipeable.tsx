@@ -80,7 +80,7 @@ const Swipeable = (props: SwipeableProps) => {
       'worklet';
       if (maybeUnpackValue<number>(value) > 0) {
         throw new Error(
-          tagMessage('dragOffsetFromRight should be non-negative.')
+          tagMessage('dragOffsetFromRight should be non-positive.')
         );
       }
     };
