@@ -82,6 +82,14 @@ export default {
     NodeManager.dropGestureHandler(handlerTag);
   },
   configureRelations(handlerTag: number, relations: GestureRelations) {
+    // Match Android/iOS behavior: silently no-op when the handler isn't registered yet. There is
+    // an unavoidable race on initial mount where `useGestureRelationsUpdater`'s effect (child)
+    // fires before `useGesture`'s `createGestureHandler` effect (parent). The relations get
+    // re-applied on the next pass once the `gesture` identity changes (which it typically does
+    // when the user's config contains inline callbacks).
+    if (!NodeManager.hasHandler(handlerTag)) {
+      return;
+    }
     InteractionManager.instance.configureInteractions(
       NodeManager.getHandler(handlerTag),
       relations
