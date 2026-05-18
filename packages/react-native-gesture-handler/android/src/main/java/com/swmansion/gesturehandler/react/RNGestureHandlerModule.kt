@@ -106,10 +106,16 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun configureRelations(handlerTagDouble: Double, relations: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
-    val handler = registry.getHandler(handlerTag) ?: return
 
-    interactionManager.dropRelationsForHandlerWithTag(handlerTag)
-    interactionManager.configureInteractions(handler, relations)
+    // Observe the registry rather than looking up the handler directly - the JS-side detector may
+    // call `configureRelations` before `useGesture`'s effect has invoked `createGestureHandler`,
+    // so the handler doesn't exist yet.
+    val owner = Any()
+    registry.observeHandler(handlerTag, owner) { handler ->
+      interactionManager.dropRelationsForHandlerWithTag(handlerTag)
+      interactionManager.configureInteractions(handler, relations)
+      registry.cancelObservation(handlerTag, owner)
+    }
   }
 
   @ReactMethod
