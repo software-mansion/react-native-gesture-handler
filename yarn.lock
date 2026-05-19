@@ -9721,6 +9721,7 @@ __metadata:
     "@react-native/typescript-config": "npm:0.85.2"
     "@react-navigation/elements": "npm:^2.3.8"
     "@react-navigation/native": "npm:^7.1.6"
+    "@react-navigation/native-stack": "npm:^7.14.12"
     "@react-navigation/stack": "npm:^7.2.10"
     "@rnrepo/expo-config-plugin": "npm:0.3.0-beta.3"
     "@swmansion/icons": "npm:^0.0.1"
@@ -13110,6 +13111,7 @@ __metadata:
     "@react-native/typescript-config": "npm:0.81.2"
     "@react-navigation/elements": "npm:^2.3.8"
     "@react-navigation/native": "npm:^7.1.6"
+    "@react-navigation/native-stack": "npm:^7.14.12"
     "@react-navigation/stack": "npm:^7.2.10"
     "@swmansion/icons": "npm:^0.0.1"
     "@types/jest": "npm:^29.5.13"
@@ -14212,7 +14214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.11, nanoid@npm:^3.3.7":
+"nanoid@npm:^3.3.11, nanoid@npm:^3.3.12, nanoid@npm:^3.3.7":
   version: 3.3.12
   resolution: "nanoid@npm:3.3.12"
   bin:
@@ -14978,13 +14980,13 @@ __metadata:
   linkType: hard
 
 "postcss@npm:^8.1.7, postcss@npm:^8.4.23":
-  version: 8.5.14
-  resolution: "postcss@npm:8.5.14"
+  version: 8.5.15
+  resolution: "postcss@npm:8.5.15"
   dependencies:
-    nanoid: "npm:^3.3.11"
+    nanoid: "npm:^3.3.12"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10c0/48138207cf5ef5581be1bfe2cb65ccfe0ac75e43888ba045afc8ed6043d7b56aeb3b9a9fe5b353ff554be943cd0cc15d826ccb991525159175971e5ee8ab0237
+  checksum: 10c0/7f2e63ae22fbe43aace1bf652bd99da4e90737c64194d49e51ddc9cd0f9e51ff2861a7d734379b494deffa03a880a5c65eec70bc29ee9ebaa7136dde3eee8f31
   languageName: node
   linkType: hard
 
@@ -15427,6 +15429,7 @@ __metadata:
     jest: "npm:^28.1.0"
     lint-staged: "npm:^12.3.2"
     prettier: "npm:3.3.3"
+    react-native: "npm:0.85.0"
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
