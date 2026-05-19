@@ -1,15 +1,15 @@
 import React from 'react';
-import Animated, {
-  clamp,
-  useSharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
   GestureHandlerRootView,
   usePanGesture,
 } from 'react-native-gesture-handler';
-import { StyleSheet, View } from 'react-native';
+import Animated, {
+  clamp,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 export default function App() {
   const translationX = useSharedValue(0);
@@ -29,11 +29,13 @@ export default function App() {
   }));
 
   const updateWidthAndHeight = () => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {
+      return;
+    }
 
     containerRef.current.measureInWindow((x, y, width, height) => {
       maxTranslateX.value = width / 2 - 50;
-      maxTranslateY.value = height / 2;
+      maxTranslateY.value = height / 2 - 50;
     });
   };
 
@@ -92,7 +94,7 @@ const styles = StyleSheet.create({
   },
   box: {
     width: 100,
-    aspectRatio: 1,
+    height: 100,
     backgroundColor: '#b58df1',
     borderRadius: 20,
   },
