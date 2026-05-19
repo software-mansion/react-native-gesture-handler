@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import { useJSResponderContext } from '../hooks/useJSResponderContext';
+import { useJSResponderHandler } from '../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 import type { NativeDetectorProps } from './common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
@@ -20,7 +20,7 @@ export function NativeDetector<
   userSelect,
   enableContextMenu,
 }: NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
-  const { handleStartShouldSetResponder } = useJSResponderContext(gesture);
+  const { handleStartShouldSetResponder } = useJSResponderHandler(gesture);
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector

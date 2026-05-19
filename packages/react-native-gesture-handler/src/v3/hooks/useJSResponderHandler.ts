@@ -62,7 +62,7 @@ function getEnabledSharedValues<
   return Reanimated.isSharedValue<boolean>(enabled) ? [enabled] : [];
 }
 
-export function useJSResponderContext<
+export function useJSResponderHandler<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
