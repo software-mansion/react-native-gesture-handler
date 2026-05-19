@@ -1,9 +1,9 @@
 name: E2E Test
 
 on:
-  # pull_request:
-  #   paths:
-  #     - packages/react-native-gesture-handler/**
+  pull_request:
+    paths:
+      - packages/react-native-gesture-handler/**
   push:
     branches:
       - main
@@ -37,34 +37,15 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Cache Pods
-        id: cache-pods
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.WORKING_DIRECTORY }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles(format('{0}/ios/Podfile.lock', env.WORKING_DIRECTORY)) }}
-
-      - name: Install pods
-        working-directory: ${{ env.WORKING_DIRECTORY }}/ios
-        run: pod install
-
       - name: Setup Detox
         run: brew tap wix/brew && brew install applesimutils && npm install -g detox-cli
 
-      - name: Install argent
-        run: npm install -g @swmansion/argent
-
-      - name: Cache IOS build
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.WORKING_DIRECTORY }}/ios/build
-          key: ${{ runner.os }}-xcode-build-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-xcode-build-
+      # - name: Install argent
+      #   run: npm install -g @swmansion/argent
 
       - name: Build for iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: detox build -c ios.sim.release
+        run: yarn build-detox-ios
 
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
@@ -91,18 +72,9 @@ jobs:
       - name: Setup Detox
         run: npm install -g detox-cli
 
-      - name: Cache Android build
-        id: cache-android-build
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.WORKING_DIRECTORY }}/android/app/build
-          key: ${{ runner.os }}-android-build-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-android-build-
-
       - name: Build for Android
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: detox build -c android.emu.release
+        run: yarn build-detox-android
 
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -113,6 +85,6 @@ jobs:
           force-avd-creation: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          avd-name: Pixel_9_Pro
+          avd-name: Pixel_9
           working-directory: ${{ env.WORKING_DIRECTORY }}
           script: adb devices && yarn test:android
