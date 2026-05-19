@@ -74,6 +74,9 @@ let Reanimated:
       useComposedEventHandler<T>(
         handlers: (((event: T) => void) | null)[]
       ): (event: T) => void;
+      runOnJS<A extends unknown[], R>(
+        fn: (...args: A) => R
+      ): (...args: Parameters<typeof fn>) => void;
       runOnUI<A extends any[], R>(
         fn: (...args: A) => R
       ): (...args: Parameters<typeof fn>) => void;
