@@ -9,6 +9,9 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "clean": "rm -rf node_modules android ios",
+    "build-detox-android": "node setup-detox-android.js && yarn detox build -c android.emu.release",
+    "build-detox-ios": "yarn detox build -c ios.sim.release",
+    "build-detox": "yarn build-detox-android && yarn build-detox-ios",
     "test": "jest",
     "test:ios": "detox test -c ios.sim.release e2e/ios e2e/shared",
     "test:android": "detox test -c android.emu.release e2e/shared e2e/android"
