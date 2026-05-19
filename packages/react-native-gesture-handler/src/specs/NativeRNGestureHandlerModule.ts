@@ -3,13 +3,15 @@ import { TurboModuleRegistry } from 'react-native';
 import type { Double } from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
+  // This method returns a boolean only to force the codegen to generate
+  // a synchronous method. The returned value doesn't have any meaning.
   createGestureHandler: (
     handlerName: string,
     handlerTag: Double,
     // Record<> is not supported by codegen
     // eslint-disable-next-line @typescript-eslint/ban-types
     config: Object
-  ) => void;
+  ) => boolean;
   attachGestureHandler: (
     handlerTag: Double,
     newView: Double,
