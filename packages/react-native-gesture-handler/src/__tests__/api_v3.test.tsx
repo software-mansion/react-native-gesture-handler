@@ -204,7 +204,7 @@ describe('[API v3] Components', () => {
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
     });
 
-    test('handles responder event passed through NativeDetector for non-tap gestures', async () => {
+    test('does not handle responder event passed through NativeDetector for unsupported gestures', async () => {
       const { UNSAFE_getAllByType } = render(
         <GestureHandlerRootView>
           <ScrollView keyboardShouldPersistTaps="handled">
@@ -224,7 +224,9 @@ describe('[API v3] Components', () => {
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
       expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
-      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
+        false
+      );
     });
 
     test('handles responder event passed through NativeDetector for composed gestures', async () => {

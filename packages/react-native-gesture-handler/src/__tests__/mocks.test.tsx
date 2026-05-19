@@ -1,8 +1,9 @@
-import { fireEvent, render } from '@testing-library/react-native';
-import React from 'react';
+import { render } from '@testing-library/react-native';
+import React, { act } from 'react';
 import { Text } from 'react-native';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
+import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import {
   LegacyBaseButton,
   LegacyBorderlessButton,
@@ -24,6 +25,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from '../mocks/Touchables';
+import { State } from '../State';
 import { Touchable } from '../v3/components';
 
 describe('Jest mocks – legacy components render without crashing', () => {
@@ -116,17 +118,25 @@ describe('Jest mocks – legacy components render without crashing', () => {
   });
 });
 
-test('Trigger press by text', () => {
+test('Trigger Touchable press', () => {
   const onPress = jest.fn();
-  const { getByText } = render(
+  render(
     <GestureHandlerRootView>
-      <Touchable activeOpacity={0.3} onPress={onPress}>
+      <Touchable activeOpacity={0.3} testID="touchable" onPress={onPress}>
         <Text>Press Me</Text>
       </Touchable>
     </GestureHandlerRootView>
   );
 
-  fireEvent.press(getByText('Press Me'));
+  const gesture = getByGestureTestId('touchable');
+
+  act(() => {
+    fireGestureHandler(gesture, [
+      { oldState: State.UNDETERMINED, state: State.BEGAN },
+      { oldState: State.BEGAN, state: State.ACTIVE },
+      { oldState: State.ACTIVE, state: State.END },
+    ]);
+  });
 
   expect(onPress).toHaveBeenCalled();
 });
