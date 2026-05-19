@@ -6,7 +6,6 @@ import android.view.MotionEvent
 import android.view.accessibility.AccessibilityManager
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import kotlin.compareTo
 
 val ReactContext.deviceEventEmitter: DeviceEventManagerModule.RCTDeviceEventEmitter
   get() = this.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
@@ -29,5 +28,11 @@ val Display.minimumFrameTime: Float
       }
     }
 
-    return 1000.0f / maxRefreshRate
+    val effectiveRefreshRate = when {
+      maxRefreshRate > 0f -> maxRefreshRate
+      refreshRate > 0f -> refreshRate
+      else -> 60f
+    }
+
+    return 1000.0f / effectiveRefreshRate
   }
