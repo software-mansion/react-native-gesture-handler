@@ -1,14 +1,14 @@
 import React from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import {
+  Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  usePinchGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
-  clamp,
-  useAnimatedStyle,
   useSharedValue,
+  useAnimatedStyle,
+  clamp,
 } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('screen');
@@ -17,7 +17,7 @@ export default function App() {
   const scale = useSharedValue(1);
   const startScale = useSharedValue(0);
 
-  const pinch = usePinchGesture({
+ const pinch = usePinchGesture({
     onActivate: () => {
       startScale.value = scale.value;
     },
@@ -28,7 +28,7 @@ export default function App() {
         Math.min(width / 100, height / 100)
       );
     },
-  });
+  }); 
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -54,5 +54,15 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 20,
     backgroundColor: '#b58df1',
+  },
+  dot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#ccc',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    pointerEvents: 'none',
   },
 });

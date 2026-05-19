@@ -6,8 +6,8 @@ import {
   useRotationGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
-  useAnimatedStyle,
   useSharedValue,
+  useAnimatedStyle,
 } from 'react-native-reanimated';
 
 export default function App() {
@@ -47,5 +47,15 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 20,
     backgroundColor: '#b58df1',
+  },
+  dot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#ccc',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    pointerEvents: 'none',
   },
 });

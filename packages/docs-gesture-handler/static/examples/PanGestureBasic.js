@@ -1,15 +1,15 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import Animated, {
+  clamp,
+  useSharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import {
   GestureDetector,
   GestureHandlerRootView,
   usePanGesture,
 } from 'react-native-gesture-handler';
-import Animated, {
-  clamp,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 
 export default function App() {
   const translationX = useSharedValue(0);
@@ -29,9 +29,7 @@ export default function App() {
   }));
 
   const updateWidthAndHeight = () => {
-    if (!containerRef.current) {
-      return;
-    }
+    if (!containerRef.current) return;
 
     containerRef.current.measureInWindow((x, y, width, height) => {
       maxTranslateX.value = width / 2 - 50;
