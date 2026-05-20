@@ -223,11 +223,7 @@ function teardown(refs: DetectorRefs) {
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
-  const handlerTagsSet = useMemo(
-    () => new Set(handlerTags),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [...handlerTags]
-  );
+  const handlerTagsSet = useMemo(() => new Set(handlerTags), [...handlerTags]);
 
   const viewRef = useRef<Element>(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
