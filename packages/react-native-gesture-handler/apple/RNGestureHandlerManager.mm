@@ -231,10 +231,10 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   __weak RNGestureHandlerRegistry *weakRegistry = _registry;
   [_registry observeHandlerWithTag:handlerTag
                              owner:owner
-                        usingBlock:^(RNGestureHandler *handler) {
-                          [handler updateRelations:relations];
-                          [weakRegistry cancelObservationForTag:handlerTag owner:owner];
-                        }];
+                      withCallback:^(RNGestureHandler *handler) {
+                        [handler updateRelations:relations];
+                        [weakRegistry cancelObservationForTag:handlerTag owner:owner];
+                      }];
 }
 
 - (void)dropGestureHandler:(NSNumber *)handlerTag
