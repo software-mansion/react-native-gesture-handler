@@ -3,17 +3,14 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
 import type { HitSlop } from '../../handlers/gestureHandlerCommon';
-import type { AnyGesture } from '../../v3/types';
+import type { AnyGesture, WithSharedValue } from '../../v3/types';
 
 export enum SwipeDirection {
   LEFT = 'left',
   RIGHT = 'right',
 }
 
-export interface SwipeableProps {
-  /**
-   *
-   */
+export type SwipeableProps = {
   ref?: React.Ref<SwipeableMethods>;
 
   /**
@@ -22,27 +19,6 @@ export interface SwipeableProps {
   testID?: string;
 
   children?: React.ReactNode;
-
-  /**
-   * Indicates whether `ReanimatedSwipeable` should be analyzing stream of touch events or not.
-   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#enabledvalue-boolean
-   */
-  enabled?: boolean;
-
-  /**
-   * This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
-   * When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
-   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#hitslopsettings
-   */
-  hitSlop?: HitSlop;
-
-  /**
-   * Enables two-finger gestures on supported devices, for example iPads with
-   * trackpads. If not enabled the gesture will require click + drag, with
-   * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
-   * the gesture.
-   */
-  enableTrackpadTwoFingerGesture?: boolean;
 
   /**
    * Specifies how much the visual interaction will be delayed compared to the
@@ -65,18 +41,6 @@ export interface SwipeableProps {
    * default it's a half of the panel's width.
    */
   rightThreshold?: number;
-
-  /**
-   * Distance that the panel must be dragged from the left edge to be considered
-   * a swipe. The default value is 10.
-   */
-  dragOffsetFromLeftEdge?: number;
-
-  /**
-   * Distance that the panel must be dragged from the right edge to be considered
-   * a swipe. The default value is 10.
-   */
-  dragOffsetFromRightEdge?: number;
 
   /**
    * Value indicating if the swipeable panel can be pulled further than the left
@@ -204,7 +168,35 @@ export interface SwipeableProps {
    * used with the swipeable's gesture handler.
    */
   block?: AnyGesture | AnyGesture[];
-}
+} & WithSharedValue<{
+  /**
+   * Indicates whether `ReanimatedSwipeable` should be analyzing stream of touch events or not.
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#enabledvalue-boolean
+   */
+  enabled?: boolean | undefined;
+  /**
+   * This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
+   * When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#hitslopsettings
+   */
+  hitSlop?: HitSlop | undefined;
+  /**
+   * Enables two-finger gestures on supported devices, for example iPads with
+   * trackpads. If not enabled the gesture will require click + drag, with
+   * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
+   * the gesture.
+   */
+  enableTrackpadTwoFingerGesture?: boolean | undefined;
+  /**
+   * The horizontal offset from the starting point required to trigger a right-swipe gesture. Defaults to 10.
+   */
+  dragOffsetFromLeft?: number;
+
+  /**
+   * The horizontal offset from the starting point required to trigger a left-swipe gesture. Defaults to -10.
+   */
+  dragOffsetFromRight?: number;
+}>;
 
 export interface SwipeableMethods {
   close: () => void;

@@ -23,7 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.facebook.react.R
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
@@ -269,14 +269,24 @@ class RNGestureHandlerButtonViewManager :
     view.isSoundEffectsEnabled = !touchSoundDisabled
   }
 
-  @ReactProp(name = "pressAndHoldAnimationDuration")
-  override fun setPressAndHoldAnimationDuration(view: ButtonViewGroup, pressAndHoldAnimationDuration: Int) {
-    view.pressAndHoldAnimationDuration = pressAndHoldAnimationDuration
+  @ReactProp(name = "tapAnimationInDuration")
+  override fun setTapAnimationInDuration(view: ButtonViewGroup, value: Int) {
+    view.tapAnimationInDuration = if (value > 0) value else 0
   }
 
-  @ReactProp(name = "tapAnimationDuration")
-  override fun setTapAnimationDuration(view: ButtonViewGroup, tapAnimationDuration: Int) {
-    view.tapAnimationDuration = if (tapAnimationDuration > 0) tapAnimationDuration else 0
+  @ReactProp(name = "tapAnimationOutDuration")
+  override fun setTapAnimationOutDuration(view: ButtonViewGroup, value: Int) {
+    view.tapAnimationOutDuration = if (value > 0) value else 0
+  }
+
+  @ReactProp(name = "longPressDuration")
+  override fun setLongPressDuration(view: ButtonViewGroup, value: Int) {
+    view.longPressDuration = value
+  }
+
+  @ReactProp(name = "longPressAnimationOutDuration")
+  override fun setLongPressAnimationOutDuration(view: ButtonViewGroup, value: Int) {
+    view.longPressAnimationOutDuration = value
   }
 
   @ReactProp(name = "defaultOpacity")
@@ -354,9 +364,11 @@ class RNGestureHandlerButtonViewManager :
     var useBorderlessDrawable = false
 
     var exclusive = true
-    var tapAnimationDuration: Int = 100
-    var pressAndHoldAnimationDuration: Int = -1
-      get() = if (field < 0) tapAnimationDuration else field
+    var tapAnimationInDuration: Int = 50
+    var tapAnimationOutDuration: Int = 100
+    var longPressDuration: Int = -1
+    var longPressAnimationOutDuration: Int = -1
+      get() = if (field < 0) tapAnimationOutDuration else field
     var activeOpacity: Float = 1.0f
     var defaultOpacity: Float = 1.0f
     var activeScale: Float = 1.0f
@@ -534,6 +546,28 @@ class RNGestureHandlerButtonViewManager :
       }
 
       currentAnimator?.cancel()
+      currentAnimator = null
+
+      // Sub-frame durations: snap directly. ObjectAnimator with duration 0
+      // still defers its property write to the next frame callback, so if a
+      // follow-up animateTo() cancels it in the same frame the property never
+      // lands on its target and the next animator captures a stale starting
+      // value (e.g. an instant press-in followed by press-out in the same
+      // frame, leaving the press-out to animate default → default).
+      if (durationMs < (display?.minimumFrameTime ?: 16f)) {
+        if (hasOpacity) {
+          alpha = opacity
+        }
+        if (hasScale) {
+          scaleX = scale
+          scaleY = scale
+        }
+        if (hasUnderlay) {
+          underlayDrawable!!.alpha = (underlayOpacity * 255).toInt()
+        }
+        return
+      }
+
       val animators = ArrayList<Animator>()
       if (hasOpacity) {
         animators.add(ObjectAnimator.ofFloat(this, "alpha", opacity))
@@ -548,7 +582,7 @@ class RNGestureHandlerButtonViewManager :
       currentAnimator = AnimatorSet().apply {
         playTogether(animators)
         duration = durationMs
-        interpolator = LinearOutSlowInInterpolator()
+        interpolator = FastOutSlowInInterpolator()
         start()
       }
     }
@@ -559,27 +593,33 @@ class RNGestureHandlerButtonViewManager :
         pendingPressOut = null
       }
       pressInTimestamp = SystemClock.uptimeMillis()
-      animateTo(activeOpacity, activeScale, activeUnderlayOpacity, pressAndHoldAnimationDuration.toLong())
+      animateTo(activeOpacity, activeScale, activeUnderlayOpacity, tapAnimationInDuration.toLong())
     }
 
     private fun animatePressOut() {
       pendingPressOut?.let { handler.removeCallbacks(it) }
-      val pressAndHoldMs = pressAndHoldAnimationDuration.toLong()
-      val tapMs = tapAnimationDuration.toLong()
+      val tapInMs = tapAnimationInDuration.toLong()
+      val tapOutMs = tapAnimationOutDuration.toLong()
+      val longPressMs = longPressDuration.toLong()
+      val longPressOutMs = longPressAnimationOutDuration.toLong()
       val elapsed = SystemClock.uptimeMillis() - pressInTimestamp
 
-      if (elapsed >= pressAndHoldMs) {
-        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, pressAndHoldMs)
-        // elapsed * 2 to ensure there is at least half of the tapAnimationDuration left for the animation to play
-      } else if (elapsed * 2 >= tapMs) {
+      if (longPressMs >= 0 && elapsed >= longPressMs) {
+        // Long-press release - use the configured long-press out duration.
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, longPressOutMs)
+      } else if (elapsed >= tapInMs) {
+        // Press-in animation fully finished — release with the configured out duration.
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
+        // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
+      } else if (elapsed * 2 >= tapOutMs) {
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, elapsed)
       } else {
-        val remaining = tapMs - elapsed
+        val remaining = tapInMs - elapsed
         animateTo(activeOpacity, activeScale, activeUnderlayOpacity, remaining)
 
         val runnable = Runnable {
           pendingPressOut = null
-          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapMs)
+          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
         }
         pendingPressOut = runnable
         handler.postDelayed(runnable, remaining)

@@ -234,15 +234,83 @@ hoverUnderlayOpacity?: number;
 
 Defines the opacity of the underlay when the button is hovered. By default falls back to [`defaultUnderlayOpacity`](#defaultunderlayopacity).
 
-<Badges platforms={['web']}>
-### hoverAnimationDuration
-</Badges>
+### animationDuration
 
-```ts
-hoverAnimationDuration?: number;
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+animationDuration?: AnimationDuration;
+
+type InOutDuration = { in: number; out: number };
+
+type AnimationDuration =
+  | number
+  | (InOutDuration & {
+      tap?: Partial<InOutDuration>;
+      hover?: Partial<InOutDuration>;
+      longPress?: { out: number };
+    })
+  | {
+      tap: InOutDuration;
+      hover: InOutDuration;
+      longPress?: { out: number };
+    };
+`}/>
+
+Press and hover animation timing, in milliseconds. Defaults to 50ms for the in phase and 100ms for the out phase.
+
+Each animation has two phases — `in` (running while the pointer engages the component) and `out` (running after the pointer releases) — across two categories:
+- `tap` — applies to presses.
+- `hover` — pointer hover (web only).
+
+`longPress` is an optional override for the press-out timing once the press has been held past [`delayLongPress`](#delaylongpress). It only has an `out` field (the press-in is always the `tap` in duration). If omitted, the long-press release uses the resolved `tap` out duration.
+
+Three input shapes are accepted:
+
+1. A single number applied to every phase of every category:
+
+```tsx
+<Touchable animationDuration={200} />
 ```
 
-Duration of the hover animation, in milliseconds. By default falls back to [`tapAnimationDuration`](#tapanimationduration).
+2. A baseline `in` / `out` with optional per-category overrides — categories that aren't specified inherit the baseline, and within a category any field left out also inherits from the baseline:
+
+```tsx
+<Touchable
+  animationDuration={{
+    in: 50,
+    out: 200,
+    hover: { in: 400 },
+  }}
+/>
+```
+
+3. Both categories specified explicitly (no baseline) — every field must be supplied:
+
+```tsx
+<Touchable
+  animationDuration={{
+    tap: { in: 0, out: 200 },
+    hover: { in: 300, out: 300 },
+  }}
+/>
+```
+
+To give a long press its own release timing, add `longPress.out`. The switch fires when the press is held past [`delayLongPress`](#delaylongpress):
+
+```tsx
+<Touchable
+  delayLongPress={400}
+  onLongPress={() => {}}
+  animationDuration={{
+    in: 50,
+    out: 100,
+    longPress: { out: 500 },
+  }}
+/>
+```
 
 ### underlayColor
 
