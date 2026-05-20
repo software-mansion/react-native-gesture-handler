@@ -1,18 +1,14 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createStaticNavigation } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import CompositionNavigation from './compositionNavigation';
 import CompetingGesturesScreen from './composition_and_interactions/competingGestures';
 import ExclusiveGesturesScreen from './composition_and_interactions/exclusiveGestures';
 import RequireToFailScreen from './composition_and_interactions/requireToFail';
-import GestureDetectorsNavigation from './gestureDetectorsNavigation';
+import CompositionNavigation from './compositionNavigation';
 import InterceptingGestureDetectorScreen from './gestureDetectors/interceptingGestureDetector';
 import VirtualGestureDetectorScreen from './gestureDetectors/virtualGestureDetector';
-import GesturesNavigation from './gesturesNavigation';
-import HomeScreen from './HomeScreen';
-import IntegrationNavigation from './integrationNavigation';
-import MultipleHandlersScreen from './integration/MultipleHandlers';
+import GestureDetectorsNavigation from './gestureDetectorsNavigation';
 import FlingScreen from './gestures/fling';
 import HoverScreen from './gestures/hover';
 import LongPressScreen from './gestures/long_press';
@@ -20,11 +16,15 @@ import PanScreen from './gestures/pan';
 import PinchScreen from './gestures/pinch';
 import RotationScreen from './gestures/rotation';
 import TapScreen from './gestures/tap';
+import GesturesNavigation from './gesturesNavigation';
+import HomeScreen from './HomeScreen';
+import MultipleHandlersScreen from './integration/MultipleHandlers';
+import IntegrationNavigation from './integrationNavigation';
 
 export default function MainNavigation() {
   const RootStack = createNativeStackNavigator({
     screens: {
-      Home: {
+      'Home': {
         screen: HomeScreen,
       },
       'Gesture Tests': {
@@ -55,19 +55,19 @@ export default function MainNavigation() {
         screen: ExclusiveGesturesScreen,
         options: { gestureEnabled: false },
       },
-      Tap: {
+      'Tap': {
         screen: TapScreen,
         options: { gestureEnabled: false },
       },
-      Pan: {
+      'Pan': {
         screen: PanScreen,
         options: { gestureEnabled: false },
       },
-      Pinch: {
+      'Pinch': {
         screen: PinchScreen,
         options: { gestureEnabled: false },
       },
-      Rotation: {
+      'Rotation': {
         screen: RotationScreen,
         options: { gestureEnabled: false },
       },
@@ -75,15 +75,15 @@ export default function MainNavigation() {
         screen: LongPressScreen,
         options: { gestureEnabled: false },
       },
-      Fling: {
+      'Fling': {
         screen: FlingScreen,
         options: { gestureEnabled: false },
       },
-      Hover: {
+      'Hover': {
         screen: HoverScreen,
         options: { gestureEnabled: false },
       },
-      MultipleHandlers: {
+      'Multiple Handlers': {
         screen: MultipleHandlersScreen,
         options: { gestureEnabled: false },
       },
@@ -99,21 +99,21 @@ export default function MainNavigation() {
   const linking = {
     prefixes: ['e2eApp://'],
     screens: {
-      Home: '',
+      'Home': '',
       'Gesture Tests': 'gestures',
       'Gesture Detectors': 'gesture-detectors',
       'Intercepting Gesture Detector':
         'gesture-detectors/intercepting-gesture-detector',
       'Virtual Gesture Detector': 'gesture-detectors/virtual-gesture-detector',
-      Tap: 'gestures/tap',
-      Pan: 'gestures/pan',
-      Pinch: 'gestures/pinch',
-      Rotation: 'gestures/rotation',
+      'Tap': 'gestures/tap',
+      'Pan': 'gestures/pan',
+      'Pinch': 'gestures/pinch',
+      'Rotation': 'gestures/rotation',
       'Long Press': 'gestures/long-press',
-      Fling: 'gestures/fling',
-      Hover: 'gestures/hover',
+      'Fling': 'gestures/fling',
+      'Hover': 'gestures/hover',
       'Integration Tests': 'integration',
-      MultipleHandlers: 'integration/multiple',
+      'Multiple Handlers': 'integration/multiple',
       'Composition & Interaction': 'composition-interaction',
       'Competing Gestures': 'composition-interaction/competing-gestures',
       'Exclusive Gestures': 'composition-interaction/exclusive-gestures',
