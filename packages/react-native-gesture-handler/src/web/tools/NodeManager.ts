@@ -102,11 +102,8 @@ export default abstract class NodeManager {
   }
 
   public static cancelAllObservationsForOwner(owner: object): void {
-    for (const [tag, table] of this.observers) {
-      table.delete(owner);
-      if (table.size === 0) {
-        this.observers.delete(tag);
-      }
+    for (const tag of this.observers.keys()) {
+      this.cancelObservation(tag, owner);
     }
   }
 
