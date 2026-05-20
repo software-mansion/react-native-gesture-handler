@@ -29,7 +29,7 @@ typedef void (^RNGestureHandlerReadyBlock)(RNGestureHandler *_Nonnull handler);
 // key; observing the same tag twice with the same `owner` replaces the previous block.
 - (void)observeHandlerWithTag:(nonnull NSNumber *)handlerTag
                         owner:(nonnull id)owner
-                   usingBlock:(nonnull RNGestureHandlerReadyBlock)block;
+                 withCallback:(nonnull RNGestureHandlerReadyBlock)callback;
 
 - (void)cancelObservationForTag:(nonnull NSNumber *)handlerTag owner:(nonnull id)owner;
 - (void)cancelAllObservationsForOwner:(nonnull id)owner;

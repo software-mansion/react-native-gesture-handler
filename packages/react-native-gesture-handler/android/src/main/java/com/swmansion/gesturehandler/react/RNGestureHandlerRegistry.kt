@@ -14,12 +14,12 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   private val observers = mutableMapOf<Int, MutableMap<Any, (GestureHandler) -> Unit>>()
 
   fun registerHandler(handler: GestureHandler) {
-    val blocks = synchronized(this) {
+    val callbacks = synchronized(this) {
       handlers.put(handler.tag, handler)
       observers[handler.tag]?.values?.toList().orEmpty()
     }
 
-    if (blocks.isEmpty()) {
+    if (callbacks.isEmpty()) {
       return
     }
 
@@ -27,8 +27,8 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
     // view state (childCount, getChildAt) and may attach native handlers, so they must run
     // on the UI thread.
     val notify = {
-      for (block in blocks) {
-        block(handler)
+      for (callback in callbacks) {
+        callback(handler)
       }
     }
 
@@ -55,9 +55,9 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
 
   @Synchronized
   fun cancelObservation(tag: Int, owner: Any) {
-    val table = observers[tag] ?: return
-    table.remove(owner)
-    if (table.isEmpty()) {
+    val observersForTag = observers[tag] ?: return
+    observersForTag.remove(owner)
+    if (observersForTag.isEmpty()) {
       observers.remove(tag)
     }
   }

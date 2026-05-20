@@ -54,7 +54,7 @@
   }
 }
 
-- (void)observeHandlerWithTag:(NSNumber *)handlerTag owner:(id)owner usingBlock:(RNGestureHandlerReadyBlock)block
+- (void)observeHandlerWithTag:(NSNumber *)handlerTag owner:(id)owner withCallback:(RNGestureHandlerReadyBlock)callback
 {
   RNGestureHandler *existing = nil;
 
@@ -66,13 +66,13 @@
                                 valueOptions:NSPointerFunctionsStrongMemory];
       _observers[handlerTag] = table;
     }
-    [table setObject:[block copy] forKey:owner];
 
+    [table setObject:[callback copy] forKey:owner];
     existing = _handlers[handlerTag];
   }
 
   if (existing != nil) {
-    block(existing);
+    callback(existing);
   }
 }
 
