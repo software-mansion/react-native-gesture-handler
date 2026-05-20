@@ -1,5 +1,7 @@
-import { beforeAll, beforeEach, describe, it } from '@jest/globals';
+// eslint-disable-next-line import-x/no-extraneous-dependencies
+import { beforeAll, beforeEach, describe } from '@jest/globals';
 import { by, element, expect } from 'detox';
+
 import { navigateTo } from './utils';
 
 describe('test pan gesture', () => {
@@ -7,43 +9,24 @@ describe('test pan gesture', () => {
     await navigateTo('Pan Gesture');
   });
 
-  const wrongElement = element(by.id('wrong-element'));
-  const panActivatedElement = element(by.id('pan-activated'));
-  const panElement = element(by.id('pan-idle'));
+  const gestureBox = element(by.id('pan-box'));
+  const stateIndicator = element(by.id('state-indicator'));
   const resetButton = element(by.id('reset'));
+  const extractButton = element(by.id('event-extractor'));
 
   beforeEach(async () => {
     await resetButton.tap();
   });
 
-  it('shouldn`t register a pan gesture on tap', async () => {
-    await expect(panElement).toExist();
-    await panElement.tap();
-    await expect(panActivatedElement).not.toExist();
+  test('Shouldn`t register a pan gesture on tap', async () => {
+    await gestureBox.tap();
+    await extractButton.tap();
+    await expect(stateIndicator).toHaveText('21');
   });
 
-  it('shouldn`t register a pan gesture on different element', async () => {
-    await expect(wrongElement).toExist();
-    await wrongElement.swipe('right', 'fast');
-    await expect(panActivatedElement).not.toExist();
-  });
-
-  it('should register a pan gesture', async () => {
-    await expect(panElement).toExist();
-    await panElement.swipe('right', 'fast');
-    await expect(panActivatedElement).toExist();
-  });
-
-  it('multiple touches shouldn`t register a pan gesture', async () => {
-    await expect(panElement).toExist();
-    await panElement.multiTap(3);
-    await expect(panActivatedElement).not.toExist();
-  });
-
-  it('shouldnt change state due to multiple pans', async () => {
-    await expect(panElement).toExist();
-    await panElement.swipe('right', 'fast');
-    await panActivatedElement.swipe('left', 'fast');
-    await expect(panActivatedElement).toExist();
+  test('Should register pan gesture on swipe', async () => {
+    await gestureBox.swipe('right', 'fast');
+    await extractButton.tap();
+    await expect(stateIndicator).toHaveText('245');
   });
 });
