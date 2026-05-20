@@ -92,11 +92,7 @@
   @synchronized(_handlers) {
     NSArray<NSNumber *> *tags = [_observers allKeys];
     for (NSNumber *tag in tags) {
-      NSMapTable *table = _observers[tag];
-      [table removeObjectForKey:owner];
-      if (table.count == 0) {
-        [_observers removeObjectForKey:tag];
-      }
+      [self cancelObservationForTag:tag owner:owner];
     }
   }
 }
