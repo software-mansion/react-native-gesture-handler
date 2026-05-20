@@ -68,8 +68,8 @@ export default abstract class NodeManager {
     this.gestures[handlerTag].detach();
   }
 
-  // Invokes `block` every time a handler with `tag` is created, and synchronously once now if
-  // the handler already exists. The observation persists until explicitly cancelled: the registry
+  // Invokes `block` every time a handler with `tag` is created and, if the handler already exists,
+  // immediately before returning. The observation persists until explicitly cancelled: the registry
   // holds both `owner` and `block` strongly, so callers MUST call `cancelObservation` or
   // `cancelAllObservationsForOwner` when the owner is going away (typically in effect cleanup) to
   // avoid leaking. Observing the same tag twice with the same `owner` replaces the previous block.
