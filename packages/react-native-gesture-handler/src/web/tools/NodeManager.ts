@@ -2,7 +2,7 @@ import type { ValueOf } from '../../typeUtils';
 import type { Gestures } from '../Gestures';
 import type IGestureHandler from '../handlers/IGestureHandler';
 
-type HandlerReadyBlock = (handler: IGestureHandler) => void;
+type HandlerReadyCallback = (handler: IGestureHandler) => void;
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default abstract class NodeManager {
@@ -11,7 +11,7 @@ export default abstract class NodeManager {
     InstanceType<ValueOf<typeof Gestures>>
   > = {};
 
-  private static observers: Map<number, Map<object, HandlerReadyBlock>> =
+  private static observers: Map<number, Map<object, HandlerReadyCallback>> =
     new Map();
 
   public static getHandler(tag: number): IGestureHandler {
@@ -41,10 +41,10 @@ export default abstract class NodeManager {
 
     const pending = this.observers.get(handlerTag);
     if (pending) {
-      // Snapshot before iterating — blocks may call back into observeHandler / cancelObservation
+      // Snapshot before iterating — callbacks may call back into observeHandler / cancelObservation
       // and mutate the underlying map.
-      for (const block of Array.from(pending.values())) {
-        block(handler as IGestureHandler);
+      for (const callback of Array.from(pending.values())) {
+        callback(handler as IGestureHandler);
       }
     }
   }
@@ -68,25 +68,25 @@ export default abstract class NodeManager {
     this.gestures[handlerTag].detach();
   }
 
-  // Invokes `block` every time a handler with `tag` is created and, if the handler already exists,
+  // Invokes `callback` every time a handler with `tag` is created and, if the handler already exists,
   // immediately before returning. The observation persists until explicitly cancelled: the registry
-  // holds both `owner` and `block` strongly, so callers MUST call `cancelObservation` or
+  // holds both `owner` and `callback` strongly, so callers MUST call `cancelObservation` or
   // `cancelAllObservationsForOwner` when the owner is going away (typically in effect cleanup) to
-  // avoid leaking. Observing the same tag twice with the same `owner` replaces the previous block.
+  // avoid leaking. Observing the same tag twice with the same `owner` replaces the previous callback.
   public static observeHandler(
     tag: number,
     owner: object,
-    block: HandlerReadyBlock
+    callback: HandlerReadyCallback
   ): void {
     let table = this.observers.get(tag);
     if (!table) {
       table = new Map();
       this.observers.set(tag, table);
     }
-    table.set(owner, block);
+    table.set(owner, callback);
 
     if (tag in this.gestures) {
-      block(this.gestures[tag] as IGestureHandler);
+      callback(this.gestures[tag] as IGestureHandler);
     }
   }
 
