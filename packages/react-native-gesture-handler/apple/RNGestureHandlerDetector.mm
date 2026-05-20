@@ -204,13 +204,13 @@
 
     [handlerManager.registry observeHandlerWithTag:@(tag)
                                              owner:self
-                                        usingBlock:^(RNGestureHandler *handler) {
-                                          __strong __typeof(weakSelf) strongSelf = weakSelf;
-                                          if (strongSelf == nil) {
-                                            return;
-                                          }
-                                          [strongSelf attachReadyHandler:handler actionType:actionType viewTag:viewTag];
-                                        }];
+                                      withCallback:^(RNGestureHandler *handler) {
+                                        __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                        if (strongSelf == nil) {
+                                          return;
+                                        }
+                                        [strongSelf attachReadyHandler:handler actionType:actionType viewTag:viewTag];
+                                      }];
     [subscribedHandlers addObject:@(tag)];
   }
 
