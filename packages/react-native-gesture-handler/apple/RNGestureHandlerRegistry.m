@@ -12,12 +12,14 @@
 
 @implementation RNGestureHandlerRegistry {
   NSMutableDictionary<NSNumber *, RNGestureHandler *> *_handlers;
+  NSMutableDictionary<NSNumber *, NSMapTable<id, RNGestureHandlerReadyBlock> *> *_observers;
 }
 
 - (instancetype)init
 {
   if ((self = [super init])) {
     _handlers = [NSMutableDictionary new];
+    _observers = [NSMutableDictionary new];
   }
   return self;
 }
@@ -36,8 +38,62 @@
 
 - (void)registerGestureHandler:(RNGestureHandler *)gestureHandler
 {
+  NSArray<RNGestureHandlerReadyBlock> *observers = nil;
+
   @synchronized(_handlers) {
     _handlers[gestureHandler.tag] = gestureHandler;
+
+    NSMapTable *table = _observers[gestureHandler.tag];
+    if (table != nil) {
+      observers = [[table objectEnumerator] allObjects];
+    }
+  }
+
+  for (RNGestureHandlerReadyBlock block in observers) {
+    block(gestureHandler);
+  }
+}
+
+- (void)observeHandlerWithTag:(NSNumber *)handlerTag owner:(id)owner withCallback:(RNGestureHandlerReadyBlock)callback
+{
+  RNGestureHandler *existing = nil;
+
+  @synchronized(_handlers) {
+    NSMapTable *table = _observers[handlerTag];
+    if (table == nil) {
+      table =
+          [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsWeakMemory | NSPointerFunctionsObjectPointerPersonality
+                                valueOptions:NSPointerFunctionsStrongMemory];
+      _observers[handlerTag] = table;
+    }
+
+    [table setObject:[callback copy] forKey:owner];
+    existing = _handlers[handlerTag];
+  }
+
+  if (existing != nil) {
+    callback(existing);
+  }
+}
+
+- (void)cancelObservationForTag:(NSNumber *)handlerTag owner:(id)owner
+{
+  @synchronized(_handlers) {
+    NSMapTable *table = _observers[handlerTag];
+    [table removeObjectForKey:owner];
+    if (table.count == 0) {
+      [_observers removeObjectForKey:handlerTag];
+    }
+  }
+}
+
+- (void)cancelAllObservationsForOwner:(id)owner
+{
+  @synchronized(_handlers) {
+    NSArray<NSNumber *> *tags = [_observers allKeys];
+    for (NSNumber *tag in tags) {
+      [self cancelObservationForTag:tag owner:owner];
+    }
   }
 }
 
