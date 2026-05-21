@@ -6,7 +6,7 @@ import { navigateTo } from '../utils';
 
 describe('test tap gesture', () => {
   beforeAll(async () => {
-    await navigateTo('Tap Gesture');
+    await navigateTo('[E2E] Tap');
   });
 
   const gestureBox = element(by.id('tap-box'));

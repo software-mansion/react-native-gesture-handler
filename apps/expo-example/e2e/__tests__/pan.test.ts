@@ -6,7 +6,7 @@ import { navigateTo } from '../utils';
 
 describe('test pan gesture', () => {
   beforeAll(async () => {
-    await navigateTo('Pan Gesture');
+    await navigateTo('[E2E] Pan');
   });
 
   const gestureBox = element(by.id('pan-box'));

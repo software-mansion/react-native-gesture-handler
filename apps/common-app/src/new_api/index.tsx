@@ -141,10 +141,10 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'E2E Tests',
     data: [
-      { name: 'Pan Gesture', component: PanE2E },
-      { name: 'Tap Gesture', component: TapE2E },
-      { name: 'Long Press Gesture', component: LongPressE2E },
-      { name: 'Fling Gesture', component: FlingE2E },
+      { name: '[E2E] Pan', component: PanE2E },
+      { name: '[E2E] Tap', component: TapE2E },
+      { name: '[E2E] LongPress', component: LongPressE2E },
+      { name: '[E2E] Fling', component: FlingE2E },
     ],
   },
 ];

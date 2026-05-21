@@ -6,7 +6,7 @@ import { navigateTo } from '../utils';
 
 describe('test long press gesture', () => {
   beforeAll(async () => {
-    await navigateTo('Long Press Gesture');
+    await navigateTo('[E2E] LongPress');
   });
 
   const gestureBox = element(by.id('long-press-box'));
