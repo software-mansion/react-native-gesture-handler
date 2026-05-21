@@ -82,6 +82,9 @@ export default {
     NodeManager.dropGestureHandler(handlerTag);
   },
   configureRelations(handlerTag: number, relations: GestureRelations) {
+    if (!NodeManager.hasHandler(handlerTag)) {
+      return;
+    }
     InteractionManager.instance.configureInteractions(
       NodeManager.getHandler(handlerTag),
       relations

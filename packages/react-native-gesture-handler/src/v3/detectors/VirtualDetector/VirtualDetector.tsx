@@ -6,8 +6,8 @@ import { tagMessage } from '../../../utils';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import type { DetectorCallbacks, VirtualChild } from '../../types';
 import type { VirtualDetectorProps } from '../common';
+import { useGestureRelationsUpdater } from '../useGestureRelationsUpdater';
 import { useNativeGestureRole } from '../useNativeGestureRole';
-import { configureRelations } from '../utils';
 import {
   InterceptingDetectorMode,
   useInterceptingDetectorContext,
@@ -104,7 +104,7 @@ export function VirtualDetector<
     setMode,
   ]);
 
-  configureRelations(props.gesture);
+  useGestureRelationsUpdater(props.gesture);
 
   return <Wrap ref={handleRef}>{props.children}</Wrap>;
 }
