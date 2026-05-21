@@ -66,6 +66,11 @@ jobs:
           node-version: 24
           cache: yarn
 
+      - name: Install emulator system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpulse0
+
       - name: Install dependencies
         run: yarn --immutable
 
