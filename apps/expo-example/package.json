@@ -17,7 +17,7 @@
     "test:android": "detox test -c android.emu.release e2e/__tests__/pan.test.ts"
   },
   "dependencies": {
-    "@expo/metro-runtime": "~56.0.9",
+    "@expo/metro-runtime": "~56.0.10",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native/new-app-screen": "0.85.2",
     "@react-navigation/elements": "^2.3.8",
@@ -27,14 +27,14 @@
     "@swmansion/icons": "^0.0.1",
     "babel-preset": "^1.1.7",
     "common-app": "workspace:*",
-    "expo": "56.0.0-preview.13",
+    "expo": "~56.0.1",
     "expo-camera": "~56.0.5",
     "expo-status-bar": "~56.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.85.3",
     "react-native-gesture-handler": "workspace:*",
-    "react-native-pager-view": "^8.0.1",
+    "react-native-pager-view": "8.0.1",
     "react-native-reanimated": "4.3.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.1",
@@ -56,8 +56,8 @@
     "@react-native/typescript-config": "0.85.2",
     "@rnrepo/expo-config-plugin": "0.3.0-beta.3",
     "@types/jest": "^29.5.13",
-    "@types/react": "~19.1.10",
-    "@types/react-dom": "~19.1.7",
+    "@types/react": "~19.2.14",
+    "@types/react-dom": "~19.2.3",
     "@types/react-native-web": "^0",
     "@types/react-test-renderer": "^19.1.0",
     "detox": "^20.51.0",
@@ -65,7 +65,7 @@
     "jest": "^29.6.3",
     "prettier": "2.8.8",
     "react-test-renderer": "19.2.3",
-    "typescript": "^5.8.3"
+    "typescript": "~6.0.3"
   },
   "private": true,
   "installConfig": {
