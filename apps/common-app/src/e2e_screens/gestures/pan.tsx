@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import {
-  GestureDetector,
-  ScrollView,
-  usePanGesture,
-} from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+
+import TestingScreen from '../TestingScreen';
 
 export default function PanScreen() {
   const [text, setText] = useState('');
@@ -33,67 +31,19 @@ export default function PanScreen() {
   });
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
-        <Text testID="state-indicator" style={styles.stateIndicator}>
-          {text}
-        </Text>
-      </ScrollView>
-      <View testID="container" style={styles.innerContainer}>
-        <GestureDetector gesture={panGesture}>
-          <View style={styles.gestureBox} testID="pan-box" />
-        </GestureDetector>
-      </View>
-      <View style={styles.buttonContainer}>
-        <Pressable
-          testID="reset"
-          style={styles.resetButton}
-          onPress={() => {
-            setText('');
-          }}>
-          <Text>Reset</Text>
-        </Pressable>
-      </View>
-    </View>
+    <TestingScreen text={text} setText={setText}>
+      <GestureDetector gesture={panGesture}>
+        <View style={styles.gestureBox} testID="pan-box" />
+      </GestureDetector>
+    </TestingScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContainer: {
-    height: 50,
-    maxHeight: 50,
-  },
-  innerContainer: {
-    flex: 1,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  stateIndicator: {
-    fontSize: 15,
-    alignSelf: 'flex-start',
-  },
   gestureBox: {
     width: 120,
     height: 120,
     borderRadius: 20,
     backgroundColor: '#4ecdc4',
-  },
-  buttonContainer: {
-    height: 60,
-    maxHeight: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  resetButton: {
-    width: 120,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'royalblue',
-
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
