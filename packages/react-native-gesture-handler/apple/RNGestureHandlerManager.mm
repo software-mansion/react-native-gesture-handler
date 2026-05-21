@@ -224,17 +224,8 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)updateGestureHandlerRelations:(NSNumber *)handlerTag relations:(NSDictionary *)relations
 {
-  // Observe the registry rather than looking up the handler directly - the JS-side detector may
-  // request relations before `useGesture`'s effect has called `createGestureHandler`, so the
-  // handler doesn't exist yet.
-  id owner = [NSObject new];
-  __weak RNGestureHandlerRegistry *weakRegistry = _registry;
-  [_registry observeHandlerWithTag:handlerTag
-                             owner:owner
-                      withCallback:^(RNGestureHandler *handler) {
-                        [handler updateRelations:relations];
-                        [weakRegistry cancelObservationForTag:handlerTag owner:owner];
-                      }];
+  RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
+  [handler updateRelations:relations];
 }
 
 - (void)dropGestureHandler:(NSNumber *)handlerTag
