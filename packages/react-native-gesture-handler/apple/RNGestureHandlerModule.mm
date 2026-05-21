@@ -118,16 +118,15 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (NSNumber *)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
+- (void)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
 {
   if (_isReanimatedAvailable && !_uiRuntimeDecorated) {
     _uiRuntimeDecorated = [self installUIRuntimeBindings];
   }
 
-  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
-
-  return @1;
+  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
+    [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
+  }];
 }
 
 - (void)attachGestureHandler:(double)handlerTag newView:(double)viewTag actionType:(double)actionType
