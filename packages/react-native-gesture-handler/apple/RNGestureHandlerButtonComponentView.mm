@@ -360,6 +360,8 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 
   [super updateProps:props oldProps:oldProps];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
   // super's updateProps sets self.accessibilityIdentifier from testID via the
   // standard Fabric mechanism. However, setAccessibilityProps already forwards
   // testID to _buttonView.accessibilityIdentifier (the actual button element).
@@ -369,6 +371,8 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   if (!newProps.testId.empty()) {
     self.accessibilityIdentifier = nil;
   }
+#endif
+
   if (shouldApplyStartAnimationState) {
     [_buttonView applyStartAnimationState];
   }
