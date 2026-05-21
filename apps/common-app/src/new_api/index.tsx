@@ -1,5 +1,6 @@
 import type { ExamplesSection } from '../common';
-import panE2E from '../e2e_screens/gestures/pan';
+import PanE2E from '../e2e_screens/gestures/Pan';
+import TapE2E from '../e2e_screens/gestures/Tap';
 import EmptyExample from '../empty';
 import CameraExample from './complicated/camera';
 import ChatHeadsExample from './complicated/chat_heads';
@@ -137,6 +138,9 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
   },
   {
     sectionTitle: 'E2E Tests',
-    data: [{ name: 'Pan Gesture', component: panE2E }],
+    data: [
+      { name: 'Pan Gesture', component: PanE2E },
+      { name: 'Tap Gesture', component: TapE2E },
+    ],
   },
 ];
