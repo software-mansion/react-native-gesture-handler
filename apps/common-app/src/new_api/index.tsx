@@ -1,7 +1,8 @@
 import type { ExamplesSection } from '../common';
+import FlingE2E from '../e2e_screens/gestures/Fling';
+import LongPressE2E from '../e2e_screens/gestures/LongPress';
 import PanE2E from '../e2e_screens/gestures/Pan';
 import TapE2E from '../e2e_screens/gestures/Tap';
-import LongPressE2E from '../e2e_screens/gestures/LongPress';
 import EmptyExample from '../empty';
 import CameraExample from './complicated/camera';
 import ChatHeadsExample from './complicated/chat_heads';
@@ -143,6 +144,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Pan Gesture', component: PanE2E },
       { name: 'Tap Gesture', component: TapE2E },
       { name: 'Long Press Gesture', component: LongPressE2E },
+      { name: 'Fling Gesture', component: FlingE2E },
     ],
   },
 ];
