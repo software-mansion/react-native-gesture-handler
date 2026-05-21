@@ -224,10 +224,6 @@ RCT_EXPORT_MODULE()
     } else if (state == 3) { // CANCELLED
       handler.recognizer.state = RNGHGestureRecognizerStateCancelled;
     } else if (state == 4) { // ACTIVE
-      // We don't allow activation of gestures which haven't received any touches
-      if (handler.lastState == RNGestureHandlerStateUndetermined) {
-        return;
-      }
       [handler stopActivationBlocker];
       handler.recognizer.state = RNGHGestureRecognizerStateBegan;
     } else if (state == 5) { // ENDED
