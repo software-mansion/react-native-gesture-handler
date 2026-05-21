@@ -1,12 +1,13 @@
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import { beforeAll, beforeEach, describe } from '@jest/globals';
+import { TestScreens } from 'common-app/src/e2e_screens/screenNames';
 import { by, element, expect } from 'detox';
 
 import { navigateTo } from '../utils';
 
 describe('test tap gesture', () => {
   beforeAll(async () => {
-    await navigateTo('[E2E] Tap');
+    await navigateTo(TestScreens.Tap);
   });
 
   const gestureBox = element(by.id('tap-box'));
