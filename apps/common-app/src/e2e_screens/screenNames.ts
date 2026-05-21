@@ -4,4 +4,5 @@ export const TestScreens = {
   LongPress: '[E2E] LongPress',
   Fling: '[E2E] Fling',
   Pinch: '[E2E] Pinch',
+  Rotation: '[E2E] Rotation',
 };
