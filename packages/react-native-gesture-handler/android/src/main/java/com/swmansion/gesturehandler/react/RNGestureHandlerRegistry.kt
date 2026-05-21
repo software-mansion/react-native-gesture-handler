@@ -14,19 +14,24 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   private val observers = mutableMapOf<Int, MutableMap<Any, (GestureHandler) -> Unit>>()
 
   fun registerHandler(handler: GestureHandler) {
-    val callbacks = synchronized(this) {
+    val hasObservers = synchronized(this) {
       handlers.put(handler.tag, handler)
-      observers[handler.tag]?.values?.toList().orEmpty()
+      observers[handler.tag]?.isNotEmpty() == true
     }
 
-    if (callbacks.isEmpty()) {
+    if (!hasObservers) {
       return
     }
 
     // `createGestureHandler` runs on the JS thread, but observer callbacks read detector
     // view state (childCount, getChildAt) and may attach native handlers, so they must run
-    // on the UI thread.
+    // on the UI thread. Re-resolve the observer list on the UI thread so a cancellation that
+    // happens between this post and `notify` running (e.g. detector detach) actually prevents
+    // the callback.
     val notify = {
+      val callbacks = synchronized(this) {
+        observers[handler.tag]?.values?.toList().orEmpty()
+      }
       for (callback in callbacks) {
         callback(handler)
       }
