@@ -61,7 +61,7 @@ export const NativeProxy = {
       RNGestureHandlerModule.configureRelations(handlerTag, relations);
     });
   },
-  setReanimatedAvailable: (isAvailable: boolean) => {
-    RNGestureHandlerModule.setReanimatedAvailable(isAvailable);
+  installUIRuntimeBindings: () => {
+    return RNGestureHandlerModule.installUIRuntimeBindings();
   },
 } as const;

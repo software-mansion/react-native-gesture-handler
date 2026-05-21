@@ -2,6 +2,8 @@ const NOOP = () => {
   // Do nothing
 };
 
+const NOOPTrue = () => true;
+
 const attachGestureHandler = NOOP;
 const createGestureHandler = NOOP;
 const dropGestureHandler = NOOP;
@@ -9,7 +11,7 @@ const setGestureHandlerConfig = NOOP;
 const updateGestureHandlerConfig = NOOP;
 const flushOperations = NOOP;
 const configureRelations = NOOP;
-const setReanimatedAvailable = NOOP;
+const installUIRuntimeBindings = NOOPTrue;
 const install = NOOP;
 
 export default {
@@ -19,7 +21,7 @@ export default {
   setGestureHandlerConfig,
   updateGestureHandlerConfig,
   configureRelations,
-  setReanimatedAvailable,
+  installUIRuntimeBindings,
   flushOperations,
   install,
 } as const;
