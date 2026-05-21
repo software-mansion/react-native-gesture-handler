@@ -92,7 +92,15 @@ try {
   });
 
   ghQueueMicrotask(() => {
-    NativeProxy.installUIRuntimeBindings();
+    const decorated = NativeProxy.installUIRuntimeBindings();
+
+    if (!decorated) {
+      console.warn(
+        tagMessage(
+          'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
+        )
+      );
+    }
   });
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue

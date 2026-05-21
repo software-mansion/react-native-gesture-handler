@@ -94,5 +94,6 @@ export default {
   flushOperations() {},
   installUIRuntimeBindings() {
     // No-op on web
+    return true;
   },
 };
