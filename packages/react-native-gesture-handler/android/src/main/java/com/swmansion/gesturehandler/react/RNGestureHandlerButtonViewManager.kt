@@ -23,7 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.facebook.react.R
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
@@ -546,6 +546,28 @@ class RNGestureHandlerButtonViewManager :
       }
 
       currentAnimator?.cancel()
+      currentAnimator = null
+
+      // Sub-frame durations: snap directly. ObjectAnimator with duration 0
+      // still defers its property write to the next frame callback, so if a
+      // follow-up animateTo() cancels it in the same frame the property never
+      // lands on its target and the next animator captures a stale starting
+      // value (e.g. an instant press-in followed by press-out in the same
+      // frame, leaving the press-out to animate default → default).
+      if (durationMs < (display?.minimumFrameTime ?: 16f)) {
+        if (hasOpacity) {
+          alpha = opacity
+        }
+        if (hasScale) {
+          scaleX = scale
+          scaleY = scale
+        }
+        if (hasUnderlay) {
+          underlayDrawable!!.alpha = (underlayOpacity * 255).toInt()
+        }
+        return
+      }
+
       val animators = ArrayList<Animator>()
       if (hasOpacity) {
         animators.add(ObjectAnimator.ofFloat(this, "alpha", opacity))
@@ -560,7 +582,7 @@ class RNGestureHandlerButtonViewManager :
       currentAnimator = AnimatorSet().apply {
         playTogether(animators)
         duration = durationMs
-        interpolator = LinearOutSlowInInterpolator()
+        interpolator = FastOutSlowInInterpolator()
         start()
       }
     }

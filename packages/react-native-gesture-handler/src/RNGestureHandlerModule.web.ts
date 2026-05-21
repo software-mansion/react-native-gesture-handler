@@ -82,14 +82,13 @@ export default {
     NodeManager.dropGestureHandler(handlerTag);
   },
   configureRelations(handlerTag: number, relations: GestureRelations) {
-    // Observe the NodeManager rather than looking up the handler directly - the detector may
-    // request relations before `useGesture`'s effect has called `createGestureHandler`, so the
-    // handler doesn't exist yet.
-    const owner = {};
-    NodeManager.observeHandler(handlerTag, owner, (handler) => {
-      InteractionManager.instance.configureInteractions(handler, relations);
-      NodeManager.cancelObservation(handlerTag, owner);
-    });
+    if (!NodeManager.hasHandler(handlerTag)) {
+      return;
+    }
+    InteractionManager.instance.configureInteractions(
+      NodeManager.getHandler(handlerTag),
+      relations
+    );
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   flushOperations() {},

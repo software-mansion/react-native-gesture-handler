@@ -20,7 +20,7 @@ function hash(str: string) {
   return h >>> 0;
 }
 
-const SHARED_VALUE_OFFSET = 1.618;
+export const SHARED_VALUE_OFFSET = 1.618;
 
 // Don't transfer entire NativeProxy to the UI thread
 const { updateGestureHandlerConfig } = NativeProxy;
