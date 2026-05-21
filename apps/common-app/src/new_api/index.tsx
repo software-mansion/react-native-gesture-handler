@@ -2,6 +2,7 @@ import type { ExamplesSection } from '../common';
 import FlingE2E from '../e2e_screens/gestures/Fling';
 import LongPressE2E from '../e2e_screens/gestures/LongPress';
 import PanE2E from '../e2e_screens/gestures/Pan';
+import PinchE2E from '../e2e_screens/gestures/Pinch';
 import TapE2E from '../e2e_screens/gestures/Tap';
 import { TestScreens } from '../e2e_screens/screenNames';
 import EmptyExample from '../empty';
@@ -143,6 +144,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
     sectionTitle: 'E2E Tests',
     data: [
       { name: TestScreens.Pan, component: PanE2E },
+      { name: TestScreens.Pinch, component: PinchE2E },
       { name: TestScreens.Tap, component: TapE2E },
       { name: TestScreens.LongPress, component: LongPressE2E },
       { name: TestScreens.Fling, component: FlingE2E },
