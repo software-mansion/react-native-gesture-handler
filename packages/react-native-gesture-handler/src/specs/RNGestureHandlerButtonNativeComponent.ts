@@ -2,6 +2,7 @@ import type { ColorValue, ViewProps } from 'react-native';
 import type {
   Float,
   Int32,
+  UnsafeMixed,
   WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
@@ -56,17 +57,28 @@ interface NativeProps extends ViewProps {
   borderBlockEndColor?: ColorValue;
   borderBlockStartColor?: ColorValue;
 
-  // Border radius — logical variants beyond what ViewProps provides
-  // WithDefault -1 so the codegen sends -1 (our "unset" sentinel) instead of 0
-  // when the prop is absent, letting physical / general radii take effect.
-  borderTopStartRadius?: WithDefault<Float, -1>;
-  borderTopEndRadius?: WithDefault<Float, -1>;
-  borderBottomStartRadius?: WithDefault<Float, -1>;
-  borderBottomEndRadius?: WithDefault<Float, -1>;
-  borderEndEndRadius?: WithDefault<Float, -1>;
-  borderEndStartRadius?: WithDefault<Float, -1>;
-  borderStartEndRadius?: WithDefault<Float, -1>;
-  borderStartStartRadius?: WithDefault<Float, -1>;
+  // Border radius — declared as UnsafeMixed (folly::dynamic on iOS,
+  // DynamicFromObject on Android) so codegen forwards the raw value
+  // without coercing to Float. This lets the Android view manager parse
+  // both numeric points and percentage strings via
+  // LengthPercentage.setFromDynamic, matching RN's standard View. The
+  // non-logical variants are declared explicitly so they're dispatched
+  // through our delegate instead of falling through to
+  // BaseViewManagerDelegate, which casts to Double and would crash on a
+  // string value.
+  borderRadius?: UnsafeMixed;
+  borderTopLeftRadius?: UnsafeMixed;
+  borderTopRightRadius?: UnsafeMixed;
+  borderBottomLeftRadius?: UnsafeMixed;
+  borderBottomRightRadius?: UnsafeMixed;
+  borderTopStartRadius?: UnsafeMixed;
+  borderTopEndRadius?: UnsafeMixed;
+  borderBottomStartRadius?: UnsafeMixed;
+  borderBottomEndRadius?: UnsafeMixed;
+  borderEndEndRadius?: UnsafeMixed;
+  borderEndStartRadius?: UnsafeMixed;
+  borderStartEndRadius?: UnsafeMixed;
+  borderStartStartRadius?: UnsafeMixed;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');
