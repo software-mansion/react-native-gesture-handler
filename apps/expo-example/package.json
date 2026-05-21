@@ -13,8 +13,8 @@
     "build-detox-ios": "yarn detox build -c ios.sim.release",
     "build-detox": "yarn build-detox-android && yarn build-detox-ios",
     "test": "jest",
-    "test:ios": "detox test -c ios.sim.release gestures.test.ts",
-    "test:android": "detox test -c android.emu.release gestures.test.ts"
+    "test:ios": "detox test -c ios.sim.release e2e/__tests__/pan.test.ts",
+    "test:android": "detox test -c android.emu.release e2e/__tests__/pan.test.ts"
   },
   "dependencies": {
     "@expo/metro-runtime": "~56.0.9",

@@ -1,57 +1,57 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+import {
+  GestureDetector,
+  ScrollView,
+  usePanGesture,
+} from 'react-native-gesture-handler';
 
 export default function PanScreen() {
   const [text, setText] = useState('');
-  const [states, setStates] = useState<number[]>([]);
 
   const panGesture = usePanGesture({
     onBegin: () => {
-      setStates((prev) => [...prev, 2]);
+      setText((prev) => prev + '1');
     },
     onActivate: () => {
-      setStates((prev) => [...prev, 4]);
+      setText((prev) => prev + '2');
     },
     onUpdate: () => {
-      setStates((prev) => [...prev, 4]);
+      // Skip subsequent updates
+      if (text[text.length - 1] === '3') {
+        return;
+      }
+      setText((prev) => prev + '3');
     },
     onDeactivate: () => {
-      setStates((prev) => [...prev, 5]);
+      setText((prev) => prev + '4');
     },
-    onFinalize: (e) => {
-      setStates((prev) => [...prev, e.canceled ? 1 : 5]);
+    onFinalize: () => {
+      setText((prev) => prev + '5');
     },
     runOnJS: true,
   });
 
   return (
     <View style={styles.container}>
-      <Text testID="state-indicator" style={styles.stateIndicator}>
-        {text}
-      </Text>
+      <ScrollView style={styles.scrollContainer}>
+        <Text testID="state-indicator" style={styles.stateIndicator}>
+          {text}
+        </Text>
+      </ScrollView>
       <View testID="container" style={styles.innerContainer}>
         <GestureDetector gesture={panGesture}>
           <View style={styles.gestureBox} testID="pan-box" />
         </GestureDetector>
-
+      </View>
+      <View style={styles.buttonContainer}>
         <Pressable
           testID="reset"
           style={styles.resetButton}
           onPress={() => {
             setText('');
-            setStates([]);
           }}>
           <Text>Reset</Text>
-        </Pressable>
-
-        <Pressable
-          testID="event-extractor"
-          style={styles.resetButton}
-          onPress={() => {
-            setText([...new Set(states)].join(''));
-          }}>
-          <Text>Extract</Text>
         </Pressable>
       </View>
     </View>
@@ -62,14 +62,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  scrollContainer: {
+    height: 50,
+    maxHeight: 50,
+  },
   innerContainer: {
     flex: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#f7fff7',
   },
   stateIndicator: {
-    fontSize: 20,
+    fontSize: 15,
     alignSelf: 'flex-start',
   },
   gestureBox: {
@@ -77,6 +80,12 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 20,
     backgroundColor: '#4ecdc4',
+  },
+  buttonContainer: {
+    height: 60,
+    maxHeight: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   resetButton: {
     width: 120,
