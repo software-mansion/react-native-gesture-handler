@@ -117,6 +117,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun flushOperations() = Unit
 
+  @ReactMethod
   override fun installUIRuntimeBindings(): Boolean {
     if (!uiRuntimeDecorated) {
       uiRuntimeDecorated = decorateUIRuntime()

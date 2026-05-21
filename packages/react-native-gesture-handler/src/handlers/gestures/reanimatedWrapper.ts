@@ -86,7 +86,7 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
   const Worklets = require('react-native-worklets');
 
-  // Make sure worklets are initialized before attemting to install UI runtime bindings
+  // Make sure worklets are initialized before attempting to install UI runtime bindings
   Worklets?.scheduleOnUI(() => {
     'worklet';
   });
