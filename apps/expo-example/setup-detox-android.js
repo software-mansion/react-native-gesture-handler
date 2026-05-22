@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 /**
  * Patches the Android project after `expo prebuild` to add Detox e2e test support.
- * Run with: node scripts/setup-detox-android.js
  */
 
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
@@ -10,6 +9,42 @@ const { existsSync, mkdirSync, readFileSync, writeFileSync } = require('fs');
 const { join } = require('path');
 
 const androidDir = join(__dirname, 'android');
+
+// Derive android package from build.gradle written by expo prebuild.
+// This avoids hardcoding the package and keeps things in sync with app.config.*.
+const appBuildGradleContent = readFileSync(
+  join(androidDir, 'app', 'build.gradle'),
+  'utf8'
+);
+const packageMatch = appBuildGradleContent.match(/applicationId\s+['"]([^'"]+)['"]/);
+if (!packageMatch) {
+  console.error(
+    'ERROR: Could not determine android package from android/app/build.gradle.\n' +
+      'Make sure you have run `expo prebuild` before running this script.'
+  );
+  process.exit(1);
+}
+const androidPackage = packageMatch[1]; // e.g. "com.example.ExpoExample"
+const packagePath = androidPackage.replace(/\./g, '/'); // e.g. "com/example/ExpoExample"
+
+// Validate that the main source package directory exists (sanity check after prebuild).
+const mainPackageDir = join(
+  androidDir,
+  'app',
+  'src',
+  'main',
+  'java',
+  packagePath
+);
+if (!existsSync(mainPackageDir)) {
+  console.error(
+    `ERROR: Expected package directory does not exist: ${mainPackageDir}\n` +
+      'Make sure you have run `expo prebuild` before running this script.'
+  );
+  process.exit(1);
+}
+
+console.log(`Detected android package: ${androidPackage}`);
 
 function patchFile(filePath, patches) {
   let content = readFileSync(filePath, 'utf8');
@@ -99,9 +134,7 @@ const detoxTestDir = join(
   'src',
   'androidTest',
   'java',
-  'com',
-  'example',
-  'ExpoExample'
+  packagePath
 );
 const detoxTestPath = join(detoxTestDir, 'DetoxTest.kt');
 if (existsSync(detoxTestPath)) {
@@ -111,7 +144,7 @@ if (existsSync(detoxTestPath)) {
   writeFileSync(
     detoxTestPath,
     [
-      'package com.example.ExpoExample',
+      `package ${androidPackage}`,
       '',
       'import androidx.test.ext.junit.runners.AndroidJUnit4',
       'import androidx.test.filters.LargeTest',
