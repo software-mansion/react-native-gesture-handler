@@ -407,6 +407,11 @@ class RNGestureHandlerButtonViewManager :
     // When null the ripple lives on the foreground drawable instead.
     private var selectableDrawable: Drawable? = null
 
+    // When true, dispatchDraw clips children to the resolved border-radius shape
+    // (overflow: hidden). ViewGroup's clipChildren is only a rectangular clip and
+    // wouldn't respect rounded corners.
+    private var clipChildrenToShape = false
+
     var isTouched = false
 
     init {
@@ -424,16 +429,7 @@ class RNGestureHandlerButtonViewManager :
     }
 
     fun setOverflow(overflow: String?) {
-      when (overflow) {
-        "hidden" -> {
-          clipChildren = true
-          clipToPadding = true
-        }
-        else -> {
-          clipChildren = false
-          clipToPadding = false
-        }
-      }
+      clipChildrenToShape = overflow == "hidden"
       invalidate()
     }
 
@@ -694,7 +690,14 @@ class RNGestureHandlerButtonViewManager :
           canvas.restore()
         }
       }
-      super.dispatchDraw(canvas)
+      if (clipChildrenToShape) {
+        canvas.save()
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
+        super.dispatchDraw(canvas)
+        canvas.restore()
+      } else {
+        super.dispatchDraw(canvas)
+      }
     }
 
     override fun verifyDrawable(who: Drawable): Boolean =
