@@ -17,11 +17,13 @@ export default function PanScreen() {
       setText((prev) => prev + '2');
     },
     onUpdate: () => {
-      // Skip subsequent updates
-      if (text[text.length - 1] === '3') {
-        return;
-      }
-      setText((prev) => prev + '3');
+      setText((prev) => {
+        // Skip subsequent updates
+        if (prev[prev.length - 1] === '3') {
+          return prev;
+        }
+        return prev + '3';
+      });
     },
     onDeactivate: () => {
       setText((prev) => prev + '4');
