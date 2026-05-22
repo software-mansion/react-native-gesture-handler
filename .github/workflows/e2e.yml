@@ -1,9 +1,6 @@
 name: E2E Test
 
 on:
-  pull_request:
-    paths:
-      - packages/react-native-gesture-handler/**
   push:
     branches:
       - main
@@ -39,9 +36,6 @@ jobs:
 
       - name: Setup Detox
         run: brew tap wix/brew && brew install applesimutils && npm install -g detox-cli
-
-      # - name: Install argent
-      #   run: npm install -g @swmansion/argent
 
       - name: Build for iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
@@ -87,7 +81,7 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn build-detox-android
 
-      - name: run tests
+      - name: Run tests on Android
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
