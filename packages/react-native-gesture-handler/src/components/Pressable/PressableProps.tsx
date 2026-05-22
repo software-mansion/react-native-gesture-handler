@@ -32,7 +32,8 @@ export type InnerPressableEvent = {
 
 export type PressableEvent = { nativeEvent: InnerPressableEvent };
 
-export interface LegacyPressableProps extends CommonPressableProps {
+export interface LegacyPressableProps
+  extends Omit<CommonPressableProps, 'needsOffscreenAlphaCompositing'> {
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the Pressable's gesture handlers.

@@ -377,6 +377,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
+        needsOffscreenAlphaCompositing
         onLayout={setDimensions}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
