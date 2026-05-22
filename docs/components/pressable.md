@@ -161,6 +161,14 @@ Enables the Android [ripple](https://developer.android.com/reference/android/gra
 
 Accepts values of type [`RippleConfig`](https://reactnative.dev/docs/pressable#rippleconfig).
 
+### needsOffscreenAlphaCompositing
+
+```ts
+needsOffscreenAlphaCompositing?: boolean;
+```
+
+Whether the view should render with an offscreen alpha-compositing buffer when its `opacity` is less than `1`. Defaults to `false`.
+
 ### testOnly\_pressed
 
 ```ts
