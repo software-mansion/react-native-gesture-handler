@@ -148,6 +148,9 @@
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
     [self applyStartAnimationState];
+    _isTouchInsideBounds = NO;
+    _suppressSuperControlActionDispatch = NO;
+    _pressInTimestamp = 0;
   }
 }
 #else
@@ -157,6 +160,9 @@
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
     [self applyStartAnimationState];
+    _isTouchInsideBounds = NO;
+    _suppressSuperControlActionDispatch = NO;
+    _pressInTimestamp = 0;
   }
 }
 #endif
