@@ -887,6 +887,10 @@ class RNGestureHandlerButtonViewManager :
       // by default Viewgroup would pass hotspot change events
     }
 
+    // Skip the offscreen buffer so children's border anti-aliasing at the view
+    // edge isn't clipped by the layer bounds when alpha != 1
+    override fun hasOverlappingRendering(): Boolean = false
+
     companion object {
       var resolveOutValue = TypedValue()
       var touchResponder: ButtonViewGroup? = null
