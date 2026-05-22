@@ -147,6 +147,7 @@
   [super viewWillMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self applyStartAnimationState];
   }
 }
 #else
@@ -155,6 +156,7 @@
   [super willMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self applyStartAnimationState];
   }
 }
 #endif

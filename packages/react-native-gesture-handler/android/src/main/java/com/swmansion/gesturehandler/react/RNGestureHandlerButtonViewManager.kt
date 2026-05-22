@@ -739,6 +739,14 @@ class RNGestureHandlerButtonViewManager :
       pendingPressOut = null
       currentAnimator?.cancel()
       currentAnimator = null
+      applyStartAnimationState()
+
+      if (touchResponder === this) {
+        touchResponder = null
+      }
+      if (soundResponder === this) {
+        soundResponder = null
+      }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
