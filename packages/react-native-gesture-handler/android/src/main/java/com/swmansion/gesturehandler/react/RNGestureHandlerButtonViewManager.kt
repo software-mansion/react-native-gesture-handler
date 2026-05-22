@@ -289,6 +289,11 @@ class RNGestureHandlerButtonViewManager :
     view.longPressAnimationOutDuration = value
   }
 
+  @ReactProp(name = "needsOffscreenAlphaCompositing")
+  override fun setNeedsOffscreenAlphaCompositing(view: ButtonViewGroup, value: Boolean) {
+    view.needsOffscreenAlphaCompositing = value
+  }
+
   @ReactProp(name = "defaultOpacity")
   override fun setDefaultOpacity(view: ButtonViewGroup, defaultOpacity: Float) {
     view.defaultOpacity = defaultOpacity
@@ -382,6 +387,7 @@ class RNGestureHandlerButtonViewManager :
       set(value) = withBackgroundUpdate {
         field = value
       }
+    var needsOffscreenAlphaCompositing = false
 
     override var pointerEvents: PointerEvents = PointerEvents.AUTO
 
@@ -894,6 +900,11 @@ class RNGestureHandlerButtonViewManager :
       // No-op
       // by default Viewgroup would pass hotspot change events
     }
+
+    // Default to skipping the offscreen buffer so children's border anti-aliasing
+    // at the view edge isn't clipped by the layer bounds when alpha != 1.
+    // `needsOffscreenAlphaCompositing` opts back into the standard View behavior.
+    override fun hasOverlappingRendering(): Boolean = needsOffscreenAlphaCompositing
 
     companion object {
       var resolveOutValue = TypedValue()

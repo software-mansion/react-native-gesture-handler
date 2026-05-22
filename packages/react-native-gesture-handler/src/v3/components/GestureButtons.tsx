@@ -15,16 +15,24 @@ import type {
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 type EndCallbackEventType = GestureEndEvent<NativeHandlerData>;
 
-/**
- * @deprecated `RawButton` is deprecated, use `Clickable` instead
- */
-export const RawButton = createNativeWrapper<
+type RawButtonInnerProps = RawButtonProps & {
+  needsOffscreenAlphaCompositing?: boolean | undefined;
+};
+
+const RawButtonInner = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
-  RawButtonProps
+  RawButtonInnerProps
 >(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
+
+/**
+ * @deprecated `RawButton` is deprecated, use `Clickable` instead
+ */
+export const RawButton = (props: RawButtonProps) => (
+  <RawButtonInner {...props} needsOffscreenAlphaCompositing />
+);
 
 /**
  * @deprecated `BaseButton` is deprecated, use `Touchable` instead
