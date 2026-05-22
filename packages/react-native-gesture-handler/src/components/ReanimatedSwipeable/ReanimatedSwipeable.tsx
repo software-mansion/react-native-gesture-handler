@@ -393,6 +393,10 @@ const Swipeable = (props: SwipeableProps) => {
   const leftActionAnimation = useAnimatedStyle(() => {
     return {
       opacity: showLeftProgress.value === 0 ? 0 : 1,
+      // Without this, Android keeps the absolute-fill left actions container
+      // as a touch target even at opacity 0, swallowing taps that should reach
+      // the row content or the opposite-side actions below in z-order.
+      pointerEvents: showLeftProgress.value === 0 ? 'none' : 'auto',
     };
   });
 
@@ -423,6 +427,9 @@ const Swipeable = (props: SwipeableProps) => {
   const rightActionAnimation = useAnimatedStyle(() => {
     return {
       opacity: showRightProgress.value === 0 ? 0 : 1,
+      // See note on leftActionAnimation: needed so the hidden right actions
+      // container doesn't intercept taps on the visible left actions on Android.
+      pointerEvents: showRightProgress.value === 0 ? 'none' : 'auto',
     };
   });
 
