@@ -17,7 +17,7 @@ describe('test pan gesture', () => {
     await resetButton.tap();
   });
 
-  test('Shouldn`t register a pan gesture on tap', async () => {
+  test("Shouldn't register a pan gesture on tap", async () => {
     await gestureBox.tap();
     await expect(stateIndicator).toHaveText('15');
   });
