@@ -1,6 +1,10 @@
 name: E2E Test
 
 on:
+  pull_request:
+    paths:
+      - apps/expo-example/e2e/**
+      - apps/common-app/src/e2e_screens/**
   push:
     branches:
       - main
