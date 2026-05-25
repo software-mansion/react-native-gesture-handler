@@ -46,35 +46,37 @@ function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
   });
 }
 
-describe('test rotation gesture', () => {
-  beforeAll(async () => {
-    await navigateTo(TestScreens.Rotation);
-  });
-
-  const gestureBox = element(by.id('rotation-box'));
-  const stateIndicator = element(by.id('state-indicator'));
-  const resetButton = element(by.id('reset'));
-
-  beforeEach(async () => {
-    await resetButton.tap();
-  });
-
-  test('Should register rotation gesture on rotation', async () => {
-    const udid = device.id;
-
-    await argentRotate(udid, {
-      centerX: '0.5',
-      centerY: '0.55',
-      startAngle: '0',
-      endAngle: '90',
-      radius: '0.05',
+export function rotationTests() {
+  describe('test rotation gesture', () => {
+    beforeAll(async () => {
+      await navigateTo(TestScreens.Rotation);
     });
 
-    await expect(stateIndicator).toHaveText('12345');
-  });
+    const gestureBox = element(by.id('rotation-box'));
+    const stateIndicator = element(by.id('state-indicator'));
+    const resetButton = element(by.id('reset'));
 
-  test('Shouldn`t register a rotation gesture on tap', async () => {
-    await gestureBox.tap();
-    await expect(stateIndicator).toHaveText('');
+    beforeEach(async () => {
+      await resetButton.tap();
+    });
+
+    test('Should register rotation gesture on rotation', async () => {
+      const udid = device.id;
+
+      await argentRotate(udid, {
+        centerX: '0.5',
+        centerY: '0.55',
+        startAngle: '0',
+        endAngle: '90',
+        radius: '0.05',
+      });
+
+      await expect(stateIndicator).toHaveText('12345');
+    });
+
+    test('Shouldn`t register a rotation gesture on tap', async () => {
+      await gestureBox.tap();
+      await expect(stateIndicator).toHaveText('');
+    });
   });
-});
+}
