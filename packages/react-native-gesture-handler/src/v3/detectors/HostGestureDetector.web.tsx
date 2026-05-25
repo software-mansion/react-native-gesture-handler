@@ -44,10 +44,6 @@ type DetectorRefs = {
   // Flat set of tags currently bound to *some* element (top-level or virtual). Mirrors iOS
   // `_attachedHandlers` / Android `attachedHandlers`.
   attachedHandlers: Set<number>;
-  // Tags whose handler asked to attach to the detector's child element rather than the detector
-  // itself (`shouldAttachGestureToChildView`). Kept here so we can (re)bind them as subviews
-  // appear.
-  nativeHandlers: Set<number>;
   // For each virtual child's viewTag, the set of currently-observed handler tags.
   subscribedVirtualHandlers: Map<number, Set<number>>;
   // Latest snapshot of virtual children keyed by viewTag. The ready callback reads this so
@@ -97,7 +93,6 @@ function flushAttaches(refs: DetectorRefs) {
     let target: Element = view;
 
     if (handler.shouldAttachGestureToChildView()) {
-      refs.nativeHandlers.add(tag);
       if (view.childElementCount > 1) {
         throw new Error(
           tagMessage(
@@ -193,7 +188,6 @@ function syncSubscriptions(
       refs.attachedHandlers.delete(tag);
     }
     subscribedSet.delete(tag);
-    refs.nativeHandlers.delete(tag);
   }
 }
 
@@ -204,7 +198,6 @@ function teardown(refs: DetectorRefs) {
   }
   refs.attachedHandlers.clear();
   refs.subscribedHandlers.clear();
-  refs.nativeHandlers.clear();
   refs.subscribedVirtualHandlers.clear();
   refs.virtualChildren.clear();
 }
@@ -226,7 +219,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       propsRef,
       subscribedHandlers: new Set<number>(),
       attachedHandlers: new Set<number>(),
-      nativeHandlers: new Set<number>(),
       subscribedVirtualHandlers: new Map<number, Set<number>>(),
       virtualChildren: new Map<number, VirtualChildrenWeb>(),
       attachFlushScheduled: false,
