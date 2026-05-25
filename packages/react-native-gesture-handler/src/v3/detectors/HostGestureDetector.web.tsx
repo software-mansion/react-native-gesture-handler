@@ -53,113 +53,69 @@ type DetectorRefs = {
   // Latest snapshot of virtual children keyed by viewTag. The ready callback reads this so
   // re-fires after a child's per-DOM props change use the up-to-date values.
   virtualChildren: Map<number, VirtualChildrenWeb>;
+  // True while a flush microtask is queued; ensures we batch attaches per React commit.
+  attachFlushScheduled: boolean;
 };
 
-// Invoked from `NodeManager.observeHandler` once the handler is known to exist. Branches on
-// handler kind + actionType to pick the right binding flow. May be called multiple times for
-// the same tag (handler re-registration), so each branch must be idempotent.
-function attachReadyHandler(
-  refs: DetectorRefs,
-  tag: number,
-  actionType: ActionType,
-  virtualViewTag?: number
-) {
-  const handler = RNGestureHandlerModule.getGestureHandlerNode(tag);
-
-  if (
-    actionType === ActionType.NATIVE_DETECTOR &&
-    handler.shouldAttachGestureToChildView()
-  ) {
-    refs.nativeHandlers.add(tag);
-    if (
-      refs.viewRef.current != null &&
-      refs.viewRef.current.childElementCount > 0
-    ) {
-      tryAttachNativeHandlersToChildView(refs);
-    }
+// Batch observer firings to a microtask so attaches happen in subscription order, not in
+// the order handlers happen to be created by React's effect commit.
+function scheduleAttachFlush(refs: DetectorRefs) {
+  if (refs.attachFlushScheduled) {
     return;
   }
 
-  if (actionType === ActionType.VIRTUAL_DETECTOR) {
-    const child =
-      virtualViewTag != null
-        ? refs.virtualChildren.get(virtualViewTag)
-        : undefined;
-    if (child == null || child.viewRef.current == null) {
-      return;
-    }
-
-    if (!refs.attachedHandlers.has(tag)) {
-      RNGestureHandlerModule.attachGestureHandler(
-        tag,
-        child.viewRef.current,
-        actionType,
-        refs.propsRef
-      );
-      refs.attachedHandlers.add(tag);
-    }
-
-    RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
-      userSelect: child.userSelect,
-      touchAction: child.touchAction,
-      enableContextMenu: child.enableContextMenu,
-    });
-    return;
-  }
-
-  if (refs.viewRef.current == null) {
-    return;
-  }
-
-  if (!refs.attachedHandlers.has(tag)) {
-    RNGestureHandlerModule.attachGestureHandler(
-      tag,
-      refs.viewRef.current,
-      actionType,
-      refs.propsRef
-    );
-    refs.attachedHandlers.add(tag);
-  }
-
-  RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
-    userSelect: refs.propsRef.current.userSelect,
-    touchAction: refs.propsRef.current.touchAction,
-    enableContextMenu: refs.propsRef.current.enableContextMenu,
+  refs.attachFlushScheduled = true;
+  queueMicrotask(() => {
+    refs.attachFlushScheduled = false;
+    flushAttaches(refs);
   });
 }
 
-function tryAttachNativeHandlersToChildView(refs: DetectorRefs) {
-  if (refs.nativeHandlers.size === 0) {
-    return;
-  }
-
+// Attach all ready, not-yet-attached tags in subscription order. Re-applies DOM props for
+// already-attached tags (handler re-registration); never re-attaches.
+function flushAttaches(refs: DetectorRefs) {
   const view = refs.viewRef.current;
   if (view == null) {
     return;
   }
 
-  if (view.childElementCount > 1) {
-    throw new Error(
-      tagMessage(
-        'Cannot have more than one child view when native gesture handlers are attached to the detector'
-      )
-    );
-  }
-
-  const target = view.firstElementChild;
-  if (target == null) {
-    return;
-  }
-
-  for (const tag of refs.nativeHandlers) {
-    // A tag may be in `nativeHandlers` from an earlier ready callback but the underlying
-    // handler may have been dropped since. Skip — a re-registration fires the observation again.
+  for (const tag of refs.subscribedHandlers) {
     if (!NodeManager.hasHandler(tag)) {
       continue;
     }
+
     if (refs.attachedHandlers.has(tag)) {
+      RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
+        userSelect: refs.propsRef.current.userSelect,
+        touchAction: refs.propsRef.current.touchAction,
+        enableContextMenu: refs.propsRef.current.enableContextMenu,
+      });
       continue;
     }
+
+    const handler = RNGestureHandlerModule.getGestureHandlerNode(tag);
+    let target: Element = view;
+
+    if (handler.shouldAttachGestureToChildView()) {
+      refs.nativeHandlers.add(tag);
+      if (view.childElementCount > 1) {
+        throw new Error(
+          tagMessage(
+            'Cannot have more than one child view when native gesture handlers are attached to the detector'
+          )
+        );
+      }
+      if (view.firstElementChild == null) {
+        throw new Error(
+          tagMessage(
+            'A native gesture handler requires a child view to attach to, but the detector has no children'
+          )
+        );
+      }
+
+      target = view.firstElementChild;
+    }
+
     RNGestureHandlerModule.attachGestureHandler(
       tag,
       target,
@@ -173,6 +129,41 @@ function tryAttachNativeHandlersToChildView(refs: DetectorRefs) {
       enableContextMenu: refs.propsRef.current.enableContextMenu,
     });
   }
+
+  for (const [viewTag, tags] of refs.subscribedVirtualHandlers) {
+    const child = refs.virtualChildren.get(viewTag);
+    if (child == null || child.viewRef.current == null) {
+      continue;
+    }
+
+    for (const tag of tags) {
+      if (!NodeManager.hasHandler(tag)) {
+        continue;
+      }
+
+      if (!refs.attachedHandlers.has(tag)) {
+        RNGestureHandlerModule.attachGestureHandler(
+          tag,
+          child.viewRef.current,
+          ActionType.VIRTUAL_DETECTOR,
+          refs.propsRef
+        );
+        refs.attachedHandlers.add(tag);
+      }
+
+      RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
+        userSelect: child.userSelect,
+        touchAction: child.touchAction,
+        enableContextMenu: child.enableContextMenu,
+      });
+    }
+  }
+}
+
+// Observer callback for `NodeManager.observeHandler`. Defers to a batched flush so attach
+// order is deterministic; may fire multiple times per tag on re-registration.
+function attachReadyHandler(refs: DetectorRefs) {
+  scheduleAttachFlush(refs);
 }
 
 // Reconcile `subscribedSet` against `currentTags`: observe new tags, cancel observation and
@@ -181,9 +172,7 @@ function tryAttachNativeHandlersToChildView(refs: DetectorRefs) {
 function syncSubscriptions(
   refs: DetectorRefs,
   currentTags: Iterable<number>,
-  subscribedSet: Set<number>,
-  actionType: ActionType,
-  virtualViewTag?: number
+  subscribedSet: Set<number>
 ) {
   const toUnsubscribe = new Set(subscribedSet);
   for (const tag of currentTags) {
@@ -192,7 +181,7 @@ function syncSubscriptions(
       continue;
     }
     NodeManager.observeHandler(tag, refs.owner, () => {
-      attachReadyHandler(refs, tag, actionType, virtualViewTag);
+      attachReadyHandler(refs);
     });
     subscribedSet.add(tag);
   }
@@ -240,6 +229,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       nativeHandlers: new Set<number>(),
       subscribedVirtualHandlers: new Map<number, Set<number>>(),
       virtualChildren: new Map<number, VirtualChildrenWeb>(),
+      attachFlushScheduled: false,
     };
   }
   const refs = refsRef.current;
@@ -279,12 +269,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, [props, refs]);
 
   useEffect(() => {
-    syncSubscriptions(
-      refs,
-      handlerTagsSet,
-      refs.subscribedHandlers,
-      ActionType.NATIVE_DETECTOR
-    );
+    syncSubscriptions(refs, handlerTagsSet, refs.subscribedHandlers);
   }, [handlerTagsSet, refs]);
 
   useEffect(() => {
@@ -304,7 +289,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     for (const viewTag of virtualChildrenToDetach) {
       const tags = refs.subscribedVirtualHandlers.get(viewTag);
       if (tags != null) {
-        syncSubscriptions(refs, [], tags, ActionType.VIRTUAL_DETECTOR, viewTag);
+        syncSubscriptions(refs, [], tags);
       }
       refs.subscribedVirtualHandlers.delete(viewTag);
     }
@@ -321,16 +306,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         subs = new Set();
         refs.subscribedVirtualHandlers.set(child.viewTag, subs);
       }
-      syncSubscriptions(
-        refs,
-        child.handlerTags,
-        subs,
-        ActionType.VIRTUAL_DETECTOR,
-        child.viewTag
-      );
+      syncSubscriptions(refs, child.handlerTags, subs);
       // Re-apply per-child DOM props on every run. Already-attached tags need this when only
-      // the child's props change; tags attached via a sync-fired observer already had it
-      // applied in `attachReadyHandler`, so this is a no-op for them.
+      // the child's props change.
       for (const tag of subs) {
         if (refs.attachedHandlers.has(tag)) {
           RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
