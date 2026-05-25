@@ -71,16 +71,16 @@ function scheduleAttachFlush(refs: DetectorRefs) {
   });
 }
 
-// Attach all ready, not-yet-attached tags in subscription order. Re-applies DOM props for
-// already-attached tags (handler re-registration); never re-attaches.
+// Attach all ready, not-yet-attached tags in current handlerTags order. Re-applies DOM props
+// for already-attached tags (handler re-registration); never re-attaches.
 function flushAttaches(refs: DetectorRefs) {
   const view = refs.viewRef.current;
   if (view == null) {
     return;
   }
 
-  for (const tag of refs.subscribedHandlers) {
-    if (!NodeManager.hasHandler(tag)) {
+  for (const tag of refs.propsRef.current.handlerTags) {
+    if (!refs.subscribedHandlers.has(tag) || !NodeManager.hasHandler(tag)) {
       continue;
     }
 
@@ -130,14 +130,14 @@ function flushAttaches(refs: DetectorRefs) {
     });
   }
 
-  for (const [viewTag, tags] of refs.subscribedVirtualHandlers) {
+  for (const [viewTag, subscribed] of refs.subscribedVirtualHandlers) {
     const child = refs.virtualChildren.get(viewTag);
     if (child == null || child.viewRef.current == null) {
       continue;
     }
 
-    for (const tag of tags) {
-      if (!NodeManager.hasHandler(tag)) {
+    for (const tag of child.handlerTags) {
+      if (!subscribed.has(tag) || !NodeManager.hasHandler(tag)) {
         continue;
       }
 
