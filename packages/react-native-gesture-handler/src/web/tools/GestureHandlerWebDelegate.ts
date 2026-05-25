@@ -43,7 +43,10 @@ export class GestureHandlerWebDelegate
     }
 
     this.gestureHandler = handler;
-    this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
+
+    this.view = handler.usesNativeOrVirtualDetector()
+      ? (viewRef as unknown as HTMLElement)
+      : (findNodeHandle(viewRef) as unknown as HTMLElement);
 
     this.defaultViewStyles = {
       userSelect: this.view.style.userSelect,
