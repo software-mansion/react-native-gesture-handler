@@ -25,10 +25,10 @@ import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.facebook.react.R
+import com.facebook.react.bridge.Dynamic
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
-import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PointerEvents
 import com.facebook.react.uimanager.ReactPointerEventsView
@@ -178,74 +178,76 @@ class RNGestureHandlerButtonViewManager :
     view.setOverflow(overflow)
   }
 
-  private fun setBorderRadiusInternal(view: ButtonViewGroup, prop: BorderRadiusProp, value: Float) {
-    val isUnset = value.isNaN() || value < 0f
-    val lp = if (isUnset) null else LengthPercentage(value, LengthPercentageType.POINT)
+  private fun setBorderRadiusInternal(view: ButtonViewGroup, prop: BorderRadiusProp, value: Dynamic) {
+    // setFromDynamic returns null for null Dynamics, negative numbers, and
+    // unparseable strings — which is what we want for "unset" so that
+    // general / physical radii continue to cascade.
+    val lp = LengthPercentage.setFromDynamic(value)
     BackgroundStyleApplicator.setBorderRadius(view, prop, lp)
   }
 
   @ReactProp(name = ViewProps.BORDER_RADIUS)
-  override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_RADIUS, borderRadius)
+  override fun setBorderRadius(view: ButtonViewGroup, value: Dynamic) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopLeftRadius")
-  override fun setBorderTopLeftRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderTopLeftRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_LEFT_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopRightRadius")
-  override fun setBorderTopRightRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderTopRightRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomRightRadius")
-  override fun setBorderBottomRightRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderBottomRightRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomLeftRadius")
-  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopStartRadius")
-  override fun setBorderTopStartRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderTopStartRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_START_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopEndRadius")
-  override fun setBorderTopEndRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderTopEndRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomStartRadius")
-  override fun setBorderBottomStartRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderBottomStartRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_START_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomEndRadius")
-  override fun setBorderBottomEndRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderBottomEndRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderEndEndRadius")
-  override fun setBorderEndEndRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderEndEndRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderEndStartRadius")
-  override fun setBorderEndStartRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderEndStartRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_START_RADIUS, value)
   }
 
   @ReactProp(name = "borderStartEndRadius")
-  override fun setBorderStartEndRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderStartEndRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderStartStartRadius")
-  override fun setBorderStartStartRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderStartStartRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_START_RADIUS, value)
   }
 
@@ -287,6 +289,11 @@ class RNGestureHandlerButtonViewManager :
   @ReactProp(name = "longPressAnimationOutDuration")
   override fun setLongPressAnimationOutDuration(view: ButtonViewGroup, value: Int) {
     view.longPressAnimationOutDuration = value
+  }
+
+  @ReactProp(name = "needsOffscreenAlphaCompositing")
+  override fun setNeedsOffscreenAlphaCompositing(view: ButtonViewGroup, value: Boolean) {
+    view.needsOffscreenAlphaCompositing = value
   }
 
   @ReactProp(name = "defaultOpacity")
@@ -382,6 +389,7 @@ class RNGestureHandlerButtonViewManager :
       set(value) = withBackgroundUpdate {
         field = value
       }
+    var needsOffscreenAlphaCompositing = false
 
     override var pointerEvents: PointerEvents = PointerEvents.AUTO
 
@@ -398,6 +406,11 @@ class RNGestureHandlerButtonViewManager :
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
     private var selectableDrawable: Drawable? = null
+
+    // When true, dispatchDraw clips children to the resolved border-radius shape
+    // (overflow: hidden). ViewGroup's clipChildren is only a rectangular clip and
+    // wouldn't respect rounded corners.
+    private var clipChildrenToShape = false
 
     var isTouched = false
 
@@ -416,16 +429,7 @@ class RNGestureHandlerButtonViewManager :
     }
 
     fun setOverflow(overflow: String?) {
-      when (overflow) {
-        "hidden" -> {
-          clipChildren = true
-          clipToPadding = true
-        }
-        else -> {
-          clipChildren = false
-          clipToPadding = false
-        }
-      }
+      clipChildrenToShape = overflow == "hidden"
       invalidate()
     }
 
@@ -686,7 +690,14 @@ class RNGestureHandlerButtonViewManager :
           canvas.restore()
         }
       }
-      super.dispatchDraw(canvas)
+      if (clipChildrenToShape) {
+        canvas.save()
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
+        super.dispatchDraw(canvas)
+        canvas.restore()
+      } else {
+        super.dispatchDraw(canvas)
+      }
     }
 
     override fun verifyDrawable(who: Drawable): Boolean =
@@ -739,6 +750,14 @@ class RNGestureHandlerButtonViewManager :
       pendingPressOut = null
       currentAnimator?.cancel()
       currentAnimator = null
+      applyStartAnimationState()
+
+      if (touchResponder === this) {
+        touchResponder = null
+      }
+      if (soundResponder === this) {
+        soundResponder = null
+      }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -886,6 +905,11 @@ class RNGestureHandlerButtonViewManager :
       // No-op
       // by default Viewgroup would pass hotspot change events
     }
+
+    // Default to skipping the offscreen buffer so children's border anti-aliasing
+    // at the view edge isn't clipped by the layer bounds when alpha != 1.
+    // `needsOffscreenAlphaCompositing` opts back into the standard View behavior.
+    override fun hasOverlappingRendering(): Boolean = needsOffscreenAlphaCompositing
 
     companion object {
       var resolveOutValue = TypedValue()

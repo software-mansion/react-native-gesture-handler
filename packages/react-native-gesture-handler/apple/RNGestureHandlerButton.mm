@@ -147,6 +147,10 @@
   [super viewWillMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self applyStartAnimationState];
+    _isTouchInsideBounds = NO;
+    _suppressSuperControlActionDispatch = NO;
+    _pressInTimestamp = 0;
   }
 }
 #else
@@ -155,6 +159,10 @@
   [super willMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self applyStartAnimationState];
+    _isTouchInsideBounds = NO;
+    _suppressSuperControlActionDispatch = NO;
+    _pressInTimestamp = 0;
   }
 }
 #endif
@@ -195,8 +203,13 @@
 
 - (void)animateUnderlayToOpacity:(float)toOpacity duration:(NSTimeInterval)durationMs
 {
-  _underlayLayer.opacity =
-      _underlayLayer.presentationLayer ? [_underlayLayer.presentationLayer opacity] : _underlayLayer.opacity;
+  // Only sync the model from the presentation layer when an animation is actually
+  // in flight.
+  CALayer *presentation = _underlayLayer.presentationLayer;
+  BOOL hasInFlightAnimation = presentation != nil && _underlayLayer.animationKeys.count > 0;
+  if (hasInFlightAnimation) {
+    _underlayLayer.opacity = presentation.opacity;
+  }
   [_underlayLayer removeAllAnimations];
 
   // CABasicAnimation with duration 0 resolves to the current CATransaction's

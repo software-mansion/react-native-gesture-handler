@@ -160,6 +160,17 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   underlayColor?: ColorValue | undefined;
 
   /**
+   * Android only.
+   *
+   * Whether the view should render with an offscreen alpha-compositing buffer
+   * when its `opacity` is less than 1. Defaults to `false` — without the
+   * offscreen buffer, children that draw past the view's bounds (e.g. anti-
+   * aliased border edges) are not clipped by the layer when `opacity < 1`.
+   * Set to `true` to opt back into the standard Android behavior.
+   */
+  needsOffscreenAlphaCompositing?: boolean | undefined;
+
+  /**
    * Style object, use it to set additional styles.
    */
   style?: StyleProp<ViewStyle>;

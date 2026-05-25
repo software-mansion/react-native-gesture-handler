@@ -18,18 +18,29 @@ import type {
   LegacyRectButtonProps,
   RectButtonWithRefProps,
 } from './GestureButtonsProps';
-import GestureHandlerButton from './GestureHandlerButton';
+import GestureHandlerButton, { type ButtonProps } from './GestureHandlerButton';
 
-/**
- * @deprecated use `RawButton` instead
- */
-export const LegacyRawButton = createNativeWrapper<LegacyRawButtonProps>(
-  GestureHandlerButton as unknown as HostComponent<LegacyRawButtonProps>,
+type LegacyRawButtonInnerProps = LegacyRawButtonProps & {
+  needsOffscreenAlphaCompositing?: boolean;
+};
+
+const LegacyRawButtonInner = createNativeWrapper<LegacyRawButtonInnerProps>(
+  GestureHandlerButton as unknown as HostComponent<LegacyRawButtonInnerProps>,
   {
     shouldCancelWhenOutside: false,
     shouldActivateOnStart: Platform.OS === 'web',
   }
 );
+
+/**
+ * @deprecated use `RawButton` instead
+ */
+export const LegacyRawButton = (
+  props: Omit<
+    React.ComponentProps<typeof LegacyRawButtonInner>,
+    'needsOffscreenAlphaCompositing'
+  >
+) => <LegacyRawButtonInner {...props} needsOffscreenAlphaCompositing />;
 
 class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   static defaultProps = {
@@ -280,4 +291,9 @@ export const LegacyBorderlessButton = ({
   ref?: React.Ref<React.ComponentType<any>> | undefined;
 }) => <InnerBorderlessButton innerRef={ref} {...props} />;
 
-export { default as LegacyPureNativeButton } from './GestureHandlerButton';
+/**
+ * @deprecated use `PureNativeButton` instead
+ */
+export const LegacyPureNativeButton = (
+  props: Omit<ButtonProps, 'needsOffscreenAlphaCompositing'>
+) => <GestureHandlerButton {...props} needsOffscreenAlphaCompositing />;
