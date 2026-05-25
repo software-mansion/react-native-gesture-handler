@@ -47,7 +47,7 @@ jobs:
 
       - name: Run tests on iOS
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: yarn test:ios
+        run: yarn e2e:ios
 
   android-e2e:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
@@ -95,4 +95,4 @@ jobs:
           disable-animations: true
           avd-name: Pixel_9
           working-directory: ${{ env.WORKING_DIRECTORY }}
-          script: adb devices && yarn test:android
+          script: adb devices && yarn e2e:android
