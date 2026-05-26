@@ -180,14 +180,16 @@ class GestureHandlerOrchestrator(
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
       if (handler.isActive) {
         handler.dispatchStateChange(newState, prevState)
-      } else if (prevState == GestureHandler.STATE_ACTIVE &&
-        (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED)
+      } else if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED
       ) {
         // Handle edge case where handler awaiting for another one tries to activate but finishes
         // before the other would not send state change event upon ending. Note that we only want
         // to do this if the newState is either CANCELLED or FAILED, if it is END we still want to
         // wait for the other handler to finish as in that case synthetic events will be sent by the
         // makeActive method.
+        // This also covers the case where a discrete gesture (e.g. Tap) ends immediately after
+        // activation (STATE_ACTIVE -> STATE_END) while still awaiting another handler, and is later
+        // cancelled when that handler activates.
         handler.dispatchStateChange(newState, GestureHandler.STATE_BEGAN)
       }
     } else if (prevState != GestureHandler.STATE_UNDETERMINED ||
