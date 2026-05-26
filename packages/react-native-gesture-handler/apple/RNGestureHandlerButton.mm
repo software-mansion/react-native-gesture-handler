@@ -201,8 +201,20 @@
   [self applyUnderlayCornerRadii];
 }
 
+- (BOOL)shouldReduceMotion
+{
+#if TARGET_OS_OSX
+  return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceMotion];
+#else
+  return UIAccessibilityIsReduceMotionEnabled();
+#endif
+}
+
 - (void)animateUnderlayToOpacity:(float)toOpacity duration:(NSTimeInterval)durationMs
 {
+  if ([self shouldReduceMotion]) {
+    durationMs = 0;
+  }
   // Only sync the model from the presentation layer when an animation is actually
   // in flight.
   CALayer *presentation = _underlayLayer.presentationLayer;
@@ -292,6 +304,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                 scale:(CGFloat)scale
              duration:(NSTimeInterval)durationMs
 {
+  if ([self shouldReduceMotion]) {
+    durationMs = 0;
+  }
   CALayer *layer = target.layer;
   CALayer *presentation = layer.presentationLayer;
   NSTimeInterval snapThresholdMs = [self minFrameDurationMs];
@@ -445,8 +460,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         }
       }
     });
+    NSTimeInterval scheduledDelay = [self shouldReduceMotion] ? 0 : remaining;
     dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)),
+        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(scheduledDelay * NSEC_PER_MSEC)),
         dispatch_get_main_queue(),
         _pendingPressOutBlock);
   }
