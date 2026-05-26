@@ -38,9 +38,6 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Install Argent
-        run: npm install -g @swmansion/argent
-
       - name: Setup Detox
         run: brew tap wix/brew && brew install applesimutils && npm install -g detox-cli
 
@@ -80,9 +77,6 @@ jobs:
 
       - name: Install dependencies
         run: yarn --immutable
-
-      - name: Install Argent
-        run: npm install -g @swmansion/argent
 
       - name: Setup Detox
         run: npm install -g detox-cli
