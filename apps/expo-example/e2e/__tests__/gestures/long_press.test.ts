@@ -1,3 +1,3 @@
-import { longPressTests } from '../../suites/long_press';
+import { longPressTests } from '../../suites/gestures/long_press';
 
 longPressTests();

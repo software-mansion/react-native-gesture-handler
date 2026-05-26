@@ -1,3 +1,3 @@
-import { flingTests } from '../../suites/fling';
+import { flingTests } from '../../suites/gestures/fling';
 
 flingTests();

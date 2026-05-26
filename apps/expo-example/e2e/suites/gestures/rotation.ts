@@ -4,29 +4,32 @@ import { spawn } from 'node:child_process';
 import { beforeAll, describe } from '@jest/globals';
 import { by, element, expect } from 'detox';
 
-import { CB, navigateTo, TestScreens } from '../utils';
+import { CB, navigateTo, TestScreens } from '../../utils';
 
-type PinchArgs = {
+type RotationArgs = {
   centerX: string;
   centerY: string;
-  startDistance: string;
-  endDistance: string;
+  radius: string;
+  startAngle: string;
+  endAngle: string;
 };
 
-function argentPinch(udid: string, pa: PinchArgs): Promise<boolean> {
+function argentRotate(udid: string, ra: RotationArgs): Promise<boolean> {
   const child = spawn('argent', [
     'run',
-    'gesture-pinch',
+    'gesture-rotate',
     '--udid',
     udid,
     '--centerX',
-    pa.centerX,
+    ra.centerX,
     '--centerY',
-    pa.centerY,
-    '--startDistance',
-    pa.startDistance,
-    '--endDistance',
-    pa.endDistance,
+    ra.centerY,
+    '--startAngle',
+    ra.startAngle,
+    '--endAngle',
+    ra.endAngle,
+    '--radius',
+    ra.radius,
   ]);
   return new Promise((resolve, reject) => {
     child.on('exit', (code) => {
@@ -42,36 +45,37 @@ function argentPinch(udid: string, pa: PinchArgs): Promise<boolean> {
   });
 }
 
-export function pinchTests() {
-  describe('test pinch gesture', () => {
+export function rotationTests() {
+  describe('test rotation gesture', () => {
     beforeAll(async () => {
-      await navigateTo(TestScreens.Pinch);
+      await navigateTo(TestScreens.Rotation);
     });
 
-    const gestureBox = element(by.id('pinch-box'));
+    const gestureBox = element(by.id('rotation-box'));
     const stateIndicator = element(by.id('state-indicator'));
     const extractButton = element(by.id('extract-button'));
 
-    test('Should register pinch gesture on pinch', async () => {
+    test('Should register rotation gesture on rotation', async () => {
       const udid = device.id;
 
-      await argentPinch(udid, {
+      await argentRotate(udid, {
         centerX: '0.5',
         centerY: '0.55',
-        startDistance: '0.2',
-        endDistance: '0.6',
+        startAngle: '0',
+        endAngle: '90',
+        radius: '0.05',
       });
 
       await extractButton.tap();
       await expect(stateIndicator).toHaveText(
-        `{Pinch: ${CB.B}${CB.A}${CB.U}${CB.D}${CB.F}}`
+        `{Rotation: ${CB.B}${CB.A}${CB.U}${CB.D}${CB.F}}`
       );
     });
 
-    test('Shouldn`t register a pinch gesture on tap', async () => {
+    test('Shouldn`t register a rotation gesture on tap', async () => {
       await gestureBox.tap();
       await extractButton.tap();
-      await expect(stateIndicator).toHaveText(`{Pinch: }`);
+      await expect(stateIndicator).toHaveText(`{Rotation: }`);
     });
   });
 }

@@ -1,3 +1,3 @@
-import { rotationTests } from '../../suites/rotation';
+import { rotationTests } from '../../suites/gestures/rotation';
 
 rotationTests();

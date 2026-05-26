@@ -1,3 +1,3 @@
-import { pinchTests } from '../../suites/pinch';
+import { pinchTests } from '../../suites/gestures/pinch';
 
 pinchTests();

@@ -1,3 +1,3 @@
-import { tapTests } from '../../suites/tap';
+import { tapTests } from '../../suites/gestures/tap';
 
 tapTests();

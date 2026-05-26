@@ -1,3 +1,3 @@
-import { panTests } from '../../suites/pan';
+import { panTests } from '../../suites/gestures/pan';
 
 panTests();

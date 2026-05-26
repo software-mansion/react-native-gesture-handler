@@ -2,7 +2,7 @@
 import { beforeAll, describe } from '@jest/globals';
 import { by, element, expect } from 'detox';
 
-import { CB, navigateTo, TestScreens } from '../utils';
+import { CB, navigateTo, TestScreens } from '../../utils';
 
 export function panTests() {
   describe('test pan gesture', () => {
