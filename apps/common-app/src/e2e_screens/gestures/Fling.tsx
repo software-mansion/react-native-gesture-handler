@@ -1,30 +1,37 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureDetector, useFlingGesture } from 'react-native-gesture-handler';
 
 import TestingScreen from '../TestingScreen';
+import { CallbackIDs } from '../utils';
 
 export default function FlingScreen() {
   const [text, setText] = useState('');
+  const callbacks = useRef(new Set<string>());
 
   const flingGesture = useFlingGesture({
     onBegin: () => {
-      setText((prev) => prev + '1');
+      callbacks.current.add(CallbackIDs.onBegin);
     },
     onActivate: () => {
-      setText((prev) => prev + '2');
+      callbacks.current.add(CallbackIDs.onActivate);
     },
     onDeactivate: () => {
-      setText((prev) => prev + '4');
+      callbacks.current.add(CallbackIDs.onDeactivate);
     },
     onFinalize: () => {
-      setText((prev) => prev + '5');
+      callbacks.current.add(CallbackIDs.onFinalize);
     },
     runOnJS: true,
   });
 
   return (
-    <TestingScreen text={text} setText={setText}>
+    <TestingScreen
+      text={text}
+      buttonCallback={() => {
+        setText(`{Fling: ${Array.from(callbacks.current).join('')}}`);
+        callbacks.current.clear();
+      }}>
       <GestureDetector gesture={flingGesture}>
         <View style={styles.gestureBox} testID="fling-box" />
       </GestureDetector>

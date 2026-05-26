@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
@@ -6,35 +6,38 @@ import {
 } from 'react-native-gesture-handler';
 
 import TestingScreen from '../TestingScreen';
+import { CallbackIDs } from '../utils';
 
 export default function RotationScreen() {
   const [text, setText] = useState('');
+  const callbacks = useRef(new Set<string>());
 
   const rotationGesture = useRotationGesture({
     onBegin: () => {
-      setText((prev) => prev + '1');
+      callbacks.current.add(CallbackIDs.onBegin);
     },
     onActivate: () => {
-      setText((prev) => prev + '2');
+      callbacks.current.add(CallbackIDs.onActivate);
     },
     onUpdate: () => {
-      // Skip subsequent updates
-      if (text[text.length - 1] === '3') {
-        return;
-      }
-      setText((prev) => prev + '3');
+      callbacks.current.add(CallbackIDs.onUpdate);
     },
     onDeactivate: () => {
-      setText((prev) => prev + '4');
+      callbacks.current.add(CallbackIDs.onDeactivate);
     },
     onFinalize: () => {
-      setText((prev) => prev + '5');
+      callbacks.current.add(CallbackIDs.onFinalize);
     },
     runOnJS: true,
   });
 
   return (
-    <TestingScreen text={text} setText={setText}>
+    <TestingScreen
+      text={text}
+      buttonCallback={() => {
+        setText(`{Rotation: ${Array.from(callbacks.current).join('')}}`);
+        callbacks.current.clear();
+      }}>
       <GestureDetector gesture={rotationGesture}>
         <View style={styles.gestureBox} testID="rotation-box" />
       </GestureDetector>

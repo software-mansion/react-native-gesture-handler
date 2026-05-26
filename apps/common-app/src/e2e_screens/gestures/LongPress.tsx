@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
@@ -6,28 +6,35 @@ import {
 } from 'react-native-gesture-handler';
 
 import TestingScreen from '../TestingScreen';
+import { CallbackIDs } from '../utils';
 
 export default function LongPressScreen() {
   const [text, setText] = useState('');
+  const callbacks = useRef(new Set<string>());
 
   const longPressGesture = useLongPressGesture({
     onBegin: () => {
-      setText((prev) => prev + '1');
+      callbacks.current.add(CallbackIDs.onBegin);
     },
     onActivate: () => {
-      setText((prev) => prev + '2');
+      callbacks.current.add(CallbackIDs.onActivate);
     },
     onDeactivate: () => {
-      setText((prev) => prev + '4');
+      callbacks.current.add(CallbackIDs.onDeactivate);
     },
     onFinalize: () => {
-      setText((prev) => prev + '5');
+      callbacks.current.add(CallbackIDs.onFinalize);
     },
     runOnJS: true,
   });
 
   return (
-    <TestingScreen text={text} setText={setText}>
+    <TestingScreen
+      text={text}
+      buttonCallback={() => {
+        setText(`{LongPress: ${Array.from(callbacks.current).join('')}}`);
+        callbacks.current.clear();
+      }}>
       <GestureDetector gesture={longPressGesture}>
         <View style={styles.gestureBox} testID="long-press-box" />
       </GestureDetector>

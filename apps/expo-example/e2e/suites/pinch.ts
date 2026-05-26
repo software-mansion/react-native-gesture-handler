@@ -1,11 +1,10 @@
 import { spawn } from 'node:child_process';
 
 // eslint-disable-next-line import-x/no-extraneous-dependencies
-import { beforeAll, beforeEach, describe } from '@jest/globals';
-import { TestScreens } from 'common-app/src/e2e_screens/screenNames';
+import { beforeAll, describe } from '@jest/globals';
 import { by, element, expect } from 'detox';
 
-import { navigateTo } from '../utils';
+import { CB, navigateTo, TestScreens } from '../utils';
 
 type PinchArgs = {
   centerX: string;
@@ -51,11 +50,7 @@ export function pinchTests() {
 
     const gestureBox = element(by.id('pinch-box'));
     const stateIndicator = element(by.id('state-indicator'));
-    const resetButton = element(by.id('reset'));
-
-    beforeEach(async () => {
-      await resetButton.tap();
-    });
+    const extractButton = element(by.id('extract-button'));
 
     test('Should register pinch gesture on pinch', async () => {
       const udid = device.id;
@@ -67,12 +62,16 @@ export function pinchTests() {
         endDistance: '0.6',
       });
 
-      await expect(stateIndicator).toHaveText('12345');
+      await extractButton.tap();
+      await expect(stateIndicator).toHaveText(
+        `{Pinch: ${CB.B}${CB.A}${CB.U}${CB.D}${CB.F}}`
+      );
     });
 
     test('Shouldn`t register a pinch gesture on tap', async () => {
       await gestureBox.tap();
-      await expect(stateIndicator).toHaveText('');
+      await extractButton.tap();
+      await expect(stateIndicator).toHaveText(`{Pinch: }`);
     });
   });
 }

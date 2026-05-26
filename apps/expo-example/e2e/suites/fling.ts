@@ -1,9 +1,8 @@
 // eslint-disable-next-line import-x/no-extraneous-dependencies
-import { beforeAll, beforeEach, describe } from '@jest/globals';
-import { TestScreens } from 'common-app/src/e2e_screens/screenNames';
+import { beforeAll, describe } from '@jest/globals';
 import { by, element, expect } from 'detox';
 
-import { navigateTo } from '../utils';
+import { CB, navigateTo, TestScreens } from '../utils';
 
 export function flingTests() {
   describe('test fling gesture', () => {
@@ -13,20 +12,20 @@ export function flingTests() {
 
     const gestureBox = element(by.id('fling-box'));
     const stateIndicator = element(by.id('state-indicator'));
-    const resetButton = element(by.id('reset'));
-
-    beforeEach(async () => {
-      await resetButton.tap();
-    });
+    const extractButton = element(by.id('extract-button'));
 
     test('Should register fling gesture', async () => {
       await gestureBox.swipe('right', 'fast');
-      await expect(stateIndicator).toHaveText('1245');
+      await extractButton.tap();
+      await expect(stateIndicator).toHaveText(
+        `{Fling: ${CB.B}${CB.A}${CB.D}${CB.F}}`
+      );
     });
 
     test("Shouldn't register fling gesture", async () => {
       await gestureBox.tap();
-      await expect(stateIndicator).toHaveText('15');
+      await extractButton.tap();
+      await expect(stateIndicator).toHaveText(`{Fling: ${CB.B}${CB.F}}`);
     });
   });
 }

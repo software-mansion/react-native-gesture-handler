@@ -1,9 +1,8 @@
 // eslint-disable-next-line import-x/no-extraneous-dependencies
-import { beforeAll, beforeEach, describe } from '@jest/globals';
-import { TestScreens } from 'common-app/src/e2e_screens/screenNames';
+import { beforeAll, describe } from '@jest/globals';
 import { by, element, expect } from 'detox';
 
-import { navigateTo } from '../utils';
+import { CB, navigateTo, TestScreens } from '../utils';
 
 export function longPressTests() {
   describe('test long press gesture', () => {
@@ -13,20 +12,20 @@ export function longPressTests() {
 
     const gestureBox = element(by.id('long-press-box'));
     const stateIndicator = element(by.id('state-indicator'));
-    const resetButton = element(by.id('reset'));
-
-    beforeEach(async () => {
-      await resetButton.tap();
-    });
+    const extractButton = element(by.id('extract-button'));
 
     test('Should register long press gesture', async () => {
       await gestureBox.longPress(1000);
-      await expect(stateIndicator).toHaveText('1245');
+      await extractButton.tap();
+      await expect(stateIndicator).toHaveText(
+        `{LongPress: ${CB.B}${CB.A}${CB.D}${CB.F}}`
+      );
     });
 
     test("Shouldn't register tap gesture", async () => {
       await gestureBox.tap();
-      await expect(stateIndicator).toHaveText('15');
+      await extractButton.tap();
+      await expect(stateIndicator).toHaveText(`{LongPress: ${CB.B}${CB.F}}`);
     });
   });
 }

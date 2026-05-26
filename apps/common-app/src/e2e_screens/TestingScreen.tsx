@@ -1,15 +1,15 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Touchable } from 'react-native-gesture-handler';
 
 interface TestingScreenProps {
   text: string;
-  setText: (text: string) => void;
+  buttonCallback: () => void;
   children: React.ReactNode;
 }
 
 export default function TestingScreen({
   text,
-  setText,
+  buttonCallback,
   children,
 }: TestingScreenProps) {
   return (
@@ -23,14 +23,12 @@ export default function TestingScreen({
         {children}
       </View>
       <View style={styles.buttonContainer}>
-        <Pressable
-          testID="reset"
-          style={styles.resetButton}
-          onPress={() => {
-            setText('');
-          }}>
-          <Text>Reset</Text>
-        </Pressable>
+        <Touchable
+          testID="extract-button"
+          style={styles.extractButton}
+          onPress={buttonCallback}>
+          <Text style={styles.extractButtonText}>Extract callbacks</Text>
+        </Touchable>
       </View>
     </View>
   );
@@ -59,7 +57,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  resetButton: {
+  extractButton: {
     width: 120,
     height: 40,
     borderRadius: 20,
@@ -67,5 +65,8 @@ const styles = StyleSheet.create({
 
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  extractButtonText: {
+    color: 'white',
   },
 });
