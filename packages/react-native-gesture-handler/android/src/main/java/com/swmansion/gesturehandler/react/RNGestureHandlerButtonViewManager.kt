@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
@@ -530,6 +531,19 @@ class RNGestureHandlerButtonViewManager :
       return false
     }
 
+    private fun getAnimatorDurationScale(): Float = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      ValueAnimator.getDurationScale()
+    } else {
+      try {
+        android.provider.Settings.Global.getFloat(
+          context.contentResolver,
+          android.provider.Settings.Global.ANIMATOR_DURATION_SCALE,
+        )
+      } catch (e: android.provider.Settings.SettingNotFoundException) {
+        1.0f
+      }
+    }
+
     private fun applyStartAnimationState() {
       if (activeOpacity != 1.0f || defaultOpacity != 1.0f) {
         alpha = defaultOpacity
@@ -558,7 +572,11 @@ class RNGestureHandlerButtonViewManager :
       // lands on its target and the next animator captures a stale starting
       // value (e.g. an instant press-in followed by press-out in the same
       // frame, leaving the press-out to animate default → default).
-      if (durationMs < (display?.minimumFrameTime ?: 16f)) {
+      // Animator duration scale folds in here too: scale 0 collapses any
+      // duration to the same deferred-write territory.
+      val durationScale = getAnimatorDurationScale()
+      val effectiveDurationMs = (durationMs * durationScale).toLong()
+      if (effectiveDurationMs < (display?.minimumFrameTime ?: 16f)) {
         if (hasOpacity) {
           alpha = opacity
         }
@@ -626,7 +644,10 @@ class RNGestureHandlerButtonViewManager :
           animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
         }
         pendingPressOut = runnable
-        handler.postDelayed(runnable, remaining)
+        // The animator scales `remaining` by ANIMATOR_DURATION_SCALE internally,
+        // so the press-in actually completes after `remaining * scale` ms. We need
+        // to match that.
+        handler.postDelayed(runnable, (remaining * getAnimatorDurationScale()).toLong())
       }
     }
 
