@@ -4,7 +4,12 @@ import { State } from '../../State';
 import { tagMessage } from '../../utils';
 import { SingleGestureName } from '../../v3/types';
 import type IGestureHandler from '../handlers/IGestureHandler';
-import { getEffectiveBoundingRect, isPointerInBounds } from '../utils';
+import type { SVGRef } from '../interfaces';
+import {
+  getEffectiveBoundingRect,
+  isPointerInBounds,
+  isRNSVGElement,
+} from '../utils';
 import type EventManager from './EventManager';
 import type {
   GestureHandlerDelegate,
@@ -44,9 +49,11 @@ export class GestureHandlerWebDelegate
 
     this.gestureHandler = handler;
 
-    this.view = handler.usesNativeOrVirtualDetector()
-      ? (viewRef as unknown as HTMLElement)
-      : (findNodeHandle(viewRef) as unknown as HTMLElement);
+    this.view =
+      handler.usesNativeOrVirtualDetector() &&
+      !isRNSVGElement(viewRef as unknown as SVGRef)
+        ? (viewRef as unknown as HTMLElement)
+        : (findNodeHandle(viewRef) as unknown as HTMLElement);
 
     this.defaultViewStyles = {
       userSelect: this.view.style.userSelect,
