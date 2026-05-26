@@ -6,6 +6,7 @@ import PinchE2E from '../e2e_screens/gestures/Pinch';
 import RotationE2E from '../e2e_screens/gestures/Rotation';
 import TapE2E from '../e2e_screens/gestures/Tap';
 import CompetingE2E from '../e2e_screens/relations/Competing';
+import ExclusiveE2E from '../e2e_screens/relations/Exclusive';
 import { TestScreens } from '../e2e_screens/utils';
 import EmptyExample from '../empty';
 import CameraExample from './complicated/camera';
@@ -152,6 +153,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: TestScreens.LongPress, component: LongPressE2E },
       { name: TestScreens.Fling, component: FlingE2E },
       { name: TestScreens.Competing, component: CompetingE2E },
+      { name: TestScreens.Exclusive, component: ExclusiveE2E },
     ],
   },
 ];

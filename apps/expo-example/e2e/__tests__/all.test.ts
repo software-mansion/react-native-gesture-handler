@@ -5,6 +5,7 @@ import { pinchTests } from '../suites/gestures/pinch';
 import { rotationTests } from '../suites/gestures/rotation';
 import { tapTests } from '../suites/gestures/tap';
 import { competingTests } from '../suites/relations/competing';
+import { exclusiveTests } from '../suites/relations/exclusive';
 
 tapTests();
 pinchTests();
@@ -13,3 +14,4 @@ longPressTests();
 rotationTests();
 panTests();
 competingTests();
+exclusiveTests();
