@@ -7,8 +7,7 @@ import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
 
 const prefersReducedMotion = (): boolean =>
   typeof window !== 'undefined' &&
-  typeof window.matchMedia === 'function' &&
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
 
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
