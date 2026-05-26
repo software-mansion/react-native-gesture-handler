@@ -1,15 +1,18 @@
 import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+import {
+  GestureDetector,
+  useRotationGesture,
+} from 'react-native-gesture-handler';
 
 import TestingScreen from '../TestingScreen';
 import { CallbackIDs } from '../utils';
 
-export default function PanScreen() {
+export default function RotationScreen() {
   const [text, setText] = useState('');
   const callbacks = useRef(new Set<string>());
 
-  const panGesture = usePanGesture({
+  const rotationGesture = useRotationGesture({
     onBegin: () => {
       callbacks.current.add(CallbackIDs.onBegin);
     },
@@ -32,11 +35,11 @@ export default function PanScreen() {
     <TestingScreen
       text={text}
       buttonCallback={() => {
-        setText(`{Pan: ${Array.from(callbacks.current).join('')}}`);
+        setText(`{Rotation: ${Array.from(callbacks.current).join('')}}`);
         callbacks.current.clear();
       }}>
-      <GestureDetector gesture={panGesture}>
-        <View style={styles.gestureBox} testID="pan-box" />
+      <GestureDetector gesture={rotationGesture}>
+        <View style={styles.gestureBox} testID="rotation-box" />
       </GestureDetector>
     </TestingScreen>
   );

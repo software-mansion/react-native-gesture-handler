@@ -1,5 +1,14 @@
 import type { ExamplesSection } from '../common';
+import FlingE2E from '../e2e_screens/gestures/Fling';
+import LongPressE2E from '../e2e_screens/gestures/LongPress';
 import PanE2E from '../e2e_screens/gestures/Pan';
+import PinchE2E from '../e2e_screens/gestures/Pinch';
+import RotationE2E from '../e2e_screens/gestures/Rotation';
+import TapE2E from '../e2e_screens/gestures/Tap';
+import CompetingE2E from '../e2e_screens/relations/Competing';
+import ExclusiveE2E from '../e2e_screens/relations/Exclusive';
+import SimultaneousE2E from '../e2e_screens/relations/Simultaneous';
+import { TestScreens } from '../e2e_screens/utils';
 import EmptyExample from '../empty';
 import CameraExample from './complicated/camera';
 import ChatHeadsExample from './complicated/chat_heads';
@@ -137,6 +146,16 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
   },
   {
     sectionTitle: 'E2E Tests',
-    data: [{ name: 'Pan Gesture', component: PanE2E }],
+    data: [
+      { name: TestScreens.Pan, component: PanE2E },
+      { name: TestScreens.Pinch, component: PinchE2E },
+      { name: TestScreens.Rotation, component: RotationE2E },
+      { name: TestScreens.Tap, component: TapE2E },
+      { name: TestScreens.LongPress, component: LongPressE2E },
+      { name: TestScreens.Fling, component: FlingE2E },
+      { name: TestScreens.Competing, component: CompetingE2E },
+      { name: TestScreens.Exclusive, component: ExclusiveE2E },
+      { name: TestScreens.Simultaneous, component: SimultaneousE2E },
+    ],
   },
 ];

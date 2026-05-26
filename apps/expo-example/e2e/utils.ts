@@ -1,3 +1,4 @@
+import { CallbackIDs } from 'common-app/src/e2e_screens/utils';
 import { by, device, element, waitFor } from 'detox';
 
 export async function navigateTo(screenName: string) {
@@ -13,3 +14,13 @@ export async function navigateTo(screenName: string) {
     .scroll(2000, 'down');
   await element(by.text(screenName)).tap();
 }
+
+export const CB = {
+  B: CallbackIDs.onBegin,
+  A: CallbackIDs.onActivate,
+  U: CallbackIDs.onUpdate,
+  D: CallbackIDs.onDeactivate,
+  F: CallbackIDs.onFinalize,
+};
+
+export { TestScreens } from 'common-app/src/e2e_screens/utils';

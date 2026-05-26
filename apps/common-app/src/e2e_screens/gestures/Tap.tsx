@@ -1,23 +1,20 @@
 import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
 
 import TestingScreen from '../TestingScreen';
 import { CallbackIDs } from '../utils';
 
-export default function PanScreen() {
+export default function TapScreen() {
   const [text, setText] = useState('');
   const callbacks = useRef(new Set<string>());
 
-  const panGesture = usePanGesture({
+  const tapGesture = useTapGesture({
     onBegin: () => {
       callbacks.current.add(CallbackIDs.onBegin);
     },
     onActivate: () => {
       callbacks.current.add(CallbackIDs.onActivate);
-    },
-    onUpdate: () => {
-      callbacks.current.add(CallbackIDs.onUpdate);
     },
     onDeactivate: () => {
       callbacks.current.add(CallbackIDs.onDeactivate);
@@ -32,11 +29,11 @@ export default function PanScreen() {
     <TestingScreen
       text={text}
       buttonCallback={() => {
-        setText(`{Pan: ${Array.from(callbacks.current).join('')}}`);
+        setText(`{Tap: ${Array.from(callbacks.current).join('')}}`);
         callbacks.current.clear();
       }}>
-      <GestureDetector gesture={panGesture}>
-        <View style={styles.gestureBox} testID="pan-box" />
+      <GestureDetector gesture={tapGesture}>
+        <View style={styles.gestureBox} testID="tap-box" />
       </GestureDetector>
     </TestingScreen>
   );
