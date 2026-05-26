@@ -7,6 +7,7 @@ export const TestScreens = {
   Rotation: '[E2E] Rotation',
   Competing: '[E2E] Competing',
   Exclusive: '[E2E] Exclusive',
+  Simultaneous: '[E2E] Simultaneous',
 };
 
 export const CallbackIDs = {

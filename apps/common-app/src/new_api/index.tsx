@@ -7,6 +7,7 @@ import RotationE2E from '../e2e_screens/gestures/Rotation';
 import TapE2E from '../e2e_screens/gestures/Tap';
 import CompetingE2E from '../e2e_screens/relations/Competing';
 import ExclusiveE2E from '../e2e_screens/relations/Exclusive';
+import SimultaneousE2E from '../e2e_screens/relations/Simultaneous';
 import { TestScreens } from '../e2e_screens/utils';
 import EmptyExample from '../empty';
 import CameraExample from './complicated/camera';
@@ -154,6 +155,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: TestScreens.Fling, component: FlingE2E },
       { name: TestScreens.Competing, component: CompetingE2E },
       { name: TestScreens.Exclusive, component: ExclusiveE2E },
+      { name: TestScreens.Simultaneous, component: SimultaneousE2E },
     ],
   },
 ];
