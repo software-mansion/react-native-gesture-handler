@@ -233,9 +233,9 @@ The props you will use when migrating:
 | `TouchableOpacity` | `<Touchable activeOpacity={0.2} animationDuration={{ in: 0, out: 150 }} />` |
 | `TouchableHighlight` | `<Touchable underlayColor={...} activeUnderlayOpacity={...} />` - keep the original `underlayColor`; the old `activeOpacity` value becomes `activeUnderlayOpacity` (do **not** set `Touchable.activeOpacity` - only the underlay should animate) |
 | `TouchableWithoutFeedback` | `<Touchable />` (plain, no visual feedback props) |
-| `TouchableNativeFeedback` | `<Touchable androidRipple={{}} />` (fill ripple config as needed, empty config results in the default ripple) |
+| `TouchableNativeFeedback` | `<Touchable androidRipple={{ foreground: true }} />` (legacy default draws the ripple in the foreground; drop `foreground` if the original code passed `useForeground={false}`) |
 
-For `TouchableNativeFeedback`, `androidRipple` must be set explicitly — without it no ripple is rendered. An empty `{}` is sufficient to get the default theme ripple; add `color`, `radius`, `borderless`, or `foreground` only if the original code customized them.
+For `TouchableNativeFeedback`, `androidRipple` must be set explicitly — without it no ripple is rendered. The legacy component defaults to `useForeground: true`, so `{ foreground: true }` is the closest default replacement; omit `foreground` only when the original code set `useForeground={false}`. Add `color`, `radius`, or `borderless` if the original code customized the `background` prop.
 
 Do not swap Gesture Handler buttons/touchables for React Native core components or vice versa during migration — keep them within `react-native-gesture-handler`.
 
