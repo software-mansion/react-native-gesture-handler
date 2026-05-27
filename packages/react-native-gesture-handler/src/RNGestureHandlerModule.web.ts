@@ -82,6 +82,9 @@ export default {
     NodeManager.dropGestureHandler(handlerTag);
   },
   configureRelations(handlerTag: number, relations: GestureRelations) {
+    if (!NodeManager.hasHandler(handlerTag)) {
+      return;
+    }
     InteractionManager.instance.configureInteractions(
       NodeManager.getHandler(handlerTag),
       relations
@@ -89,7 +92,8 @@ export default {
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   flushOperations() {},
-  setReanimatedAvailable(_isAvailable: boolean) {
+  installUIRuntimeBindings() {
     // No-op on web
+    return true;
   },
 };

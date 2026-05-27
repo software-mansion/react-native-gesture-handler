@@ -18,31 +18,42 @@ import type {
   LegacyRectButtonProps,
   RectButtonWithRefProps,
 } from './GestureButtonsProps';
-import GestureHandlerButton from './GestureHandlerButton';
+import GestureHandlerButton, { type ButtonProps } from './GestureHandlerButton';
 
-/**
- * @deprecated use `RawButton` instead
- */
-export const LegacyRawButton = createNativeWrapper<LegacyRawButtonProps>(
-  GestureHandlerButton as unknown as HostComponent<LegacyRawButtonProps>,
+type LegacyRawButtonInnerProps = LegacyRawButtonProps & {
+  needsOffscreenAlphaCompositing?: boolean;
+};
+
+const LegacyRawButtonInner = createNativeWrapper<LegacyRawButtonInnerProps>(
+  GestureHandlerButton as unknown as HostComponent<LegacyRawButtonInnerProps>,
   {
     shouldCancelWhenOutside: false,
     shouldActivateOnStart: Platform.OS === 'web',
   }
 );
 
+/**
+ * @deprecated use `RawButton` instead
+ */
+export const LegacyRawButton = (
+  props: Omit<
+    React.ComponentProps<typeof LegacyRawButtonInner>,
+    'needsOffscreenAlphaCompositing'
+  >
+) => <LegacyRawButtonInner {...props} needsOffscreenAlphaCompositing />;
+
 class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   static defaultProps = {
     delayLongPress: 600,
   };
 
-  private lastActive: boolean;
+  private lastIsPressed: boolean;
   private longPressTimeout: ReturnType<typeof setTimeout> | undefined;
   private longPressDetected: boolean;
 
   constructor(props: BaseButtonWithRefProps) {
     super(props);
-    this.lastActive = false;
+    this.lastIsPressed = false;
     this.longPressDetected = false;
   }
 
@@ -50,23 +61,24 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
     nativeEvent,
   }: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>) => {
     const { state, oldState, pointerInside } = nativeEvent;
-    const active = pointerInside && state === State.ACTIVE;
+    const isPressed =
+      pointerInside && (state === State.BEGAN || state === State.ACTIVE);
 
-    if (active !== this.lastActive && this.props.onActiveStateChange) {
-      this.props.onActiveStateChange(active);
+    if (isPressed !== this.lastIsPressed && this.props.onActiveStateChange) {
+      this.props.onActiveStateChange(isPressed);
     }
 
     if (
       !this.longPressDetected &&
       oldState === State.ACTIVE &&
       state !== State.CANCELLED &&
-      this.lastActive &&
+      this.lastIsPressed &&
       this.props.onPress
     ) {
       this.props.onPress(pointerInside);
     }
 
-    if (!this.lastActive && state === State.BEGAN && pointerInside) {
+    if (!this.lastIsPressed && state === State.BEGAN && pointerInside) {
       this.longPressDetected = false;
       if (this.props.onLongPress) {
         this.longPressTimeout = setTimeout(
@@ -93,7 +105,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
       this.longPressTimeout = undefined;
     }
 
-    this.lastActive = active;
+    this.lastIsPressed = isPressed;
   };
 
   private onLongPress = () => {
@@ -279,4 +291,9 @@ export const LegacyBorderlessButton = ({
   ref?: React.Ref<React.ComponentType<any>> | undefined;
 }) => <InnerBorderlessButton innerRef={ref} {...props} />;
 
-export { default as LegacyPureNativeButton } from './GestureHandlerButton';
+/**
+ * @deprecated use `PureNativeButton` instead
+ */
+export const LegacyPureNativeButton = (
+  props: Omit<ButtonProps, 'needsOffscreenAlphaCompositing'>
+) => <GestureHandlerButton {...props} needsOffscreenAlphaCompositing />;

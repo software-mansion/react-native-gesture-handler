@@ -56,16 +56,6 @@ API_AVAILABLE(ios(13.4))
   [_gestureHandler handleGesture:self];
 }
 
-- (void)triggerAction
-{
-  [_gestureHandler handleGesture:self fromReset:NO fromManualStateChange:NO];
-}
-
-- (void)cancel
-{
-  self.enabled = NO;
-}
-
 - (void)reset
 {
   [super reset];
@@ -177,9 +167,14 @@ API_AVAILABLE(ios(13.4))
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                      withPointerType:_pointerType];
+}
+
+- (BOOL)isContinuous
+{
+  return YES;
 }
 
 @end
@@ -199,6 +194,11 @@ API_AVAILABLE(ios(13.4))
   }
 
   return self;
+}
+
+- (BOOL)isContinuous
+{
+  return YES;
 }
 
 - (void)bindToView:(RNGHUIView *)view

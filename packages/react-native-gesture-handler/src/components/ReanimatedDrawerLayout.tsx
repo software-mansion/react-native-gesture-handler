@@ -44,6 +44,7 @@ import { MouseButton } from '../handlers/gestureHandlerCommon';
 import { GestureDetector } from '../v3/detectors';
 import type { PanGestureActiveEvent } from '../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
+import type { WithSharedValue } from '../v3/types';
 
 const DRAG_TOSS = 0.05;
 
@@ -75,7 +76,7 @@ export enum DrawerKeyboardDismissMode {
   ON_DRAG,
 }
 
-export interface DrawerLayoutProps {
+export type DrawerLayoutProps = {
   /**
    * This attribute is present in the native android implementation already and is one
    * of the required params. The gesture handler version of DrawerLayout makes it
@@ -193,14 +194,6 @@ export interface DrawerLayoutProps {
    */
   drawerContainerStyle?: StyleProp<ViewStyle>;
 
-  /**
-   * Enables two-finger gestures on supported devices, for example iPads with
-   * trackpads. If not enabled the gesture will require click + drag, with
-   * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
-   * the gesture.
-   */
-  enableTrackpadTwoFingerGesture?: boolean;
-
   onDrawerSlide?: (position: number) => void;
 
   // Implicit `children` prop has been removed in @types/react^18.0.
@@ -217,24 +210,35 @@ export interface DrawerLayoutProps {
   userSelect?: UserSelect;
 
   /**
-   * @default 'auto'
-   * Sets the displayed cursor pictogram when the drawer is being dragged.
-   * Values: see CSS cursor values
-   */
-  activeCursor?: ActiveCursor;
-
-  /**
-   * @default 'MouseButton.LEFT'
-   * Allows to choose which mouse button should underlying pan handler react to.
-   */
-  mouseButton?: MouseButton;
-
-  /**
    * @default 'false if MouseButton.RIGHT is specified'
    * Allows to enable/disable context menu.
    */
   enableContextMenu?: boolean;
-}
+} & WithSharedValue<
+  {
+    /**
+     * Enables two-finger gestures on supported devices, for example iPads with
+     * trackpads. If not enabled the gesture will require click + drag, with
+     * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
+     * the gesture.
+     */
+    enableTrackpadTwoFingerGesture?: boolean;
+
+    /**
+     * @default 'auto'
+     * Sets the displayed cursor pictogram when the drawer is being dragged.
+     * Values: see CSS cursor values
+     */
+    activeCursor?: ActiveCursor;
+
+    /**
+     * @default 'MouseButton.LEFT'
+     * Allows to choose which mouse button should underlying pan handler react to.
+     */
+    mouseButton?: MouseButton;
+  },
+  ActiveCursor | MouseButton
+>;
 
 export type DrawerMovementOption = {
   initialVelocity?: number;

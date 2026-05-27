@@ -40,7 +40,11 @@ function transformPinchProps(
 
 const PinchPropsMapping = new Map<string, string>();
 
-export function usePinchGesture(config: PinchGestureConfig): PinchGesture {
+const EMPTY_PINCH_CONFIG: PinchGestureConfig = {};
+
+export function usePinchGesture(
+  config: PinchGestureConfig = EMPTY_PINCH_CONFIG
+): PinchGesture {
   const pinchConfig = useClonedAndRemappedConfig<
     PinchGestureProperties,
     PinchHandlerData,

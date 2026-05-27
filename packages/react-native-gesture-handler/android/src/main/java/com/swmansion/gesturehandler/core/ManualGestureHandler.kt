@@ -5,6 +5,8 @@ import android.view.MotionEvent
 import com.swmansion.gesturehandler.react.events.eventbuilders.ManualGestureHandlerEventDataBuilder
 
 class ManualGestureHandler : GestureHandler() {
+  override val isContinuous = true
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       begin()

@@ -27,8 +27,10 @@
 @property (nonatomic) BOOL userEnabled;
 @property (nonatomic, assign) RNGestureHandlerPointerEvents pointerEvents;
 
-@property (nonatomic, assign) NSInteger pressAndHoldAnimationDuration;
-@property (nonatomic, assign) NSInteger tapAnimationDuration;
+@property (nonatomic, assign) NSInteger tapAnimationInDuration;
+@property (nonatomic, assign) NSInteger tapAnimationOutDuration;
+@property (nonatomic, assign) NSInteger longPressDuration;
+@property (nonatomic, assign) NSInteger longPressAnimationOutDuration;
 @property (nonatomic, assign) CGFloat activeOpacity;
 @property (nonatomic, assign) CGFloat defaultOpacity;
 @property (nonatomic, assign) CGFloat activeScale;
@@ -48,6 +50,14 @@
  * Call after props are updated to ensure the idle visual state is correct.
  */
 - (void)applyStartAnimationState;
+
+/**
+ * Resets all transient press/animation state so the button can be safely reused
+ * by Fabric view recycling. Cancels pending press-out blocks, removes in-flight
+ * animations, and unconditionally restores the animation target's transform/alpha
+ * and the underlay opacity to neutral values.
+ */
+- (void)prepareForRecycle;
 
 /**
  * Updates the underlay layer's corner radii with separate horizontal/vertical

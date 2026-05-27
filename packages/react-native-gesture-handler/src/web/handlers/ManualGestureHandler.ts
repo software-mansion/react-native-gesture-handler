@@ -5,6 +5,8 @@ import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
 export default class ManualGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   public constructor(
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
   ) {

@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
@@ -23,12 +24,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.facebook.react.R
+import com.facebook.react.bridge.Dynamic
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
-import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PointerEvents
 import com.facebook.react.uimanager.ReactPointerEventsView
@@ -42,6 +43,8 @@ import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
+import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
@@ -176,74 +179,76 @@ class RNGestureHandlerButtonViewManager :
     view.setOverflow(overflow)
   }
 
-  private fun setBorderRadiusInternal(view: ButtonViewGroup, prop: BorderRadiusProp, value: Float) {
-    val isUnset = value.isNaN() || value < 0f
-    val lp = if (isUnset) null else LengthPercentage(value, LengthPercentageType.POINT)
+  private fun setBorderRadiusInternal(view: ButtonViewGroup, prop: BorderRadiusProp, value: Dynamic) {
+    // setFromDynamic returns null for null Dynamics, negative numbers, and
+    // unparseable strings — which is what we want for "unset" so that
+    // general / physical radii continue to cascade.
+    val lp = LengthPercentage.setFromDynamic(value)
     BackgroundStyleApplicator.setBorderRadius(view, prop, lp)
   }
 
   @ReactProp(name = ViewProps.BORDER_RADIUS)
-  override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_RADIUS, borderRadius)
+  override fun setBorderRadius(view: ButtonViewGroup, value: Dynamic) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopLeftRadius")
-  override fun setBorderTopLeftRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderTopLeftRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_LEFT_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopRightRadius")
-  override fun setBorderTopRightRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderTopRightRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomRightRadius")
-  override fun setBorderBottomRightRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderBottomRightRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomLeftRadius")
-  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopStartRadius")
-  override fun setBorderTopStartRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderTopStartRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_START_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopEndRadius")
-  override fun setBorderTopEndRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderTopEndRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomStartRadius")
-  override fun setBorderBottomStartRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderBottomStartRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_START_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomEndRadius")
-  override fun setBorderBottomEndRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderBottomEndRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderEndEndRadius")
-  override fun setBorderEndEndRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderEndEndRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderEndStartRadius")
-  override fun setBorderEndStartRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderEndStartRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_START_RADIUS, value)
   }
 
   @ReactProp(name = "borderStartEndRadius")
-  override fun setBorderStartEndRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderStartEndRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderStartStartRadius")
-  override fun setBorderStartStartRadius(view: ButtonViewGroup, value: Float) {
+  override fun setBorderStartStartRadius(view: ButtonViewGroup, value: Dynamic) {
     setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_START_RADIUS, value)
   }
 
@@ -267,14 +272,29 @@ class RNGestureHandlerButtonViewManager :
     view.isSoundEffectsEnabled = !touchSoundDisabled
   }
 
-  @ReactProp(name = "pressAndHoldAnimationDuration")
-  override fun setPressAndHoldAnimationDuration(view: ButtonViewGroup, pressAndHoldAnimationDuration: Int) {
-    view.pressAndHoldAnimationDuration = pressAndHoldAnimationDuration
+  @ReactProp(name = "tapAnimationInDuration")
+  override fun setTapAnimationInDuration(view: ButtonViewGroup, value: Int) {
+    view.tapAnimationInDuration = if (value > 0) value else 0
   }
 
-  @ReactProp(name = "tapAnimationDuration")
-  override fun setTapAnimationDuration(view: ButtonViewGroup, tapAnimationDuration: Int) {
-    view.tapAnimationDuration = if (tapAnimationDuration > 0) tapAnimationDuration else 0
+  @ReactProp(name = "tapAnimationOutDuration")
+  override fun setTapAnimationOutDuration(view: ButtonViewGroup, value: Int) {
+    view.tapAnimationOutDuration = if (value > 0) value else 0
+  }
+
+  @ReactProp(name = "longPressDuration")
+  override fun setLongPressDuration(view: ButtonViewGroup, value: Int) {
+    view.longPressDuration = value
+  }
+
+  @ReactProp(name = "longPressAnimationOutDuration")
+  override fun setLongPressAnimationOutDuration(view: ButtonViewGroup, value: Int) {
+    view.longPressAnimationOutDuration = value
+  }
+
+  @ReactProp(name = "needsOffscreenAlphaCompositing")
+  override fun setNeedsOffscreenAlphaCompositing(view: ButtonViewGroup, value: Boolean) {
+    view.needsOffscreenAlphaCompositing = value
   }
 
   @ReactProp(name = "defaultOpacity")
@@ -352,9 +372,11 @@ class RNGestureHandlerButtonViewManager :
     var useBorderlessDrawable = false
 
     var exclusive = true
-    var tapAnimationDuration: Int = 100
-    var pressAndHoldAnimationDuration: Int = -1
-      get() = if (field < 0) tapAnimationDuration else field
+    var tapAnimationInDuration: Int = 50
+    var tapAnimationOutDuration: Int = 100
+    var longPressDuration: Int = -1
+    var longPressAnimationOutDuration: Int = -1
+      get() = if (field < 0) tapAnimationOutDuration else field
     var activeOpacity: Float = 1.0f
     var defaultOpacity: Float = 1.0f
     var activeScale: Float = 1.0f
@@ -368,6 +390,7 @@ class RNGestureHandlerButtonViewManager :
       set(value) = withBackgroundUpdate {
         field = value
       }
+    var needsOffscreenAlphaCompositing = false
 
     override var pointerEvents: PointerEvents = PointerEvents.AUTO
 
@@ -384,6 +407,11 @@ class RNGestureHandlerButtonViewManager :
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
     private var selectableDrawable: Drawable? = null
+
+    // When true, dispatchDraw clips children to the resolved border-radius shape
+    // (overflow: hidden). ViewGroup's clipChildren is only a rectangular clip and
+    // wouldn't respect rounded corners.
+    private var clipChildrenToShape = false
 
     var isTouched = false
 
@@ -402,16 +430,7 @@ class RNGestureHandlerButtonViewManager :
     }
 
     fun setOverflow(overflow: String?) {
-      when (overflow) {
-        "hidden" -> {
-          clipChildren = true
-          clipToPadding = true
-        }
-        else -> {
-          clipChildren = false
-          clipToPadding = false
-        }
-      }
+      clipChildrenToShape = overflow == "hidden"
       invalidate()
     }
 
@@ -493,7 +512,9 @@ class RNGestureHandlerButtonViewManager :
               if (inside != isPointerInsideBounds) {
                 isPointerInsideBounds = inside
                 if (inside) {
-                  animatePressIn()
+                  // Re-establish View's pressed flag to restore ripple and the
+                  // UP handler runs its normal release cleanup.
+                  setPressed(true)
                 } else {
                   animatePressOut()
                 }
@@ -508,6 +529,19 @@ class RNGestureHandlerButtonViewManager :
         return handled
       }
       return false
+    }
+
+    private fun getAnimatorDurationScale(): Float = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      ValueAnimator.getDurationScale()
+    } else {
+      try {
+        android.provider.Settings.Global.getFloat(
+          context.contentResolver,
+          android.provider.Settings.Global.ANIMATOR_DURATION_SCALE,
+        )
+      } catch (e: android.provider.Settings.SettingNotFoundException) {
+        1.0f
+      }
     }
 
     private fun applyStartAnimationState() {
@@ -530,6 +564,32 @@ class RNGestureHandlerButtonViewManager :
       }
 
       currentAnimator?.cancel()
+      currentAnimator = null
+
+      // Sub-frame durations: snap directly. ObjectAnimator with duration 0
+      // still defers its property write to the next frame callback, so if a
+      // follow-up animateTo() cancels it in the same frame the property never
+      // lands on its target and the next animator captures a stale starting
+      // value (e.g. an instant press-in followed by press-out in the same
+      // frame, leaving the press-out to animate default → default).
+      // Animator duration scale folds in here too: scale 0 collapses any
+      // duration to the same deferred-write territory.
+      val durationScale = getAnimatorDurationScale()
+      val effectiveDurationMs = (durationMs * durationScale).toLong()
+      if (effectiveDurationMs < (display?.minimumFrameTime ?: 16f)) {
+        if (hasOpacity) {
+          alpha = opacity
+        }
+        if (hasScale) {
+          scaleX = scale
+          scaleY = scale
+        }
+        if (hasUnderlay) {
+          underlayDrawable!!.alpha = (underlayOpacity * 255).toInt()
+        }
+        return
+      }
+
       val animators = ArrayList<Animator>()
       if (hasOpacity) {
         animators.add(ObjectAnimator.ofFloat(this, "alpha", opacity))
@@ -544,7 +604,7 @@ class RNGestureHandlerButtonViewManager :
       currentAnimator = AnimatorSet().apply {
         playTogether(animators)
         duration = durationMs
-        interpolator = LinearOutSlowInInterpolator()
+        interpolator = FastOutSlowInInterpolator()
         start()
       }
     }
@@ -555,30 +615,39 @@ class RNGestureHandlerButtonViewManager :
         pendingPressOut = null
       }
       pressInTimestamp = SystemClock.uptimeMillis()
-      animateTo(activeOpacity, activeScale, activeUnderlayOpacity, pressAndHoldAnimationDuration.toLong())
+      animateTo(activeOpacity, activeScale, activeUnderlayOpacity, tapAnimationInDuration.toLong())
     }
 
     private fun animatePressOut() {
       pendingPressOut?.let { handler.removeCallbacks(it) }
-      val pressAndHoldMs = pressAndHoldAnimationDuration.toLong()
-      val tapMs = tapAnimationDuration.toLong()
+      val tapInMs = tapAnimationInDuration.toLong()
+      val tapOutMs = tapAnimationOutDuration.toLong()
+      val longPressMs = longPressDuration.toLong()
+      val longPressOutMs = longPressAnimationOutDuration.toLong()
       val elapsed = SystemClock.uptimeMillis() - pressInTimestamp
 
-      if (elapsed >= pressAndHoldMs) {
-        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, pressAndHoldMs)
-        // elapsed * 2 to ensure there is at least half of the tapAnimationDuration left for the animation to play
-      } else if (elapsed * 2 >= tapMs) {
+      if (longPressMs >= 0 && elapsed >= longPressMs) {
+        // Long-press release - use the configured long-press out duration.
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, longPressOutMs)
+      } else if (elapsed >= tapInMs) {
+        // Press-in animation fully finished — release with the configured out duration.
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
+        // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
+      } else if (elapsed * 2 >= tapOutMs) {
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, elapsed)
       } else {
-        val remaining = tapMs - elapsed
+        val remaining = tapInMs - elapsed
         animateTo(activeOpacity, activeScale, activeUnderlayOpacity, remaining)
 
         val runnable = Runnable {
           pendingPressOut = null
-          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapMs)
+          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
         }
         pendingPressOut = runnable
-        handler.postDelayed(runnable, remaining)
+        // The animator scales `remaining` by ANIMATOR_DURATION_SCALE internally,
+        // so the press-in actually completes after `remaining * scale` ms. We need
+        // to match that.
+        handler.postDelayed(runnable, (remaining * getAnimatorDurationScale()).toLong())
       }
     }
 
@@ -642,7 +711,14 @@ class RNGestureHandlerButtonViewManager :
           canvas.restore()
         }
       }
-      super.dispatchDraw(canvas)
+      if (clipChildrenToShape) {
+        canvas.save()
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
+        super.dispatchDraw(canvas)
+        canvas.restore()
+      } else {
+        super.dispatchDraw(canvas)
+      }
     }
 
     override fun verifyDrawable(who: Drawable): Boolean =
@@ -695,6 +771,14 @@ class RNGestureHandlerButtonViewManager :
       pendingPressOut = null
       currentAnimator?.cancel()
       currentAnimator = null
+      applyStartAnimationState()
+
+      if (touchResponder === this) {
+        touchResponder = null
+      }
+      if (soundResponder === this) {
+        soundResponder = null
+      }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -734,6 +818,16 @@ class RNGestureHandlerButtonViewManager :
     override fun afterGestureEnd(event: MotionEvent) {
       tryFreeingResponder()
       isTouched = false
+    }
+
+    override fun shouldBeginWithRecordedHandlers(
+      recorded: List<GestureHandler>,
+      handler: NativeViewGestureHandler,
+    ): Boolean = recorded.all {
+      it.shouldRecognizeSimultaneously(handler) ||
+        handler.shouldRecognizeSimultaneously(it) ||
+        it.view == this ||
+        it is HoverGestureHandler
     }
 
     private fun tryFreeingResponder() {
@@ -832,6 +926,11 @@ class RNGestureHandlerButtonViewManager :
       // No-op
       // by default Viewgroup would pass hotspot change events
     }
+
+    // Default to skipping the offscreen buffer so children's border anti-aliasing
+    // at the view edge isn't clipped by the layer bounds when alpha != 1.
+    // `needsOffscreenAlphaCompositing` opts back into the standard View behavior.
+    override fun hasOverlappingRendering(): Boolean = needsOffscreenAlphaCompositing
 
     companion object {
       var resolveOutValue = TypedValue()

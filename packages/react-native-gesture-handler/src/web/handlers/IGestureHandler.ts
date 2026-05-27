@@ -22,6 +22,7 @@ export default interface IGestureHandler {
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
   readonly name: SingleGestureName;
+  readonly isContinuous: boolean;
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;
@@ -31,6 +32,8 @@ export default interface IGestureHandler {
   readonly activeCursor?: ActiveCursor | undefined;
   readonly touchAction?: TouchAction | undefined;
   readonly userSelect?: UserSelect | undefined;
+
+  usesNativeOrVirtualDetector: () => boolean;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
 
@@ -53,6 +56,7 @@ export default interface IGestureHandler {
   shouldRequireToWaitForFailure: (handler: IGestureHandler) => boolean;
   shouldRecognizeSimultaneously: (handler: IGestureHandler) => boolean;
   shouldBeCancelledByOther: (handler: IGestureHandler) => boolean;
+  shouldBeginWithRecordedHandlers: (recorded: IGestureHandler[]) => boolean;
   shouldAttachGestureToChildView: () => boolean;
 
   sendEvent: (newState: State, oldState: State) => void;

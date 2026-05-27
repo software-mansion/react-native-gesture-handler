@@ -33,18 +33,6 @@
   return self;
 }
 
-- (BOOL)shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-  // This method is used to implement "enabled" feature for gesture handlers. We enforce gesture
-  // recognizers that are connected with "disabled" handlers to wait for the root gesture
-  // recognizer to fail and this way we block them from acting.
-  RNGestureHandler *otherHandler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
-  if (otherHandler != nil && otherHandler.enabled == NO) {
-    return YES;
-  }
-  return NO;
-}
-
 - (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
 {
   return ![preventedGestureRecognizer isKindOfClass:[RCTSurfaceTouchHandler class]];

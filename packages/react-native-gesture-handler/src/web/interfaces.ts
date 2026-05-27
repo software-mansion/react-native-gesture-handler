@@ -88,6 +88,7 @@ export interface Config extends Record<string, ConfigArgs> {
   maxDeltaY?: number;
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
+  yieldsToContinuousGestures?: boolean;
   direction?: Directions;
   enableTrackpadTwoFingerGesture?: boolean;
 }
@@ -177,3 +178,9 @@ export type GestureHandlerRef = {
 export type SVGRef = {
   elementRef: { current: SVGElement };
 };
+
+export enum NativeGestureRole {
+  Button = 'GestureHandlerButton',
+  Switch = 'Switch',
+  ScrollView = 'ScrollView',
+}

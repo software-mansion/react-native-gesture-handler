@@ -46,6 +46,7 @@ export default {
           ],
         },
       ],
+      "@rnrepo/expo-config-plugin",
     ],
   },
 };

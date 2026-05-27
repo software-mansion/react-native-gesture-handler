@@ -49,7 +49,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     // When starting a new event stream, dispatch CANCEL event so the subtree
     // can clean up its internal state that may be stale due to Gesture Handler
     // starting to intercept events mid-stream.
-    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+    if (rootViewEnabled && event.actionMasked == MotionEvent.ACTION_DOWN) {
       val cancelEvent = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_CANCEL }
       super.dispatchTouchEvent(cancelEvent)
       cancelEvent.recycle()

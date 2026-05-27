@@ -13,6 +13,8 @@ const DEFAULT_MAX_POINTERS = 10;
 const DEFAULT_MIN_DIST_SQ = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
 export default class PanGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   public velocityX = 0;
   public velocityY = 0;
 

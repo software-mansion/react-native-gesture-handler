@@ -8,7 +8,11 @@ import type {
   FlingHandlerData,
 } from './FlingTypes';
 
-export function useFlingGesture(config: FlingGestureConfig): FlingGesture {
+const EMPTY_FLING_CONFIG: FlingGestureConfig = {};
+
+export function useFlingGesture(
+  config: FlingGestureConfig = EMPTY_FLING_CONFIG
+): FlingGesture {
   const flingConfig = useClonedAndRemappedConfig<
     FlingGestureProperties,
     FlingHandlerData

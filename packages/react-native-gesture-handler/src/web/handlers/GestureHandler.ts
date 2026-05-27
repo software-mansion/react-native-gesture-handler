@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
+import { ActionType } from '../../ActionType';
 import type {
   ActiveCursor,
   GestureTouchEvent,
@@ -46,7 +46,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
-  private actionType: ActionType | null = null;
+  protected actionType: ActionType | null = null;
   private forAnimated: boolean = false;
   private forReanimated: boolean = false;
   private _handlerTag!: number;
@@ -96,6 +96,13 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.state = State.UNDETERMINED;
 
     this.delegate.init(viewRef, this);
+  }
+
+  public usesNativeOrVirtualDetector(): boolean {
+    return (
+      this.actionType === ActionType.NATIVE_DETECTOR ||
+      this.actionType === ActionType.VIRTUAL_DETECTOR
+    );
   }
 
   public detach() {
@@ -303,6 +310,12 @@ export default abstract class GestureHandler implements IGestureHandler {
     );
   }
 
+  public shouldBeginWithRecordedHandlers(
+    _recorded: IGestureHandler[]
+  ): boolean {
+    return true;
+  }
+
   public shouldAttachGestureToChildView(): boolean {
     return false;
   }
@@ -356,8 +369,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected onPointerCancel(_event: AdaptedEvent): void {
     // No need to send a cancel touch event explicitly here. `cancel` will
     // handle cancelling all tracked touches if the handler expects pointer data.
-    this.cancel();
-    this.reset();
+    if (GestureHandlerOrchestrator.instance.isHandlerRecorded(this)) {
+      this.cancel();
+    }
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(true, event);
@@ -406,7 +420,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    if (!usesNativeOrVirtualDetector(this.actionType)) {
+    if (!this.usesNativeOrVirtualDetector()) {
       onGestureHandlerEvent?.(touchEvent);
       return;
     }
@@ -433,9 +447,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     const isStateChange = this.lastSentState !== newState;
 
-    const resultEvent: ResultEvent = !usesNativeOrVirtualDetector(
-      this.actionType
-    )
+    const resultEvent: ResultEvent = !this.usesNativeOrVirtualDetector()
       ? this.transformEventData(newState, oldState)
       : isStateChange
         ? this.transformStateChangeEvent(newState, oldState)
@@ -460,7 +472,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     // Cover only V3 path due to different event shape
-    if (!isStateChange && usesNativeOrVirtualDetector(this.actionType)) {
+    if (!isStateChange && this.usesNativeOrVirtualDetector()) {
       const handlerData = (
         resultEvent.nativeEvent as GestureUpdateEventWithHandlerData<unknown>
       ).handlerData;
@@ -763,7 +775,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     const enabledChanged = this.maybeUpdateEnabled(config.enabled);
 
     if (config.hitSlop !== undefined) {
-      this.hitSlop = config.hitSlop;
       this.hitSlop = config.hitSlop;
       this.validateHitSlops();
     }
@@ -1090,6 +1101,11 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected set name(value: SingleGestureName) {
     this._name = value;
   }
+
+  /**
+   * Whether the handler represents a continuous gesture rather than a discrete one.
+   */
+  public readonly isContinuous: boolean = false;
 
   public getTrackedPointersID(): number[] {
     return this.tracker.trackedPointersIDs;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import {
@@ -16,7 +16,6 @@ import type {
 import { useGestureCallbacks } from './useGestureCallbacks';
 import {
   bindSharedValues,
-  prepareConfig,
   prepareConfigForNativeSide,
   prepareRelations,
   unbindSharedValues,
@@ -41,9 +40,6 @@ export function useGesture<
     );
   }
 
-  // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
-  prepareConfig(config);
-
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const { jsEventHandler, reanimatedEventHandler, animatedEventHandler } =
     useGestureCallbacks(handlerTag, config);
@@ -64,15 +60,6 @@ export function useGesture<
       ),
     [handlerTag, config.simultaneousWith, config.requireToFail, config.block]
   );
-
-  const currentGestureRef = useRef({ type: '', handlerTag: -1 });
-  if (
-    currentGestureRef.current.handlerTag !== handlerTag ||
-    currentGestureRef.current.type !== (type as string)
-  ) {
-    currentGestureRef.current = { type, handlerTag };
-    NativeProxy.createGestureHandler(type, handlerTag, {});
-  }
 
   const gesture = useMemo(
     () => ({
@@ -98,11 +85,10 @@ export function useGesture<
   );
 
   useEffect(() => {
-    return () => {
-      if (currentGestureRef.current.handlerTag === handlerTag) {
-        currentGestureRef.current = { type: '', handlerTag: -1 };
-      }
+    NativeProxy.createGestureHandler(type, handlerTag, {});
+    scheduleFlushOperations();
 
+    return () => {
       NativeProxy.dropGestureHandler(handlerTag);
       scheduleFlushOperations();
     };

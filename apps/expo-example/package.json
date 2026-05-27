@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@rnrepo/expo-config-plugin": "0.3.0-beta.3",
     "@types/react": "~19.1.10",
     "@types/react-dom": "~19.1.7",
     "@types/react-native-web": "^0",

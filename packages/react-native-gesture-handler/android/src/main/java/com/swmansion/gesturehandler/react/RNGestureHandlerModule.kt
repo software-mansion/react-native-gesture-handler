@@ -28,7 +28,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @DoNotStrip
   @Suppress("unused")
   private var mHybridData: HybridData = initHybrid()
-  private var isReanimatedAvailable = false
   private var uiRuntimeDecorated = false
   private val registry: RNGestureHandlerRegistry
     get() = registries[moduleId]!!
@@ -61,16 +60,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap): Boolean {
-    if (isReanimatedAvailable && !uiRuntimeDecorated) {
-      uiRuntimeDecorated = decorateUIRuntime()
-    }
-
+  override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
     createGestureHandlerHelper<GestureHandler>(handlerName, handlerTag, config)
-
-    return true
   }
 
   @ReactMethod
@@ -125,8 +118,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   override fun flushOperations() = Unit
 
   @ReactMethod
-  override fun setReanimatedAvailable(isAvailable: Boolean) {
-    isReanimatedAvailable = isAvailable
+  override fun installUIRuntimeBindings(): Boolean {
+    if (!uiRuntimeDecorated) {
+      uiRuntimeDecorated = decorateUIRuntime()
+    }
+
+    return uiRuntimeDecorated
   }
 
   @DoNotStrip
