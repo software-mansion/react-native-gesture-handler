@@ -640,14 +640,14 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // We may try to extract "DummyGestureHandler" in case when "otherGestureRecognizer" belongs to
   // a native view being wrapped with "NativeViewGestureHandler"
   RNGHUIView *reactView = recognizer.view;
-  while (reactView != nil && reactView.reactTag == nil) {
-    reactView = reactView.superview;
-  }
-
-  for (UIGestureRecognizer *recognizer in reactView.gestureRecognizers) {
-    if ([recognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
-      return recognizer.gestureHandler;
+  while (reactView != nil) {
+    for (UIGestureRecognizer *recognizer in reactView.gestureRecognizers) {
+      if ([recognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
+        return recognizer.gestureHandler;
+      }
     }
+
+    reactView = reactView.superview;
   }
 
   return nil;
@@ -816,7 +816,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   RNGHUIView *viewToHitTest = _recognizer.view;
 
-  if ([self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0) {
+  if ([self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0 &&
+      _recognizer.view == self.hostDetectorView) {
     viewToHitTest = _recognizer.view.subviews[0];
     point = [_recognizer.view convertPoint:point toView:viewToHitTest];
   }

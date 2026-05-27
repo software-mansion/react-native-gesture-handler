@@ -850,7 +850,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   for (UIGestureRecognizer *recognizer in enabledGestureRecognizers) {
     RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:recognizer];
     if (handler != nil) {
-      CGPoint pointInView = [self convertPoint:point toView:view];
+      CGPoint pointInView = [self convertPoint:point toView:handler.recognizer.view];
       gestureRecognizerWantsEvent = [handler wantsToHandleEventsAtPoint:pointInView];
     } else {
       gestureRecognizerWantsEvent = YES;
