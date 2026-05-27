@@ -1,18 +1,17 @@
-import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import React, { useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+import {
+  GestureDetector,
+  usePanGesture,
+  usePinchGesture,
+  useRotationGesture,
+  useSimultaneousGestures,
+  useTapGesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import {
-  GestureDetector,
-  useRotationGesture,
-  usePinchGesture,
-  usePanGesture,
-  useTapGesture,
-  useSimultaneousGestures,
-} from 'react-native-gesture-handler';
-import { useState } from 'react';
 
 // @ts-ignore it's an image
 import SIGNET from '../../../ListWithHeader/signet.png';
