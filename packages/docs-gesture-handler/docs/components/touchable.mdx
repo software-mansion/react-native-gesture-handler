@@ -33,6 +33,8 @@ To replace `RectButton` with `Touchable`, add `underlayColor="black"` to your `T
 The legacy `RectButton` shows the native theme ripple on Android by default, while `Touchable` disables the ripple unless [`androidRipple`](#androidripple) is set. To keep the legacy Android feedback, set `androidRipple={{}}` on Android *instead of* `underlayColor`/`animationDuration` — combining the two would render a ripple and an underlay animation simultaneously. Use `Platform.select` to apply the right props per platform:
 
 ```tsx
+import { Platform } from 'react-native';
+
 <Touchable
   {...Platform.select({
     android: { androidRipple: {} },
