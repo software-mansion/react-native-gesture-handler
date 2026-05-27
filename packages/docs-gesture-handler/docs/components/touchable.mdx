@@ -57,12 +57,13 @@ To replace `TouchableOpacity`, add `activeOpacity={0.2}`. The legacy `TouchableO
 
 ### TouchableHighlight
 
-To replace `TouchableHighlight`, add `activeUnderlayOpacity={1}`.
+To replace `TouchableHighlight`, keep your existing `underlayColor` and rename `activeOpacity` to `activeUnderlayOpacity`, while keeping the same value.
 
 ```tsx
 <Touchable
   ...
-  activeUnderlayOpacity={1}/>
+  underlayColor="#DDDDDD"
+  activeUnderlayOpacity={0.6}/>
 ```
 
 ### TouchableWithoutFeedback

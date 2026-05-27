@@ -220,7 +220,7 @@ The props you will use when migrating:
 | Old component | Replace with |
 | --------------------------- | ---------------------------------------------------------------------------- |
 | `TouchableOpacity` | `<Touchable activeOpacity={0.2} animationDuration={{ in: 0, out: 150 }} />` |
-| `TouchableHighlight` | `<Touchable activeUnderlayOpacity={1} />` (also pass `underlayColor`) |
+| `TouchableHighlight` | `<Touchable underlayColor={...} activeUnderlayOpacity={...} />` - keep the original `underlayColor`; the old `activeOpacity` value becomes `activeUnderlayOpacity` (do **not** set `Touchable.activeOpacity` - only the underlay should animate) |
 | `TouchableWithoutFeedback` | `<Touchable />` (plain, no visual feedback props) |
 | `TouchableNativeFeedback` | `<Touchable androidRipple={{}} />` (fill ripple config as needed, empty config results in the default ripple) |
 
