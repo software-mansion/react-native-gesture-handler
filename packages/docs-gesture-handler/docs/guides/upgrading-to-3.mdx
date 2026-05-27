@@ -311,7 +311,7 @@ Although the legacy JS implementation of the buttons is still available, they al
 [`Touchable`](/docs/components/touchable) can also be used as a substitute for old, deprecated `Touchables`.
   - To replace `TouchableOpacity`, add `activeOpacity={0.2}` and `animationDuration={{ in: 0, out: 150 }}`.
   - To replace `TouchableHighlight`, keep your existing `underlayColor` and rename `activeOpacity` to `activeUnderlayOpacity` (same value). Do not set `Touchable`'s `activeOpacity` — only the underlay should animate, not the foreground.
-  - To replace `TouchableNativeFeedback`, add `androidRipple` property with an empty object.
+  - To replace `TouchableNativeFeedback`, add `androidRipple={{}}` — an empty config renders the default theme ripple; add `color`, `radius`, `borderless`, or `foreground` only if the original code customized them.
   - `TouchableWithoutFeedback` can be replaced with a plain `Touchable`.
 
 ### Other components

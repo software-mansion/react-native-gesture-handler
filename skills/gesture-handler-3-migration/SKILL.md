@@ -235,7 +235,7 @@ The props you will use when migrating:
 | `TouchableWithoutFeedback` | `<Touchable />` (plain, no visual feedback props) |
 | `TouchableNativeFeedback` | `<Touchable androidRipple={{}} />` (fill ripple config as needed, empty config results in the default ripple) |
 
-For `TouchableNativeFeedback`, `androidRipple` must be set explicitly — without it no ripple is rendered. `{ foreground: true }` is the minimum to mimic the original behavior; add `color`, `radius`, or `borderless` to match the original ripple appearance.
+For `TouchableNativeFeedback`, `androidRipple` must be set explicitly — without it no ripple is rendered. An empty `{}` is sufficient to get the default theme ripple; add `color`, `radius`, `borderless`, or `foreground` only if the original code customized them.
 
 Do not swap Gesture Handler buttons/touchables for React Native core components or vice versa during migration — keep them within `react-native-gesture-handler`.
 

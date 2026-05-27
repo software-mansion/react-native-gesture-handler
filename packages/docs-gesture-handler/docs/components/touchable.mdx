@@ -102,14 +102,12 @@ To replace `TouchableWithoutFeedback`, use a plain `Touchable`.
 
 ### TouchableNativeFeedback
 
-To replicate `TouchableNativeFeedback` behavior, use the [`androidRipple`](#androidripple) prop. Make sure to set `foreground={true}`.
+To replicate `TouchableNativeFeedback` behavior, use the [`androidRipple`](#androidripple) prop. An empty config is enough to render the default theme ripple — add `color`, `radius`, `borderless`, or `foreground` to customize the animation.
 
 ```tsx
 <Touchable
   ...
-  androidRipple={{
-    foreground: true,
-  }}/>
+  androidRipple={{}}/>
 ```
 
 ## Example 
