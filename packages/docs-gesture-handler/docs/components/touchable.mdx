@@ -29,6 +29,19 @@ To replace `RectButton` with `Touchable`, add `underlayColor="black"` to your `T
   animationDuration={0}/>
 ```
 
+:::note Android ripple
+The legacy `RectButton` shows the native theme ripple on Android by default, while `Touchable` disables the ripple unless [`androidRipple`](#androidripple) is set. To keep the legacy Android feedback, set `androidRipple={{}}` on Android *instead of* `underlayColor`/`animationDuration` — combining the two would render a ripple and an underlay animation simultaneously. Use `Platform.select` to apply the right props per platform:
+
+```tsx
+<Touchable
+  {...Platform.select({
+    android: { androidRipple: {} },
+    default: { underlayColor: 'black', animationDuration: 0 },
+  })}
+/>
+```
+:::
+
 ### BorderlessButton
 
 Replacing `BorderlessButton` with `Touchable` is as easy as replacing `RectButton`. Add `activeOpacity={0.3}` to dim the whole component on press, and `animationDuration={0}` to keep the transition instant — matching the legacy `BorderlessButton`.
@@ -39,6 +52,19 @@ Replacing `BorderlessButton` with `Touchable` is as easy as replacing `RectButto
   activeOpacity={0.3}
   animationDuration={0}/>
 ```
+
+:::note Android ripple
+Same caveat as `RectButton`: the legacy `BorderlessButton` shows the native theme ripple on Android. To preserve that, set `androidRipple={{ borderless: true }}` on Android *instead of* `activeOpacity`/`animationDuration`:
+
+```tsx
+<Touchable
+  {...Platform.select({
+    android: { androidRipple: { borderless: true } },
+    default: { activeOpacity: 0.3, animationDuration: 0 },
+  })}
+/>
+```
+:::
 
 ## Migrating from legacy Touchable variants
 

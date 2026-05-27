@@ -209,11 +209,22 @@ The props you will use when migrating:
 
 ##### Replacing Gesture Handler buttons
 
-| Old component | Replace with |
+| Old component | Replace with (iOS / cross-platform default) |
 | ----------------- | --------------------------------------------------------- |
 | `BaseButton` | `<Touchable />` (default props) |
 | `RectButton` | `<Touchable underlayColor="black" animationDuration={0} />` |
 | `BorderlessButton`| `<Touchable activeOpacity={0.3} animationDuration={0} />` |
+
+**Android ripple:** legacy `RectButton`/`BorderlessButton` use the native theme ripple on Android, while `Touchable` disables the ripple unless `androidRipple` is set. To preserve the legacy Android feedback, set `androidRipple={{}}` on Android **instead of** `underlayColor`/`activeOpacity`/`animationDuration` (don't combine them — the ripple is the visual feedback on Android). Use `Platform.select` to split:
+
+```jsx
+<Touchable
+  {...Platform.select({
+    android: { androidRipple: {} },
+    default: { underlayColor: 'black', animationDuration: 0 }, // RectButton
+  })}
+/>
+```
 
 ##### Replacing legacy Touchables
 
