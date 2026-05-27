@@ -215,7 +215,12 @@ The props you will use when migrating:
 | `RectButton` | `<Touchable underlayColor="black" animationDuration={0} />` |
 | `BorderlessButton`| `<Touchable activeOpacity={0.3} animationDuration={0} />` |
 
-**Android ripple:** legacy `RectButton`/`BorderlessButton` use the native theme ripple on Android, while `Touchable` disables the ripple unless `androidRipple` is set. To preserve the legacy Android feedback, set `androidRipple={{}}` on Android **instead of** `underlayColor`/`activeOpacity`/`animationDuration` (don't combine them — the ripple is the visual feedback on Android). Use `Platform.select` to split:
+**Android ripple:** legacy `RectButton`/`BorderlessButton` use the native theme ripple on Android, while `Touchable` disables the ripple unless `androidRipple` is set. To preserve the legacy Android feedback, set `androidRipple` on Android **instead of** `underlayColor`/`activeOpacity`/`animationDuration` (don't combine them — the ripple is the visual feedback on Android). The two configs are different:
+
+- `RectButton` → `androidRipple={{}}`
+- `BorderlessButton` → `androidRipple={{ borderless: true }}` (matches the legacy borderless ripple shape)
+
+Use `Platform.select` to apply different props per platform. Example for `RectButton`:
 
 ```jsx
 import { Platform } from 'react-native';
@@ -223,7 +228,7 @@ import { Platform } from 'react-native';
 <Touchable
   {...Platform.select({
     android: { androidRipple: {} },
-    default: { underlayColor: 'black', animationDuration: 0 }, // RectButton
+    default: { underlayColor: 'black', animationDuration: 0 },
   })}
 />
 ```
