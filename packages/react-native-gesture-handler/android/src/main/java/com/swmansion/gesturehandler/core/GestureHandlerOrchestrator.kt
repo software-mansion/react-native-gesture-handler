@@ -145,13 +145,6 @@ class GestureHandlerOrchestrator(
   fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
 
-    if (isFinished(newState) && handler.isActive && handler.cancelsJSResponder) {
-      // Check if there are any other active handlers that still request the JS responder to be cancelled.
-      if (gestureHandlers.none { it !== handler && it.isActive && it.cancelsJSResponder }) {
-        onJSResponderCancelListener?.onCancelJSResponderReleased(handler)
-      }
-    }
-
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
       // while iterating over its elements
