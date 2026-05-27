@@ -231,11 +231,13 @@ The props you will use when migrating:
 | Old component | Replace with |
 | --------------------------- | ---------------------------------------------------------------------------- |
 | `TouchableOpacity` | `<Touchable activeOpacity={0.2} animationDuration={{ in: 0, out: 150 }} />` |
-| `TouchableHighlight` | `<Touchable underlayColor={...} activeUnderlayOpacity={...} />` - keep the original `underlayColor`; the old `activeOpacity` value becomes `activeUnderlayOpacity` (do **not** set `Touchable.activeOpacity` - only the underlay should animate) |
+| `TouchableHighlight` | `<Touchable underlayColor={...} activeUnderlayOpacity={1} activeOpacity={...} />` — closest approximation only (not 1:1, see note below) |
 | `TouchableWithoutFeedback` | `<Touchable />` (plain, no visual feedback props) |
 | `TouchableNativeFeedback` | `<Touchable androidRipple={{ foreground: true }} />` (legacy default draws the ripple in the foreground; drop `foreground` if the original code passed `useForeground={false}`) |
 
 For `TouchableNativeFeedback`, `androidRipple` must be set explicitly — without it no ripple is rendered. The legacy component defaults to `useForeground: true`, so `{ foreground: true }` is the closest default replacement; omit `foreground` only when the original code set `useForeground={false}`. Add `color`, `radius`, or `borderless` if the original code customized the `background` prop.
+
+For `TouchableHighlight`, a perfect 1:1 replacement is **not possible** — in the legacy component the container's own background becomes the underlay (solid `underlayColor`) and `activeOpacity` dims just the children on top, so the underlay shows *through* the dimmed children. `Touchable` instead has a separate underlay layer between the background and children, and its `activeOpacity` dims the whole component (background + underlay + children together). The closest approximation: carry `underlayColor` and `activeOpacity` over unchanged, and add `activeUnderlayOpacity={1}` so the underlay layer is rendered solid. Inform the user that the visual feedback may differ from the legacy component because of the different layering.
 
 Do not swap Gesture Handler buttons/touchables for React Native core components or vice versa during migration — keep them within `react-native-gesture-handler`.
 

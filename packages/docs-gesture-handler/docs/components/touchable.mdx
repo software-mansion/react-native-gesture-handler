@@ -83,13 +83,14 @@ To replace `TouchableOpacity`, add `activeOpacity={0.2}`. The legacy `TouchableO
 
 ### TouchableHighlight
 
-To replace `TouchableHighlight`, keep your existing `underlayColor` and rename `activeOpacity` to `activeUnderlayOpacity`, while keeping the same value.
+A perfect 1:1 replacement isn't possible — in `TouchableHighlight` the container's own background becomes the underlay (solid `underlayColor`) and `activeOpacity` dims just the children on top, so the underlay shows *through* the dimmed children. `Touchable` instead has a separate underlay layer between the background and children, and its `activeOpacity` dims the whole component (background + underlay + children together). The closest approximation: carry `underlayColor` and `activeOpacity` over unchanged and add `activeUnderlayOpacity={1}` so the underlay layer is rendered solid.
 
 ```tsx
 <Touchable
   ...
   underlayColor="#DDDDDD"
-  activeUnderlayOpacity={0.6}/>
+  activeUnderlayOpacity={1}
+  activeOpacity={0.6}/>
 ```
 
 ### TouchableWithoutFeedback
