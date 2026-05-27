@@ -44,10 +44,6 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         }
         event.recycle()
       }
-
-      override fun onCancelJSResponderReleased(handler: GestureHandler) {
-        shouldIntercept = false
-      }
     }
     orchestrator = GestureHandlerOrchestrator(
       wrappedView,
