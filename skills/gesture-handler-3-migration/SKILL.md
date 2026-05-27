@@ -184,15 +184,49 @@ The implementation of buttons has been updated, resolving most button-related is
 
 `PureNativeButton` has been removed. If encountered, inform the user that it has been removed and let them decide how to handle that case. They can achieve similar functionality with other buttons.
 
-When migrating buttons, you should use new `Touchable` component instead. To replace `BaseButton` use `Touchable` with default props, to replace `RectButton` use `Touchable` with `underlayColor="black"` and to replace `BorderlessButton` use `Touchable` with `activeOpacity={0.3}`.
-
 ReanimatedSwipeable prop `dragOffsetFromRight` now accepts negative values. If it was used with positive values, make sure to change the sign.
-
-Legacy Touchables (`TouchableOpacity`, `TouchableHighlight`, `TouchableWithoutFeedback`, `TouchableNativeFeedback`) from Gesture Handler are also deprecated and should be replaced with `Touchable`. To replace `TouchableOpacity` use `Touchable` with `activeOpacity={0.2}` and to replace `TouchableHighlight` use `Touchable` with `activeUnderlayOpacity={1}`. To replace `TouchableWithoutFeedback` use a plain `Touchable`. `TouchableNativeFeedback` can be replaced with `Touchable` by setting `androidRipple` property. At minimum, it should be set to `{foreground: true}`, to mimic `TouchableNativeFeedback` ripple effect.
 
 Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the legacy components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
 
 Rename all instances of createNativeWrapper to legacy_createNativeWrapper. This includes both the import statements and the function calls.
+
+#### Migrating to `Touchable`
+
+In Gesture Handler 3 the `Touchable` component replaces both the old buttons (`BaseButton`, `RectButton`, `BorderlessButton`) and the legacy core-style touchables (`TouchableOpacity`, `TouchableHighlight`, `TouchableWithoutFeedback`, `TouchableNativeFeedback`). It is a single component whose visual feedback is controlled entirely through props — pick the right combination instead of picking a different component.
+
+The props you will use when migrating:
+
+- `onPress(event)` — fired on a successful tap. Note: the callback signature changed; the old `BaseButton.onPress` received `(pointerInside: boolean)`, `Touchable.onPress` receives a gesture event object instead.
+- `onPressIn(event)` / `onPressOut(event)` — fired when the pointer first touches and when it is released or leaves the component.
+- `onLongPress()` — fired after the press is held for `delayLongPress` milliseconds (default `600`). When a long press fires, the subsequent release does **not** call `onPress`.
+- `disabled` — replaces the old `enabled` prop (note the inverted sense). Defaults to `false`.
+- `cancelOnLeave` — whether the press is cancelled when the pointer leaves the component bounds. Defaults to `true`. Use this to replace `shouldCancelWhenOutside` from raw buttons.
+- `activeOpacity` — opacity applied to the component itself while pressed (mirrors `TouchableOpacity`). Defaults to `1` (no opacity change).
+- `underlayColor` + `activeUnderlayOpacity` — color and opacity of the underlay shown while pressed (mirrors `TouchableHighlight` / `RectButton`). `underlayColor` defaults to `'transparent'` and `activeUnderlayOpacity` to `0.105`.
+- `androidRipple` — Android ripple config (`{ color?, radius?, borderless?, foreground? }`). When omitted, no native ripple is rendered. Use this to replace `TouchableNativeFeedback`.
+- `animationDuration` — press/hover animation timing in milliseconds. Pass a single number to apply it to every phase, or `{ in, out }` (optionally with `tap`/`hover`/`longPress` overrides). Defaults to `50` in / `100` out.
+- `hitSlop`, `testID`, `style`, `children` — same as before.
+
+##### Replacing Gesture Handler buttons
+
+| Old component | Replace with |
+| ----------------- | --------------------------------------------------------- |
+| `BaseButton` | `<Touchable />` (default props) |
+| `RectButton` | `<Touchable underlayColor="black" animationDuration={0} />` |
+| `BorderlessButton`| `<Touchable activeOpacity={0.3} animationDuration={0} />` |
+
+##### Replacing legacy Touchables
+
+| Old component | Replace with |
+| --------------------------- | ---------------------------------------------------------------------------- |
+| `TouchableOpacity` | `<Touchable activeOpacity={0.2} animationDuration={{ in: 0, out: 150 }} />` |
+| `TouchableHighlight` | `<Touchable activeUnderlayOpacity={1} />` (also pass `underlayColor`) |
+| `TouchableWithoutFeedback` | `<Touchable />` (plain, no visual feedback props) |
+| `TouchableNativeFeedback` | `<Touchable androidRipple={{}} />` (fill ripple config as needed, empty config results in the default ripple) |
+
+For `TouchableNativeFeedback`, `androidRipple` must be set explicitly — without it no ripple is rendered. `{ foreground: true }` is the minimum to mimic the original behavior; add `color`, `radius`, or `borderless` to match the original ripple appearance.
+
+Do not swap Gesture Handler buttons/touchables for React Native core components or vice versa during migration — keep them within `react-native-gesture-handler`.
 
 ### Replaced types
 
