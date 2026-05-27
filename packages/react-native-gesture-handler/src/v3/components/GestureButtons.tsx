@@ -186,6 +186,7 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
 
   return (
     <AnimatedBaseButton
+      borderless
       {...rest}
       ref={ref ?? null}
       onActiveStateChange={onActiveStateChange}
