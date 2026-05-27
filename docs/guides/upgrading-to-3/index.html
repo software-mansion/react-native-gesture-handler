@@ -19,7 +19,7 @@
 
 
 <script src="/react-native-gesture-handler/js/snack-helpers.js" async></script><link rel="stylesheet" href="/react-native-gesture-handler/assets/css/styles.2d2af0bb.css">
-<script src="/react-native-gesture-handler/assets/js/runtime~main.6014db00.js" defer="defer"></script>
+<script src="/react-native-gesture-handler/assets/js/runtime~main.94520e25.js" defer="defer"></script>
 <script src="/react-native-gesture-handler/assets/js/main.c03a8a15.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -77,10 +77,22 @@
 <p>To help you migrate, here is the current state of our button components:</p>
 <ul>
 <li>
-<p><a href="/react-native-gesture-handler/docs/components/touchable"><code>Touchable</code></a> - The recommended component. Can be used to replicate both <code>RectButton</code> and <code>BorderlessButton</code> effects by adjusting the <code>activeOpacity</code> and <code>activeUnderlayOpacity</code> props.</p>
+<p><a href="/react-native-gesture-handler/docs/components/touchable"><code>Touchable</code></a> - The recommended component. Can be used to replicate both <code>RectButton</code> and <code>BorderlessButton</code> effects by adjusting the <code>underlayColor</code>, <code>activeOpacity</code>, and <code>animationDuration</code> props.</p>
 <ul>
-<li>To replace <code>RectButton</code>, add <code>activeUnderlayOpacity={0.105}</code>.</li>
-<li>To replace <code>BorderlessButton</code>, add <code>activeOpacity={0.3}</code>.</li>
+<li>
+<p>To replace <code>RectButton</code>, add <code>underlayColor=&quot;black&quot;</code> and <code>animationDuration={0}</code> (the legacy button switches states instantly).</p>
+</li>
+<li>
+<p>To replace <code>BorderlessButton</code>, add <code>activeOpacity={0.3}</code> and <code>animationDuration={0}</code>.</p>
+</li>
+<li>
+<p><strong>Android ripple:</strong> legacy <code>RectButton</code>/<code>BorderlessButton</code> show the native theme ripple on Android by default, while <code>Touchable</code> disables the ripple unless <code>androidRipple</code> is set. To preserve that behavior, set <code>androidRipple</code> on Android <em>instead of</em> the underlay/opacity/animation props above (don&#x27;t combine them, or you&#x27;ll get both a ripple and an underlay animation at once):</p>
+<ul>
+<li><code>RectButton</code> → <code>androidRipple={{}}</code></li>
+<li><code>BorderlessButton</code> → <code>androidRipple={{ borderless: true }}</code> (matches the legacy borderless ripple shape)</li>
+</ul>
+<p>See the <a href="/react-native-gesture-handler/docs/components/touchable#rectbutton"><code>Touchable</code> docs</a> for full <code>Platform.select</code> examples.</p>
+</li>
 </ul>
 </li>
 <li>
@@ -98,9 +110,9 @@
 <h3 class="anchor _anchorWithHideOnScrollNavbar_1jjlx_10" id="touchables">Touchables<a href="#touchables" class="hash-link" aria-label="Direct link to Touchables" title="Direct link to Touchables">​</a></h3>
 <p><a href="/react-native-gesture-handler/docs/components/touchable"><code>Touchable</code></a> can also be used as a substitute for old, deprecated <code>Touchables</code>.</p>
 <ul>
-<li>To replace <code>TouchableOpacity</code>, add <code>activeOpacity={0.2}</code>.</li>
-<li>To replace <code>TouchableHighlight</code>, add <code>activeUnderlayOpacity={1}</code>.</li>
-<li>To replace <code>TouchableNativeFeedback</code>, add <code>androidRipple</code> property with <code>foreground: true</code>.</li>
+<li>To replace <code>TouchableOpacity</code>, add <code>activeOpacity={0.2}</code> and <code>animationDuration={{ in: 0, out: 150 }}</code>.</li>
+<li>To replace <code>TouchableHighlight</code>, carry <code>underlayColor</code> and <code>activeOpacity</code> over unchanged and add <code>activeUnderlayOpacity={1}</code> so the underlay is solid. A perfect 1:1 replacement isn&#x27;t possible: in <code>TouchableHighlight</code> the container&#x27;s own background becomes the underlay and <code>activeOpacity</code> dims just the children on top (the underlay shows <em>through</em> the dimmed children), while <code>Touchable</code> renders the underlay as a separate layer between background and children, and its <code>activeOpacity</code> dims the whole component. The visual feedback may differ slightly because of the different layering.</li>
+<li>To replace <code>TouchableNativeFeedback</code>, add <code>androidRipple={{ foreground: true }}</code> — the legacy component defaults to <code>useForeground: true</code>, so <code>{ foreground: true }</code> is the closest match. Drop <code>foreground</code> only when the original code set <code>useForeground={false}</code>; add <code>color</code>, <code>radius</code>, or <code>borderless</code> if it customized the <code>background</code> prop.</li>
 <li><code>TouchableWithoutFeedback</code> can be replaced with a plain <code>Touchable</code>.</li>
 </ul>
 <h3 class="anchor _anchorWithHideOnScrollNavbar_1jjlx_10" id="other-components">Other components<a href="#other-components" class="hash-link" aria-label="Direct link to Other components" title="Direct link to Other components">​</a></h3>

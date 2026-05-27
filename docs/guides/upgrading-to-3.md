@@ -97,9 +97,15 @@ RNGH3 introduces the [`Touchable`](/docs/components/touchable) component — a f
 
 To help you migrate, here is the current state of our button components:
 
-* [`Touchable`](/docs/components/touchable) - The recommended component. Can be used to replicate both `RectButton` and `BorderlessButton` effects by adjusting the `activeOpacity` and `activeUnderlayOpacity` props.
-  * To replace `RectButton`, add `activeUnderlayOpacity={0.105}`.
-  * To replace `BorderlessButton`, add `activeOpacity={0.3}`.
+* [`Touchable`](/docs/components/touchable) - The recommended component. Can be used to replicate both `RectButton` and `BorderlessButton` effects by adjusting the `underlayColor`, `activeOpacity`, and `animationDuration` props.
+  * To replace `RectButton`, add `underlayColor="black"` and `animationDuration={0}` (the legacy button switches states instantly).
+  * To replace `BorderlessButton`, add `activeOpacity={0.3}` and `animationDuration={0}`.
+  * **Android ripple:** legacy `RectButton`/`BorderlessButton` show the native theme ripple on Android by default, while `Touchable` disables the ripple unless `androidRipple` is set. To preserve that behavior, set `androidRipple` on Android *instead of* the underlay/opacity/animation props above (don't combine them, or you'll get both a ripple and an underlay animation at once):
+
+    * `RectButton` → `androidRipple={{}}`
+    * `BorderlessButton` → `androidRipple={{ borderless: true }}` (matches the legacy borderless ripple shape)
+
+    See the [`Touchable` docs](/docs/components/touchable#rectbutton) for full `Platform.select` examples.
 
 * Standard Buttons (Deprecated) - `BaseButton`, `RectButton` and `BorderlessButton` are still available but are now deprecated. They have been internally rewritten using the new Hooks API to resolve long-standing issues.
 
@@ -127,9 +133,9 @@ Legacy buttons
 
 [`Touchable`](/docs/components/touchable) can also be used as a substitute for old, deprecated `Touchables`.
 
-* To replace `TouchableOpacity`, add `activeOpacity={0.2}`.
-* To replace `TouchableHighlight`, add `activeUnderlayOpacity={1}`.
-* To replace `TouchableNativeFeedback`, add `androidRipple` property with `foreground: true`.
+* To replace `TouchableOpacity`, add `activeOpacity={0.2}` and `animationDuration={{ in: 0, out: 150 }}`.
+* To replace `TouchableHighlight`, carry `underlayColor` and `activeOpacity` over unchanged and add `activeUnderlayOpacity={1}` so the underlay is solid. A perfect 1:1 replacement isn't possible: in `TouchableHighlight` the container's own background becomes the underlay and `activeOpacity` dims just the children on top (the underlay shows *through* the dimmed children), while `Touchable` renders the underlay as a separate layer between background and children, and its `activeOpacity` dims the whole component. The visual feedback may differ slightly because of the different layering.
+* To replace `TouchableNativeFeedback`, add `androidRipple={{ foreground: true }}` — the legacy component defaults to `useForeground: true`, so `{ foreground: true }` is the closest match. Drop `foreground` only when the original code set `useForeground={false}`; add `color`, `radius`, or `borderless` if it customized the `background` prop.
 * `TouchableWithoutFeedback` can be replaced with a plain `Touchable`.
 
 ### Other components

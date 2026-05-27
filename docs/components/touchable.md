@@ -14,23 +14,53 @@ If you were using `RectButton` or `BorderlessButton` in your app, you should rep
 
 ### RectButton
 
-To replace `RectButton` with `Touchable`, simply add `underlayColor="black"` to your `Touchable`. This will animate the underlay when the button is pressed.
+To replace `RectButton` with `Touchable`, add `underlayColor="black"` to your `Touchable`. This will tint the underlay when the button is pressed. The legacy `RectButton` switches states instantly with no fade, so also set `animationDuration={0}` to match its behavior.
 
 ```tsx
 <Touchable
   ...
-  underlayColor="black"/>
+  underlayColor="black"
+  animationDuration={0}/>
 ```
 
-### BorderlessButton
+:::note Android ripple
+The legacy `RectButton` shows the native theme ripple on Android by default, while `Touchable` disables the ripple unless [`androidRipple`](#androidripple) is set. To keep the legacy Android feedback, set `androidRipple={{}}` on Android *instead of* `underlayColor`/`animationDuration` — combining the two would render a ripple and an underlay animation simultaneously. Use `Platform.select` to apply the right props per platform:
 
-Replacing `BorderlessButton` with `Touchable` is as easy as replacing `RectButton`. Just add `activeOpacity={0.3}` to your `Touchable`. This will animate the whole component when the button is pressed.
+```tsx
+import { Platform } from 'react-native';
+
+<Touchable
+  {...Platform.select({
+    android: { androidRipple: {} },
+    default: { underlayColor: 'black', animationDuration: 0 },
+  })}
+/>
+```
+
+> ### BorderlessButton
+>
+> Replacing `BorderlessButton` with `Touchable` is as easy as replacing `RectButton`. Add `activeOpacity={0.3}` to dim the whole component on press, and `animationDuration={0}` to keep the transition instant — matching the legacy `BorderlessButton`.
+>
+> ````tsx
+> <Touchable
+>   ...
+>   activeOpacity={0.3}
+>   animationDuration={0}/>
+> ```note Android ripple
+> ````
+
+Same caveat as `RectButton`: the legacy `BorderlessButton` shows the native theme ripple on Android. To preserve that, set `androidRipple={{ borderless: true }}` on Android *instead of* `activeOpacity`/`animationDuration`:
 
 ```tsx
 <Touchable
-  ...
-  activeOpacity={0.3}/>
+  {...Platform.select({
+    android: { androidRipple: { borderless: true } },
+    default: { activeOpacity: 0.3, animationDuration: 0 },
+  })}
+/>
 ```
+
+:::
 
 ## Migrating from legacy Touchable variants
 
@@ -38,22 +68,25 @@ If you were using the specialized touchable components (`TouchableOpacity`, `Tou
 
 ### TouchableOpacity
 
-To replace `TouchableOpacity`, add `activeOpacity={0.2}`.
+To replace `TouchableOpacity`, add `activeOpacity={0.2}`. The legacy `TouchableOpacity` dims instantly on press-in and fades back over 150ms on release, so set `animationDuration={{ in: 0, out: 150 }}` to mirror that timing.
 
 ```tsx
 <Touchable
   ...
-  activeOpacity={0.2}/>
+  activeOpacity={0.2}
+  animationDuration={{ in: 0, out: 150 }}/>
 ```
 
 ### TouchableHighlight
 
-To replace `TouchableHighlight`, add `activeUnderlayOpacity={1}`.
+A perfect 1:1 replacement isn't possible — in `TouchableHighlight` the container's own background becomes the underlay (solid `underlayColor`) and `activeOpacity` dims just the children on top, so the underlay shows *through* the dimmed children. `Touchable` instead has a separate underlay layer between the background and children, and its `activeOpacity` dims the whole component (background + underlay + children together). The closest approximation: carry `underlayColor` and `activeOpacity` over unchanged and add `activeUnderlayOpacity={1}` so the underlay layer is rendered solid.
 
 ```tsx
 <Touchable
   ...
-  activeUnderlayOpacity={1}/>
+  underlayColor="#DDDDDD"
+  activeUnderlayOpacity={1}
+  activeOpacity={0.6}/>
 ```
 
 ### TouchableWithoutFeedback
@@ -66,14 +99,12 @@ To replace `TouchableWithoutFeedback`, use a plain `Touchable`.
 
 ### TouchableNativeFeedback
 
-To replicate `TouchableNativeFeedback` behavior, use the [`androidRipple`](#androidripple) prop. Make sure to set `foreground={true}`.
+To replicate `TouchableNativeFeedback` behavior, use the [`androidRipple`](#androidripple) prop. The legacy component defaults to `useForeground: true`, so set `foreground: true` to match — drop it only if the original code passed `useForeground={false}`. Add `color`, `radius`, or `borderless` if the original code customized the `background` prop.
 
 ```tsx
 <Touchable
   ...
-  androidRipple={{
-    foreground: true,
-  }}/>
+  androidRipple={{ foreground: true }}/>
 ```
 
 ## Example
