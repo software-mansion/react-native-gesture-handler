@@ -58,7 +58,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
-    jsGestureHandler = RootViewGestureHandler(handlerTag = -wrappedViewTag)
+    jsGestureHandler = RootViewGestureHandler(handlerTag = -wrappedViewTag).apply {
+      cancelsJSResponder = false
+    }
     registry.registerHandler(jsGestureHandler)
     registry.attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API)
     module.registerRootHelper(this)
