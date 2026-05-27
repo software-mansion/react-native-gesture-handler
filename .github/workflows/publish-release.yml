@@ -73,4 +73,5 @@ jobs:
           package-json-path: 'packages/react-native-gesture-handler/package.json'
           install-dependencies-command: 'yarn install --immutable'
           release-type: 'nightly'
+          version: "3.0.0"
           dry-run: false
