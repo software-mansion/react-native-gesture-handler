@@ -1,17 +1,17 @@
+import type { ActionType } from '../../ActionType';
 import { State } from '../../State';
-import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, PropsRef } from '../interfaces';
-
-import GestureHandler from './GestureHandler';
-import ScaleGestureDetector, {
-  ScaleGestureListener,
-} from '../detectors/ScaleGestureDetector';
-import { ActionType } from '../../ActionType';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import IGestureHandler from './IGestureHandler';
 import { SingleGestureName } from '../../v3/types';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import type { ScaleGestureListener } from '../detectors/ScaleGestureDetector';
+import ScaleGestureDetector from '../detectors/ScaleGestureDetector';
+import type { AdaptedEvent, PropsRef } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
 
 export default class PinchGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   private scale = 1;
   private velocity = 0;
 
@@ -91,8 +91,8 @@ export default class PinchGestureHandler extends GestureHandler {
   protected override onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
-    this.tryBegin();
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.tryBegin();
   }
 
   protected override onPointerUp(event: AdaptedEvent): void {
@@ -113,26 +113,22 @@ export default class PinchGestureHandler extends GestureHandler {
     super.onPointerRemove(event);
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     this.tracker.removeFromTracker(event.pointerId);
-
-    if (this.state === State.ACTIVE && this.tracker.trackedPointersCount < 2) {
-      this.end();
-    }
   }
 
   protected override onPointerMove(event: AdaptedEvent): void {
+    this.tracker.track(event);
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
-    this.tracker.track(event);
 
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     super.onPointerMove(event);
   }
   protected override onPointerOutOfBounds(event: AdaptedEvent): void {
+    this.tracker.track(event);
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
-    this.tracker.track(event);
 
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     super.onPointerOutOfBounds(event);

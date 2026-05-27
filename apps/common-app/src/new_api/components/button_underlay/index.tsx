@@ -1,17 +1,16 @@
 import React from 'react';
-import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
-  ScrollView,
   RawButton,
+  ScrollView,
 } from 'react-native-gesture-handler';
 
 const UNDERLAY_PROPS = {
   underlayColor: 'red',
   activeUnderlayOpacity: 0.2,
   activeScale: 0.9,
-  pressAndHoldAnimationDuration: 200,
-  tapAnimationDuration: 100,
+  animationDruation: 100,
   rippleColor: 'transparent',
 } as const;
 

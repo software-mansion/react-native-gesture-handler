@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { TouchEventType } from '../../../TouchEventType';
+
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import {
+import { TouchEventType } from '../../../TouchEventType';
+import type {
   GestureCallbacks,
+  GestureEndEventCallback,
   GestureEventCallback,
-  GestureEventCallbackWithDidSucceed,
   GestureTouchEventCallback,
   UnpackedGestureHandlerEvent,
 } from '../../types';
@@ -15,38 +16,49 @@ export function useMemoizedGestureCallbacks<
 >(
   callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>
 ): GestureCallbacks<THandlerData, TExtendedHandlerData> {
-  return useMemo(
-    () => ({
-      ...(callbacks.onBegin ? { onBegin: callbacks.onBegin } : {}),
-      ...(callbacks.onActivate ? { onActivate: callbacks.onActivate } : {}),
-      ...(callbacks.onDeactivate
-        ? { onDeactivate: callbacks.onDeactivate }
-        : {}),
-      ...(callbacks.onFinalize ? { onFinalize: callbacks.onFinalize } : {}),
-      ...(callbacks.onUpdate ? { onUpdate: callbacks.onUpdate } : {}),
-      ...(callbacks.onTouchesDown
-        ? { onTouchesDown: callbacks.onTouchesDown }
-        : {}),
-      ...(callbacks.onTouchesMove
-        ? { onTouchesMove: callbacks.onTouchesMove }
-        : {}),
-      ...(callbacks.onTouchesUp ? { onTouchesUp: callbacks.onTouchesUp } : {}),
-      ...(callbacks.onTouchesCancel
-        ? { onTouchesCancel: callbacks.onTouchesCancel }
-        : {}),
-    }),
-    [
-      callbacks.onActivate,
-      callbacks.onBegin,
-      callbacks.onDeactivate,
-      callbacks.onFinalize,
-      callbacks.onTouchesCancel,
-      callbacks.onTouchesDown,
-      callbacks.onTouchesMove,
-      callbacks.onTouchesUp,
-      callbacks.onUpdate,
-    ]
-  );
+  return useMemo(() => {
+    const memoized: GestureCallbacks<THandlerData, TExtendedHandlerData> = {};
+
+    if (callbacks.onBegin) {
+      memoized.onBegin = callbacks.onBegin;
+    }
+    if (callbacks.onActivate) {
+      memoized.onActivate = callbacks.onActivate;
+    }
+    if (callbacks.onDeactivate) {
+      memoized.onDeactivate = callbacks.onDeactivate;
+    }
+    if (callbacks.onFinalize) {
+      memoized.onFinalize = callbacks.onFinalize;
+    }
+    if (callbacks.onUpdate) {
+      memoized.onUpdate = callbacks.onUpdate;
+    }
+    if (callbacks.onTouchesDown) {
+      memoized.onTouchesDown = callbacks.onTouchesDown;
+    }
+    if (callbacks.onTouchesMove) {
+      memoized.onTouchesMove = callbacks.onTouchesMove;
+    }
+    if (callbacks.onTouchesUp) {
+      memoized.onTouchesUp = callbacks.onTouchesUp;
+    }
+    if (callbacks.onTouchesCancel) {
+      memoized.onTouchesCancel = callbacks.onTouchesCancel;
+    }
+
+    return memoized;
+  }, [
+    callbacks.onActivate,
+    callbacks.onBegin,
+    callbacks.onDeactivate,
+    callbacks.onFinalize,
+    callbacks.onTouchesCancel,
+    callbacks.onTouchesDown,
+    callbacks.onTouchesMove,
+    callbacks.onTouchesUp,
+    callbacks.onUpdate,
+  ]);
 }
 
 function getHandler<THandlerData, TExtendedHandlerData extends THandlerData>(
@@ -55,8 +67,8 @@ function getHandler<THandlerData, TExtendedHandlerData extends THandlerData>(
 ):
   | GestureEventCallback<THandlerData>
   | GestureEventCallback<TExtendedHandlerData>
-  | GestureEventCallbackWithDidSucceed<THandlerData>
-  | GestureEventCallbackWithDidSucceed<TExtendedHandlerData>
+  | GestureEndEventCallback<THandlerData>
+  | GestureEndEventCallback<TExtendedHandlerData>
   | GestureTouchEventCallback
   | undefined {
   'worklet';
@@ -100,7 +112,6 @@ export function touchEventTypeToCallbackType(
 }
 
 type SingleParameterCallback<T> = (event: T) => void;
-type DoubleParameterCallback<T> = (event: T, didSucceed: boolean) => void;
 
 export function runCallback<
   THandlerData,
@@ -108,8 +119,7 @@ export function runCallback<
 >(
   type: CALLBACK_TYPE,
   callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
-  event: UnpackedGestureHandlerEvent<THandlerData>,
-  didSucceed?: boolean
+  event: UnpackedGestureHandlerEvent<THandlerData>
 ) {
   'worklet';
   const handler = getHandler(type, callbacks);
@@ -118,9 +128,5 @@ export function runCallback<
     return;
   }
 
-  if (didSucceed === undefined) {
-    (handler as SingleParameterCallback<typeof event>)(event);
-  } else {
-    (handler as DoubleParameterCallback<typeof event>)(event, didSucceed);
-  }
+  (handler as SingleParameterCallback<typeof event>)(event);
 }

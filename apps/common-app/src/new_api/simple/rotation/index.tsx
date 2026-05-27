@@ -1,4 +1,3 @@
-import { COLORS, commonStyles } from '../../../common';
 import React from 'react';
 import { View } from 'react-native';
 import {
@@ -6,11 +5,13 @@ import {
   useRotationGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
   interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+
+import { COLORS, commonStyles } from '../../../common';
 
 export default function RotationExample() {
   const rotation = useSharedValue(0);

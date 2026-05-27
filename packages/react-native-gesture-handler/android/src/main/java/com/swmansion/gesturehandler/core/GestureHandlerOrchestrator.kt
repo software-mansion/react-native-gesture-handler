@@ -19,6 +19,7 @@ class GestureHandlerOrchestrator(
   private val handlerRegistry: GestureHandlerRegistry,
   private val viewConfigHelper: ViewConfigurationHelper,
   private val rootView: ViewGroup,
+  private val onJSResponderCancelListener: OnJSResponderCancelListener,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -143,6 +144,14 @@ class GestureHandlerOrchestrator(
   /*package*/
   fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
+
+    if (isFinished(newState) && handler.isActive && handler.cancelsJSResponder) {
+      // Check if there are any other active handlers that still request the JS responder to be cancelled.
+      if (gestureHandlers.none { it !== handler && it.isActive && it.cancelsJSResponder }) {
+        onJSResponderCancelListener?.onCancelJSResponderReleased(handler)
+      }
+    }
+
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
       // while iterating over its elements
@@ -182,14 +191,16 @@ class GestureHandlerOrchestrator(
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
       if (handler.isActive) {
         handler.dispatchStateChange(newState, prevState)
-      } else if (prevState == GestureHandler.STATE_ACTIVE &&
-        (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED)
+      } else if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED
       ) {
         // Handle edge case where handler awaiting for another one tries to activate but finishes
         // before the other would not send state change event upon ending. Note that we only want
         // to do this if the newState is either CANCELLED or FAILED, if it is END we still want to
         // wait for the other handler to finish as in that case synthetic events will be sent by the
         // makeActive method.
+        // This also covers the case where a discrete gesture (e.g. Tap) ends immediately after
+        // activation (STATE_ACTIVE -> STATE_END) while still awaiting another handler, and is later
+        // cancelled when that handler activates.
         handler.dispatchStateChange(newState, GestureHandler.STATE_BEGAN)
       }
     } else if (prevState != GestureHandler.STATE_UNDETERMINED ||
@@ -239,6 +250,10 @@ class GestureHandlerOrchestrator(
       currentState == GestureHandler.STATE_CANCELLED
     ) {
       return
+    }
+
+    if (handler.cancelsJSResponder) {
+      onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
     }
 
     handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)
@@ -297,7 +312,7 @@ class GestureHandlerOrchestrator(
     }
 
     val action = sourceEvent.actionMasked
-    val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
+    val event = transformEventToViewCoords(handler.coordinateView, MotionEvent.obtain(sourceEvent))
 
     if (handler.needsPointerData) {
       handler.updatePointerData(event, sourceEvent)
@@ -349,11 +364,19 @@ class GestureHandlerOrchestrator(
     if (view === wrapperView) {
       return true
     }
-    var parent = view.parent
-    while (parent != null && parent !== wrapperView) {
-      parent = parent.parent
+    var current: View = view
+    while (true) {
+      val parent = current.parent as? ViewGroup ?: return false
+
+      when {
+        // A disappearing child (kept drawable for an exit animation, e.g. RNScreens during a
+        // navigation transition) still has `parent` set but is gone from `mChildren`. Treat as
+        // detached - `cancelTouchTarget` already synthesized ACTION_CANCEL into this subtree.
+        parent.indexOfChild(current) < 0 -> return false
+        parent === wrapperView -> return true
+        else -> current = parent
+      }
     }
-    return parent === wrapperView
   }
 
   fun isAnyHandlerActive() = gestureHandlers.any { it.state == GestureHandler.STATE_ACTIVE }
@@ -448,11 +471,16 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    gestureHandlers.add(handler)
     handler.isActive = false
     handler.isAwaiting = false
     handler.activationIndex = Int.MAX_VALUE
     handler.prepare(view, this)
+
+    if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
+      handler.cancel()
+    }
+
+    gestureHandlers.add(handler)
   }
 
   private fun isViewOverflowingParent(view: View): Boolean {
@@ -606,7 +634,7 @@ class GestureHandlerOrchestrator(
 
     val childrenCount = viewGroup.childCount
     for (i in childrenCount - 1 downTo 0) {
-      val child = viewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i)
+      val child = viewGroup.getChildAt(i)
       if (canReceiveEvents(child)) {
         val childPoint = tempPoint
         transformPointToChildViewCoords(coords[0], coords[1], viewGroup, child, childPoint)
@@ -659,7 +687,7 @@ class GestureHandlerOrchestrator(
             is ViewGroup -> {
               extractGestureHandlers(view, coords, pointerId, event).also { found ->
                 // A child view is handling touch, also extract handlers attached to this view
-                if (found) {
+                if (found || view is RNGestureHandlerDetectorView) {
                   recordViewHandlersForPointer(view, coords, pointerId, event)
                 }
               }

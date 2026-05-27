@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Modal, View, Text } from 'react-native';
-
+import { Modal, StyleSheet, Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
+
 import { DraggableBox } from '../../basic/draggable';
 
 export default function App() {

@@ -1,10 +1,11 @@
-import { GestureEvent, HandlerData, SingleGestureName } from '../../../types';
+import type { GestureEvent, HandlerData } from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
-  useClonedAndRemappedConfig,
   getChangeEventCalculator,
+  useClonedAndRemappedConfig,
 } from '../../utils';
-import {
+import type {
   RotationExtendedHandlerData,
   RotationGesture,
   RotationGestureConfig,
@@ -41,8 +42,10 @@ function transformRotationProps(
 
 const RotationPropsMapping = new Map<string, string>();
 
+const EMPTY_ROTATION_CONFIG: RotationGestureConfig = {};
+
 export function useRotationGesture(
-  config: RotationGestureConfig
+  config: RotationGestureConfig = EMPTY_ROTATION_CONFIG
 ): RotationGesture {
   const rotationConfig = useClonedAndRemappedConfig<
     RotationGestureProperties,

@@ -1,7 +1,7 @@
 import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
-import {
+import type {
   LongPressGesture,
   LongPressGestureConfig,
   LongPressGestureInternalConfig,
@@ -28,8 +28,10 @@ function transformLongPressProps(
   return config;
 }
 
+const EMPTY_LONG_PRESS_CONFIG: LongPressGestureConfig = {};
+
 export function useLongPressGesture(
-  config: LongPressGestureConfig
+  config: LongPressGestureConfig = EMPTY_LONG_PRESS_CONFIG
 ): LongPressGesture {
   const longPressConfig = useClonedAndRemappedConfig<
     LongPressGestureProperties,

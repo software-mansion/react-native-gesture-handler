@@ -1,6 +1,6 @@
 import { scheduleOperationToBeFlushed } from '../handlers/utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import {
+import type {
   BaseGestureConfig,
   GestureRelations,
   SingleGestureName,
@@ -16,11 +16,13 @@ export const NativeProxy = {
     handlerTag: number,
     config?: T
   ) => {
-    RNGestureHandlerModule.createGestureHandler(
-      handlerName,
-      handlerTag,
-      config || {}
-    );
+    scheduleOperationToBeFlushed(() => {
+      RNGestureHandlerModule.createGestureHandler(
+        handlerName,
+        handlerTag,
+        config || {}
+      );
+    });
   },
   setGestureHandlerConfig: <
     TConfig,
@@ -59,7 +61,7 @@ export const NativeProxy = {
       RNGestureHandlerModule.configureRelations(handlerTag, relations);
     });
   },
-  setReanimatedAvailable: (isAvailable: boolean) => {
-    RNGestureHandlerModule.setReanimatedAvailable(isAvailable);
+  installUIRuntimeBindings: () => {
+    return RNGestureHandlerModule.installUIRuntimeBindings();
   },
 } as const;

@@ -1,17 +1,18 @@
 import React from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
-
+import type {
+  PanGestureHandlerGestureEvent,
+  PanGestureHandlerStateChangeEvent,
+  PinchGestureHandlerGestureEvent,
+  PinchGestureHandlerStateChangeEvent,
+  RotationGestureHandlerGestureEvent,
+  RotationGestureHandlerStateChangeEvent,
+} from 'react-native-gesture-handler';
 import {
   PanGestureHandler,
   PinchGestureHandler,
   RotationGestureHandler,
   State,
-  PanGestureHandlerGestureEvent,
-  PanGestureHandlerStateChangeEvent,
-  RotationGestureHandlerGestureEvent,
-  PinchGestureHandlerGestureEvent,
-  PinchGestureHandlerStateChangeEvent,
-  RotationGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../../../config';

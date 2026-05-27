@@ -1,18 +1,18 @@
+import type { ActionType } from '../../ActionType';
 import { State } from '../../State';
-import { AdaptedEvent, PropsRef } from '../interfaces';
-
-import GestureHandler from './GestureHandler';
-import RotationGestureDetector, {
-  RotationGestureListener,
-} from '../detectors/RotationGestureDetector';
-import { ActionType } from '../../ActionType';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import IGestureHandler from './IGestureHandler';
 import { SingleGestureName } from '../../v3/types';
+import type { RotationGestureListener } from '../detectors/RotationGestureDetector';
+import RotationGestureDetector from '../detectors/RotationGestureDetector';
+import type { AdaptedEvent, PropsRef } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
 
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
 export default class RotationGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
   private rotation = 0;
   private velocity = 0;
 
@@ -100,11 +100,12 @@ export default class RotationGestureHandler extends GestureHandler {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
 
-    this.tryBegin();
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+    this.tryBegin();
   }
 
   protected override onPointerMove(event: AdaptedEvent): void {
+    this.tracker.track(event);
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
@@ -112,8 +113,6 @@ export default class RotationGestureHandler extends GestureHandler {
     const anchor = this.getAnchor();
     this.cachedAnchorX = anchor.x;
     this.cachedAnchorY = anchor.y;
-
-    this.tracker.track(event);
 
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
@@ -121,6 +120,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected override onPointerOutOfBounds(event: AdaptedEvent): void {
+    this.tracker.track(event);
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
@@ -128,8 +128,6 @@ export default class RotationGestureHandler extends GestureHandler {
     const anchor = this.getAnchor();
     this.cachedAnchorX = anchor.x;
     this.cachedAnchorY = anchor.y;
-
-    this.tracker.track(event);
 
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 

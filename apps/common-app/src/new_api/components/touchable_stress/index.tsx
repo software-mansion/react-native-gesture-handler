@@ -1,6 +1,6 @@
 import { Profiler, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Touchable, ScrollView } from 'react-native-gesture-handler';
+import { ScrollView, Touchable } from 'react-native-gesture-handler';
 
 const CLICK_COUNT = 2000;
 const N = 25;

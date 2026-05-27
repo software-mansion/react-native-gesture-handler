@@ -1,31 +1,28 @@
 import React, { Component } from 'react';
+import type { TouchableHighlightProps as RNTouchableHighlightProps } from 'react-native';
 import {
-  StyleSheet,
+  Alert,
   ScrollView as RNScroll,
+  StyleSheet,
   Switch,
   Text,
   View,
-  Alert,
-  TouchableHighlightProps as RNTouchableHighlightProps,
 } from 'react-native';
-
+import type { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import {
-  NativeViewGestureHandler,
   LegacyScrollView as GHScroll,
+  NativeViewGestureHandler,
+  RectButton,
   State,
   TapGestureHandler,
   TextInput,
-  RectButton,
-  TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
-
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
-import { DraggableBox } from '../../basic/draggable';
-import { PinchableBox } from '../../recipes/scaleAndRotate';
-import { PressBox } from '../../basic/multitap';
-
 import { LoremIpsum } from '../../../common';
+import { DraggableBox } from '../../basic/draggable';
+import { PressBox } from '../../basic/multitap';
+import { PinchableBox } from '../../recipes/scaleAndRotate';
 import { InfoButton } from './InfoButton';
 
 type TouchableHighlightProps = RNTouchableHighlightProps & {

@@ -1,11 +1,12 @@
+import { useMemo } from 'react';
+
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../../utils';
-import {
+import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   SingleGestureName,
 } from '../../types';
-import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
 import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 import {
   allowedNativeProps,
@@ -13,9 +14,9 @@ import {
   PropsToFilter,
   PropsWhiteLists,
 } from './propsWhiteList';
-import { useMemo } from 'react';
+import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
 
-export function prepareConfig<
+export function resolveInternalConfigProps<
   TConfig extends object,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
@@ -86,9 +87,8 @@ export function prepareConfigForNativeSide<
   for (const [key, value] of Object.entries(config)) {
     // @ts-ignore That's the point, we want to see if key exists in the whitelists
     if (allowedNativeProps.has(key) || handlerPropsWhiteList.has(key)) {
-      Object.assign(filteredConfig, {
-        [key]: Reanimated?.isSharedValue(value) ? value.value : value,
-      });
+      (filteredConfig as Record<string, unknown>)[key] =
+        Reanimated?.isSharedValue(value) ? value.value : value;
     } else if (PropsToFilter.has(key)) {
       continue;
     } else {
@@ -124,7 +124,7 @@ function remapProps<
   TInternalConfig extends Record<string, unknown>,
 >(
   config: TConfig & TInternalConfig,
-  propsMapping: Map<string, string>
+  propsMapping: ReadonlyMap<string, string>
 ): TInternalConfig {
   type MergedConfig = TConfig & TInternalConfig;
 
@@ -141,6 +141,11 @@ function remapProps<
   return config;
 }
 
+const DEFAULT_PROPS_MAPPING = new Map<string, string>();
+const DEFAULT_PROPS_TRANSFORMER = <TConfig extends object>(
+  config: TConfig
+): TConfig => config;
+
 export function useClonedAndRemappedConfig<
   TConfig extends Record<string, unknown>,
   THandlerData,
@@ -150,8 +155,10 @@ export function useClonedAndRemappedConfig<
   config: ExcludeInternalConfigProps<
     BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
   >,
-  propsMapping: Map<string, string> = new Map(),
-  propsTransformer: (config: TInternalConfig) => TInternalConfig = (cfg) => cfg
+  propsMapping: ReadonlyMap<string, string> = DEFAULT_PROPS_MAPPING,
+  propsTransformer: (
+    config: TInternalConfig
+  ) => TInternalConfig = DEFAULT_PROPS_TRANSFORMER
 ): BaseGestureConfig<TInternalConfig, THandlerData, TExtendedHandlerData> {
   return useMemo(() => {
     const clonedConfig = cloneConfig<
@@ -160,11 +167,15 @@ export function useClonedAndRemappedConfig<
       TExtendedHandlerData
     >(config);
 
-    return propsTransformer(
+    const transformedConfig = propsTransformer(
       remapProps<TConfig, TInternalConfig>(
         clonedConfig as TConfig & TInternalConfig,
         propsMapping
       )
     );
+
+    resolveInternalConfigProps(transformedConfig);
+
+    return transformedConfig;
   }, [config, propsMapping, propsTransformer]);
 }

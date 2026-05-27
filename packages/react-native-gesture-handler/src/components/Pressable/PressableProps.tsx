@@ -1,15 +1,16 @@
-import {
+import type {
   AccessibilityProps,
-  ViewProps,
   Insets,
-  StyleProp,
-  ViewStyle,
-  PressableStateCallbackType as RNPressableStateCallbackType,
   PressableAndroidRippleConfig as RNPressableAndroidRippleConfig,
+  PressableStateCallbackType as RNPressableStateCallbackType,
+  StyleProp,
   View,
+  ViewProps,
+  ViewStyle,
 } from 'react-native';
-import { RelationPropType } from '../utils';
-import { AnyGesture } from '../../v3/types';
+
+import type { AnyGesture } from '../../v3/types';
+import type { RelationPropType } from '../utils';
 
 export type PressableDimensions = { width: number; height: number };
 
@@ -31,7 +32,8 @@ export type InnerPressableEvent = {
 
 export type PressableEvent = { nativeEvent: InnerPressableEvent };
 
-export interface LegacyPressableProps extends CommonPressableProps {
+export interface LegacyPressableProps
+  extends Omit<CommonPressableProps, 'needsOffscreenAlphaCompositing'> {
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the Pressable's gesture handlers.

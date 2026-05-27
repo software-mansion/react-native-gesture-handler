@@ -1,43 +1,37 @@
 export {
-  prepareConfig,
   prepareConfigForNativeSide,
   useClonedAndRemappedConfig,
 } from './configUtils';
-
 export {
-  useMemoizedGestureCallbacks,
-  touchEventTypeToCallbackType,
   runCallback,
+  touchEventTypeToCallbackType,
+  useMemoizedGestureCallbacks,
 } from './eventHandlersUtils';
-
 export {
-  maybeExtractNativeEvent,
+  checkMappingForChangeProperties,
   flattenAndFilterEvent,
+  getChangeEventCalculator,
   isEventForHandlerWithTag,
   isNativeAnimatedEvent,
-  checkMappingForChangeProperties,
+  maybeExtractNativeEvent,
   shouldHandleTouchEvents,
-  getChangeEventCalculator,
 } from './eventUtils';
-
-export {
-  bindSharedValues,
-  unbindSharedValues,
-  hasWorkletEventHandlers,
-  maybeUnpackValue,
-} from './reanimatedUtils';
-
-export {
-  isComposedGesture,
-  prepareRelations,
-  containsDuplicates,
-} from './relationUtils';
-
 export {
   allowedNativeProps,
-  NativeWrapperProps,
+  EMPTY_WHITE_LIST,
   HandlerCallbacks,
+  NativeWrapperProps,
   PropsToFilter,
   PropsWhiteLists,
-  EMPTY_WHITE_LIST,
 } from './propsWhiteList';
+export {
+  bindSharedValues,
+  hasWorkletEventHandlers,
+  maybeUnpackValue,
+  unbindSharedValues,
+} from './reanimatedUtils';
+export {
+  containsDuplicates,
+  isComposedGesture,
+  prepareRelations,
+} from './relationUtils';

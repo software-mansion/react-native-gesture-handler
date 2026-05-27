@@ -20,23 +20,53 @@ If you were using `RectButton` or `BorderlessButton` in your app, you should rep
 
 ### RectButton
 
-To replace `RectButton` with `Touchable`, simply add `activeUnderlayOpacity={0.105}` to your `Touchable`. This will animate the underlay when the button is pressed.
+To replace `RectButton` with `Touchable`, add `underlayColor="black"` to your `Touchable`. This will tint the underlay when the button is pressed. The legacy `RectButton` switches states instantly with no fade, so also set `animationDuration={0}` to match its behavior.
 
 ```tsx
 <Touchable
   ...
-  activeUnderlayOpacity={0.105}/>
+  underlayColor="black"
+  animationDuration={0}/>
 ```
+
+:::note Android ripple
+The legacy `RectButton` shows the native theme ripple on Android by default, while `Touchable` disables the ripple unless [`androidRipple`](#androidripple) is set. To keep the legacy Android feedback, set `androidRipple={{}}` on Android *instead of* `underlayColor`/`animationDuration` — combining the two would render a ripple and an underlay animation simultaneously. Use `Platform.select` to apply the right props per platform:
+
+```tsx
+import { Platform } from 'react-native';
+
+<Touchable
+  {...Platform.select({
+    android: { androidRipple: {} },
+    default: { underlayColor: 'black', animationDuration: 0 },
+  })}
+/>
+```
+:::
 
 ### BorderlessButton
 
-Replacing `BorderlessButton` with `Touchable` is as easy as replacing `RectButton`. Just add `activeOpacity={0.3}` to your `Touchable`. This will animate the whole component when the button is pressed.
+Replacing `BorderlessButton` with `Touchable` is as easy as replacing `RectButton`. Add `activeOpacity={0.3}` to dim the whole component on press, and `animationDuration={0}` to keep the transition instant — matching the legacy `BorderlessButton`.
 
 ```tsx
 <Touchable
   ...
-  activeOpacity={0.3}/>
+  activeOpacity={0.3}
+  animationDuration={0}/>
 ```
+
+:::note Android ripple
+Same caveat as `RectButton`: the legacy `BorderlessButton` shows the native theme ripple on Android. To preserve that, set `androidRipple={{ borderless: true }}` on Android *instead of* `activeOpacity`/`animationDuration`:
+
+```tsx
+<Touchable
+  {...Platform.select({
+    android: { androidRipple: { borderless: true } },
+    default: { activeOpacity: 0.3, animationDuration: 0 },
+  })}
+/>
+```
+:::
 
 ## Migrating from legacy Touchable variants
 
@@ -44,22 +74,25 @@ If you were using the specialized touchable components (`TouchableOpacity`, `Tou
 
 ### TouchableOpacity
 
-To replace `TouchableOpacity`, add `activeOpacity={0.2}`.
+To replace `TouchableOpacity`, add `activeOpacity={0.2}`. The legacy `TouchableOpacity` dims instantly on press-in and fades back over 150ms on release, so set `animationDuration={{ in: 0, out: 150 }}` to mirror that timing.
 
 ```tsx
 <Touchable
   ...
-  activeOpacity={0.2}/>
+  activeOpacity={0.2}
+  animationDuration={{ in: 0, out: 150 }}/>
 ```
 
 ### TouchableHighlight
 
-To replace `TouchableHighlight`, add `activeUnderlayOpacity={1}`.
+A perfect 1:1 replacement isn't possible — in `TouchableHighlight` the container's own background becomes the underlay (solid `underlayColor`) and `activeOpacity` dims just the children on top, so the underlay shows *through* the dimmed children. `Touchable` instead has a separate underlay layer between the background and children, and its `activeOpacity` dims the whole component (background + underlay + children together). The closest approximation: carry `underlayColor` and `activeOpacity` over unchanged and add `activeUnderlayOpacity={1}` so the underlay layer is rendered solid.
 
 ```tsx
 <Touchable
   ...
-  activeUnderlayOpacity={1}/>
+  underlayColor="#DDDDDD"
+  activeUnderlayOpacity={1}
+  activeOpacity={0.6}/>
 ```
 
 ### TouchableWithoutFeedback
@@ -72,14 +105,12 @@ To replace `TouchableWithoutFeedback`, use a plain `Touchable`.
 
 ### TouchableNativeFeedback
 
-To replicate `TouchableNativeFeedback` behavior, use the [`androidRipple`](#androidripple) prop. Make sure to set `foreground={true}`.
+To replicate `TouchableNativeFeedback` behavior, use the [`androidRipple`](#androidripple) prop. The legacy component defaults to `useForeground: true`, so set `foreground: true` to match — drop it only if the original code passed `useForeground={false}`. Add `color`, `radius`, or `borderless` if the original code customized the `background` prop.
 
 ```tsx
 <Touchable
   ...
-  androidRipple={{
-    foreground: true,
-  }}/>
+  androidRipple={{ foreground: true }}/>
 ```
 
 ## Example 
@@ -114,7 +145,8 @@ export default function TouchableExample() {
           console.log('RectButton built with Touchable');
         }}
         style={[styles.button, { backgroundColor: '#4f9a84' }]}
-        activeUnderlayOpacity={0.105}>
+        underlayColor="black"
+        animationDuration={0}>
         <Text style={styles.buttonText}>RectButton</Text>
       </Touchable>
 
@@ -123,7 +155,8 @@ export default function TouchableExample() {
           console.log('BorderlessButton built with Touchable');
         }}
         style={[styles.button, { backgroundColor: '#5f97c8' }]}
-        activeOpacity={0.3}>
+        activeOpacity={0.3}
+        animationDuration={0}>
         <Text style={styles.buttonText}>BorderlessButton</Text>
       </Touchable>
     </GestureHandlerRootView>
@@ -172,13 +205,29 @@ defaultOpacity?: number;
 
 Defines the opacity of the whole component when the button is active. By default set to `1`.
 
+### activeScale
+
+```ts
+activeScale?: number;
+```
+
+Defines the scale of the whole component when the button is active.
+
+### defaultScale
+
+```ts
+defaultScale?: number;
+```
+
+Defines the scale of the whole component when the button is inactive. By default set to `1`.
+
 ### activeUnderlayOpacity
 
 ```ts
 activeUnderlayOpacity?: number;
 ```
 
-Defines the opacity of the underlay when the button is active. By default set to `0`.
+Defines the opacity of the underlay when the button is active. By default set to `0.105`.
 
 ### defaultUnderlayOpacity
 
@@ -188,13 +237,121 @@ defaultUnderlayOpacity?: number;
 
 Defines the initial opacity of underlay when the button is inactive. By default set to `0`.
 
+<Badges platforms={['web']}>
+### hoverOpacity
+</Badges>
+
+```ts
+hoverOpacity?: number;
+```
+
+Defines the opacity of the whole component when the button is hovered. By default falls back to [`defaultOpacity`](#defaultopacity).
+
+<Badges platforms={['web']}>
+### hoverScale
+</Badges>
+
+```ts
+hoverScale?: number;
+```
+
+Defines the scale of the whole component when the button is hovered. By default falls back to [`defaultScale`](#defaultscale).
+
+<Badges platforms={['web']}>
+### hoverUnderlayOpacity
+</Badges>
+
+```ts
+hoverUnderlayOpacity?: number;
+```
+
+Defines the opacity of the underlay when the button is hovered. By default falls back to [`defaultUnderlayOpacity`](#defaultunderlayopacity).
+
+### animationDuration
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+animationDuration?: AnimationDuration;
+
+type InOutDuration = { in: number; out: number };
+
+type AnimationDuration =
+  | number
+  | (InOutDuration & {
+      tap?: Partial<InOutDuration>;
+      hover?: Partial<InOutDuration>;
+      longPress?: { out: number };
+    })
+  | {
+      tap: InOutDuration;
+      hover: InOutDuration;
+      longPress?: { out: number };
+    };
+`}/>
+
+Press and hover animation timing, in milliseconds. Defaults to 50ms for the in phase and 100ms for the out phase.
+
+Each animation has two phases — `in` (running while the pointer engages the component) and `out` (running after the pointer releases) — across two categories:
+- `tap` — applies to presses.
+- `hover` — pointer hover (web only).
+
+`longPress` is an optional override for the press-out timing once the press has been held past [`delayLongPress`](#delaylongpress). It only has an `out` field (the press-in is always the `tap` in duration). If omitted, the long-press release uses the resolved `tap` out duration.
+
+Three input shapes are accepted:
+
+1. A single number applied to every phase of every category:
+
+```tsx
+<Touchable animationDuration={200} />
+```
+
+2. A baseline `in` / `out` with optional per-category overrides — categories that aren't specified inherit the baseline, and within a category any field left out also inherits from the baseline:
+
+```tsx
+<Touchable
+  animationDuration={{
+    in: 50,
+    out: 200,
+    hover: { in: 400 },
+  }}
+/>
+```
+
+3. Both categories specified explicitly (no baseline) — every field must be supplied:
+
+```tsx
+<Touchable
+  animationDuration={{
+    tap: { in: 0, out: 200 },
+    hover: { in: 300, out: 300 },
+  }}
+/>
+```
+
+To give a long press its own release timing, add `longPress.out`. The switch fires when the press is held past [`delayLongPress`](#delaylongpress):
+
+```tsx
+<Touchable
+  delayLongPress={400}
+  onLongPress={() => {}}
+  animationDuration={{
+    in: 50,
+    out: 100,
+    longPress: { out: 500 },
+  }}
+/>
+```
+
 ### underlayColor
 
 ```ts
 underlayColor?: string;
 ```
 
-Background color of the underlay. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set.
+Background color of the underlay. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set. By default set to `transparent`.
 
 ### exclusive
 
@@ -270,9 +427,28 @@ Triggered when the button gets released or the pointer moves outside of the butt
 
 ### onPress
 
-```ts
-onPress?: (pointerInside: boolean) => void;
-```
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onPress?: (e: GestureEvent<NativeHandlerData>) => void;
+
+type GestureEvent<NativeHandlerData> = {
+    handlerTag: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+    pointerInside: boolean;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
 
 Triggered when the button gets pressed (analogous to `onPress` in `Pressable` from RN core).
 
@@ -284,14 +460,6 @@ onLongPress?: () => void;
 
 Triggered when the button gets pressed for at least [`delayLongPress`](#delaylongpress) milliseconds.
 
-
-### onActiveStateChange
-
-```ts
-onActiveStateChange?: (active: boolean) => void;
-```
-
-Triggered when the button transitions between active and inactive states. It passes the current active state as a boolean variable to the method as the first parameter.
 
 ### delayLongPress
 
@@ -322,3 +490,23 @@ type PressableAndroidRippleConfig = {
 `}/>
 
 Configuration for the ripple effect on Android. If not provided, the ripple effect will be disabled. If `{}` is provided, the ripple effect will be enabled with default configuration.
+
+<Badges platforms={['android', 'ios']}>
+### cancelOnLeave
+</Badges>
+
+```ts
+cancelOnLeave?: boolean;
+```
+
+Whether the touch should be canceled when the pointer leaves the component. By default set to `true`. On web this prop doesn't have any effect and behaves as if `true` was set.
+
+<Badges platforms={['android']}>
+### needsOffscreenAlphaCompositing
+</Badges>
+
+```ts
+needsOffscreenAlphaCompositing?: boolean;
+```
+
+Whether the view should render with an offscreen alpha-compositing buffer when its `opacity` is less than `1`. Defaults to `false`.

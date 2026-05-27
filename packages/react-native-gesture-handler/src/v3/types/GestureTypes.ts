@@ -1,12 +1,12 @@
-import { DetectorCallbacks } from './DetectorTypes';
-import {
+import type {
   CommonGestureConfig,
   ComposedGestureConfig,
   GestureCallbacks,
   GestureRelations,
   InternalConfigProps,
 } from './ConfigTypes';
-import { FilterNeverProperties } from './UtilityTypes';
+import type { DetectorCallbacks } from './DetectorTypes';
+import type { FilterNeverProperties } from './UtilityTypes';
 
 // Unfortunately, this type cannot be moved into ConfigTypes.ts because of circular dependency
 export type ExternalRelations = {

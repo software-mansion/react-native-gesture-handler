@@ -1,13 +1,14 @@
-import React, { ReactNode } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import type { ReactNode } from 'react';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { HitSlopExample } from './hitSlop';
-import { RippleExample } from './androidRipple';
-import { FunctionalStyleExample } from './functionalStyles';
-import { DelayedPressExample } from './delayedPress';
-import { DelayHoverExample } from './hoverDelay';
 import { commonStyles } from '../../../common';
+import { RippleExample } from './androidRipple';
+import { DelayedPressExample } from './delayedPress';
+import { FunctionalStyleExample } from './functionalStyles';
+import { HitSlopExample } from './hitSlop';
+import { DelayHoverExample } from './hoverDelay';
 
 type TestingEntryProps = {
   title: string;

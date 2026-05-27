@@ -1,34 +1,31 @@
+import type { ReactElement } from 'react';
 import * as React from 'react';
-import {
-  Platform,
-  DeviceEventEmitter,
-  EmitterSubscription,
-} from 'react-native';
-import { customDirectEventTypes } from './customDirectEventTypes';
+import type { EmitterSubscription } from 'react-native';
+import { DeviceEventEmitter, Platform } from 'react-native';
+
+import { ActionType } from '../ActionType';
+import findNodeHandle from '../findNodeHandle';
+import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
+import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { MountRegistry } from '../mountRegistry';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
+import type { ValueOf } from '../typeUtils';
+import { deepEqual, isTestEnv, tagMessage } from '../utils';
+import { customDirectEventTypes } from './customDirectEventTypes';
+import type {
+  BaseGestureHandlerProps,
+  GestureEvent,
+  HandlerStateChangeEvent,
+} from './gestureHandlerCommon';
+import { getNextHandlerTag } from './getNextHandlerTag';
 import {
   handlerIDToTag,
   registerOldGestureHandler,
   unregisterOldGestureHandler,
 } from './handlersRegistry';
-import { getNextHandlerTag } from './getNextHandlerTag';
-
-import {
-  BaseGestureHandlerProps,
-  GestureEvent,
-  HandlerStateChangeEvent,
-} from './gestureHandlerCommon';
-import { filterConfig, scheduleFlushOperations } from './utils';
-import findNodeHandle from '../findNodeHandle';
-import { ValueOf } from '../typeUtils';
-import { deepEqual, isTestEnv, tagMessage } from '../utils';
-import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
-import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
-import { ghQueueMicrotask } from '../ghQueueMicrotask';
-import { MountRegistry } from '../mountRegistry';
-import { ReactElement } from 'react';
+import { filterConfig, scheduleFlushOperations } from './utils';
 
 customDirectEventTypes.topGestureHandlerEvent = {
   registrationName: 'onGestureHandlerEvent',

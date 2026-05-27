@@ -1,18 +1,23 @@
 import findNodeHandle from '../../findNodeHandle';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import { State } from '../../State';
+import { tagMessage } from '../../utils';
+import { SingleGestureName } from '../../v3/types';
 import type IGestureHandler from '../handlers/IGestureHandler';
+import type { SVGRef } from '../interfaces';
 import {
+  getEffectiveBoundingRect,
+  isPointerInBounds,
+  isRNSVGElement,
+} from '../utils';
+import type EventManager from './EventManager';
+import type {
   GestureHandlerDelegate,
   MeasureResult,
 } from './GestureHandlerDelegate';
-import PointerEventManager from './PointerEventManager';
-import { State } from '../../State';
-import { isPointerInBounds, getEffectiveBoundingRect } from '../utils';
-import EventManager from './EventManager';
-import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import KeyboardEventManager from './KeyboardEventManager';
+import PointerEventManager from './PointerEventManager';
 import WheelEventManager from './WheelEventManager';
-import { tagMessage } from '../../utils';
-import { SingleGestureName } from '../../v3/types';
 
 interface DefaultViewStyles {
   userSelect: string;
@@ -43,7 +48,12 @@ export class GestureHandlerWebDelegate
     }
 
     this.gestureHandler = handler;
-    this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
+
+    this.view =
+      handler.usesNativeOrVirtualDetector() &&
+      !isRNSVGElement(viewRef as unknown as SVGRef)
+        ? (viewRef as unknown as HTMLElement)
+        : (findNodeHandle(viewRef) as unknown as HTMLElement);
 
     this.defaultViewStyles = {
       userSelect: this.view.style.userSelect,

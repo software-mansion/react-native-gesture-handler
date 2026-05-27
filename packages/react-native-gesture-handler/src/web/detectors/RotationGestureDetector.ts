@@ -1,5 +1,6 @@
-import { AdaptedEvent, EventTypes } from '../interfaces';
-import PointerTracker from '../tools/PointerTracker';
+import type { AdaptedEvent } from '../interfaces';
+import { EventTypes } from '../interfaces';
+import type PointerTracker from '../tools/PointerTracker';
 
 export interface RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
@@ -83,15 +84,23 @@ export default class RotationGestureDetector
     this.onRotationEnd(this);
   }
 
-  private setKeyPointers(tracker: PointerTracker): void {
+  private setKeyPointers(tracker: PointerTracker, excludeId?: number): void {
     if (this.keyPointers[0] && this.keyPointers[1]) {
       return;
     }
 
-    const pointerIDs: IterableIterator<number> = tracker.trackedPointers.keys();
+    let assigned = 0;
 
-    this.keyPointers[0] = pointerIDs.next().value as number;
-    this.keyPointers[1] = pointerIDs.next().value as number;
+    for (const id of tracker.trackedPointers.keys()) {
+      if (id === excludeId) {
+        continue;
+      }
+
+      this.keyPointers[assigned++] = id;
+      if (assigned === 2) {
+        break;
+      }
+    }
   }
 
   public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
@@ -131,7 +140,13 @@ export default class RotationGestureDetector
         }
 
         if (this.keyPointers.indexOf(event.pointerId) >= 0) {
-          this.finish();
+          if (tracker.trackedPointersCount <= 2) {
+            this.reset();
+          } else {
+            this.keyPointers = [NaN, NaN];
+            this.setKeyPointers(tracker, event.pointerId);
+            this.previousAngle = NaN;
+          }
         }
 
         break;

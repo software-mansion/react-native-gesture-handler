@@ -1,16 +1,15 @@
-import { TurboModuleRegistry, TurboModule } from 'react-native';
-import { Double } from 'react-native/Libraries/Types/CodegenTypes';
+import type { TurboModule } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
+import type { Double } from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
-  // This method returns a boolean only to force the codegen to generate
-  // a synchronous method. The returned value doesn't have any meaning.
   createGestureHandler: (
     handlerName: string,
     handlerTag: Double,
     // Record<> is not supported by codegen
     // eslint-disable-next-line @typescript-eslint/ban-types
     config: Object
-  ) => boolean;
+  ) => void;
   attachGestureHandler: (
     handlerTag: Double,
     newView: Double,
@@ -24,7 +23,7 @@ export interface Spec extends TurboModule {
   configureRelations: (handlerTag: Double, relations: Object) => void;
   dropGestureHandler: (handlerTag: Double) => void;
   flushOperations: () => void;
-  setReanimatedAvailable: (isAvailable: boolean) => void;
+  installUIRuntimeBindings: () => boolean;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNGestureHandlerModule');

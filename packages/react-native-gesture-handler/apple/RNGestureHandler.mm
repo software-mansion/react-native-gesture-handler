@@ -14,10 +14,6 @@
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
 
-@interface UIGestureRecognizer (GestureHandler)
-@property (nonatomic, readonly) RNGestureHandler *gestureHandler;
-@end
-
 @implementation UIGestureRecognizer (GestureHandler)
 
 - (RNGestureHandler *)gestureHandler
@@ -105,6 +101,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.testID = nil;
   self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
+  _cancelsJSResponder = YES;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
   _dispatchesAnimatedEvents = NO;
@@ -162,6 +159,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   prop = config[@"manualActivation"];
   if (prop != nil) {
     self.manualActivation = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"cancelsJSResponder"];
+  if (prop != nil) {
+    _cancelsJSResponder = [RCTConvert BOOL:prop];
   }
 
   prop = config[@"hitSlop"];
@@ -252,6 +254,43 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return [view isKindOfClass:[RCTParagraphComponentView class]];
 }
 
+/**
+ * Recursively searches the view subtree rooted at `view` for any descendant whose
+ * `touchEventEmitterAtPoint:` returns an emitter tag matching `virtualViewTag`.
+ * `point` must be in `view`'s coordinate space.
+ *
+ * Most Fabric views inherit a base `touchEventEmitterAtPoint:` that returns their own emitter
+ * (tag == their own reactTag). Views that render multiple logical children — like
+ * `RCTParagraphComponentView` for inline text spans — override the method to return
+ * per-child emitters, making them distinguishable by tag. This helper exploits that
+ * property without hardcoding any specific view class.
+ */
+- (BOOL)isVirtualViewTag:(NSNumber *)virtualViewTag touchedAtPoint:(CGPoint)point inView:(RNGHUIView *)view
+{
+  if (!CGRectContainsPoint(view.bounds, point)) {
+    return NO;
+  }
+
+  if ([view respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+    auto emitter = [(id<RCTTouchableComponentViewProtocol>)view touchEventEmitterAtPoint:point];
+    if (emitter) {
+      auto eventTarget = emitter->getEventTarget();
+      if (eventTarget != nullptr && eventTarget->getTag() == [virtualViewTag intValue]) {
+        return YES;
+      }
+    }
+  }
+
+  for (RNGHUIView *subview in view.subviews) {
+    CGPoint pointInSubview = [view convertPoint:point toView:subview];
+    if ([self isVirtualViewTag:virtualViewTag touchedAtPoint:pointInSubview inView:subview]) {
+      return YES;
+    }
+  }
+
+  return NO;
+}
+
 - (void)bindToView:(RNGHUIView *)view
 {
   self.recognizer.delegate = self;
@@ -286,12 +325,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
 #if TARGET_OS_OSX
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
                                  withNumberOfTouches:1
                                      withPointerType:RNGestureHandlerMouse];
 #else
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                  withNumberOfTouches:recognizer.numberOfTouches
                                      withPointerType:_pointerType];
@@ -305,6 +344,21 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (RNGHUIView *)chooseViewForInteraction:(UIGestureRecognizer *)recognizer
 {
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
+}
+
+- (RNGHUIView *)coordinateView
+{
+  RNGHUIView *recognizerView = _recognizer.view;
+  if ([self usesNativeOrVirtualDetector] && recognizerView == self.hostDetectorView &&
+      recognizerView.subviews.count == 1) {
+    return recognizerView.subviews[0];
+  }
+  return recognizerView;
+}
+
+- (BOOL)shouldSuppressActiveEvent:(RNGestureHandlerEventExtraData *)extraData
+{
+  return NO;
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
@@ -367,6 +421,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _state = state;
 
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
+
+  if (state == RNGestureHandlerStateActive && [self shouldSuppressActiveEvent:eventData]) {
+    return;
+  }
 
   NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
 
@@ -732,6 +790,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)containsPointInView
 {
+  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
+    CGPoint point = [_recognizer locationInView:_recognizer.view];
+    return [self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view];
+  }
+
   RNGHUIView *viewToHitTest = _recognizer.view;
 
   if (_shouldCancelWhenOutside && [self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0) {
@@ -746,25 +809,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)wantsToHandleEventsAtPoint:(CGPoint)point
 {
+  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
+    // point is in _recognizer.view (detector) coordinate space; search the whole subtree
+    return [self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view];
+  }
+
   RNGHUIView *viewToHitTest = _recognizer.view;
 
   if ([self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0) {
     viewToHitTest = _recognizer.view.subviews[0];
     point = [_recognizer.view convertPoint:point toView:viewToHitTest];
-  }
-
-  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
-    // In this case, logic detector is attached to the DetectorView, which has a single subview representing
-    // the actual target view in the RN hierarchy
-    if ([viewToHitTest respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-      // If the view has touchEventEmitterAtPoint: method, it can be used to determine the viewtag
-      // of the view under the touch point
-      facebook::react::SharedTouchEventEmitter eventEmitter =
-          [(id<RCTTouchableComponentViewProtocol>)viewToHitTest touchEventEmitterAtPoint:point];
-      auto viewUnderTouch = eventEmitter->getEventTarget()->getTag();
-
-      return viewUnderTouch == [_virtualViewTag intValue];
-    }
   }
 
   CGRect hitFrame = RNGHHitSlopInsetRect(viewToHitTest.bounds, _hitSlop);
@@ -789,19 +843,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   // Logic detector has a virtual view tag set only if the real hierarchy was folded into a single View
   if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
-    // In this case, logic detector is attached to the DetectorView, which has a single subview representing
-    // the actual target view in the RN hierarchy
-    RNGHUIView *view = _recognizer.view.subviews[0];
-    if ([view respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-      // If the view has touchEventEmitterAtPoint: method, it can be used to determine the viewtag
-      // of the view under the touch point
-      facebook::react::SharedTouchEventEmitter eventEmitter =
-          [(id<RCTTouchableComponentViewProtocol>)view touchEventEmitterAtPoint:[_recognizer locationInView:view]];
-      auto viewUnderTouch = eventEmitter->getEventTarget()->getTag();
-
-      if (viewUnderTouch != [_virtualViewTag intValue]) {
-        return NO;
-      }
+    CGPoint point = [_recognizer locationInView:_recognizer.view];
+    if (![self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view]) {
+      return NO;
     }
   }
 
@@ -829,6 +873,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 }
 
 - (BOOL)wantsToAttachDirectlyToView
+{
+  return NO;
+}
+
+- (BOOL)isContinuous
 {
   return NO;
 }

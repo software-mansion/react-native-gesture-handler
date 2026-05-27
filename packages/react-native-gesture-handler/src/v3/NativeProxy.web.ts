@@ -1,5 +1,5 @@
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import {
+import type {
   BaseGestureConfig,
   GestureRelations,
   SingleGestureName,
@@ -43,7 +43,7 @@ export const NativeProxy = {
   configureRelations: (handlerTag: number, relations: GestureRelations) => {
     RNGestureHandlerModule.configureRelations(handlerTag, relations);
   },
-  setReanimatedAvailable: (isAvailable: boolean) => {
-    RNGestureHandlerModule.setReanimatedAvailable(isAvailable);
+  installUIRuntimeBindings: () => {
+    return RNGestureHandlerModule.installUIRuntimeBindings();
   },
 } as const;

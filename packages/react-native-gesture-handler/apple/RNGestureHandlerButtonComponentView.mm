@@ -34,6 +34,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
 @implementation RNGestureHandlerButtonComponentView {
   RNGestureHandlerButton *_buttonView;
+  BOOL _needsAnimationStateReset;
 }
 
 #if TARGET_OS_OSX
@@ -65,6 +66,20 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 
   return self;
+}
+
+- (void)prepareForRecycle
+{
+  [self.layer removeAnimationForKey:@"transform"];
+  self.layer.transform = CATransform3DIdentity;
+
+  [_buttonView prepareForRecycle];
+
+  // Force the next updateProps: to re-run applyStartAnimationState even if
+  // the new mount's defaults match the previous mount's.
+  _needsAnimationStateReset = YES;
+
+  [super prepareForRecycle];
 }
 
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
@@ -111,13 +126,64 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   const LayoutMetrics buttonMetrics = [self buildButtonMetrics:layoutMetrics];
   const LayoutMetrics oldbuttonMetrics = [self buildButtonMetrics:oldLayoutMetrics];
 
+  // The press-in animation sets a scale transform on `self.layer` (animationTarget
+  // is this wrapper). RN's layout path sets `self.frame = frame`, which is undefined
+  // behavior when the layer's transform is non-identity, so mid-press child re-layouts
+  // get squished against the old bounds before snapping to the new ones. Neutralize
+  // the transform and any in-flight animation around super's frame update, then
+  // restore both atomically within the same transaction.
+  CATransform3D savedTransform = self.layer.transform;
+  CAAnimation *savedTransformAnimation = [[self.layer animationForKey:@"transform"] copy];
+  BOOL hasPendingTransform = !CATransform3DIsIdentity(savedTransform) || savedTransformAnimation != nil;
+
+  if (hasPendingTransform) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    [self.layer removeAnimationForKey:@"transform"];
+    self.layer.transform = CATransform3DIdentity;
+  }
+
   [super updateLayoutMetrics:wrapperMetrics oldLayoutMetrics:oldWrapperMetrics];
+
+  if (hasPendingTransform) {
+    self.layer.transform = savedTransform;
+    if (savedTransformAnimation) {
+      [self.layer addAnimation:savedTransformAnimation forKey:@"transform"];
+    }
+    [CATransaction commit];
+  }
+
   [_buttonView updateLayoutMetrics:buttonMetrics oldLayoutMetrics:oldbuttonMetrics];
 }
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
+  // super's invalidateLayer (called via finalizeUpdates) unconditionally sets
+  // self.layer.opacity to the React style.opacity, overwriting our
+  // applyStartAnimationState alpha and interrupting in-flight press
+  // animations. Save/restore around super, but only touch what super actually
+  // disturbed — re-adding an unchanged animation resets its progress.
+  float savedOpacity = self.layer.opacity;
+  CAAnimation *savedOpacityAnimation = [self.layer animationForKey:@"opacity"];
+
   [super finalizeUpdates:updateMask];
+
+  BOOL opacityChanged = savedOpacity != self.layer.opacity;
+  BOOL animationChanged = savedOpacityAnimation != [self.layer animationForKey:@"opacity"];
+  if (opacityChanged || animationChanged) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    if (animationChanged) {
+      [self.layer removeAnimationForKey:@"opacity"];
+      if (savedOpacityAnimation) {
+        [self.layer addAnimation:savedOpacityAnimation forKey:@"opacity"];
+      }
+    }
+    if (opacityChanged) {
+      self.layer.opacity = savedOpacity;
+    }
+    [CATransaction commit];
+  }
 
   // Resolve per-corner border radii from props and forward to the button
   // so its underlay CALayer gets the matching shape.
@@ -134,8 +200,6 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
                                         right:borderMetrics.borderWidths.right
                                        bottom:borderMetrics.borderWidths.bottom
                                          left:borderMetrics.borderWidths.left];
-
-  [_buttonView applyStartAnimationState];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -243,9 +307,26 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 {
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
+  // After recycling, treat diffing branches as a fresh mount so values that
+  // survived recycling on _buttonView (e.g. pointerEvents) get re-applied.
+  BOOL treatAsFirstMount = !oldProps || _needsAnimationStateReset;
+  _needsAnimationStateReset = NO;
+
+  // Avoid re-running applyStartAnimationState on every commit — it would
+  // interrupt in-flight press animations during mid-press re-renders.
+  BOOL shouldApplyStartAnimationState = treatAsFirstMount;
+  if (!treatAsFirstMount) {
+    const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
+    shouldApplyStartAnimationState = oldButtonProps.defaultOpacity != newProps.defaultOpacity ||
+        oldButtonProps.defaultScale != newProps.defaultScale ||
+        oldButtonProps.defaultUnderlayOpacity != newProps.defaultUnderlayOpacity;
+  }
+
   _buttonView.userEnabled = newProps.enabled;
-  _buttonView.pressAndHoldAnimationDuration = newProps.pressAndHoldAnimationDuration;
-  _buttonView.tapAnimationDuration = newProps.tapAnimationDuration > 0 ? newProps.tapAnimationDuration : 0;
+  _buttonView.tapAnimationInDuration = newProps.tapAnimationInDuration > 0 ? newProps.tapAnimationInDuration : 0;
+  _buttonView.tapAnimationOutDuration = newProps.tapAnimationOutDuration > 0 ? newProps.tapAnimationOutDuration : 0;
+  _buttonView.longPressDuration = newProps.longPressDuration;
+  _buttonView.longPressAnimationOutDuration = newProps.longPressAnimationOutDuration;
   _buttonView.activeOpacity = newProps.activeOpacity;
   _buttonView.defaultOpacity = newProps.defaultOpacity;
   _buttonView.activeScale = newProps.activeScale;
@@ -268,7 +349,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   // This is necessary because pointerEvents is redefined in the spec,
   // which shadows the base property with a different, incompatible type.
   const auto &newViewProps = static_cast<const ViewProps &>(newProps);
-  if (!oldProps) {
+  if (treatAsFirstMount) {
     _buttonView.pointerEvents = RCTPointerEventsToEnum(newViewProps.pointerEvents);
   } else {
     const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
@@ -279,7 +360,22 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 
   [super updateProps:props oldProps:oldProps];
-  [_buttonView applyStartAnimationState];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  // super's updateProps sets self.accessibilityIdentifier from testID via the
+  // standard Fabric mechanism. However, setAccessibilityProps already forwards
+  // testID to _buttonView.accessibilityIdentifier (the actual button element).
+  // Having the identifier on both views causes testing frameworks (e.g. Detox)
+  // to report multiple matches for the same testID. Clear it from the wrapper so
+  // only _buttonView carries the identifier.
+  if (!newProps.testId.empty()) {
+    self.accessibilityIdentifier = nil;
+  }
+#endif
+
+  if (shouldApplyStartAnimationState) {
+    [_buttonView applyStartAnimationState];
+  }
 }
 
 #if !TARGET_OS_OSX

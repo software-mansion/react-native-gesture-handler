@@ -9,24 +9,26 @@ import {
   isComposedGesture,
   prepareRelations,
 } from '../hooks/utils/relationUtils';
-import { NativeProxy } from '../NativeProxy';
-import { ComposedGestureName, Gesture } from '../types';
+import type { Gesture, GestureRelations } from '../types';
+import { ComposedGestureName } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseAndConfigureRelations = (
   node: Gesture,
+  relationsByTag: Map<number, GestureRelations>,
   simultaneousHandlers: Set<number>,
   waitFor: number[] = []
 ) => {
   // If we are in the leaf node, we want to fill gesture relations arrays with current
-  // waitFor and simultaneousHandlers. We also want to configure relations on the native side.
+  // waitFor and simultaneousHandlers. We also want to record the resulting relations for
+  // this handler so the caller can push them to the native side.
   if (!isComposedGesture(node)) {
     node.gestureRelations = prepareRelations(node.config, node.handlerTag);
 
     node.gestureRelations.simultaneousHandlers.push(...simultaneousHandlers);
     node.gestureRelations.waitFor.push(...waitFor);
 
-    NativeProxy.configureRelations(node.handlerTag, {
+    relationsByTag.set(node.handlerTag, {
       waitFor: node.gestureRelations.waitFor,
       simultaneousHandlers: node.gestureRelations.simultaneousHandlers,
       blocksHandlers: node.gestureRelations.blocksHandlers,
@@ -72,7 +74,12 @@ export const traverseAndConfigureRelations = (
       const length = waitFor.length;
 
       // We traverse the child, passing the current `waitFor` and `simultaneousHandlers`.
-      traverseAndConfigureRelations(child, simultaneousHandlers, waitFor);
+      traverseAndConfigureRelations(
+        child,
+        relationsByTag,
+        simultaneousHandlers,
+        waitFor
+      );
 
       // After traversing the child, we need to update `waitFor` and `simultaneousHandlers`
 
@@ -121,7 +128,12 @@ export const traverseAndConfigureRelations = (
       // We don't want to mark gesture as simultaneous with itself, so we remove its tag from the set.
       const hasRemovedTag = simultaneousHandlers.delete(child.handlerTag);
 
-      traverseAndConfigureRelations(child, simultaneousHandlers, waitFor);
+      traverseAndConfigureRelations(
+        child,
+        relationsByTag,
+        simultaneousHandlers,
+        waitFor
+      );
 
       if (hasRemovedTag) {
         simultaneousHandlers.add(child.handlerTag);
@@ -137,7 +149,9 @@ export const traverseAndConfigureRelations = (
 
 export function configureRelations<TConfig, THandlerData>(
   gesture: Gesture<TConfig, THandlerData>
-) {
+): Map<number, GestureRelations> {
+  const relationsByTag = new Map<number, GestureRelations>();
+
   if (isComposedGesture(gesture)) {
     const simultaneousHandlers = new Set<number>(
       gesture.externalSimultaneousHandlers
@@ -150,13 +164,16 @@ export function configureRelations<TConfig, THandlerData>(
       );
     }
 
-    traverseAndConfigureRelations(gesture, simultaneousHandlers);
-  } else {
-    NativeProxy.configureRelations(
-      gesture.handlerTag,
-      gesture.gestureRelations
+    traverseAndConfigureRelations(
+      gesture,
+      relationsByTag,
+      simultaneousHandlers
     );
+  } else {
+    relationsByTag.set(gesture.handlerTag, gesture.gestureRelations);
   }
+
+  return relationsByTag;
 }
 
 export function ensureNativeDetectorComponent(

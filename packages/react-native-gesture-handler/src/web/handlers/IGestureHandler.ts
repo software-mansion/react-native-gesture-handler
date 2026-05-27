@@ -1,16 +1,16 @@
-import type { PointerType } from '../../PointerType';
 import type {
   ActiveCursor,
   MouseButton,
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
+import type { PointerType } from '../../PointerType';
 import type { State } from '../../State';
+import type { SingleGestureName } from '../../v3/types';
 import type { Config } from '../interfaces';
 import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import type PointerTracker from '../tools/PointerTracker';
-import { SingleGestureName } from '../../v3/types';
 
 export default interface IGestureHandler {
   attached: boolean;
@@ -22,6 +22,7 @@ export default interface IGestureHandler {
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
   readonly name: SingleGestureName;
+  readonly isContinuous: boolean;
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;
@@ -31,6 +32,8 @@ export default interface IGestureHandler {
   readonly activeCursor?: ActiveCursor | undefined;
   readonly touchAction?: TouchAction | undefined;
   readonly userSelect?: UserSelect | undefined;
+
+  usesNativeOrVirtualDetector: () => boolean;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
 
@@ -53,6 +56,7 @@ export default interface IGestureHandler {
   shouldRequireToWaitForFailure: (handler: IGestureHandler) => boolean;
   shouldRecognizeSimultaneously: (handler: IGestureHandler) => boolean;
   shouldBeCancelledByOther: (handler: IGestureHandler) => boolean;
+  shouldBeginWithRecordedHandlers: (recorded: IGestureHandler[]) => boolean;
   shouldAttachGestureToChildView: () => boolean;
 
   sendEvent: (newState: State, oldState: State) => void;

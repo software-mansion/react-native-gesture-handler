@@ -1,18 +1,18 @@
-import {
-  UserSelect,
+import type { Directions } from '../Directions';
+import type {
   ActiveCursor,
-  MouseButton,
-  TouchAction,
-  StylusData,
   GestureTouchEvent,
+  MouseButton,
+  StylusData,
+  TouchAction,
+  UserSelect,
 } from '../handlers/gestureHandlerCommon';
-import { Directions } from '../Directions';
-import { PointerType } from '../PointerType';
-import {
+import type { PointerType } from '../PointerType';
+import type { State } from '../State';
+import type {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
 } from '../v3/types';
-import { State } from '../State';
 
 export interface HitSlop {
   left?: number | undefined;
@@ -88,6 +88,7 @@ export interface Config extends Record<string, ConfigArgs> {
   maxDeltaY?: number;
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
+  yieldsToContinuousGestures?: boolean;
   direction?: Directions;
   enableTrackpadTwoFingerGesture?: boolean;
 }
@@ -177,3 +178,9 @@ export type GestureHandlerRef = {
 export type SVGRef = {
   elementRef: { current: SVGElement };
 };
+
+export enum NativeGestureRole {
+  Button = 'GestureHandlerButton',
+  Switch = 'Switch',
+  ScrollView = 'ScrollView',
+}

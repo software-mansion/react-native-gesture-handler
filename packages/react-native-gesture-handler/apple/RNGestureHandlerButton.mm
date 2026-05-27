@@ -41,6 +41,7 @@
  */
 @implementation RNGestureHandlerButton {
   BOOL _isTouchInsideBounds;
+  BOOL _suppressSuperControlActionDispatch;
   CALayer *_underlayLayer;
   CGFloat _underlayCornerRadii[8]; // [tlH, tlV, trH, trV, blH, blV, brH, brV] outer radii in points
   UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
@@ -48,7 +49,7 @@
   dispatch_block_t _pendingPressOutBlock;
 }
 
-@synthesize pressAndHoldAnimationDuration = _pressAndHoldAnimationDuration;
+@synthesize longPressAnimationOutDuration = _longPressAnimationOutDuration;
 
 - (void)commonInit
 {
@@ -56,8 +57,10 @@
   _hitTestEdgeInsets = UIEdgeInsetsZero;
   _userEnabled = YES;
   _pointerEvents = RNGestureHandlerPointerEventsAuto;
-  _pressAndHoldAnimationDuration = -1;
-  _tapAnimationDuration = 100;
+  _tapAnimationInDuration = 50;
+  _tapAnimationOutDuration = 100;
+  _longPressDuration = -1;
+  _longPressAnimationOutDuration = -1;
   _activeOpacity = 1.0;
   _defaultOpacity = 1.0;
   _activeScale = 1.0;
@@ -79,7 +82,9 @@
 
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self setExclusiveTouch:YES];
-  [self addTarget:self action:@selector(handleAnimatePressIn) forControlEvents:UIControlEventTouchDown];
+  [self addTarget:self
+                action:@selector(handleAnimatePressIn)
+      forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragEnter];
   [self addTarget:self
                 action:@selector(handleAnimatePressOut)
       forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchDragExit |
@@ -114,12 +119,38 @@
   [_underlayLayer removeAllAnimations];
 }
 
+- (void)prepareForRecycle
+{
+  // Fabric reuses the same wrapper + button instance across mounts. Without
+  // this reset, residual press-in transform/alpha/underlay-opacity from a
+  // prior use leaks into the recycled view, and `updateProps:` won't undo it
+  // when defaults are unchanged between mounts.
+  [self cancelPendingPressOutAnimation];
+
+  RNGHUIView *target = self.animationTarget ?: self;
+  target.layer.transform = CATransform3DIdentity;
+#if !TARGET_OS_OSX
+  target.alpha = 1.0;
+#else
+  target.alphaValue = 1.0;
+#endif
+  _underlayLayer.opacity = 0;
+
+  _isTouchInsideBounds = NO;
+  _suppressSuperControlActionDispatch = NO;
+  _pressInTimestamp = 0;
+}
+
 #if TARGET_OS_OSX
 - (void)viewWillMoveToWindow:(RNGHWindow *)newWindow
 {
   [super viewWillMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self applyStartAnimationState];
+    _isTouchInsideBounds = NO;
+    _suppressSuperControlActionDispatch = NO;
+    _pressInTimestamp = 0;
   }
 }
 #else
@@ -128,13 +159,17 @@
   [super willMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self applyStartAnimationState];
+    _isTouchInsideBounds = NO;
+    _suppressSuperControlActionDispatch = NO;
+    _pressInTimestamp = 0;
   }
 }
 #endif
 
-- (NSInteger)pressAndHoldAnimationDuration
+- (NSInteger)longPressAnimationOutDuration
 {
-  return _pressAndHoldAnimationDuration < 0 ? _tapAnimationDuration : _pressAndHoldAnimationDuration;
+  return _longPressAnimationOutDuration < 0 ? _tapAnimationOutDuration : _longPressAnimationOutDuration;
 }
 
 - (void)setUnderlayColor:(RNGHColor *)underlayColor
@@ -166,11 +201,39 @@
   [self applyUnderlayCornerRadii];
 }
 
+- (BOOL)shouldReduceMotion
+{
+#if TARGET_OS_OSX
+  return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceMotion];
+#else
+  return UIAccessibilityIsReduceMotionEnabled();
+#endif
+}
+
 - (void)animateUnderlayToOpacity:(float)toOpacity duration:(NSTimeInterval)durationMs
 {
-  _underlayLayer.opacity =
-      _underlayLayer.presentationLayer ? [_underlayLayer.presentationLayer opacity] : _underlayLayer.opacity;
+  if ([self shouldReduceMotion]) {
+    durationMs = 0;
+  }
+  // Only sync the model from the presentation layer when an animation is actually
+  // in flight.
+  CALayer *presentation = _underlayLayer.presentationLayer;
+  BOOL hasInFlightAnimation = presentation != nil && _underlayLayer.animationKeys.count > 0;
+  if (hasInFlightAnimation) {
+    _underlayLayer.opacity = presentation.opacity;
+  }
   [_underlayLayer removeAllAnimations];
+
+  // CABasicAnimation with duration 0 resolves to the current CATransaction's
+  // default duration (0.25s), not "no animation". Snap the value directly
+  // with implicit actions disabled to get a true instant update.
+  if (durationMs <= 0) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    _underlayLayer.opacity = toOpacity;
+    [CATransaction commit];
+    return;
+  }
 
   CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"opacity"];
   anim.fromValue = @(_underlayLayer.opacity);
@@ -220,19 +283,63 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #endif
 }
 
+// Duration of a single frame at the current screen's max refresh rate, in ms.
+- (NSTimeInterval)minFrameDurationMs
+{
+#if !TARGET_OS_OSX
+  UIScreen *screen = self.window.screen ?: UIScreen.mainScreen;
+  NSInteger maxFps = screen.maximumFramesPerSecond;
+#else
+  NSScreen *screen = self.window.screen ?: NSScreen.mainScreen;
+  NSInteger maxFps = 60;
+  if (@available(macOS 12.0, *)) {
+    maxFps = screen.maximumFramesPerSecond;
+  }
+#endif
+  return maxFps > 0 ? 1000.0 / (NSTimeInterval)maxFps : 1000.0 / 60.0;
+}
+
 - (void)animateTarget:(RNGHUIView *)target
             toOpacity:(CGFloat)opacity
                 scale:(CGFloat)scale
              duration:(NSTimeInterval)durationMs
 {
-  target.layer.transform =
-      target.layer.presentationLayer ? target.layer.presentationLayer.transform : target.layer.transform;
-  NSTimeInterval duration = durationMs / 1000.0;
+  if ([self shouldReduceMotion]) {
+    durationMs = 0;
+  }
+  CALayer *layer = target.layer;
+  CALayer *presentation = layer.presentationLayer;
+  NSTimeInterval snapThresholdMs = [self minFrameDurationMs];
+
+  // Only snap to the presentation layer when an animation is in flight,
+  // that's the only case where it tells us something the model layer doesn't.
+  BOOL hasInFlightAnimation = presentation != nil && layer.animationKeys.count > 0;
+  if (hasInFlightAnimation) {
+    layer.transform = presentation.transform;
+  }
 
 #if !TARGET_OS_OSX
-  target.alpha = target.layer.presentationLayer ? target.layer.presentationLayer.opacity : target.alpha;
-  [target.layer removeAllAnimations];
+  if (hasInFlightAnimation) {
+    target.alpha = presentation.opacity;
+  }
+  [layer removeAllAnimations];
 
+  // Sub-frame durations: snap with implicit actions disabled instead of
+  // routing through UIView.animate. Same rationale as animateUnderlayToOpacity.
+  if (durationMs < snapThresholdMs) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+      target.alpha = opacity;
+    }
+    if (_activeScale != 1.0 || _defaultScale != 1.0) {
+      layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
+    }
+    [CATransaction commit];
+    return;
+  }
+
+  NSTimeInterval duration = durationMs / 1000.0;
   [UIView animateWithDuration:duration
                         delay:0
                       options:UIViewAnimationOptionCurveEaseInOut
@@ -247,9 +354,25 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                    completion:nil];
 #else
   target.wantsLayer = YES;
-  target.alphaValue = target.layer.presentationLayer ? target.layer.presentationLayer.opacity : target.alphaValue;
-  [target.layer removeAllAnimations];
+  if (hasInFlightAnimation) {
+    target.alphaValue = presentation.opacity;
+  }
+  [layer removeAllAnimations];
 
+  if (durationMs < snapThresholdMs) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+      target.alphaValue = opacity;
+    }
+    if (_activeScale != 1.0 || _defaultScale != 1.0) {
+      layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
+    }
+    [CATransaction commit];
+    return;
+  }
+
+  NSTimeInterval duration = durationMs / 1000.0;
   [NSAnimationContext
       runAnimationGroup:^(NSAnimationContext *context) {
         context.allowsImplicitAnimation = YES;
@@ -274,9 +397,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
   _pressInTimestamp = CACurrentMediaTime();
   RNGHUIView *target = self.animationTarget ?: self;
-  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:self.pressAndHoldAnimationDuration];
+  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:_tapAnimationInDuration];
   if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-    [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:self.pressAndHoldAnimationDuration];
+    [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:_tapAnimationInDuration];
   }
 }
 
@@ -287,17 +410,24 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   NSTimeInterval elapsed = (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
-  NSInteger pressAndHoldAnimationDuration = self.pressAndHoldAnimationDuration;
 
-  if (elapsed >= pressAndHoldAnimationDuration) {
-    // Press-in animation fully finished, animate out in pressAndHoldAnimationDuration
+  if (_longPressDuration >= 0 && elapsed >= _longPressDuration) {
+    // Long-press release - use the configured long-press out duration.
+    NSInteger longPressOut = self.longPressAnimationOutDuration;
     RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:pressAndHoldAnimationDuration];
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:longPressOut];
     if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:pressAndHoldAnimationDuration];
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:longPressOut];
     }
-    // elapsed * 2 to ensure there is at least half of the minDuration left for the animation to play
-  } else if (elapsed * 2 >= _tapAnimationDuration) {
+  } else if (elapsed >= _tapAnimationInDuration) {
+    // Press-in animation fully finished - release with the configured out duration.
+    RNGHUIView *target = self.animationTarget ?: self;
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:_tapAnimationOutDuration];
+    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:_tapAnimationOutDuration];
+    }
+    // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
+  } else if (elapsed * 2 >= _tapAnimationOutDuration) {
     // Past minimum but press-in animation still playing, animate out in elapsed time
     RNGHUIView *target = self.animationTarget ?: self;
     [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:elapsed];
@@ -305,8 +435,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:elapsed];
     }
   } else {
-    // Before minimum duration, finish press-in in remaining time then animate out in minDuration
-    NSTimeInterval remaining = _tapAnimationDuration - elapsed;
+    // Before minimum duration, finish press-in in remaining time then animate out in tapAnimationOutDuration.
+    NSTimeInterval remaining = _tapAnimationInDuration - elapsed;
 
     RNGHUIView *target = self.animationTarget ?: self;
     [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:remaining];
@@ -323,15 +453,16 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         [strongSelf animateTarget:target
                         toOpacity:strongSelf->_defaultOpacity
                             scale:strongSelf->_defaultScale
-                         duration:strongSelf->_tapAnimationDuration];
+                         duration:strongSelf->_tapAnimationOutDuration];
         if (strongSelf->_activeUnderlayOpacity != strongSelf->_defaultUnderlayOpacity) {
           [strongSelf animateUnderlayToOpacity:strongSelf->_defaultUnderlayOpacity
-                                      duration:strongSelf->_tapAnimationDuration];
+                                      duration:strongSelf->_tapAnimationOutDuration];
         }
       }
     });
+    NSTimeInterval scheduledDelay = [self shouldReduceMotion] ? 0 : remaining;
     dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)),
+        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(scheduledDelay * NSEC_PER_MSEC)),
         dispatch_get_main_queue(),
         _pendingPressOutBlock);
   }
@@ -554,6 +685,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #if TARGET_OS_OSX
 - (void)mouseDown:(NSEvent *)event
 {
+  _isTouchInsideBounds = YES;
   [self handleAnimatePressIn];
   [super mouseDown:event];
 }
@@ -561,6 +693,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 - (void)mouseUp:(NSEvent *)event
 {
   [self handleAnimatePressOut];
+  _isTouchInsideBounds = NO;
   [super mouseUp:event];
 }
 
@@ -568,8 +701,13 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 {
   NSPoint locationInWindow = [event locationInWindow];
   NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
+  BOOL currentlyInside = NSPointInRect(locationInView, self.bounds);
 
-  if (!NSPointInRect(locationInView, self.bounds)) {
+  if (currentlyInside && !_isTouchInsideBounds) {
+    _isTouchInsideBounds = YES;
+    [self handleAnimatePressIn];
+  } else if (!currentlyInside && _isTouchInsideBounds) {
+    _isTouchInsideBounds = NO;
     [self handleAnimatePressOut];
   }
 }
@@ -591,9 +729,52 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   return [super beginTrackingWithTouch:touch withEvent:event];
 }
 
+// Mirrors `sendActionsForControlEvents:` but preserves the real `UIEvent`
+// so target-actions with a `forEvent:` parameter receive the touches.
+// The public `sendActionsForControlEvents:` passes a nil event, which would
+// make handlers reading `event.allTouches.count` observe 0 pointers.
+- (void)rngh_sendActionsForControlEvents:(UIControlEvents)controlEvents withEvent:(UIEvent *)event
+{
+  for (id target in [self allTargets]) {
+    for (NSString *actionName in [self actionsForTarget:target forControlEvent:controlEvents]) {
+      [self sendAction:NSSelectorFromString(actionName) to:target forEvent:event];
+    }
+  }
+}
+
+// UIControl's default `touchesMoved:` / `touchesEnded:` invoke
+// `{continue|end}TrackingWithTouch:` and THEN dispatch their own Drag* / Up*
+// actions via `sendAction:to:forEvent:` using Apple's 70-point retention-offset
+// hit-test. That double-fires our handlers (once from our manual dispatch in
+// the tracking hooks, once from UIControl's retention-offset path). We swallow
+// UIControl's dispatch via this override; the flag is armed by our tracking
+// hooks only after our own dispatch has already run.
+- (void)sendAction:(SEL)action to:(id)target forEvent:(UIEvent *)event
+{
+  if (_suppressSuperControlActionDispatch) {
+    return;
+  }
+  [super sendAction:action to:target forEvent:event];
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesMoved:touches withEvent:event];
+  _suppressSuperControlActionDispatch = NO;
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  _suppressSuperControlActionDispatch = NO;
+}
+
 - (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
-  // DO NOT call super. We are entirely taking over the drag event generation.
+  // We take over drag event generation to enforce strict hitslop bounds
+  // (bypassing Apple's retention offset). After our dispatch, set the
+  // suppress flag so UIControl's default post-tracking dispatch in
+  // `touchesMoved:` gets swallowed by our `sendAction:to:forEvent:` override.
 
   CGPoint location = [touch locationInView:self];
   CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
@@ -601,25 +782,27 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   if (currentlyInside) {
     if (!_isTouchInsideBounds) {
-      [self sendActionsForControlEvents:UIControlEventTouchDragEnter];
+      [self rngh_sendActionsForControlEvents:UIControlEventTouchDragEnter withEvent:event];
       _isTouchInsideBounds = YES;
     }
 
     // Targets may call `cancelTrackingWithEvent:` in response to DragEnter.
     if (self.tracking) {
-      [self sendActionsForControlEvents:UIControlEventTouchDragInside];
+      [self rngh_sendActionsForControlEvents:UIControlEventTouchDragInside withEvent:event];
     }
   } else {
     if (_isTouchInsideBounds) {
-      [self sendActionsForControlEvents:UIControlEventTouchDragExit];
+      [self rngh_sendActionsForControlEvents:UIControlEventTouchDragExit withEvent:event];
       _isTouchInsideBounds = NO;
     }
 
     // Targets may call `cancelTrackingWithEvent:` in response to DragExit.
     if (self.tracking) {
-      [self sendActionsForControlEvents:UIControlEventTouchDragOutside];
+      [self rngh_sendActionsForControlEvents:UIControlEventTouchDragOutside withEvent:event];
     }
   }
+
+  _suppressSuperControlActionDispatch = YES;
 
   // If `cancelTrackingWithEvent` was called, `self.tracking` will be NO.
   return self.tracking;
@@ -627,17 +810,20 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
-  // Also bypass super here so that the final "up" event respects the
-  // strict bounds, rather than Apple's 70-point.
+  // Same rationale as `continueTrackingWithTouch:` — we dispatch the final
+  // Up* event ourselves using strict hitslop bounds, then set the suppress
+  // flag so UIControl's default dispatch in `touchesEnded:` gets swallowed.
 
   if (touch != nil) {
     CGPoint location = [touch locationInView:self];
     CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
     if (CGRectContainsPoint(hitFrame, location)) {
-      [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+      [self rngh_sendActionsForControlEvents:UIControlEventTouchUpInside withEvent:event];
     } else {
-      [self sendActionsForControlEvents:UIControlEventTouchUpOutside];
+      [self rngh_sendActionsForControlEvents:UIControlEventTouchUpOutside withEvent:event];
     }
+
+    _suppressSuperControlActionDispatch = YES;
   }
 
   _isTouchInsideBounds = NO;

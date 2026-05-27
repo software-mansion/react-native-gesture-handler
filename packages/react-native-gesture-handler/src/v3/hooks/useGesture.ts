@@ -1,21 +1,25 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
+
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
-import { useGestureCallbacks } from './useGestureCallbacks';
-import {
-  prepareConfig,
-  prepareRelations,
-  bindSharedValues,
-  unbindSharedValues,
-  prepareConfigForNativeSide,
-} from './utils';
-import { tagMessage } from '../../utils';
-import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
-import { scheduleFlushOperations } from '../../handlers/utils';
 import {
   registerGesture,
   unregisterGesture,
 } from '../../handlers/handlersRegistry';
+import { scheduleFlushOperations } from '../../handlers/utils';
+import { tagMessage } from '../../utils';
 import { NativeProxy } from '../NativeProxy';
+import type {
+  BaseGestureConfig,
+  SingleGesture,
+  SingleGestureName,
+} from '../types';
+import { useGestureCallbacks } from './useGestureCallbacks';
+import {
+  bindSharedValues,
+  prepareConfigForNativeSide,
+  prepareRelations,
+  unbindSharedValues,
+} from './utils';
 
 export function useGesture<
   TConfig,
@@ -35,9 +39,6 @@ export function useGesture<
       )
     );
   }
-
-  // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
-  prepareConfig(config);
 
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const { jsEventHandler, reanimatedEventHandler, animatedEventHandler } =
@@ -59,15 +60,6 @@ export function useGesture<
       ),
     [handlerTag, config.simultaneousWith, config.requireToFail, config.block]
   );
-
-  const currentGestureRef = useRef({ type: '', handlerTag: -1 });
-  if (
-    currentGestureRef.current.handlerTag !== handlerTag ||
-    currentGestureRef.current.type !== (type as string)
-  ) {
-    currentGestureRef.current = { type, handlerTag };
-    NativeProxy.createGestureHandler(type, handlerTag, {});
-  }
 
   const gesture = useMemo(
     () => ({
@@ -93,11 +85,10 @@ export function useGesture<
   );
 
   useEffect(() => {
-    return () => {
-      if (currentGestureRef.current.handlerTag === handlerTag) {
-        currentGestureRef.current = { type: '', handlerTag: -1 };
-      }
+    NativeProxy.createGestureHandler(type, handlerTag, {});
+    scheduleFlushOperations();
 
+    return () => {
       NativeProxy.dropGestureHandler(handlerTag);
       scheduleFlushOperations();
     };

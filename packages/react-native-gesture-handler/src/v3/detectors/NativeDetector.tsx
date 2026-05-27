@@ -1,14 +1,13 @@
 import React, { useMemo } from 'react';
-import HostGestureDetector from './HostGestureDetector';
-import { configureRelations, ensureNativeDetectorComponent } from './utils';
-import { isComposedGesture } from '../hooks/utils/relationUtils';
-import {
-  AnimatedNativeDetector,
-  NativeDetectorProps,
-  nativeDetectorStyles,
-} from './common';
-import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
 import { Platform } from 'react-native';
+
+import { isComposedGesture } from '../hooks/utils/relationUtils';
+import type { NativeDetectorProps } from './common';
+import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
+import HostGestureDetector from './HostGestureDetector';
+import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
+import { useGestureRelationsUpdater } from './useGestureRelationsUpdater';
+import { ensureNativeDetectorComponent } from './utils';
 
 export function NativeDetector<
   TConfig,
@@ -28,7 +27,7 @@ export function NativeDetector<
       : HostGestureDetector;
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
-  configureRelations(gesture);
+  useGestureRelationsUpdater(gesture);
 
   const handlerTags = useMemo(() => {
     return isComposedGesture(gesture)

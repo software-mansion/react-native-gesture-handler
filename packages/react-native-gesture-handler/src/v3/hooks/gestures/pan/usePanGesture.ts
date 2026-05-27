@@ -1,16 +1,16 @@
-import {
+import type {
   GestureEvent,
   HandlerData,
-  SingleGestureName,
   WithSharedValue,
 } from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   getChangeEventCalculator,
   maybeUnpackValue,
   useClonedAndRemappedConfig,
 } from '../../utils';
-import {
+import type {
   OffsetProps,
   PanExtendedHandlerData,
   PanGesture,
@@ -139,7 +139,11 @@ function transformPanProps(
   return config;
 }
 
-export function usePanGesture(config: PanGestureConfig): PanGesture {
+const EMPTY_PAN_CONFIG: PanGestureConfig = {};
+
+export function usePanGesture(
+  config: PanGestureConfig = EMPTY_PAN_CONFIG
+): PanGesture {
   if (__DEV__) {
     validatePanConfig(config);
   }

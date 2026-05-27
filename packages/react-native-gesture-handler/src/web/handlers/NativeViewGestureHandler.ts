@@ -1,24 +1,39 @@
 import { Platform } from 'react-native';
+
+import { type ActionType } from '../../ActionType';
 import { State } from '../../State';
-import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config, PropsRef } from '../interfaces';
-
-import GestureHandler from './GestureHandler';
-import { ActionType } from '../../ActionType';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import IGestureHandler from './IGestureHandler';
+import { deepEqual } from '../../utils';
+import type { NativeHandlerData } from '../../v3/hooks/gestures/native/NativeTypes';
+import type { HandlerData } from '../../v3/types';
 import { SingleGestureName } from '../../v3/types';
-export default class NativeViewGestureHandler extends GestureHandler {
-  private buttonRole!: boolean;
+import {
+  DEFAULT_TOUCH_SLOP,
+  NATIVE_GESTURE_ROLE_ATTRIBUTE,
+} from '../constants';
+import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
+import { NativeGestureRole } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import {
+  dispatchGestureLifecycleEvent,
+  GestureLifecycleEvent,
+} from '../tools/GestureLifecycleEvents';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
 
-  // TODO: Implement logic for activation on start
-  // @ts-ignore Logic yet to be implemented
+export default class NativeViewGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+  private role: NativeGestureRole | null = null;
+
+  // TODO: Implement logic for activation on start properly
   private shouldActivateOnStart = false;
   private disallowInterruption = false;
+  private yieldsToContinuousGestures = false;
 
   private startX = 0;
   private startY = 0;
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
+
+  private lastActiveHandlerData: HandlerData<NativeHandlerData> | null = null;
 
   public constructor(
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
@@ -43,7 +58,19 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const view = this.delegate.view as HTMLElement;
 
     this.restoreViewStyles(view);
-    this.buttonRole = view.getAttribute('role') === 'button';
+
+    if (this.usesNativeOrVirtualDetector()) {
+      this.role =
+        (view.getAttribute(
+          NATIVE_GESTURE_ROLE_ATTRIBUTE
+        ) as NativeGestureRole) ?? null;
+    } else {
+      if (view.getAttribute('role') === 'button') {
+        this.role = NativeGestureRole.Button;
+      } else if (view.querySelector(':scope > input[role="switch"]') !== null) {
+        this.role = NativeGestureRole.Switch;
+      }
+    }
   }
 
   public override updateGestureConfig(config: Config): void {
@@ -54,6 +81,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
     if (config.disallowInterruption !== undefined) {
       this.disallowInterruption = config.disallowInterruption;
+    }
+    if (config.yieldsToContinuousGestures !== undefined) {
+      this.yieldsToContinuousGestures = config.yieldsToContinuousGestures;
     }
 
     const view = this.delegate.view as HTMLElement;
@@ -66,7 +96,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
 
     view.style['touchAction'] = 'auto';
-    // @ts-ignore Turns on defualt touch behavior on Safari
+    // @ts-ignore Turns on default touch behavior on Safari
     view.style['WebkitTouchCallout'] = 'auto';
   }
 
@@ -93,10 +123,19 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.begin();
 
+    dispatchGestureLifecycleEvent(
+      this.delegate.view as HTMLElement | null,
+      GestureLifecycleEvent.Began
+    );
+
     const view = this.delegate.view as HTMLElement;
     const isRNGHText = view.hasAttribute('rnghtext');
 
-    if (this.buttonRole || isRNGHText) {
+    if (
+      (this.role === NativeGestureRole.Button && this.shouldActivateOnStart) ||
+      this.role === NativeGestureRole.Switch ||
+      isRNGHText
+    ) {
       this.activate();
     }
   }
@@ -109,12 +148,15 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const dy = this.startY - lastCoords.y;
     const distSq = dx * dx + dy * dy;
 
-    if (distSq >= this.minDistSq) {
-      if (this.buttonRole && this.state === State.ACTIVE) {
-        this.cancel();
-      } else if (!this.buttonRole && this.state === State.BEGAN) {
-        this.activate();
-      }
+    if (
+      this.role === NativeGestureRole.Switch ||
+      this.role === NativeGestureRole.Button
+    ) {
+      return;
+    }
+
+    if (distSq >= this.minDistSq && this.state === State.BEGAN) {
+      this.activate();
     }
   }
 
@@ -138,6 +180,13 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (this.tracker.trackedPointersCount === 0) {
+      if (
+        this.role === NativeGestureRole.Button &&
+        this.state === State.BEGAN
+      ) {
+        this.activate();
+      }
+
       if (this.state === State.ACTIVE) {
         this.end();
       } else {
@@ -156,12 +205,15 @@ export default class NativeViewGestureHandler extends GestureHandler {
     if (
       handler instanceof NativeViewGestureHandler &&
       handler.state === State.ACTIVE &&
-      handler.disallowsInterruption()
+      handler.disallowsInterruption() &&
+      !handler.yieldsToContinuousGestures
     ) {
       return false;
     }
 
-    const canBeInterrupted = !this.disallowInterruption;
+    const canBeInterrupted =
+      !this.disallowInterruption ||
+      (this.yieldsToContinuousGestures && handler.isContinuous);
 
     if (
       this.state === State.ACTIVE &&
@@ -176,8 +228,16 @@ export default class NativeViewGestureHandler extends GestureHandler {
     );
   }
 
-  public override shouldBeCancelledByOther(_handler: IGestureHandler): boolean {
-    return !this.disallowInterruption;
+  public override detach(): void {
+    super.detach();
+    this.role = null;
+  }
+
+  public override shouldBeCancelledByOther(handler: IGestureHandler): boolean {
+    return (
+      !this.disallowInterruption ||
+      (this.yieldsToContinuousGestures && handler.isContinuous)
+    );
   }
 
   public override shouldAttachGestureToChildView(): boolean {
@@ -189,7 +249,32 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   public isButton(): boolean {
-    return this.buttonRole;
+    return this.role === NativeGestureRole.Button;
+  }
+
+  public override shouldBeginWithRecordedHandlers(
+    recorded: IGestureHandler[]
+  ): boolean {
+    if (!this.isButton()) {
+      return true;
+    }
+
+    const self = this as IGestureHandler;
+    return recorded.every(
+      (other) =>
+        other.shouldRecognizeSimultaneously(self) ||
+        self.shouldRecognizeSimultaneously(other) ||
+        other.delegate.view === this.delegate.view ||
+        other.name === SingleGestureName.Hover
+    );
+  }
+
+  protected override onCancel(): void {
+    super.onCancel();
+    dispatchGestureLifecycleEvent(
+      this.delegate.view as HTMLElement | null,
+      GestureLifecycleEvent.Canceled
+    );
   }
 
   protected override transformNativeEvent(): Record<string, unknown> {
@@ -198,5 +283,23 @@ export default class NativeViewGestureHandler extends GestureHandler {
         this.tracker.getAbsoluteCoordsAverage()
       ),
     };
+  }
+
+  protected override shouldSuppressActiveUpdate(
+    handlerData: HandlerData<NativeHandlerData>
+  ): boolean {
+    if (
+      this.lastActiveHandlerData &&
+      deepEqual(this.lastActiveHandlerData, handlerData)
+    ) {
+      return true;
+    }
+    this.lastActiveHandlerData = handlerData;
+    return false;
+  }
+
+  public override reset(): void {
+    super.reset();
+    this.lastActiveHandlerData = null;
   }
 }

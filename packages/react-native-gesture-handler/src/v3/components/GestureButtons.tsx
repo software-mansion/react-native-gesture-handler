@@ -1,7 +1,10 @@
 import React, { useRef } from 'react';
-import { Platform, StyleSheet, Animated } from 'react-native';
-import createNativeWrapper from '../createNativeWrapper';
+import { Animated, Platform, StyleSheet } from 'react-native';
+
 import GestureHandlerButton from '../../components/GestureHandlerButton';
+import createNativeWrapper from '../createNativeWrapper';
+import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
+import type { GestureEndEvent, GestureEvent } from '../types';
 import type {
   BaseButtonProps,
   BorderlessButtonProps,
@@ -9,21 +12,27 @@ import type {
   RectButtonProps,
 } from './GestureButtonsProps';
 
-import type { GestureEvent } from '../types';
-import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
-
 type CallbackEventType = GestureEvent<NativeHandlerData>;
+type EndCallbackEventType = GestureEndEvent<NativeHandlerData>;
+
+type RawButtonInnerProps = RawButtonProps & {
+  needsOffscreenAlphaCompositing?: boolean | undefined;
+};
+
+const RawButtonInner = createNativeWrapper<
+  React.ComponentRef<typeof GestureHandlerButton>,
+  RawButtonInnerProps
+>(GestureHandlerButton, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: false,
+});
 
 /**
  * @deprecated `RawButton` is deprecated, use `Clickable` instead
  */
-export const RawButton = createNativeWrapper<
-  React.ComponentRef<typeof GestureHandlerButton>,
-  RawButtonProps
->(GestureHandlerButton, {
-  shouldCancelWhenOutside: false,
-  shouldActivateOnStart: true,
-});
+export const RawButton = (props: RawButtonProps) => (
+  <RawButtonInner {...props} needsOffscreenAlphaCompositing />
+);
 
 /**
  * @deprecated `BaseButton` is deprecated, use `Touchable` instead
@@ -67,23 +76,23 @@ export const BaseButton = (props: BaseButtonProps) => {
     props.onActivate?.(e);
   };
 
-  const onDeactivate = (e: CallbackEventType, didSucceed: boolean) => {
+  const onDeactivate = (e: EndCallbackEventType) => {
+    props.onDeactivate?.(e);
+  };
+
+  const onFinalize = (e: EndCallbackEventType) => {
     onActiveStateChange?.(false);
 
-    if (didSucceed && !longPressDetected.current) {
+    if (!e.canceled && !longPressDetected.current) {
       onPress?.(e.pointerInside);
     }
 
-    props.onDeactivate?.(e, didSucceed);
-  };
-
-  const onFinalize = (e: CallbackEventType, didSucceed: boolean) => {
     if (longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
     }
 
-    props.onFinalize?.(e, didSucceed);
+    props.onFinalize?.(e);
   };
 
   return (

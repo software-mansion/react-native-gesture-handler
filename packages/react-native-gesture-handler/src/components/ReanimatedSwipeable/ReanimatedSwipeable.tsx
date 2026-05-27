@@ -1,27 +1,39 @@
-import { useMemo, useCallback, useImperativeHandle, ForwardedRef } from 'react';
-import { LayoutChangeEvent, View, I18nManager, StyleSheet } from 'react-native';
+import type { ForwardedRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
+import type { LayoutChangeEvent } from 'react-native';
+import { I18nManager, StyleSheet, View } from 'react-native';
 import Animated, {
-  useSharedValue,
   interpolate,
-  runOnJS,
-  ReduceMotion,
-  withSpring,
-  useAnimatedRef,
   measure,
+  ReduceMotion,
+  runOnJS,
   runOnUI,
+  useAnimatedRef,
   useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from 'react-native-reanimated';
-import {
-  SwipeableProps,
-  SwipeableMethods,
-  SwipeDirection,
-} from './ReanimatedSwipeableProps';
-import {
-  PanGestureActiveEvent,
-  usePanGesture,
-  useTapGesture,
-} from '../../v3/hooks/gestures';
+
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import { tagMessage } from '../../utils';
 import { GestureDetector } from '../../v3/detectors';
+import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
+import { usePanGesture, useTapGesture } from '../../v3/hooks/gestures';
+import {
+  maybeUnpackValue,
+  SHARED_VALUE_OFFSET,
+} from '../../v3/hooks/utils/reanimatedUtils';
+import type { SharedValueOrT } from '../../v3/types';
+import type {
+  SwipeableMethods,
+  SwipeableProps,
+} from './ReanimatedSwipeableProps';
+import { SwipeDirection } from './ReanimatedSwipeableProps';
 
 const DRAG_TOSS = 0.05;
 
@@ -44,8 +56,8 @@ const Swipeable = (props: SwipeableProps) => {
     testID,
     children,
     enableTrackpadTwoFingerGesture = DEFAULT_ENABLE_TRACKING_TWO_FINGER_GESTURE,
-    dragOffsetFromLeftEdge = DEFAULT_DRAG_OFFSET,
-    dragOffsetFromRightEdge = DEFAULT_DRAG_OFFSET,
+    dragOffsetFromLeft = DEFAULT_DRAG_OFFSET,
+    dragOffsetFromRight = -DEFAULT_DRAG_OFFSET,
     friction = DEFAULT_FRICTION,
     overshootFriction = DEFAULT_OVERSHOOT_FRICTION,
     onSwipeableOpenStartDrag,
@@ -62,6 +74,40 @@ const Swipeable = (props: SwipeableProps) => {
     hitSlop,
     ...remainingProps
   } = props;
+
+  if (__DEV__) {
+    const checkValue = (value: SharedValueOrT<number>) => {
+      'worklet';
+      if (maybeUnpackValue<number>(value) > 0) {
+        throw new Error(
+          tagMessage('dragOffsetFromRight should be non-positive.')
+        );
+      }
+    };
+
+    checkValue(dragOffsetFromRight);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      if (!Reanimated?.isSharedValue<number>(dragOffsetFromRight)) {
+        return;
+      }
+
+      const listenerId = Math.random() + SHARED_VALUE_OFFSET;
+
+      Reanimated?.runOnUI(() => {
+        'worklet';
+        dragOffsetFromRight.addListener(listenerId, checkValue);
+      })();
+
+      return () => {
+        Reanimated?.runOnUI(() => {
+          'worklet';
+          dragOffsetFromRight.removeListener(listenerId);
+        })();
+      };
+    }, [dragOffsetFromRight, checkValue]);
+  }
 
   const shouldEnableTap = useSharedValue<boolean>(false);
   const rowState = useSharedValue<number>(0);
@@ -468,9 +514,9 @@ const Swipeable = (props: SwipeableProps) => {
   });
 
   const panGesture = usePanGesture({
-    enabled: enabled !== false,
+    enabled: enabled ?? true,
     enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
-    activeOffsetX: [-dragOffsetFromRightEdge, dragOffsetFromLeftEdge],
+    activeOffsetX: [dragOffsetFromRight, dragOffsetFromLeft],
     simultaneousWith,
     requireToFail,
     block,
