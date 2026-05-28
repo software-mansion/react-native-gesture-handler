@@ -1,11 +1,9 @@
 import React from 'react';
-import { View } from 'react-native';
-import type { LongPressGesture } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View } from 'react-native';
 import {
   GestureDetector,
-  GestureHandlerRootView,
   GestureStateManager,
-  useLongPressGesture,
+  usePanGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -15,83 +13,95 @@ import Animated, {
 
 import { COLORS, commonStyles } from '../../../common';
 
-export default function TwoPressables() {
-  const isActivated = [
-    useSharedValue(0),
-    useSharedValue(0),
-    useSharedValue(0),
-    useSharedValue(0),
-  ];
-  const gestures: LongPressGesture[] = [];
+export default function GestureStateManagerExample() {
+  const upperPanActive = useSharedValue(0);
+  const bottomPanActive = useSharedValue(0);
 
-  const createGestureConfig = (index: number) => ({
+  const bottomPan = usePanGesture({
     onActivate: () => {
-      'worklet';
-      isActivated[index].value = 1;
-      console.log(`Box ${index}: long pressed`);
-
-      const nextIndex = index + 1;
-      if (nextIndex < gestures.length) {
-        const nextGesture = gestures[nextIndex];
-        if (nextGesture) {
-          GestureStateManager.activate(nextGesture.handlerTag);
-        }
-      }
+      bottomPanActive.value = 1;
     },
     onFinalize: () => {
-      'worklet';
-      isActivated[index].value = 0;
-      const nextIndex = index + 1;
-      if (nextIndex < gestures.length) {
-        const nextGesture = gestures[nextIndex];
-        if (nextGesture) {
-          GestureStateManager.deactivate(nextGesture.handlerTag);
-        }
-      }
+      bottomPanActive.value = withTiming(0, { duration: 300 });
     },
-    disableReanimated: true,
+    minDistance: 50,
   });
 
-  const g0 = useLongPressGesture(createGestureConfig(0));
-  const g1 = useLongPressGesture(createGestureConfig(1));
-  const g2 = useLongPressGesture(createGestureConfig(2));
-  const g3 = useLongPressGesture(createGestureConfig(3));
+  const upperPan = usePanGesture({
+    onActivate: () => {
+      upperPanActive.value = 1;
+      GestureStateManager.activate(bottomPan.handlerTag);
+    },
+    onFinalize: () => {
+      upperPanActive.value = withTiming(0, { duration: 300 });
+      GestureStateManager.deactivate(bottomPan.handlerTag);
+    },
+  });
 
-  gestures[0] = g0;
-  gestures[1] = g1;
-  gestures[2] = g2;
-  gestures[3] = g3;
+  const upperPanStyle = useAnimatedStyle(() => ({
+    backgroundColor: COLORS.PURPLE,
+    transform: [{ scale: withTiming(upperPanActive.value === 1 ? 0.9 : 1) }],
+    opacity: withTiming(upperPanActive.value === 1 ? 0.6 : 1),
+  }));
 
-  const colors = [COLORS.PURPLE, COLORS.NAVY, COLORS.GREEN, COLORS.RED];
+  const bottomPanStyle = useAnimatedStyle(() => ({
+    backgroundColor: COLORS.GREEN,
+    transform: [{ scale: withTiming(bottomPanActive.value === 1 ? 0.9 : 1) }],
+    opacity: withTiming(bottomPanActive.value === 1 ? 0.6 : 1),
+  }));
 
-  function Box({ index }: { index: number }) {
-    const animatedStyle = useAnimatedStyle(() => ({
-      opacity: isActivated[index].value === 1 ? 0.5 : 1,
-      transform: [
-        { scale: withTiming(isActivated[index].value === 1 ? 0.95 : 1) },
-      ],
-    }));
-
-    return (
-      <GestureDetector gesture={gestures[index]}>
-        <Animated.View
-          style={[
-            commonStyles.box,
-            { backgroundColor: colors[index] },
-            animatedStyle,
-          ]}
-        />
-      </GestureDetector>
-    );
-  }
   return (
-    <GestureHandlerRootView>
-      <View style={commonStyles.centerView}>
-        <Box index={0} />
-        <Box index={1} />
-        <Box index={2} />
-        <Box index={3} />
-      </View>
-    </GestureHandlerRootView>
+    <View style={styles.container}>
+      <Text style={styles.title}>GestureStateManager</Text>
+
+      <GestureDetector gesture={upperPan}>
+        <Animated.View style={[commonStyles.box, upperPanStyle]} />
+      </GestureDetector>
+      <Text style={styles.boxLabel}>Box A — pan me</Text>
+
+      <GestureDetector gesture={bottomPan}>
+        <Animated.View style={[commonStyles.box, bottomPanStyle]} />
+      </GestureDetector>
+      <Text style={styles.boxLabel}>Box B — touch me, then pan A</Text>
+
+      <Text style={styles.hint}>
+        Touch Box B to begin its pan gesture, then pan Box A. Box A calls{' '}
+        <Text style={styles.code}>GestureStateManager.activate</Text> on Box
+        B&apos;s gesture. Box B must have a pointer on its surface to be managed
+        by StateManager.
+      </Text>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: COLORS.NAVY,
+    marginBottom: 8,
+  },
+  boxLabel: {
+    fontSize: 13,
+    opacity: 0.6,
+    color: COLORS.NAVY,
+  },
+  hint: {
+    fontSize: 13,
+    opacity: 0.5,
+    textAlign: 'center',
+    paddingHorizontal: 32,
+    marginTop: 8,
+    color: COLORS.NAVY,
+  },
+  code: {
+    fontFamily: 'monospace',
+    fontSize: 12,
+  },
+});
