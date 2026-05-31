@@ -15,6 +15,7 @@ import type {
   InnerPressableEvent,
   PressableDimensions,
   PressableEvent,
+  PressableProps,
 } from './PressableProps';
 
 const numberAsInset = (value: number): Insets => ({
@@ -178,11 +179,86 @@ const viewCenterToPressableEvent = (
   };
 };
 
+const makeSyntheticPressableEvent = (
+  dimensions: PressableDimensions,
+  timestamp: number = Date.now(),
+  targetId: number = 0
+): PressableEvent => {
+  const locationX = dimensions.width / 2;
+  const locationY = dimensions.height / 2;
+  // AccessibilityActionEvent does not expose native touch coordinates. Use the
+  // center of the last layout as a layout-local synthetic point.
+  const pageX = (dimensions.x ?? 0) + locationX;
+  const pageY = (dimensions.y ?? 0) + locationY;
+  const pressEvent: InnerPressableEvent = {
+    identifier: 0,
+    locationX,
+    locationY,
+    pageX,
+    pageY,
+    target: targetId,
+    timestamp,
+    touches: [],
+    changedTouches: [],
+    force: undefined,
+  };
+
+  return {
+    nativeEvent: {
+      touches: [pressEvent],
+      changedTouches: [pressEvent],
+      identifier: pressEvent.identifier,
+      locationX,
+      locationY,
+      pageX,
+      pageY,
+      target: targetId,
+      timestamp,
+      force: undefined,
+    },
+  };
+};
+
+const getPressableAccessibilityActions = (
+  accessibilityActions: PressableProps['accessibilityActions'],
+  onPress: PressableProps['onPress'],
+  onLongPress: PressableProps['onLongPress']
+) => {
+  const defaultActions = [
+    ...(onPress ? [{ name: 'activate' }] : []),
+    ...(onLongPress ? [{ name: 'longpress' }] : []),
+  ];
+
+  if (defaultActions.length === 0) {
+    return accessibilityActions;
+  }
+
+  const actionNames = new Set(
+    (accessibilityActions ?? []).map((action) => action.name)
+  );
+
+  return [
+    ...(accessibilityActions ?? []),
+    ...defaultActions.filter((action) => !actionNames.has(action.name)),
+  ];
+};
+
+const isUserHandledAccessibilityAction = (
+  actionName: string,
+  accessibilityActions: PressableProps['accessibilityActions'],
+  onAccessibilityAction: PressableProps['onAccessibilityAction']
+) =>
+  onAccessibilityAction != null &&
+  (accessibilityActions ?? []).some((action) => action.name === actionName);
+
 export {
   addInsets,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
+  getPressableAccessibilityActions,
   isTouchWithinInset,
+  isUserHandledAccessibilityAction,
+  makeSyntheticPressableEvent,
   numberAsInset,
   viewCenterToPressableEvent,
 };

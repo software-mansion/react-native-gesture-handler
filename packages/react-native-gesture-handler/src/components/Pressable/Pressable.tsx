@@ -32,7 +32,10 @@ import {
   addInsets,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
+  getPressableAccessibilityActions,
   isTouchWithinInset,
+  isUserHandledAccessibilityAction,
+  makeSyntheticPressableEvent,
   numberAsInset,
   viewCenterToPressableEvent,
 } from './utils';
@@ -65,6 +68,8 @@ const LegacyPressable = (props: LegacyPressableProps) => {
     android_ripple,
     disabled,
     accessible,
+    accessibilityActions: userAccessibilityActions,
+    onAccessibilityAction: userOnAccessibilityAction,
     simultaneousWithExternalGesture,
     requireExternalGestureToFail,
     blocksExternalGesture,
@@ -200,6 +205,64 @@ const LegacyPressable = (props: LegacyPressableProps) => {
     },
     [handleFinalize, innerHandlePressIn, onPress, onPressOut]
   );
+
+  const shouldUsePressableAccessibilityActions =
+    Platform.OS === 'android' &&
+    disabled !== true &&
+    (onPress != null || onLongPress != null);
+  const accessibilityActions = useMemo(
+    () =>
+      shouldUsePressableAccessibilityActions
+        ? getPressableAccessibilityActions(
+            userAccessibilityActions,
+            onPress,
+            onLongPress
+          )
+        : userAccessibilityActions,
+    [
+      onLongPress,
+      onPress,
+      shouldUsePressableAccessibilityActions,
+      userAccessibilityActions,
+    ]
+  );
+  const handleAccessibilityAction = useCallback<
+    NonNullable<LegacyPressableProps['onAccessibilityAction']>
+  >(
+    (event) => {
+      const actionName = event.nativeEvent.actionName;
+      const shouldHandleAction =
+        shouldUsePressableAccessibilityActions &&
+        !isUserHandledAccessibilityAction(
+          actionName,
+          userAccessibilityActions,
+          userOnAccessibilityAction
+        );
+
+      if (shouldHandleAction && actionName === 'activate' && onPress) {
+        const pressableEvent = makeSyntheticPressableEvent(dimensions.current);
+        handlePressIn(pressableEvent);
+        handlePressOut(pressableEvent);
+      } else if (shouldHandleAction && actionName === 'longpress') {
+        onLongPress?.(makeSyntheticPressableEvent(dimensions.current));
+      }
+
+      userOnAccessibilityAction?.(event);
+    },
+    [
+      handlePressIn,
+      handlePressOut,
+      onLongPress,
+      onPress,
+      shouldUsePressableAccessibilityActions,
+      userAccessibilityActions,
+      userOnAccessibilityAction,
+    ]
+  );
+  const onAccessibilityAction =
+    shouldUsePressableAccessibilityActions || userOnAccessibilityAction
+      ? handleAccessibilityAction
+      : undefined;
 
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
   const isScreenReaderEnabled = useIsScreenReaderEnabled();
@@ -385,6 +448,8 @@ const LegacyPressable = (props: LegacyPressableProps) => {
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
+        accessibilityActions={accessibilityActions}
+        onAccessibilityAction={onAccessibilityAction}
         needsOffscreenAlphaCompositing
         onLayout={setDimensions}
         accessible={accessible !== false}
