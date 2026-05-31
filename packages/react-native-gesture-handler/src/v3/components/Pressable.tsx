@@ -23,14 +23,12 @@ import {
   StateMachineEvent,
 } from '../../components/Pressable/stateDefinitions';
 import { PressableStateMachine } from '../../components/Pressable/StateMachine';
+import { usePressableAccessibility } from '../../components/Pressable/usePressableAccessibility';
 import {
   addInsets,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
-  getPressableAccessibilityActions,
   isTouchWithinInset,
-  isUserHandledAccessibilityAction,
-  makeSyntheticPressableEvent,
   numberAsInset,
   viewCenterToPressableEvent,
 } from '../../components/Pressable/utils';
@@ -207,63 +205,17 @@ const Pressable = (props: PressableProps) => {
     [handleFinalize, innerHandlePressIn, onPress, onPressOut]
   );
 
-  const shouldUsePressableAccessibilityActions =
-    Platform.OS === 'android' &&
-    disabled !== true &&
-    (onPress != null || onLongPress != null);
-  const accessibilityActions = useMemo(
-    () =>
-      shouldUsePressableAccessibilityActions
-        ? getPressableAccessibilityActions(
-            userAccessibilityActions,
-            onPress,
-            onLongPress
-          )
-        : userAccessibilityActions,
-    [
-      onLongPress,
-      onPress,
-      shouldUsePressableAccessibilityActions,
-      userAccessibilityActions,
-    ]
-  );
-  const handleAccessibilityAction = useCallback<
-    NonNullable<PressableProps['onAccessibilityAction']>
-  >(
-    (event) => {
-      const actionName = event.nativeEvent.actionName;
-      const shouldHandleAction =
-        shouldUsePressableAccessibilityActions &&
-        !isUserHandledAccessibilityAction(
-          actionName,
-          userAccessibilityActions,
-          userOnAccessibilityAction
-        );
-
-      if (shouldHandleAction && actionName === 'activate' && onPress) {
-        const pressableEvent = makeSyntheticPressableEvent(dimensions.current);
-        handlePressIn(pressableEvent);
-        handlePressOut(pressableEvent);
-      } else if (shouldHandleAction && actionName === 'longpress') {
-        onLongPress?.(makeSyntheticPressableEvent(dimensions.current));
-      }
-
-      userOnAccessibilityAction?.(event);
-    },
-    [
+  const { accessibilityActions, onAccessibilityAction } =
+    usePressableAccessibility({
+      accessibilityActions: userAccessibilityActions,
+      dimensions,
+      disabled,
       handlePressIn,
       handlePressOut,
+      onAccessibilityAction: userOnAccessibilityAction,
       onLongPress,
       onPress,
-      shouldUsePressableAccessibilityActions,
-      userAccessibilityActions,
-      userOnAccessibilityAction,
-    ]
-  );
-  const onAccessibilityAction =
-    shouldUsePressableAccessibilityActions || userOnAccessibilityAction
-      ? handleAccessibilityAction
-      : undefined;
+    });
 
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
   const isScreenReaderEnabled = useIsScreenReaderEnabled();

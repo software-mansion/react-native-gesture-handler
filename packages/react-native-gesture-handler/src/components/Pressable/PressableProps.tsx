@@ -12,7 +12,12 @@ import type {
 import type { AnyGesture } from '../../v3/types';
 import type { RelationPropType } from '../utils';
 
-export type PressableDimensions = { width: number; height: number };
+export type PressableDimensions = {
+  x?: number;
+  y?: number;
+  width: number;
+  height: number;
+};
 
 export type PressableStateCallbackType = RNPressableStateCallbackType;
 export type PressableAndroidRippleConfig = RNPressableAndroidRippleConfig;
