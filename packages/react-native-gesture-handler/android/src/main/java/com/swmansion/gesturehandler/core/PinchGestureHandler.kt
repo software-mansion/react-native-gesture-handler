@@ -88,7 +88,12 @@ class PinchGestureHandler : GestureHandler() {
       this.focalPointY = point.y
     }
 
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
+    val isLastRequiredPointerLifted = sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP &&
+      event.pointerCount - 1 < MIN_POINTERS
+
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP ||
+      isLastRequiredPointerLifted
+    ) {
       when (state) {
         STATE_UNDETERMINED -> cancel()
         STATE_ACTIVE -> end()
@@ -124,5 +129,9 @@ class PinchGestureHandler : GestureHandler() {
     override fun create(context: Context?): PinchGestureHandler = PinchGestureHandler()
 
     override fun createEventBuilder(handler: PinchGestureHandler) = PinchGestureHandlerEventDataBuilder(handler)
+  }
+
+  companion object {
+    private const val MIN_POINTERS = 2
   }
 }
