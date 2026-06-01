@@ -38,7 +38,7 @@ export default function App() {
 
 ## Virtual Detectors
 
-Since RNGH3, `GestureDetector` is a standalone host component. Depending on the view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualNativeDetector`.
+Since RNGH3, `GestureDetector` is a standalone host component. Depending on the view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualGestureDetector`.
 
 ### InterceptingGestureDetector
 

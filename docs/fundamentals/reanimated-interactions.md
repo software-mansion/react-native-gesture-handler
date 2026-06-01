@@ -53,7 +53,7 @@ const gesture = useTapGesture({
 ```jsx
 const callback = useCallback(() => {
   // highlight-next-line
-  'worklet;';
+  'worklet';
   console.log(_WORKLET);
 }, []);
 
