@@ -3,6 +3,7 @@ import EmptyExample from '../empty';
 import CameraExample from './complicated/camera';
 import ChatHeadsExample from './complicated/chat_heads';
 import LockExample from './complicated/lock';
+import TransformationsExample from './complicated/transformations';
 import VelocityExample from './complicated/velocity_test';
 import ButtonUnderlayExample from './components/button_underlay';
 import ButtonsExample from './components/buttons';
@@ -95,6 +96,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Velocity Test', component: VelocityExample },
       { name: 'Chat Heads', component: ChatHeadsExample },
       { name: 'Camera', component: CameraExample },
+      { name: 'Transformations', component: TransformationsExample },
     ],
   },
 

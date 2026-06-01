@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  GestureDetector,
+  usePanGesture,
+  usePinchGesture,
+  useRotationGesture,
+  useSimultaneousGestures,
+  useTapGesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
 
+// @ts-ignore it's an image
 import SIGNET from '../../../ListWithHeader/signet.png';
 
 function identity4() {
@@ -175,8 +183,8 @@ function Photo() {
     };
   });
 
-  const rotationGesture = Gesture.Rotation()
-    .onStart((e) => {
+  const rotationGesture = useRotationGesture({
+    onActivate: (e) => {
       if (!isRotating.value && !isScaling.value) {
         origin.value = {
           x: -(e.anchorX - size.width / 2),
@@ -184,13 +192,11 @@ function Photo() {
         };
       }
       isRotating.value = true;
-    })
-    .onChange((e) => {
-      'worklet';
+    },
+    onUpdate: (e) => {
       rotation.value += e.rotationChange;
-    })
-    .onEnd(() => {
-      'worklet';
+    },
+    onDeactivate: () => {
       transform.value = applyTransformations(
         translation.value,
         scale.value,
@@ -203,10 +209,11 @@ function Photo() {
       translation.value = { x: 0, y: 0 };
       scale.value = 1;
       isRotating.value = false;
-    });
+    },
+  });
 
-  const scaleGesture = Gesture.Pinch()
-    .onStart((e) => {
+  const scaleGesture = usePinchGesture({
+    onActivate: (e) => {
       if (!isRotating.value && !isScaling.value) {
         origin.value = {
           x: -(e.focalX - size.width / 2),
@@ -214,13 +221,11 @@ function Photo() {
         };
       }
       isScaling.value = true;
-    })
-    .onChange((e) => {
-      'worklet';
+    },
+    onUpdate: (e) => {
       scale.value *= e.scaleChange;
-    })
-    .onEnd(() => {
-      'worklet';
+    },
+    onDeactivate: () => {
       transform.value = applyTransformations(
         translation.value,
         scale.value,
@@ -232,19 +237,18 @@ function Photo() {
       translation.value = { x: 0, y: 0 };
       scale.value = 1;
       isScaling.value = false;
-    });
+    },
+  });
 
-  const panGesture = Gesture.Pan()
-    .averageTouches(true)
-    .onChange((e) => {
-      'worklet';
+  const panGesture = usePanGesture({
+    averageTouches: true,
+    onUpdate: (e) => {
       translation.value = {
         x: translation.value.x + e.changeX,
         y: translation.value.y + e.changeY,
       };
-    })
-    .onEnd(() => {
-      'worklet';
+    },
+    onDeactivate: () => {
       transform.value = applyTransformations(
         translation.value,
         scale.value,
@@ -256,18 +260,17 @@ function Photo() {
       rotation.value = 0;
       translation.value = { x: 0, y: 0 };
       scale.value = 1;
-    });
+    },
+  });
 
-  const doubleTapGesture = Gesture.Tap()
-    .numberOfTaps(2)
-    .onEnd((_e, success) => {
-      'worklet';
-      if (success) {
-        scale.value *= 1.25;
-      }
-    });
+  const doubleTapGesture = useTapGesture({
+    numberOfTaps: 2,
+    onDeactivate: () => {
+      scale.value *= 1.25;
+    },
+  });
 
-  const gesture = Gesture.Simultaneous(
+  const gesture = useSimultaneousGestures(
     rotationGesture,
     scaleGesture,
     panGesture,
