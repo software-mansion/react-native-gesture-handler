@@ -36,11 +36,12 @@ function getAndroidAccessibilityStatesConfig(
 ) {
   return [
     {
-      eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+      eventName: StateMachineEvent.NATIVE_BEGIN,
       callback: handlePressIn,
     },
     {
-      eventName: StateMachineEvent.NATIVE_BEGIN,
+      eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+      optional: true,
     },
     {
       eventName: StateMachineEvent.FINALIZE,

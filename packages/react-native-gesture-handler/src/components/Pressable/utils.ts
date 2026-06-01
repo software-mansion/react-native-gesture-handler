@@ -142,10 +142,47 @@ const gestureTouchToPressableEvent = (
   };
 };
 
+const viewCenterToPressableEvent = (
+  dimensions: PressableDimensions
+): PressableEvent => {
+  const timestamp = Date.now();
+  const targetId = 0;
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+
+  const pressEvent: InnerPressableEvent = {
+    identifier: 0,
+    locationX: centerX,
+    locationY: centerY,
+    pageX: centerX,
+    pageY: centerY,
+    target: targetId,
+    timestamp,
+    touches: [],
+    changedTouches: [],
+  };
+
+  return {
+    nativeEvent: {
+      touches: [pressEvent],
+      changedTouches: [pressEvent],
+      identifier: 0,
+      locationX: centerX,
+      locationY: centerY,
+      pageX: centerX,
+      pageY: centerY,
+      target: targetId,
+      timestamp,
+      force: undefined,
+    },
+  };
+};
+
 export {
   addInsets,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
   isTouchWithinInset,
   numberAsInset,
+  viewCenterToPressableEvent,
 };

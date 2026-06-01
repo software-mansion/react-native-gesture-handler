@@ -34,6 +34,7 @@ import {
   gestureTouchToPressableEvent,
   isTouchWithinInset,
   numberAsInset,
+  viewCenterToPressableEvent,
 } from './utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
@@ -301,6 +302,13 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           }
         })
         .onBegin(() => {
+          if (Platform.OS === 'android' && isScreenReaderEnabled) {
+            stateMachine.handleEvent(
+              StateMachineEvent.NATIVE_BEGIN,
+              viewCenterToPressableEvent(dimensions.current)
+            );
+            return;
+          }
           stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
         })
         .onStart(() => {

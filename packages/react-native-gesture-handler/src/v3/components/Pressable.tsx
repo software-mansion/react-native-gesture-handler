@@ -29,6 +29,7 @@ import {
   gestureTouchToPressableEvent,
   isTouchWithinInset,
   numberAsInset,
+  viewCenterToPressableEvent,
 } from '../../components/Pressable/utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
@@ -305,6 +306,13 @@ const Pressable = (props: PressableProps) => {
       }
     },
     onBegin: () => {
+      if (Platform.OS === 'android' && isScreenReaderEnabled) {
+        stateMachine.handleEvent(
+          StateMachineEvent.NATIVE_BEGIN,
+          viewCenterToPressableEvent(dimensions.current)
+        );
+        return;
+      }
       stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
     },
     onActivate: () => {

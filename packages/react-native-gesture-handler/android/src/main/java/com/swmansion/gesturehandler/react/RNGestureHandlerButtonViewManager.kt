@@ -27,6 +27,7 @@ import androidx.core.view.children
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.facebook.react.R
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
@@ -347,6 +348,7 @@ class RNGestureHandlerButtonViewManager :
     super.onAfterUpdateTransaction(view)
 
     view.updateBackground()
+    view.updateLongPressAccessibility()
   }
 
   override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? = mDelegate
@@ -432,6 +434,23 @@ class RNGestureHandlerButtonViewManager :
     fun setOverflow(overflow: String?) {
       clipChildrenToShape = overflow == "hidden"
       invalidate()
+    }
+
+    fun updateLongPressAccessibility() {
+      val hasLongPress = hasLongPressAccessibilityAction()
+      setOnLongClickListener(if (hasLongPress) dummyLongClickListener else null)
+      isLongClickable = hasLongPress
+    }
+
+    private fun hasLongPressAccessibilityAction(): Boolean {
+      val actions = getTag(R.id.accessibility_actions) as? ReadableArray ?: return false
+      for (i in 0 until actions.size()) {
+        if (actions.getMap(i)?.getString("name") == "longpress") {
+          return true
+        }
+      }
+
+      return false
     }
 
     override fun setBackgroundColor(color: Int) {
@@ -879,7 +898,8 @@ class RNGestureHandlerButtonViewManager :
       // don't preform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
       return if (!isChildTouched()) {
-        if (context.isScreenReaderOn()) {
+        // Don't activate native handlers when isPressed is true (motion events are passing through)
+        if (context.isScreenReaderOn() && !isPressed) {
           RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
         } else if (receivedKeyEvent) {
           RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
@@ -936,7 +956,14 @@ class RNGestureHandlerButtonViewManager :
       var resolveOutValue = TypedValue()
       var touchResponder: ButtonViewGroup? = null
       var soundResponder: ButtonViewGroup? = null
-      var dummyClickListener = OnClickListener { }
+      val dummyClickListener = OnClickListener { }
+      val dummyLongClickListener = OnLongClickListener { view ->
+        if (view.context.isScreenReaderOn()) {
+          view.performAccessibilityAction(AccessibilityNodeInfo.ACTION_LONG_CLICK, null)
+        } else {
+          false
+        }
+      }
     }
   }
 
