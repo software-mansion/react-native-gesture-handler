@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
-    "@react-native-community/viewpager": "5.0.11",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",

@@ -6,7 +6,7 @@ import {
 } from 'react-native-gesture-handler';
 import PagerView from 'react-native-pager-view';
 
-const WrappedViewPagerAndroid = legacy_createNativeWrapper(PagerView, {
+const WrappedPagerView = legacy_createNativeWrapper(PagerView, {
   disallowInterruption: true,
 });
 
@@ -33,7 +33,7 @@ export default class Example extends Component {
       </View>
     );
     return (
-      <WrappedViewPagerAndroid style={styles.container}>
+      <WrappedPagerView style={styles.container}>
         <View>
           <LegacyDrawerLayoutAndroid
             drawerWidth={200}
@@ -52,7 +52,7 @@ export default class Example extends Component {
             <Page backgroundColor="blue" text="Fourth 😎" />
           </LegacyDrawerLayoutAndroid>
         </View>
-      </WrappedViewPagerAndroid>
+      </WrappedPagerView>
     );
   }
 }
