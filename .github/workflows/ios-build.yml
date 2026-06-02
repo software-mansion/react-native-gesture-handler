@@ -31,6 +31,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      - name: Use latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.1'
+
       - name: Use Node.js 24
         uses: actions/setup-node@v6
         with:
