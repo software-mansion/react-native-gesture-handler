@@ -33,8 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)detachNativeGestureHandlers;
 
-- (BOOL)shouldAttachGestureToSubview:(nonnull NSNumber *)handlerTag;
-
 @end
 
 NS_ASSUME_NONNULL_END
