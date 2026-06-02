@@ -15,7 +15,7 @@ import SwitchTextInputExample from './components/switchAndInput';
 import TouchableExample from './components/touchable';
 import TouchableStressExample from './components/touchable_stress';
 import ContextMenuExample from './hover_mouse/context_menu';
-import HoverIconsExample from './hover_mouse/hover';
+import HoverPositioningExample from './hover_mouse/hover';
 import HoverableIconsExample from './hover_mouse/hoverable_icons';
 import MouseButtonsExample from './hover_mouse/mouse_buttons';
 import StylusDataExample from './hover_mouse/stylus_data';
@@ -84,7 +84,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
         component: ContextMenuExample,
         unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
       },
-      { name: 'Hover Icons', component: HoverIconsExample },
+      { name: 'Hover Positioning', component: HoverPositioningExample },
       { name: 'Hoverable Icons', component: HoverableIconsExample },
       { name: 'Mouse Buttons', component: MouseButtonsExample },
     ],
