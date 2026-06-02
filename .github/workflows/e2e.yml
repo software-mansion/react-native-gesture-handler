@@ -1,0 +1,98 @@
+name: E2E Test
+
+on:
+  pull_request:
+    paths:
+      - apps/expo-example/e2e/**
+      - apps/common-app/src/e2e_screens/**
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios-e2e:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    runs-on: macos-26
+    env:
+      WORKING_DIRECTORY: apps/expo-example
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use node 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Use latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.4.1'
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Setup Detox
+        run: brew tap wix/brew && brew install applesimutils && npm install -g detox-cli
+
+      - name: Build for iOS
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: yarn build-detox-ios
+
+      - name: Run tests on iOS
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: yarn e2e:ios
+
+  android-e2e:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    runs-on: ubuntu-latest
+    env:
+      WORKING_DIRECTORY: apps/expo-example
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use node 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install emulator system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpulse0
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Setup Detox
+        run: npm install -g detox-cli
+
+      - name: Build for Android
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: yarn build-detox-android
+
+      - name: Run tests on Android
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          force-avd-creation: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          avd-name: Pixel_9
+          working-directory: ${{ env.WORKING_DIRECTORY }}
+          script: adb devices && yarn e2e:android

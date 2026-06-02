@@ -1,4 +1,5 @@
 import type { ExamplesSection } from '../common';
+import PanE2E from '../e2e_screens/gestures/Pan';
 import EmptyExample from '../empty';
 import CameraExample from './complicated/camera';
 import ChatHeadsExample from './complicated/chat_heads';
@@ -135,5 +136,9 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
         component: RNResponderCancellationExample,
       },
     ],
+  },
+  {
+    sectionTitle: 'E2E Tests',
+    data: [{ name: 'Pan Gesture', component: PanE2E }],
   },
 ];

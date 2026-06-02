@@ -1,6 +1,7 @@
 /* eslint-disable @eslint-react/no-nested-component-definitions */
 /* eslint-disable @eslint-react/no-nested-components */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { HeaderBackButton } from '@react-navigation/elements';
 import type { ParamListBase } from '@react-navigation/native';
 import { NavigationContainer } from '@react-navigation/native';
 import type {
@@ -43,6 +44,9 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
+            headerLeft: (props) => (
+              <HeaderBackButton {...props} testID="back-to-home" />
+            ),
             cardStyle: {
               // It's important to set height for the screen, without it scroll doesn't work on web platform.
               height: Dimensions.get('window').height,
@@ -113,6 +117,7 @@ export default function App() {
     return (
       <View style={styles.container}>
         <ListWithHeader
+          scrollViewTestID="examples-list"
           style={styles.list}
           sections={showLegacyVersion ? OLD_EXAMPLES : NEW_EXAMPLES}
           keyExtractor={(example) => example.name}
