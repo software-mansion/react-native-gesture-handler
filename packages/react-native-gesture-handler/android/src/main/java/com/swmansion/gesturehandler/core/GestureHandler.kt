@@ -362,9 +362,14 @@ open class GestureHandler {
       }
     }
 
+    numberOfPointers = when (adaptedTransformedEvent.actionMasked) {
+      MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
+      else -> adaptedTransformedEvent.pointerCount
+    }
+
     x = adaptedTransformedEvent.x
     y = adaptedTransformedEvent.y
-    numberOfPointers = adaptedTransformedEvent.pointerCount
+
     isWithinBounds = isWithinBounds(view, x, y)
     if (shouldCancelWhenOutside && !isWithinBounds) {
       if (state == STATE_ACTIVE) {
