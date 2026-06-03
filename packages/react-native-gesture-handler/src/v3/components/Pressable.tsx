@@ -31,6 +31,7 @@ import {
   mockCenterPressableEvent,
   numberAsInset,
 } from '../../components/Pressable/utils';
+import { getTVProps } from '../../components/utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 import { INT32_MAX, isTestEnv } from '../../utils';
@@ -384,12 +385,7 @@ const Pressable = (props: PressableProps) => {
     [onLayout]
   );
 
-  const tvProps = Platform.isTV
-    ? {
-        isTVSelectable:
-          remainingProps.focusable ?? remainingProps.isTVSelectable ?? false,
-      }
-    : null;
+  const tvProps = getTVProps(remainingProps);
 
   return (
     <GestureDetector gesture={gesture}>
