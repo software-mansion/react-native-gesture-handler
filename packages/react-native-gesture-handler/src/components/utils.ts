@@ -12,9 +12,9 @@ type TVProps = {
  * the only place the `focusable` prop is translated into `isTVSelectable`, which actually drives
  * tvOS focusability.
  */
-export function getTVProps(props: TVProps): TVProps | null {
+export function getTVProps(props: TVProps): TVProps {
   if (!Platform.isTV) {
-    return null;
+    return {};
   }
 
   return {
