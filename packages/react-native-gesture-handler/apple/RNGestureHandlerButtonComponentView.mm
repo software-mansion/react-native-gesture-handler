@@ -78,6 +78,16 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 {
   [_buttonView sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
+
+- (void)animatePressIn
+{
+  [_buttonView handleAnimatePressIn];
+}
+
+- (void)animatePressOut
+{
+  [_buttonView handleAnimatePressOut];
+}
 #endif // TARGET_OS_TV
 
 - (void)prepareForRecycle
