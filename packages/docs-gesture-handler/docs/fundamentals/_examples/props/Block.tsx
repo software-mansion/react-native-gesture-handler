@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
+import type { NativeGesture } from 'react-native-gesture-handler';
 import {
   GestureDetector,
   GestureHandlerRootView,
   ScrollView,
-  NativeGesture,
   usePinchGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 
@@ -69,7 +69,10 @@ export default function App() {
       <ScrollView
         style={styles.container}
         onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={(gesture) => {
-          if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
+          if (
+            !scrollGesture ||
+            scrollGesture.handlerTag !== gesture.handlerTag
+          ) {
             setScrollGesture(gesture);
           }
         }}>

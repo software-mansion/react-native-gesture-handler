@@ -141,8 +141,14 @@ export class GestureHandlerWebDelegate
       throw new Error(tagMessage('Cannot convert coords on a null view'));
     }
 
-    const rect = getEffectiveBoundingRect(this.view);
-    const transform = getComputedStyle(this.view).transform;
+    const localView =
+      this.gestureHandler.usesNativeOrVirtualDetector() &&
+      this.view.style.display === 'contents'
+        ? (this.view.children[0] as HTMLElement)
+        : this.view;
+
+    const rect = getEffectiveBoundingRect(localView);
+    const transform = getComputedStyle(localView).transform;
     const matrix =
       transform && transform !== 'none'
         ? new DOMMatrix(transform)
@@ -164,8 +170,8 @@ export class GestureHandlerWebDelegate
     const localOffset = inverse.transformPoint(new DOMPoint(dx, dy));
 
     // Add back the local center (untransformed dimensions)
-    const localCenterX = this.view.offsetWidth / 2;
-    const localCenterY = this.view.offsetHeight / 2;
+    const localCenterX = localView.offsetWidth / 2;
+    const localCenterY = localView.offsetHeight / 2;
 
     return {
       x: localCenterX + localOffset.x,

@@ -2,14 +2,14 @@ import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
   GestureHandlerRootView,
-  useTapGesture,
   useExclusiveGestures,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 
 export default function App() {
   const singleTap = useTapGesture({
-    onDeactivate: (_, success) => {
-      if (success) {
+    onDeactivate: (e) => {
+      if (!e.canceled) {
         console.log('Single tap!');
       }
     },
@@ -17,8 +17,8 @@ export default function App() {
 
   const doubleTap = useTapGesture({
     numberOfTaps: 2,
-    onDeactivate: (_, success) => {
-      if (success) {
+    onDeactivate: (e) => {
+      if (!e.canceled) {
         console.log('Double tap!');
       }
     },
