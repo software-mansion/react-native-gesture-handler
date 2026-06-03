@@ -333,7 +333,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           }
         })
         .shouldActivateOnStart(Platform.OS === 'web'),
-    [stateMachine, handlePressOut, handleFinalize]
+    [stateMachine, handlePressOut, handleFinalize, isScreenReaderEnabled]
   );
 
   const isPressableEnabled = disabled !== true;
