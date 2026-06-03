@@ -142,26 +142,20 @@ const gestureTouchToPressableEvent = (
   };
 };
 
-const mockCenterPressableEvent = (
+const viewCenterToPressableEvent = (
   dimensions: PressableDimensions
 ): PressableEvent => {
   const timestamp = Date.now();
-
-  // As far as I can see, there isn't a conventional way of getting targetId with the data we get
   const targetId = 0;
-
-  // tvOS activates a focused button via the Select button rather than a touch, so there are no
-  // touch coordinates. Report the view's center as the press location — a sensible representative
-  // point for the event handed to user callbacks.
-  const locationX = dimensions.width / 2;
-  const locationY = dimensions.height / 2;
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
 
   const pressEvent: InnerPressableEvent = {
-    identifier: targetId,
-    locationX,
-    locationY,
-    pageX: locationX,
-    pageY: locationY,
+    identifier: 0,
+    locationX: centerX,
+    locationY: centerY,
+    pageX: -1,
+    pageY: -1,
     target: targetId,
     timestamp,
     touches: [],
@@ -172,11 +166,11 @@ const mockCenterPressableEvent = (
     nativeEvent: {
       touches: [pressEvent],
       changedTouches: [pressEvent],
-      identifier: targetId,
-      locationX,
-      locationY,
-      pageX: locationX,
-      pageY: locationY,
+      identifier: 0,
+      locationX: centerX,
+      locationY: centerY,
+      pageX: -1,
+      pageY: -1,
       target: targetId,
       timestamp,
       force: undefined,
@@ -189,6 +183,6 @@ export {
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
   isTouchWithinInset,
-  mockCenterPressableEvent,
   numberAsInset,
+  viewCenterToPressableEvent,
 };

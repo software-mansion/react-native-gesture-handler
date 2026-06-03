@@ -28,8 +28,8 @@ import {
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
   isTouchWithinInset,
-  mockCenterPressableEvent,
   numberAsInset,
+  viewCenterToPressableEvent,
 } from '../../components/Pressable/utils';
 import { getTVProps } from '../../components/utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
@@ -313,7 +313,14 @@ const Pressable = (props: PressableProps) => {
         // The press state machine is touch-based and never
         // receives LONG_PRESS_TOUCHES_DOWN here, so bypass it and drive the press handlers directly.
         // A focus-driven press has no coordinates, so skip the hit-slop bounds check entirely.
-        handlePressIn(mockCenterPressableEvent(dimensions.current), true);
+        handlePressIn(viewCenterToPressableEvent(dimensions.current), true);
+        return;
+      }
+      if (Platform.OS === 'android' && isScreenReaderEnabled) {
+        stateMachine.handleEvent(
+          StateMachineEvent.NATIVE_BEGIN,
+          viewCenterToPressableEvent(dimensions.current)
+        );
         return;
       }
       stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
@@ -332,7 +339,7 @@ const Pressable = (props: PressableProps) => {
 
       if (Platform.isTV) {
         handlePressOut(
-          mockCenterPressableEvent(dimensions.current),
+          viewCenterToPressableEvent(dimensions.current),
           !event.canceled
         );
         handleFinalize();
