@@ -895,7 +895,7 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun performClick(): Boolean {
-      // don't preform click when a child button is pressed (mainly to prevent sound effect of
+      // don't perform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
       return if (!isChildTouched()) {
         // Don't activate native handlers when isPressed is true (motion events are passing through)
