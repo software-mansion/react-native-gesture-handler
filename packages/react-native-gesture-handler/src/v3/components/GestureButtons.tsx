@@ -95,10 +95,17 @@ export const BaseButton = (props: BaseButtonProps) => {
     props.onFinalize?.(e);
   };
 
+  const tvProps = Platform.isTV
+    ? {
+        isTVSelectable: rest.focusable ?? rest.isTVSelectable ?? false,
+      }
+    : null;
+
   return (
     <RawButton
       style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
       {...rest}
+      {...tvProps}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
