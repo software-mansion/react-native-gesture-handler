@@ -208,10 +208,17 @@ export const Touchable = (props: TouchableProps) => {
       }
     : TRANSPARENT_RIPPLE;
 
+  const tvProps = Platform.isTV
+    ? {
+        isTVSelectable: rest.focusable ?? rest.isTVSelectable ?? false,
+      }
+    : null;
+
   return (
     <NativeDetector gesture={nativeGesture}>
       <GestureHandlerButton
         {...rest}
+        {...tvProps}
         {...rippleProps}
         {...resolvedDurations}
         ref={ref ?? null}

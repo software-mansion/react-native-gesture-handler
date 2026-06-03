@@ -68,6 +68,18 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   return self;
 }
 
+#if TARGET_OS_TV
+- (void)emitPressInEvent
+{
+  [_buttonView sendActionsForControlEvents:UIControlEventTouchDown];
+}
+
+- (void)emitPressOutEvent
+{
+  [_buttonView sendActionsForControlEvents:UIControlEventTouchUpInside];
+}
+#endif // TARGET_OS_TV
+
 - (void)prepareForRecycle
 {
   [self.layer removeAnimationForKey:@"transform"];
