@@ -18,7 +18,7 @@ export function getTVProps(props: TVProps): TVProps | null {
   }
 
   return {
-    isTVSelectable: props.focusable ?? props.isTVSelectable ?? false,
+    isTVSelectable: props.focusable ?? props.isTVSelectable ?? true,
   };
 }
 
