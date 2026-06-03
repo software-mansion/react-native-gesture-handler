@@ -1919,7 +1919,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - RNWorklets (0.8.3):
+  - RNWorklets (0.8.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1941,10 +1941,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/apple (= 0.8.3)
-    - RNWorklets/common (= 0.8.3)
+    - RNWorklets/apple (= 0.8.1)
+    - RNWorklets/common (= 0.8.1)
     - Yoga
-  - RNWorklets/apple (0.8.3):
+  - RNWorklets/apple (0.8.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1967,7 +1967,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets/common (0.8.3):
+  - RNWorklets/common (0.8.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2234,7 +2234,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FBLazyVector: 0c1647ff765347194ad6b2dc9ddd875973795c2e
-  hermes-engine: 31d9ff0053d584ed36310817f3696d475b2f8b55
+  hermes-engine: 36b7c8a0f48cd0cd75ca08072b9940c538931b84
   RCTDeprecation: 701894f3b4e310fd7d23505edf9660db29cce13a
   RCTRequired: dcaccfcd79cfddfe0532e3324648f24b40ba3857
   RCTSwiftUI: e0c9dd8698dabdf3b95139c1d1c5c14aaf696e4b
@@ -2283,7 +2283,7 @@ SPEC CHECKSUMS:
   React-RCTAppDelegate: 8056107855f6cd8e7d8b5690846c47e1d694d0db
   React-RCTBlob: c1630fe121de4b7e3ff09c9485ae34107ce2dd60
   React-RCTFabric: a5dc8d43c8b559c58af73a020980373d08e314b7
-  React-RCTFBReactNativeSpec: 55f69b125842291e9026de4c76c89dc41b2230f2
+  React-RCTFBReactNativeSpec: 3f681a687dde9660df88e85a4ced3d985888a6ef
   React-RCTImage: a12e0825d9194d3b812bbb5684f6ef4ec30c767e
   React-RCTLinking: 61d7671af45dafbb479ce9c394e1761bbd0268da
   React-RCTNetwork: f868d4658077ea7b440c2dd457cdfe27881895fa
@@ -2309,7 +2309,7 @@ SPEC CHECKSUMS:
   ReactNativeDependencies: f383c64b166232e8bd6b4ab29e7d82746be78f34
   RNGestureHandler: f07cf8b0a45a4eee18163629f78413b0a534aece
   RNReanimated: 97ae6ab85702c610e6e5e1248ae50cd2ab2cd008
-  RNWorklets: db3f84bee80478c7a8a9ee27512f22dfd7b59837
+  RNWorklets: 7994f526d59049ff365656dbdb4858b71a284d85
   Yoga: 6394b946e923cd4123283ef36d725f6ca5e48432
 
 PODFILE CHECKSUM: c7c24b794ae37fda7472ce32e653711daa22b88c

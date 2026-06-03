@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
@@ -26,6 +27,7 @@ import androidx.core.view.children
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.facebook.react.R
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
@@ -346,6 +348,7 @@ class RNGestureHandlerButtonViewManager :
     super.onAfterUpdateTransaction(view)
 
     view.updateBackground()
+    view.updateLongPressAccessibility()
   }
 
   override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? = mDelegate
@@ -431,6 +434,23 @@ class RNGestureHandlerButtonViewManager :
     fun setOverflow(overflow: String?) {
       clipChildrenToShape = overflow == "hidden"
       invalidate()
+    }
+
+    fun updateLongPressAccessibility() {
+      val hasLongPress = hasLongPressAccessibilityAction()
+      setOnLongClickListener(if (hasLongPress) dummyLongClickListener else null)
+      isLongClickable = hasLongPress
+    }
+
+    private fun hasLongPressAccessibilityAction(): Boolean {
+      val actions = getTag(R.id.accessibility_actions) as? ReadableArray ?: return false
+      for (i in 0 until actions.size()) {
+        if (actions.getMap(i)?.getString("name") == "longpress") {
+          return true
+        }
+      }
+
+      return false
     }
 
     override fun setBackgroundColor(color: Int) {
@@ -530,6 +550,19 @@ class RNGestureHandlerButtonViewManager :
       return false
     }
 
+    private fun getAnimatorDurationScale(): Float = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      ValueAnimator.getDurationScale()
+    } else {
+      try {
+        android.provider.Settings.Global.getFloat(
+          context.contentResolver,
+          android.provider.Settings.Global.ANIMATOR_DURATION_SCALE,
+        )
+      } catch (e: android.provider.Settings.SettingNotFoundException) {
+        1.0f
+      }
+    }
+
     private fun applyStartAnimationState() {
       if (activeOpacity != 1.0f || defaultOpacity != 1.0f) {
         alpha = defaultOpacity
@@ -558,7 +591,11 @@ class RNGestureHandlerButtonViewManager :
       // lands on its target and the next animator captures a stale starting
       // value (e.g. an instant press-in followed by press-out in the same
       // frame, leaving the press-out to animate default → default).
-      if (durationMs < (display?.minimumFrameTime ?: 16f)) {
+      // Animator duration scale folds in here too: scale 0 collapses any
+      // duration to the same deferred-write territory.
+      val durationScale = getAnimatorDurationScale()
+      val effectiveDurationMs = (durationMs * durationScale).toLong()
+      if (effectiveDurationMs < (display?.minimumFrameTime ?: 16f)) {
         if (hasOpacity) {
           alpha = opacity
         }
@@ -626,7 +663,10 @@ class RNGestureHandlerButtonViewManager :
           animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
         }
         pendingPressOut = runnable
-        handler.postDelayed(runnable, remaining)
+        // The animator scales `remaining` by ANIMATOR_DURATION_SCALE internally,
+        // so the press-in actually completes after `remaining * scale` ms. We need
+        // to match that.
+        handler.postDelayed(runnable, (remaining * getAnimatorDurationScale()).toLong())
       }
     }
 
@@ -855,10 +895,11 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun performClick(): Boolean {
-      // don't preform click when a child button is pressed (mainly to prevent sound effect of
+      // don't perform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
       return if (!isChildTouched()) {
-        if (context.isScreenReaderOn()) {
+        // Don't activate native handlers when isPressed is true (motion events are passing through)
+        if (context.isScreenReaderOn() && !isPressed) {
           RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
         } else if (receivedKeyEvent) {
           RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
@@ -915,7 +956,14 @@ class RNGestureHandlerButtonViewManager :
       var resolveOutValue = TypedValue()
       var touchResponder: ButtonViewGroup? = null
       var soundResponder: ButtonViewGroup? = null
-      var dummyClickListener = OnClickListener { }
+      val dummyClickListener = OnClickListener { }
+      val dummyLongClickListener = OnLongClickListener { view ->
+        if (view.context.isScreenReaderOn()) {
+          view.performAccessibilityAction(AccessibilityNodeInfo.ACTION_LONG_CLICK, null)
+        } else {
+          false
+        }
+      }
     }
   }
 

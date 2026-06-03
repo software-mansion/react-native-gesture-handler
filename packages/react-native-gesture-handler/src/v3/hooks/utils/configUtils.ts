@@ -21,8 +21,6 @@ export function resolveInternalConfigProps<
   THandlerData,
   TExtendedHandlerData extends THandlerData,
 >(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
-  const runOnJS = maybeUnpackValue(config.runOnJS);
-
   if (
     __DEV__ &&
     isNativeAnimatedEvent(config.onUpdate) &&
@@ -63,8 +61,6 @@ export function resolveInternalConfigProps<
     hasWorkletEventHandlers(config) &&
     !config.dispatchesAnimatedEvents;
   config.needsPointerData = shouldHandleTouchEvents(config);
-  config.dispatchesReanimatedEvents =
-    config.shouldUseReanimatedDetector && !runOnJS;
 }
 
 export function prepareConfigForNativeSide<
@@ -80,7 +76,10 @@ export function prepareConfigForNativeSide<
     TConfig,
     THandlerData,
     TExtendedHandlerData
-  > = {};
+  > = {
+    dispatchesReanimatedEvents:
+      config.shouldUseReanimatedDetector && !maybeUnpackValue(config.runOnJS),
+  };
   const handlerPropsWhiteList =
     PropsWhiteLists.get(handlerType) ?? EMPTY_WHITE_LIST;
 

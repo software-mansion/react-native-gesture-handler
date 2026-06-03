@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { type ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
+import { type ActionType } from '../../ActionType';
 import { State } from '../../State';
 import { deepEqual } from '../../utils';
 import type { NativeHandlerData } from '../../v3/hooks/gestures/native/NativeTypes';
@@ -59,7 +59,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.restoreViewStyles(view);
 
-    if (usesNativeOrVirtualDetector(this.actionType)) {
+    if (this.usesNativeOrVirtualDetector()) {
       this.role =
         (view.getAttribute(
           NATIVE_GESTURE_ROLE_ATTRIBUTE

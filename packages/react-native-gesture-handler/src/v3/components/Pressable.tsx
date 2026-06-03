@@ -29,7 +29,9 @@ import {
   gestureTouchToPressableEvent,
   isTouchWithinInset,
   numberAsInset,
+  viewCenterToPressableEvent,
 } from '../../components/Pressable/utils';
+import { getTVProps } from '../../components/utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 import { INT32_MAX, isTestEnv } from '../../utils';
@@ -151,8 +153,9 @@ const Pressable = (props: PressableProps) => {
   }, [cancelDelayedPress, cancelLongPress]);
 
   const handlePressIn = useCallback(
-    (event: PressableEvent) => {
+    (event: PressableEvent, skipBoundsCheck = false) => {
       if (
+        !skipBoundsCheck &&
         !isTouchWithinInset(
           dimensions.current,
           normalizedHitSlop,
@@ -305,11 +308,25 @@ const Pressable = (props: PressableProps) => {
       }
     },
     onBegin: () => {
+      if (Platform.isTV) {
+        // tvOS drives this native gesture from the focus-engine Select press.
+        // The press state machine is touch-based and never
+        // receives LONG_PRESS_TOUCHES_DOWN here, so bypass it and drive the press handlers directly.
+        // A focus-driven press has no coordinates, so skip the hit-slop bounds check entirely.
+        handlePressIn(viewCenterToPressableEvent(dimensions.current), true);
+        return;
+      }
+      if (Platform.OS === 'android' && isScreenReaderEnabled) {
+        stateMachine.handleEvent(
+          StateMachineEvent.NATIVE_BEGIN,
+          viewCenterToPressableEvent(dimensions.current)
+        );
+        return;
+      }
       stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
     },
     onActivate: () => {
-      if (Platform.OS !== 'android') {
-        // Native.onActivate is broken with Android + hitSlop
+      if (!Platform.isTV && Platform.OS !== 'android') {
         stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
       }
     },
@@ -319,6 +336,16 @@ const Pressable = (props: PressableProps) => {
       if (Platform.OS === 'web') {
         return;
       }
+
+      if (Platform.isTV) {
+        handlePressOut(
+          viewCenterToPressableEvent(dimensions.current),
+          !event.canceled
+        );
+        handleFinalize();
+        return;
+      }
+
       stateMachine.handleEvent(
         event.canceled ? StateMachineEvent.CANCEL : StateMachineEvent.FINALIZE
       );
@@ -365,10 +392,13 @@ const Pressable = (props: PressableProps) => {
     [onLayout]
   );
 
+  const tvProps = getTVProps(remainingProps);
+
   return (
     <GestureDetector gesture={gesture}>
       <PureNativeButton
         {...remainingProps}
+        {...tvProps}
         onLayout={setDimensions}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
