@@ -6,6 +6,7 @@ import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
 import { Pressable, RectButton, Touchable } from '../v3/components';
+import { setAndForwardAnimatableRef } from '../v3/components/animatableRef';
 import { usePanGesture } from '../v3/hooks/gestures';
 import type { SingleGesture } from '../v3/types';
 
@@ -84,6 +85,21 @@ describe('[API v3] Components', () => {
     expect(secondRef?.getAnimatableRef?.()).toBe(secondRef);
   });
 
+  test('setAndForwardAnimatableRef preserves an existing animatable ref', () => {
+    const localRef = createRef<AnimatableViewRef>();
+    const forwardedRef = createRef<AnimatableViewRef>();
+    const existingAnimatableRef = jest.fn();
+    const hostRef = {
+      getAnimatableRef: existingAnimatableRef,
+    } as unknown as AnimatableViewRef;
+
+    setAndForwardAnimatableRef(localRef, forwardedRef, hostRef);
+
+    expect(localRef.current).toBe(hostRef);
+    expect(forwardedRef.current).toBe(hostRef);
+    expect(hostRef.getAnimatableRef).toBe(existingAnimatableRef);
+  });
+
   test('Rect Button', () => {
     const pressFn = jest.fn();
 
@@ -121,6 +137,39 @@ describe('[API v3] Components', () => {
       );
 
       expect(ref.current?.getAnimatableRef?.()).toBe(ref.current);
+    });
+
+    test('forwards function refs on mount and unmount', () => {
+      const ref = jest.fn();
+
+      const { unmount } = render(
+        <GestureHandlerRootView>
+          <Touchable ref={ref} />
+        </GestureHandlerRootView>
+      );
+
+      expect(ref).toHaveBeenCalledWith(expect.anything());
+
+      unmount();
+
+      expect(ref).toHaveBeenLastCalledWith(null);
+    });
+
+    test('animatable refs stay bound to their host instance', () => {
+      const ref = createRef<AnimatableViewRef>();
+      const renderTouchable = (key: string) => (
+        <GestureHandlerRootView>
+          <Touchable key={key} ref={ref} />
+        </GestureHandlerRootView>
+      );
+      const { rerender } = render(renderTouchable('first'));
+      const firstRef = ref.current;
+
+      rerender(renderTouchable('second'));
+      const secondRef = ref.current;
+
+      expect(firstRef?.getAnimatableRef?.()).toBe(firstRef);
+      expect(secondRef?.getAnimatableRef?.()).toBe(secondRef);
     });
 
     test('calls onPress on successful press', () => {
