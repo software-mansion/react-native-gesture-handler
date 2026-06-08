@@ -41,7 +41,10 @@ import type {
   UserSelect,
 } from '../handlers/gestureHandlerCommon';
 import { MouseButton } from '../handlers/gestureHandlerCommon';
-import { GestureDetector } from '../v3/detectors';
+import {
+  InterceptingGestureDetector,
+  VirtualGestureDetector,
+} from '../v3/detectors';
 import type { PanGestureActiveEvent } from '../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
 import type { WithSharedValue } from '../v3/types';
@@ -657,12 +660,12 @@ const DrawerLayout = function DrawerLayout(
   );
 
   return (
-    <GestureDetector
+    <InterceptingGestureDetector
       gesture={panGesture}
       userSelect={userSelect}
       enableContextMenu={enableContextMenu}>
       <Animated.View style={styles.main} onLayout={handleContainerLayout}>
-        <GestureDetector
+        <VirtualGestureDetector
           gesture={overlayDismissGesture}
           userSelect={userSelect}>
           <Animated.View
@@ -680,7 +683,7 @@ const DrawerLayout = function DrawerLayout(
               style={[styles.overlay, overlayAnimatedStyle]}
             />
           </Animated.View>
-        </GestureDetector>
+        </VirtualGestureDetector>
         <Animated.View
           pointerEvents="box-none"
           animatedProps={drawerAnimatedProps}
@@ -694,7 +697,7 @@ const DrawerLayout = function DrawerLayout(
           </Animated.View>
         </Animated.View>
       </Animated.View>
-    </GestureDetector>
+    </InterceptingGestureDetector>
   );
 };
 

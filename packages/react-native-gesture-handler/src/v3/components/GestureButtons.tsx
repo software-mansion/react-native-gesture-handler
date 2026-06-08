@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
 
 import GestureHandlerButton from '../../components/GestureHandlerButton';
+import { getTVProps } from '../../components/utils';
 import createNativeWrapper from '../createNativeWrapper';
 import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 import type { GestureEndEvent, GestureEvent } from '../types';
@@ -95,10 +96,13 @@ export const BaseButton = (props: BaseButtonProps) => {
     props.onFinalize?.(e);
   };
 
+  const tvProps = getTVProps(rest);
+
   return (
     <RawButton
       style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
       {...rest}
+      {...tvProps}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
