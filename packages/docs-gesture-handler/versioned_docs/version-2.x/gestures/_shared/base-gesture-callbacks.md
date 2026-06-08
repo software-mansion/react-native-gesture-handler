@@ -14,7 +14,7 @@ Set the callback that is being called when the gesture that was recognized by th
 
 ### `onFinalize(callback)`
 
-Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize.
+Set the callback that is being called when the handler finalizes handling the gesture - the gesture was recognized and has finished or it failed to recognize.
 
 ### `onTouchesDown(callback)`
 
