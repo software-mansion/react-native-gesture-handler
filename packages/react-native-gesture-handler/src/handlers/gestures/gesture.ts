@@ -137,6 +137,17 @@ export abstract class BaseGesture<
   public handlerTag = -1;
   public handlerName = '';
   public config: BaseGestureConfig = {};
+  // Snapshot of the relations defined directly on this gesture (e.g. via
+  // `simultaneousWithExternalGesture`), captured before any composition extends
+  // them. Composition rebuilds the relation config from this snapshot on every
+  // `prepare`, so repeated renders don't accumulate references to gestures from
+  // previous renders (memory leak, see #3763), while keeping the original
+  // references so relations stay re-resolvable after a remount, such as a
+  // `react-freeze` unfreeze (see #4238).
+  public relationsSnapshot?: {
+    simultaneousWith: GestureRef[] | undefined;
+    requireToFail: GestureRef[] | undefined;
+  };
   public handlers: HandlerCallbacks<EventPayloadT> = {
     gestureId: -1,
     handlerTag: -1,

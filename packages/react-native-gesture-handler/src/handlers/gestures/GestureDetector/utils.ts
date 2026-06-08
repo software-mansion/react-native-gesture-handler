@@ -65,20 +65,16 @@ function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
 }
 
 export function extractGestureRelations(gesture: GestureType) {
-  gesture.config.requireToFail = extractValidHandlerTags(
-    gesture.config.requireToFail
-  );
-  gesture.config.simultaneousWith = extractValidHandlerTags(
+  const requireToFail = extractValidHandlerTags(gesture.config.requireToFail);
+  const simultaneousWith = extractValidHandlerTags(
     gesture.config.simultaneousWith
   );
-  gesture.config.blocksHandlers = extractValidHandlerTags(
-    gesture.config.blocksHandlers
-  );
+  const blocksHandlers = extractValidHandlerTags(gesture.config.blocksHandlers);
 
   return {
-    waitFor: gesture.config.requireToFail,
-    simultaneousHandlers: gesture.config.simultaneousWith,
-    blocksHandlers: gesture.config.blocksHandlers,
+    waitFor: requireToFail,
+    simultaneousHandlers: simultaneousWith,
+    blocksHandlers: blocksHandlers,
   };
 }
 
