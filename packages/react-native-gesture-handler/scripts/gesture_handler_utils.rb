@@ -1,5 +1,5 @@
-def try_to_parse_react_native_package_json(node_modules_dir)
-    react_native_package_json_path = File.join(node_modules_dir, 'react-native/package.json')
+def rngh_try_to_parse_react_native_package_json(react_native_dir)
+    react_native_package_json_path = File.join(react_native_dir, 'package.json')
 
     if !File.exist?(react_native_package_json_path)
         return nil
@@ -8,13 +8,13 @@ def try_to_parse_react_native_package_json(node_modules_dir)
     return JSON.parse(File.read(react_native_package_json_path))
 end
 
-def get_react_native_minor_version()
-    react_native_node_modules_dir = File.join(File.dirname(`cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('react-native/package.json')"`), '..')
-    react_native_json = try_to_parse_react_native_package_json(react_native_node_modules_dir)
+def rngh_get_react_native_minor_version()
+    react_native_dir = File.dirname(`cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('react-native/package.json')"`)
+    react_native_json = rngh_try_to_parse_react_native_package_json(react_native_dir)
 
     if react_native_json == nil
         node_modules_dir = ENV["REACT_NATIVE_NODE_MODULES_DIR"]
-        react_native_json = try_to_parse_react_native_package_json(node_modules_dir)
+        react_native_json = rngh_try_to_parse_react_native_package_json(File.join(node_modules_dir, 'react-native'))
     end
 
     if react_native_json == nil
