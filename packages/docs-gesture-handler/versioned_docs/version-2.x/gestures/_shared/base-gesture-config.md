@@ -2,21 +2,21 @@
 
 ### `enabled(value: boolean)`
 
-Indicates whether the given handler should be analyzing stream of touch events or not.
-When set to `false` we can be sure that the handler's state will **never** become [`ACTIVE`](/docs/2.x/fundamentals/states-events#active).
-If the value gets updated while the handler already started recognizing a gesture, then the handler's state will immediately change to [`FAILED`](/docs/2.x/fundamentals/states-events#failed) or [`CANCELLED`](/docs/2.x/fundamentals/states-events#cancelled) (depending on its current state).
+Indicates whether the given handler should be analyzing the stream of touch events or not.
+When set to `false`, we can be sure that the handler's state will **never** become [`ACTIVE`](/docs/2.x/fundamentals/states-events#active).
+If the value gets updated while the handler has already started recognizing a gesture, then the handler's state will immediately change to [`FAILED`](/docs/2.x/fundamentals/states-events#failed) or [`CANCELLED`](/docs/2.x/fundamentals/states-events#cancelled) (depending on its current state).
 Default value is `true`.
 
 ### `shouldCancelWhenOutside(value: boolean)`
 
-When `true` the handler will [cancel](/docs/2.x/fundamentals/states-events#cancelled) or [fail](/docs/2.x/fundamentals/states-events#failed) recognition (depending on its current state) whenever the finger leaves the area of the connected view.
+When `true`, the handler will [cancel](/docs/2.x/fundamentals/states-events#cancelled) or [fail](/docs/2.x/fundamentals/states-events#failed) recognition (depending on its current state) whenever the finger leaves the area of the connected view.
 Default value of this property is different depending on the handler type.
-Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](/docs/2.x/gestures/long-press-gesture) and [`TapGesture`](/docs/2.x/gestures/tap-gesture) which default to `true`.
+Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](/docs/2.x/gestures/long-press-gesture), [`TapGesture`](/docs/2.x/gestures/tap-gesture) and ['NativeGesture](/docs/2.x/gestures/native-gesture) which default to `true`.
 
 ### `hitSlop(settings)`
 
 This parameter enables control over what part of the connected view area can be used to [begin](/docs/2.x/fundamentals/states-events#began) recognizing the gesture.
-When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
+When a negative number is provided, the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
 
 Instead you can pass an object to specify how each boundary side should be reduced by providing different number of points for `left`, `right`, `top` or `bottom` sides.
 You can alternatively provide `horizontal` or `vertical` instead of specifying directly `left`, `right` or `top` and `bottom`.
@@ -65,4 +65,4 @@ Adds a relation that makes other gestures wait with activation until this gestur
 
 ### `activeCursor(value)` (Web only)
 
-This parameter allows to specify which cursor should be used when gesture activates. Supports all CSS cursor values (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
+This parameter allows specifying which cursor should be used when the gesture activates. Supports all CSS cursor values (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
