@@ -11,7 +11,7 @@ Default value is `true`.
 
 When `true`, the handler will [cancel](/docs/2.x/fundamentals/states-events#cancelled) or [fail](/docs/2.x/fundamentals/states-events#failed) recognition (depending on its current state) whenever the finger leaves the area of the connected view.
 Default value of this property is different depending on the handler type.
-Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](/docs/2.x/gestures/long-press-gesture), [`TapGesture`](/docs/2.x/gestures/tap-gesture) and [`NativeGesture`](/docs/2.x/gestures/native-gesture) (on Android) which default to `true`.
+Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](/docs/2.x/gestures/long-press-gesture), [`TapGesture`](/docs/2.x/gestures/tap-gesture) and [`NativeGesture`](/docs/2.x/gestures/native-gesture) (on Android and web) which default to `true`.
 
 ### `hitSlop(settings)`
 
