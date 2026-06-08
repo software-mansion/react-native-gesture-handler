@@ -17,7 +17,9 @@ module GestureHandlerUtils
 
         if react_native_json == nil
             node_modules_dir = ENV["REACT_NATIVE_NODE_MODULES_DIR"]
-            react_native_json = try_to_parse_react_native_package_json(File.join(node_modules_dir, 'react-native'))
+            if node_modules_dir != nil
+                react_native_json = try_to_parse_react_native_package_json(File.join(node_modules_dir, 'react-native'))
+            end
         end
 
         if react_native_json == nil
