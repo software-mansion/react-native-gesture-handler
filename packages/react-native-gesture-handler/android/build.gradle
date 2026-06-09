@@ -14,7 +14,7 @@ buildscript {
             rootProject.buildscript.configurations.classpath.dependencies.any {
                 it.group == 'org.jetbrains.kotlin' && it.name == 'kotlin-gradle-plugin'
             }
-            
+
         if (!rootProvidesKotlinPlugin) {
             classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         }
