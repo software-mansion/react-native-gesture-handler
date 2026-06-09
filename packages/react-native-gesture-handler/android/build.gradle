@@ -10,7 +10,14 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        def rootProvidesKotlinPlugin = rootProject != project &&
+            rootProject.buildscript.configurations.classpath.dependencies.any {
+                it.group == 'org.jetbrains.kotlin' && it.name == 'kotlin-gradle-plugin'
+            }
+            
+        if (!rootProvidesKotlinPlugin) {
+            classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        }
         classpath("com.android.tools.build:gradle:8.10.1")
         classpath("com.diffplug.spotless:spotless-plugin-gradle:7.0.4")
     }
