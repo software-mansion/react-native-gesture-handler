@@ -578,9 +578,15 @@ class GestureHandlerOrchestrator(
     }
 
     if (view is ReactCompoundView) {
-      val tagForCoords = view.reactTagForTouch(coords[0], coords[1])
+      // Some implementations (e.g. RNScreens' DimmingView) intentionally throw from `reactTagForTouch`
+      val tagForCoords =
+        try {
+          view.reactTagForTouch(coords[0], coords[1])
+        } catch (e: IllegalStateException) {
+          null
+        }
 
-      if (tagForCoords != view.id) {
+      if (tagForCoords != null && tagForCoords != view.id) {
         handlerRegistry.getHandlersForViewWithTag(tagForCoords)?.let {
           synchronized(it) {
             for (handler in it) {
