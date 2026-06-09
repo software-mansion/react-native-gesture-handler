@@ -5,7 +5,7 @@ is_gh_example_app = ENV["GH_EXAMPLE_APP_NAME"] != nil
 
 compilation_metadata_dir = "CompilationDatabase"
 compilation_metadata_generation_flag = is_gh_example_app ? '-gen-cdb-fragment-path ' + compilation_metadata_dir : ''
-version_flag = "-DREACT_NATIVE_MINOR_VERSION=#{rngh_get_react_native_minor_version()}"
+version_flag = "-DREACT_NATIVE_MINOR_VERSION=#{GestureHandlerUtils.get_react_native_minor_version()}"
 
 Pod::Spec.new do |s|
   # NPM package specification
