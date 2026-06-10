@@ -8,8 +8,8 @@ import {
   useSimultaneousGestures,
 } from 'react-native-gesture-handler';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
 } from 'react-native-reanimated';
 
 export default function App() {
