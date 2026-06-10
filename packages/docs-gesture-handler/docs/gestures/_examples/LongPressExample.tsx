@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
   GestureHandlerRootView,
@@ -7,8 +7,8 @@ import {
 
 export default function LongPressExample() {
   const longPressGesture = useLongPressGesture({
-    onDeactivate: (e, success) => {
-      if (success) {
+    onDeactivate: (e) => {
+      if (!e.canceled) {
         console.log(`Long pressed for ${e.duration} ms!`);
       }
     },

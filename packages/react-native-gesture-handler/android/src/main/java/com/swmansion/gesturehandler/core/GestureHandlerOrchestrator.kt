@@ -492,7 +492,7 @@ class GestureHandlerOrchestrator(
       top + view.height > parent.height
   }
 
-  private fun extractAncestorHandlers(view: View, coords: FloatArray, pointerId: Int): Boolean {
+  private fun extractAncestorHandlers(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean {
     var found = false
     var parent = view.parent
 
@@ -509,6 +509,10 @@ class GestureHandlerOrchestrator(
         handlerRegistry.getHandlersForView(parent)?.let {
           synchronized(it) {
             for (handler in it) {
+              if (shouldHandlerSkipHoverEvents(handler, event)) {
+                continue
+              }
+
               if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
                 found = true
                 recordHandlerIfNotPresent(handler, parentViewGroup)
@@ -568,15 +572,21 @@ class GestureHandlerOrchestrator(
     if (coords[0] in 0f..view.width.toFloat() &&
       coords[1] in 0f..view.height.toFloat() &&
       isViewOverflowingParent(view) &&
-      extractAncestorHandlers(view, coords, pointerId)
+      extractAncestorHandlers(view, coords, pointerId, event)
     ) {
       found = true
     }
 
     if (view is ReactCompoundView) {
-      val tagForCoords = view.reactTagForTouch(coords[0], coords[1])
+      // Some implementations (e.g. RNScreens' DimmingView) intentionally throw from `reactTagForTouch`
+      val tagForCoords =
+        try {
+          view.reactTagForTouch(coords[0], coords[1])
+        } catch (e: IllegalStateException) {
+          null
+        }
 
-      if (tagForCoords != view.id) {
+      if (tagForCoords != null && tagForCoords != view.id) {
         handlerRegistry.getHandlersForViewWithTag(tagForCoords)?.let {
           synchronized(it) {
             for (handler in it) {

@@ -42,7 +42,6 @@ export const allowedNativeProps = new Set<
   'userSelect',
   'enableContextMenu',
   'touchAction',
-  'dispatchesReanimatedEvents',
   'dispatchesAnimatedEvents',
   'needsPointerData',
 ]);
