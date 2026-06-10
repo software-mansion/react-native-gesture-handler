@@ -560,7 +560,7 @@ class GestureHandlerOrchestrator(
     // for a translated child the area follows the content.
     if (useChildBounds) {
       val child = (view as RNGestureHandlerDetectorView).getChildAt(0)
-      val childPoint = PointF()
+      val childPoint = tempPoint
       transformPointToChildViewCoords(coords[0], coords[1], view, child, childPoint)
       boundsView = child
       boundsX = childPoint.x
