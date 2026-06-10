@@ -206,13 +206,10 @@ export type DrawerLayoutProps = {
   rootContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-   * Enables two-finger gestures on supported devices, for example iPads with
-   * trackpads. If not enabled the gesture will require click + drag, with
-   * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
-   * the gesture.
+   * Called while the drawer is moving or animating, with a `position`
+   * parameter indicating the progress of the opening/closing animation.
+   * It equals `0` when the drawer is closed and `1` when it is fully opened.
    */
-  enableTrackpadTwoFingerGesture?: boolean;
-
   onDrawerSlide?: (position: number) => void;
 
   // Implicit `children` prop has been removed in @types/react^18.0.
