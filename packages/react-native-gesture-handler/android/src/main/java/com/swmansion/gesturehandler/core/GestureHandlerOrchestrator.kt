@@ -546,13 +546,19 @@ class GestureHandlerOrchestrator(
     coords: FloatArray,
     pointerId: Int,
     event: MotionEvent,
+    // View and coordinates used for the `isWithinBounds` check. Defaults to `view`/`coords`, but the
+    // native detector path overrides them with its child's transform-aware bounds so the detector's
+    // interactive area follows child transforms (see `recordDetectorHandlersForPointer`).
+    boundsView: View = view,
+    boundsX: Float = coords[0],
+    boundsY: Float = coords[1],
   ): Boolean {
     var found = false
     handlerRegistry.getHandlersForView(view)?.let {
       synchronized(it) {
         for (handler in it) {
           // skip disabled and out-of-bounds handlers
-          if (!handler.isEnabled || !handler.isWithinBounds(view, coords[0], coords[1])) {
+          if (!handler.isEnabled || !handler.isWithinBounds(boundsView, boundsX, boundsY)) {
             continue
           }
 
@@ -604,6 +610,37 @@ class GestureHandlerOrchestrator(
     }
 
     return found
+  }
+
+  /**
+   * Records the handlers attached to a native detector when no child consumed the touch.
+   *
+   * Delegates to [recordViewHandlersForPointer], but evaluates each handler's bounds in the
+   * coordinate space of the detector's child, so the detector's interactive area follows the child's
+   * transforms (e.g. `translateX`) instead of relying on the detector view's own (transform-agnostic)
+   * frame. For an identity transform the single child fills the detector, so this matches checking
+   * the detector's frame and `hitSlop` expansion (#4049) keeps working; for a translated child the
+   * interactive area follows the content, which fixes presses being stolen over revealed siblings in
+   * an open `ReanimatedSwipeable` (#4250).
+   *
+   * Multi-child detectors fall back to the detector's own frame, as there is no single child whose
+   * transform represents the content.
+   */
+  private fun recordDetectorHandlersForPointer(
+    detector: RNGestureHandlerDetectorView,
+    coords: FloatArray,
+    pointerId: Int,
+    event: MotionEvent,
+  ): Boolean {
+    if (detector.childCount != 1) {
+      return recordViewHandlersForPointer(detector, coords, pointerId, event)
+    }
+
+    val child = detector.getChildAt(0)
+    val childPoint = PointF()
+    transformPointToChildViewCoords(coords[0], coords[1], detector, child, childPoint)
+
+    return recordViewHandlersForPointer(detector, coords, pointerId, event, child, childPoint.x, childPoint.y)
   }
 
   private fun extractGestureHandlers(event: MotionEvent) {
@@ -690,8 +727,17 @@ class GestureHandlerOrchestrator(
             is ViewGroup -> {
               extractGestureHandlers(view, coords, pointerId, event).also { found ->
                 // A child view is handling touch, also extract handlers attached to this view
-                if (found || view is RNGestureHandlerDetectorView) {
+                if (found) {
                   recordViewHandlersForPointer(view, coords, pointerId, event)
+                } else if (view is RNGestureHandlerDetectorView) {
+                  // No child consumed the touch, but we still record the detector's own handlers so
+                  // that `hitSlop` expansion keeps working (see #4049). The detector's frame is the
+                  // bounding box of its children's *layout* frames and does not follow child
+                  // transforms (e.g. `translateX`), so checking it directly would let the detector
+                  // steal presses over areas its content has been moved away from - this is what
+                  // breaks buttons in an open ReanimatedSwipeable on Android (see #4250). Evaluate
+                  // the handlers in the child's transform-aware coordinate space instead.
+                  recordDetectorHandlersForPointer(view, coords, pointerId, event)
                 }
               }
             }
