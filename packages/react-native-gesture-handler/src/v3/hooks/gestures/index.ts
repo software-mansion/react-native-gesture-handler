@@ -1,111 +1,128 @@
 import type {
-  FlingGestureStateChangeEvent,
-  FlingGestureUpdateEvent,
   FlingGesture,
-} from './fling/useFlingGesture';
+  FlingGestureActiveEvent,
+  FlingGestureConfig,
+  FlingGestureEvent,
+} from './fling/FlingTypes';
 import type {
-  HoverGestureStateChangeEvent,
-  HoverGestureUpdateEvent,
   HoverGesture,
-} from './hover/useHoverGesture';
+  HoverGestureActiveEvent,
+  HoverGestureConfig,
+  HoverGestureEvent,
+} from './hover/HoverTypes';
 import type {
-  LongPressGestureStateChangeEvent,
-  LongPressGestureUpdateEvent,
   LongPressGesture,
-} from './longPress/useLongPressGesture';
+  LongPressGestureActiveEvent,
+  LongPressGestureConfig,
+  LongPressGestureEvent,
+} from './longPress/LongPressTypes';
 import type {
-  ManualGestureStateChangeEvent,
-  ManualGestureUpdateEvent,
   ManualGesture,
-} from './manual/useManualGesture';
+  ManualGestureActiveEvent,
+  ManualGestureConfig,
+  ManualGestureEvent,
+} from './manual/ManualTypes';
 import type {
-  NativeGestureStateChangeEvent,
-  NativeGestureUpdateEvent,
   NativeGesture,
-} from './native/useNativeGesture';
+  NativeGestureActiveEvent,
+  NativeGestureConfig,
+  NativeGestureEvent,
+} from './native/NativeTypes';
 import type {
-  PanGestureStateChangeEvent,
-  PanGestureUpdateEvent,
   PanGesture,
-} from './pan/usePanGesture';
+  PanGestureActiveEvent,
+  PanGestureConfig,
+  PanGestureEvent,
+} from './pan/PanTypes';
 import type {
-  PinchGestureStateChangeEvent,
-  PinchGestureUpdateEvent,
   PinchGesture,
-} from './pinch/usePinchGesture';
+  PinchGestureActiveEvent,
+  PinchGestureConfig,
+  PinchGestureEvent,
+} from './pinch/PinchTypes';
 import type {
-  RotationGestureStateChangeEvent,
-  RotationGestureUpdateEvent,
   RotationGesture,
-} from './rotation/useRotationGesture';
+  RotationGestureActiveEvent,
+  RotationGestureConfig,
+  RotationGestureEvent,
+} from './rotation/RotationTypes';
 import type {
-  TapGestureStateChangeEvent,
-  TapGestureUpdateEvent,
   TapGesture,
-} from './tap/useTapGesture';
+  TapGestureActiveEvent,
+  TapGestureConfig,
+  TapGestureEvent,
+} from './tap/TapTypes';
 
-export type { TapGestureConfig } from './tap/useTapGesture';
-export type { TapGesture, TapGestureStateChangeEvent, TapGestureUpdateEvent };
+export type {
+  TapGesture,
+  TapGestureActiveEvent,
+  TapGestureConfig,
+  TapGestureEvent,
+};
 export { useTapGesture } from './tap/useTapGesture';
 
-export type { FlingGestureConfig } from './fling/useFlingGesture';
 export type {
   FlingGesture,
-  FlingGestureStateChangeEvent,
-  FlingGestureUpdateEvent,
+  FlingGestureActiveEvent,
+  FlingGestureConfig,
+  FlingGestureEvent,
 };
 export { useFlingGesture } from './fling/useFlingGesture';
 
-export type { LongPressGestureConfig } from './longPress/useLongPressGesture';
 export type {
   LongPressGesture,
-  LongPressGestureStateChangeEvent,
-  LongPressGestureUpdateEvent,
+  LongPressGestureActiveEvent,
+  LongPressGestureConfig,
+  LongPressGestureEvent,
 };
 export { useLongPressGesture } from './longPress/useLongPressGesture';
 
-export type { PinchGestureConfig } from './pinch/usePinchGesture';
 export type {
   PinchGesture,
-  PinchGestureStateChangeEvent,
-  PinchGestureUpdateEvent,
+  PinchGestureActiveEvent,
+  PinchGestureConfig,
+  PinchGestureEvent,
 };
 export { usePinchGesture } from './pinch/usePinchGesture';
 
-export type { RotationGestureConfig } from './rotation/useRotationGesture';
 export type {
   RotationGesture,
-  RotationGestureStateChangeEvent,
-  RotationGestureUpdateEvent,
+  RotationGestureActiveEvent,
+  RotationGestureConfig,
+  RotationGestureEvent,
 };
 export { useRotationGesture } from './rotation/useRotationGesture';
 
-export type { HoverGestureConfig } from './hover/useHoverGesture';
 export type {
   HoverGesture,
-  HoverGestureStateChangeEvent,
-  HoverGestureUpdateEvent,
+  HoverGestureActiveEvent,
+  HoverGestureConfig,
+  HoverGestureEvent,
 };
 export { useHoverGesture } from './hover/useHoverGesture';
 
-export type { ManualGestureConfig } from './manual/useManualGesture';
 export type {
   ManualGesture,
-  ManualGestureStateChangeEvent,
-  ManualGestureUpdateEvent,
+  ManualGestureActiveEvent,
+  ManualGestureConfig,
+  ManualGestureEvent,
 };
 export { useManualGesture } from './manual/useManualGesture';
 
-export type { NativeViewGestureConfig } from './native/useNativeGesture';
 export type {
   NativeGesture,
-  NativeGestureStateChangeEvent,
-  NativeGestureUpdateEvent,
+  NativeGestureActiveEvent,
+  NativeGestureConfig,
+  NativeGestureEvent,
 };
 export { useNativeGesture } from './native/useNativeGesture';
 
-export type { PanGestureConfig } from './pan/usePanGesture';
-export type { PanGesture, PanGestureStateChangeEvent, PanGestureUpdateEvent };
+export type {
+  PanGesture,
+  PanGestureActiveEvent,
+  PanGestureConfig,
+  PanGestureEvent,
+};
 export { usePanGesture } from './pan/usePanGesture';
 
 export type SingleGesture =
@@ -119,22 +136,22 @@ export type SingleGesture =
   | NativeGesture
   | PanGesture;
 
-export type SingleGestureStateChangeEvent =
-  | TapGestureStateChangeEvent
-  | FlingGestureStateChangeEvent
-  | LongPressGestureStateChangeEvent
-  | RotationGestureStateChangeEvent
-  | HoverGestureStateChangeEvent
-  | ManualGestureStateChangeEvent
-  | NativeGestureStateChangeEvent
-  | PanGestureStateChangeEvent;
-
-export type SingleGestureUpdateEvent =
-  | TapGestureUpdateEvent
-  | FlingGestureUpdateEvent
-  | LongPressGestureUpdateEvent
-  | RotationGestureUpdateEvent
-  | HoverGestureUpdateEvent
-  | ManualGestureUpdateEvent
-  | NativeGestureUpdateEvent
-  | PanGestureUpdateEvent;
+/* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
+export type SingleGestureEvent =
+  | TapGestureEvent
+  | TapGestureActiveEvent
+  | FlingGestureEvent
+  | FlingGestureActiveEvent
+  | LongPressGestureEvent
+  | LongPressGestureActiveEvent
+  | RotationGestureEvent
+  | RotationGestureActiveEvent
+  | HoverGestureEvent
+  | HoverGestureActiveEvent
+  | ManualGestureEvent
+  | ManualGestureActiveEvent
+  | NativeGestureEvent
+  | NativeGestureActiveEvent
+  | PanGestureEvent
+  | PanGestureActiveEvent;
+/* eslint-enable @typescript-eslint/no-duplicate-type-constituents */

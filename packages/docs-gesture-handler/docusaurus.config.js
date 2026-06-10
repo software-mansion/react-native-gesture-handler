@@ -7,6 +7,8 @@ const darkCodeTheme = require('./src/theme/CodeBlock/highlighting-dark.js');
 // @ts-check
 const webpack = require('webpack');
 
+const redirectsData = require('./redirects.json');
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'React Native Gesture Handler',
@@ -42,11 +44,11 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           sidebarCollapsible: false,
           editUrl:
-            'https://github.com/software-mansion/react-native-gesture-handler/edit/main/docs',
+            'https://github.com/software-mansion/react-native-gesture-handler/edit/main/packages/docs-gesture-handler/',
           lastVersion: 'current', // <- this makes 2.x docs as default
           versions: {
             current: {
-              label: '2.x',
+              label: '3.x',
             },
           },
         },
@@ -59,6 +61,7 @@ const config = {
         },
       }),
     ],
+    require.resolve('@swmansion/t-rex-ui/preset')
   ],
 
   themeConfig:
@@ -81,7 +84,7 @@ const config = {
         },
         items: [
           {
-            to: 'docs/',
+            to: 'docs/fundamentals/introduction',
             activeBasePath: 'docs',
             label: 'Docs',
             position: 'right',
@@ -113,7 +116,7 @@ const config = {
           'All trademarks and copyrights belong to their respective owners.',
       },
       prism: {
-        additionalLanguages: ['bash'],
+        additionalLanguages: ['bash', 'groovy'],
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
@@ -126,10 +129,22 @@ const config = {
   plugins: [
     ...[
       process.env.NODE_ENV === 'production' && '@docusaurus/plugin-debug',
+      process.env.NODE_ENV === 'production' && [
+        '@docusaurus/plugin-google-tag-manager',
+        {
+          containerId: 'GTM-PHF2NKVT',
+        },
+      ],
     ].filter(Boolean),
-    async function reanimatedDocusaurusPlugin(context, options) {
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: redirectsData.redirects,
+      },
+    ],
+    async function gestureHandlerDocusaurusPlugin(context, options) {
       return {
-        name: 'react-native-reanimated/docusaurus-plugin',
+        name: 'react-native-gesture-handler/docusaurus-plugin',
         configureWebpack(config, isServer, utils) {
           const processMock = !isServer ? { process: { env: {} } } : {};
 
@@ -154,6 +169,10 @@ const config = {
                 },
                 {
                   test: /\.tsx?$/,
+                  use: 'babel-loader',
+                },
+                {
+                  test: /\.js$/,
                   use: 'babel-loader',
                 },
               ],

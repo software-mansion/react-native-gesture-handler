@@ -1,4 +1,4 @@
-import Mocks from '../mocks/mocks';
+import Mocks from '../mocks/module';
 
 export default {
   ...Mocks,

@@ -1,6 +1,5 @@
 import { PointerType } from '../../PointerType';
 import { State } from '../../State';
-
 import type IGestureHandler from '../handlers/IGestureHandler';
 import PointerTracker from './PointerTracker';
 
@@ -31,6 +30,10 @@ export default class GestureHandlerOrchestrator {
     handler.active = false;
     handler.awaiting = false;
     handler.activationIndex = Number.MAX_VALUE;
+  }
+
+  public isHandlerRecorded(handler: IGestureHandler): boolean {
+    return this.gestureHandlers.includes(handler);
   }
 
   public removeHandlerFromOrchestrator(handler: IGestureHandler): void {
@@ -267,15 +270,19 @@ export default class GestureHandlerOrchestrator {
   }
 
   public recordHandlerIfNotPresent(handler: IGestureHandler): void {
-    if (this.gestureHandlers.includes(handler)) {
+    if (this.isHandlerRecorded(handler)) {
       return;
     }
-
-    this.gestureHandlers.push(handler);
 
     handler.active = false;
     handler.awaiting = false;
     handler.activationIndex = Number.MAX_SAFE_INTEGER;
+
+    if (!handler.shouldBeginWithRecordedHandlers(this.gestureHandlers)) {
+      handler.cancel();
+    }
+
+    this.gestureHandlers.push(handler);
   }
 
   private shouldHandlerWaitForOther(

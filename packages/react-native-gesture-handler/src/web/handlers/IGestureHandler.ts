@@ -1,34 +1,39 @@
-import type { PointerType } from '../../PointerType';
 import type {
   ActiveCursor,
   MouseButton,
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
+import type { PointerType } from '../../PointerType';
 import type { State } from '../../State';
+import type { SingleGestureName } from '../../v3/types';
 import type { Config } from '../interfaces';
 import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import type PointerTracker from '../tools/PointerTracker';
-import { SingleGestureName } from '../../v3/types';
 
 export default interface IGestureHandler {
+  attached: boolean;
   active: boolean;
   activationIndex: number;
   awaiting: boolean;
   handlerTag: number;
+  readonly testID?: string | undefined;
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
   readonly name: SingleGestureName;
+  readonly isContinuous: boolean;
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;
   readonly enabled: boolean | null;
   readonly pointerType: PointerType;
   enableContextMenu: boolean;
-  readonly activeCursor?: ActiveCursor;
-  readonly touchAction?: TouchAction;
-  readonly userSelect?: UserSelect;
+  readonly activeCursor?: ActiveCursor | undefined;
+  readonly touchAction?: TouchAction | undefined;
+  readonly userSelect?: UserSelect | undefined;
+
+  usesNativeOrVirtualDetector: () => boolean;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
 
@@ -51,12 +56,13 @@ export default interface IGestureHandler {
   shouldRequireToWaitForFailure: (handler: IGestureHandler) => boolean;
   shouldRecognizeSimultaneously: (handler: IGestureHandler) => boolean;
   shouldBeCancelledByOther: (handler: IGestureHandler) => boolean;
+  shouldBeginWithRecordedHandlers: (recorded: IGestureHandler[]) => boolean;
   shouldAttachGestureToChildView: () => boolean;
 
   sendEvent: (newState: State, oldState: State) => void;
 
   setGestureConfig: (config: Config) => void;
-  updateGestureConfig: (config: Config) => void;
+  updateGestureConfig: (config: Partial<Config>) => void;
 
   isButton?: () => boolean;
 }

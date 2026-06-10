@@ -1,0 +1,1 @@
+../../versioned_docs/version-2.x/gestures/tap-gesture.md

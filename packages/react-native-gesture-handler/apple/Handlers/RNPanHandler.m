@@ -75,7 +75,12 @@
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO fromManualStateChange:NO];
+}
+
+- (void)triggerActionFromReset
+{
+  [_gestureHandler handleGesture:self fromReset:YES fromManualStateChange:NO];
 }
 
 #if !TARGET_OS_OSX
@@ -116,6 +121,11 @@
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  if (self.state == UIGestureRecognizerStatePossible && ![self.delegate gestureRecognizerShouldBegin:self]) {
+    self.state = UIGestureRecognizerStateFailed;
+    return;
+  }
+
   if (touches.count == 0) {
     [_gestureHandler reset];
   }
@@ -166,7 +176,6 @@
       self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
                                                                     : UIGestureRecognizerStateCancelled;
 
-      [self triggerAction];
       [self reset];
       return;
     }
@@ -193,7 +202,6 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
-  [self triggerAction];
 }
 
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
@@ -202,7 +210,6 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
-  [self triggerAction];
 }
 
 #if TARGET_OS_OSX
@@ -231,7 +238,7 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   // super call was moved to interactionsBegan method to keep the
   // original order of calls
   [self interactionsBegan:touches withEvent:event];
@@ -259,9 +266,9 @@
 
 - (void)reset
 {
+  [self triggerActionFromReset];
   [_gestureHandler.pointerTracker reset];
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
-  self.enabled = YES;
   [super reset];
   [_gestureHandler reset];
 
@@ -355,6 +362,11 @@
   return self;
 }
 
+- (BOOL)isContinuous
+{
+  return YES;
+}
+
 - (void)resetConfig
 {
   [super resetConfig];
@@ -444,7 +456,7 @@
 #if TARGET_OS_OSX
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSPanGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:self.coordinateView]
                            withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
                                 withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
@@ -458,7 +470,7 @@
   RNBetterPanGestureRecognizer *panRecognizer = (RNBetterPanGestureRecognizer *)recognizer;
 
   return [RNGestureHandlerEventExtraData
-                    forPan:[recognizer locationInView:recognizer.view]
+                    forPan:[recognizer locationInView:self.coordinateView]
       withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
            withTranslation:[recognizer translationInView:recognizer.view.window]
               withVelocity:[recognizer velocityInView:recognizer.view.window]

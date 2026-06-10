@@ -1,37 +1,49 @@
-import {
+import type {
+  TouchAction,
+  UserSelect,
+} from '../../handlers/gestureHandlerCommon';
+import type {
   AnimatedEvent,
-  StateChangeEventWithHandlerData,
-  UpdateEventWithHandlerData,
-  TouchEvent,
+  GestureHandlerEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
 } from './EventTypes';
 
-export type DetectorCallbacks<THandlerData> = {
-  onGestureHandlerStateChange: (
-    event: StateChangeEventWithHandlerData<THandlerData>
-  ) => void;
-  onGestureHandlerEvent:
+export type DetectorCallbacks<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> = {
+  jsEventHandler:
     | undefined
-    | ((event: UpdateEventWithHandlerData<THandlerData>) => void);
-  onGestureHandlerTouchEvent: (event: TouchEvent) => void;
-  onReanimatedStateChange:
+    | ((
+        event: GestureHandlerEventWithHandlerData<
+          THandlerData,
+          TExtendedHandlerData
+        >
+      ) => void);
+  reanimatedEventHandler:
     | undefined
-    | ((event: StateChangeEventWithHandlerData<THandlerData>) => void);
-  onReanimatedUpdateEvent:
-    | undefined
-    | ((event: UpdateEventWithHandlerData<THandlerData>) => void);
-  onReanimatedTouchEvent: undefined | ((event: TouchEvent) => void);
-  onGestureHandlerAnimatedEvent:
+    | ((
+        event: GestureHandlerEventWithHandlerData<
+          THandlerData,
+          TExtendedHandlerData
+        >
+      ) => void);
+  animatedEventHandler:
     | undefined
     | AnimatedEvent
-    | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void);
+    | ((
+        event: GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+      ) => void);
 };
 
 export type VirtualChild = {
   viewTag: number;
   handlerTags: number[];
-  methods: DetectorCallbacks<unknown>;
+  methods: DetectorCallbacks<unknown, unknown>;
 
   // only set on web
   viewRef: unknown;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
 };

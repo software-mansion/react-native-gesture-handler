@@ -1,4 +1,5 @@
-import { BaseGesture, Gesture, GestureRef, GestureType } from './gesture';
+import type { GestureRef, GestureType } from './gesture';
+import { BaseGesture, Gesture } from './gesture';
 
 function extendRelation(
   currentRelation: GestureRef[] | undefined,
@@ -11,6 +12,9 @@ function extendRelation(
   }
 }
 
+/**
+ * @deprecated `ComposedGesture` is deprecated and will be removed in the future. Please use `useCompetingGestures` instead.
+ */
 export class ComposedGesture extends Gesture {
   protected gestures: Gesture[] = [];
   protected simultaneousGestures: GestureType[] = [];
@@ -27,16 +31,29 @@ export class ComposedGesture extends Gesture {
     requireGesturesToFail: GestureType[]
   ) {
     if (gesture instanceof BaseGesture) {
+      // Capture the relations defined directly on the gesture before composition
+      // extends them, then always rebuild from that snapshot. Otherwise, when the
+      // gesture is stable (e.g. wrapped in `useMemo`) but the composition is
+      // recreated on every render, the relations would keep accumulating
+      // references to gestures from previous renders, leaking memory (see #3763).
+      // We keep the original references (instead of collapsing them to handler
+      // tags) so relations can still be re-resolved after a remount, such as a
+      // `react-freeze` unfreeze (see #4238).
+      gesture.relationsSnapshot ??= {
+        simultaneousWith: gesture.config.simultaneousWith,
+        requireToFail: gesture.config.requireToFail,
+      };
+
       const newConfig = { ...gesture.config };
 
       // No need to extend `blocksHandlers` here, because it's not changed in composition.
       // The same effect is achieved by reversing the order of 2 gestures in `Exclusive`
       newConfig.simultaneousWith = extendRelation(
-        newConfig.simultaneousWith,
+        gesture.relationsSnapshot.simultaneousWith,
         simultaneousGestures
       );
       newConfig.requireToFail = extendRelation(
-        newConfig.requireToFail,
+        gesture.relationsSnapshot.requireToFail,
         requireGesturesToFail
       );
 
@@ -69,6 +86,9 @@ export class ComposedGesture extends Gesture {
   }
 }
 
+/**
+ * @deprecated `SimultaneousGesture` is deprecated and will be removed in the future. Please use `useSimultaneousGestures` instead.
+ */
 export class SimultaneousGesture extends ComposedGesture {
   override prepare() {
     // This piece of magic works something like this:
@@ -95,6 +115,9 @@ export class SimultaneousGesture extends ComposedGesture {
   }
 }
 
+/**
+ * @deprecated `ExclusiveGesture` is deprecated and will be removed in the future. Please use `useExclusiveGestures` instead.
+ */
 export class ExclusiveGesture extends ComposedGesture {
   override prepare() {
     // Transforms the array of gestures into array of grouped raw (not composed) gestures
@@ -118,7 +141,19 @@ export class ExclusiveGesture extends ComposedGesture {
   }
 }
 
+/**
+ * @deprecated `ComposedGestureType` is deprecated and will be removed in the future. Please use `ComposedGesture` instead.
+ */
 export type ComposedGestureType = InstanceType<typeof ComposedGesture>;
+/**
+ * @deprecated `RaceGestureType` is deprecated and will be removed in the future. Please use `ComposedGesture` instead.
+ */
 export type RaceGestureType = ComposedGestureType;
+/**
+ * @deprecated `SimultaneousGestureType` is deprecated and will be removed in the future. Please use `ComposedGesture` instead.
+ */
 export type SimultaneousGestureType = InstanceType<typeof SimultaneousGesture>;
+/**
+ * @deprecated `ExclusiveGestureType` is deprecated and will be removed in the future. Please use `ComposedGesture` instead.
+ */
 export type ExclusiveGestureType = InstanceType<typeof ExclusiveGesture>;

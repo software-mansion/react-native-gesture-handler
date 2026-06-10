@@ -156,10 +156,15 @@
   }];
 }
 
-+ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside withPointerType:(NSInteger)pointerType
++ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
+                                 withNumberOfTouches:(NSUInteger)numberOfTouches
+                                     withPointerType:(NSInteger)pointerType
 {
-  return [[RNGestureHandlerEventExtraData alloc]
-      initWithData:@{@"pointerInside" : @(pointerInside), @"pointerType" : @(pointerType)}];
+  return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
+    @"pointerInside" : @(pointerInside),
+    @"numberOfPointers" : @(numberOfTouches),
+    @"pointerType" : @(pointerType)
+  }];
 }
 
 @end

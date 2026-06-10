@@ -1,52 +1,14 @@
-import {
-  BaseDiscreteGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  SingleGestureName,
-  WithSharedValue,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
-} from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
-import {
-  LongPressGestureExternalProperties,
-  LongPressGestureNativeProperties,
-} from './LongPressProperties';
-
-type LongPressHandlerData = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-  duration: number;
-};
-
-type LongPressGestureProperties =
-  WithSharedValue<LongPressGestureExternalProperties>;
-
-type LongPressGestureInternalProperties =
-  WithSharedValue<LongPressGestureNativeProperties>;
-
-export type LongPressGestureConfig = ExcludeInternalConfigProps<
-  BaseDiscreteGestureConfig<LongPressHandlerData, LongPressGestureProperties>
->;
-
-type LongPressGestureInternalConfig = BaseDiscreteGestureConfig<
+import type {
+  LongPressGesture,
+  LongPressGestureConfig,
+  LongPressGestureInternalConfig,
+  LongPressGestureInternalProperties,
+  LongPressGestureProperties,
   LongPressHandlerData,
-  LongPressGestureInternalProperties
->;
-
-export type LongPressGestureStateChangeEvent =
-  GestureStateChangeEvent<LongPressHandlerData>;
-
-export type LongPressGestureUpdateEvent =
-  GestureUpdateEvent<LongPressHandlerData>;
-
-export type LongPressGesture = SingleGesture<
-  LongPressHandlerData,
-  LongPressGestureProperties
->;
+} from './LongPressTypes';
 
 const LongPressPropsMapping = new Map<
   keyof LongPressGestureProperties,
@@ -66,16 +28,18 @@ function transformLongPressProps(
   return config;
 }
 
+const EMPTY_LONG_PRESS_CONFIG: LongPressGestureConfig = {};
+
 export function useLongPressGesture(
-  config: LongPressGestureConfig
+  config: LongPressGestureConfig = EMPTY_LONG_PRESS_CONFIG
 ): LongPressGesture {
   const longPressConfig = useClonedAndRemappedConfig<
-    LongPressHandlerData,
     LongPressGestureProperties,
+    LongPressHandlerData,
     LongPressGestureInternalProperties
   >(config, LongPressPropsMapping, transformLongPressProps);
 
-  return useGesture<LongPressHandlerData, LongPressGestureInternalProperties>(
+  return useGesture<LongPressGestureInternalProperties, LongPressHandlerData>(
     SingleGestureName.LongPress,
     longPressConfig
   );

@@ -1,69 +1,33 @@
-import { StylusData } from '../../../../handlers/gestureHandlerCommon';
-import {
-  BaseGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
+import type {
+  GestureEvent,
   HandlerData,
-  SingleGestureName,
   WithSharedValue,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
 } from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   getChangeEventCalculator,
   maybeUnpackValue,
   useClonedAndRemappedConfig,
 } from '../../utils';
-import {
+import type {
   OffsetProps,
-  PanGestureExternalProperties,
-  PanGestureNativeProperties,
-} from './PanProperties';
-
-export type PanHandlerData = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-  translationX: number;
-  translationY: number;
-  velocityX: number;
-  velocityY: number;
-  stylusData: StylusData;
-  changeX: number;
-  changeY: number;
-};
-
-export type PanGestureProperties =
-  WithSharedValue<PanGestureExternalProperties>;
-
-export type PanGestureInternalProperties =
-  WithSharedValue<PanGestureNativeProperties>;
-
-export type PanGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<PanHandlerData, PanGestureProperties>
->;
-
-type PanGestureInternalConfig = BaseGestureConfig<
+  PanExtendedHandlerData,
+  PanGesture,
+  PanGestureConfig,
+  PanGestureInternalConfig,
+  PanGestureInternalProperties,
+  PanGestureProperties,
   PanHandlerData,
-  PanGestureInternalProperties
->;
-
-export type PanGestureStateChangeEvent =
-  GestureStateChangeEvent<PanHandlerData>;
-
-export type PanGestureUpdateEvent = GestureUpdateEvent<PanHandlerData>;
-
-export type PanGesture = SingleGesture<
-  PanHandlerData,
-  PanGestureInternalProperties
->;
+} from './PanTypes';
 
 const PanPropsMapping = new Map<
   keyof PanGestureProperties,
   keyof PanGestureInternalProperties
->([['minDistance', 'minDist']]);
+>([
+  ['minDistance', 'minDist'],
+  ['averageTouches', 'avgTouches'],
+]);
 
 function validateOffsetsArray(
   offsets: WithSharedValue<number | [number, number] | undefined>,
@@ -77,8 +41,8 @@ function validateOffsetsArray(
     return;
   }
 
-  const offsetStart = maybeUnpackValue(offsets[0]);
-  const offsetEnd = maybeUnpackValue(offsets[1]);
+  const offsetStart = maybeUnpackValue<number>(offsets[0]);
+  const offsetEnd = maybeUnpackValue<number>(offsets[1]);
 
   if (offsetStart > 0 || offsetEnd < 0) {
     throw new Error(
@@ -126,7 +90,7 @@ function transformOffsetProp(
     config[`${propName}Start`] = propValue[0];
     config[`${propName}End`] = propValue[1];
   } else {
-    const offsetValue = maybeUnpackValue(propValue);
+    const offsetValue = maybeUnpackValue<number>(propValue);
 
     if (offsetValue < 0) {
       config[`${propName}Start`] = propValue;
@@ -140,8 +104,8 @@ function transformOffsetProp(
 }
 
 function diffCalculator(
-  current: HandlerData<PanHandlerData>,
-  previous: HandlerData<PanHandlerData> | null
+  current: HandlerData<PanExtendedHandlerData>,
+  previous: HandlerData<PanExtendedHandlerData> | null
 ) {
   'worklet';
   return {
@@ -154,6 +118,13 @@ function diffCalculator(
   };
 }
 
+function fillInDefaultValues(event: GestureEvent<PanExtendedHandlerData>) {
+  'worklet';
+
+  event.changeX = 0;
+  event.changeY = 0;
+}
+
 function transformPanProps(
   config: PanGestureConfig & PanGestureInternalConfig
 ) {
@@ -163,23 +134,30 @@ function transformPanProps(
   transformOffsetProp(config, 'activeOffsetX');
 
   config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+  config.fillInDefaultValues = fillInDefaultValues;
 
   return config;
 }
 
-export function usePanGesture(config: PanGestureConfig): PanGesture {
+const EMPTY_PAN_CONFIG: PanGestureConfig = {};
+
+export function usePanGesture(
+  config: PanGestureConfig = EMPTY_PAN_CONFIG
+): PanGesture {
   if (__DEV__) {
     validatePanConfig(config);
   }
 
   const panConfig = useClonedAndRemappedConfig<
-    PanHandlerData,
     PanGestureProperties,
-    PanGestureInternalProperties
+    PanHandlerData,
+    PanGestureInternalProperties,
+    PanExtendedHandlerData
   >(config, PanPropsMapping, transformPanProps);
 
-  return useGesture<PanHandlerData, PanGestureInternalProperties>(
-    SingleGestureName.Pan,
-    panConfig
-  );
+  return useGesture<
+    PanGestureInternalProperties,
+    PanHandlerData,
+    PanExtendedHandlerData
+  >(SingleGestureName.Pan, panConfig);
 }

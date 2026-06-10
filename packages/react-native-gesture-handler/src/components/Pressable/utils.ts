@@ -1,16 +1,19 @@
-import { Insets } from 'react-native';
-import {
+import type { Insets } from 'react-native';
+
+import type {
+  GestureStateChangeEvent,
+  GestureTouchEvent,
+  TouchData,
+} from '../../handlers/gestureHandlerCommon';
+import type {
   HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
 } from '../../handlers/GestureHandlerEventPayload';
-import {
-  TouchData,
-  GestureStateChangeEvent,
-  GestureTouchEvent,
-} from '../../handlers/gestureHandlerCommon';
-import {
-  PressableDimensions,
+import type { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
+import type { HoverGestureActiveEvent } from '../../v3/hooks';
+import type {
   InnerPressableEvent,
+  PressableDimensions,
   PressableEvent,
 } from './PressableProps';
 
@@ -45,9 +48,13 @@ const touchDataToPressEvent = (
 });
 
 const gestureToPressEvent = (
-  event: GestureStateChangeEvent<
-    HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-  >,
+  event:
+    | GestureStateChangeEvent<
+        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
+      >
+    | HoverGestureEvent
+    | HoverGestureActiveEvent
+    | LongPressGestureEvent,
   timestamp: number,
   targetId: number
 ): InnerPressableEvent => ({
@@ -73,9 +80,13 @@ const isTouchWithinInset = (
   (touch?.locationY ?? 0) > -(inset.top ?? 0);
 
 const gestureToPressableEvent = (
-  event: GestureStateChangeEvent<
-    HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-  >
+  event:
+    | GestureStateChangeEvent<
+        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
+      >
+    | HoverGestureEvent
+    | HoverGestureActiveEvent
+    | LongPressGestureEvent
 ): PressableEvent => {
   const timestamp = Date.now();
 
@@ -131,10 +142,47 @@ const gestureTouchToPressableEvent = (
   };
 };
 
+const viewCenterToPressableEvent = (
+  dimensions: PressableDimensions
+): PressableEvent => {
+  const timestamp = Date.now();
+  const targetId = 0;
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+
+  const pressEvent: InnerPressableEvent = {
+    identifier: 0,
+    locationX: centerX,
+    locationY: centerY,
+    pageX: -1,
+    pageY: -1,
+    target: targetId,
+    timestamp,
+    touches: [],
+    changedTouches: [],
+  };
+
+  return {
+    nativeEvent: {
+      touches: [pressEvent],
+      changedTouches: [pressEvent],
+      identifier: 0,
+      locationX: centerX,
+      locationY: centerY,
+      pageX: -1,
+      pageY: -1,
+      target: targetId,
+      timestamp,
+      force: undefined,
+    },
+  };
+};
+
 export {
-  numberAsInset,
   addInsets,
-  isTouchWithinInset,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
+  isTouchWithinInset,
+  numberAsInset,
+  viewCenterToPressableEvent,
 };

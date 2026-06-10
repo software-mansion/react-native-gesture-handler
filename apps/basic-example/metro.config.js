@@ -2,14 +2,11 @@ const { getDefaultConfig } = require('@react-native/metro-config');
 const { mergeConfig } = require('metro-config');
 
 const path = require('path');
-const exclusionList = require('metro-config/private/defaults/exclusionList').default;
+const exclusionList =
+  require('metro-config/private/defaults/exclusionList').default;
 const escape = require('escape-string-regexp');
 
-// Gesture handler tries to require 'react-native-reanimated' inside a try...catch
-// block. In root directory, we have reanimated installed but FabricExample doesn't.
-// We need to blacklist reanimated to prevent its JS code from bein in the bundle
-// without the native code or the babel plugin.
-const modulesBlacklist = ['react-native-reanimated'];
+const modulesBlacklist = [];
 
 const projectRoot = __dirname;
 const monorepoRoot = path.resolve(projectRoot, '../..');

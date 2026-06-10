@@ -1,6 +1,9 @@
 import { State } from '../../State';
 import { tagMessage } from '../../utils';
 
+/**
+ * @deprecated `LegacyGestureStateManagerType` is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export interface GestureStateManagerType {
   begin: () => void;
   activate: () => void;
@@ -9,12 +12,6 @@ export interface GestureStateManagerType {
   /** @internal */
   handlerTag: number;
 }
-
-// Declare methods to keep the TS happy
-declare const globalThis: {
-  _setGestureStateSync?: (handlerTag: number, state: State) => void;
-  _setGestureStateAsync?: (handlerTag: number, state: State) => void;
-};
 
 const wrappedSetGestureState = (handlerTag: number, state: State) => {
   'worklet';
@@ -55,6 +52,9 @@ function create(handlerTag: number): GestureStateManagerType {
   };
 }
 
+/**
+ * @deprecated `LegacyGestureStateManager` is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export const GestureStateManager = {
   create,
 };

@@ -1,51 +1,22 @@
-import {
-  BaseGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  HandlerData,
-  SingleGestureName,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
-} from '../../../types';
+import type { GestureEvent, HandlerData } from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
-  useClonedAndRemappedConfig,
   getChangeEventCalculator,
+  useClonedAndRemappedConfig,
 } from '../../utils';
-import { RotationGestureNativeProperties } from './RotationProperties';
-
-type RotationHandlerData = {
-  rotation: number;
-  anchorX: number;
-  anchorY: number;
-  velocity: number;
-  rotationChange: number;
-};
-
-type RotationGestureProperties = RotationGestureNativeProperties;
-
-type RotationGestureInternalConfig = BaseGestureConfig<
+import type {
+  RotationExtendedHandlerData,
+  RotationGesture,
+  RotationGestureConfig,
+  RotationGestureInternalConfig,
+  RotationGestureProperties,
   RotationHandlerData,
-  RotationGestureProperties
->;
-
-export type RotationGestureConfig =
-  ExcludeInternalConfigProps<RotationGestureInternalConfig>;
-
-export type RotationGestureStateChangeEvent =
-  GestureStateChangeEvent<RotationHandlerData>;
-
-export type RotationGestureUpdateEvent =
-  GestureUpdateEvent<RotationHandlerData>;
-
-export type RotationGesture = SingleGesture<
-  RotationHandlerData,
-  RotationGestureProperties
->;
+} from './RotationTypes';
 
 function diffCalculator(
-  current: HandlerData<RotationHandlerData>,
-  previous: HandlerData<RotationHandlerData> | null
+  current: HandlerData<RotationExtendedHandlerData>,
+  previous: HandlerData<RotationExtendedHandlerData> | null
 ) {
   'worklet';
   return {
@@ -55,24 +26,33 @@ function diffCalculator(
   };
 }
 
+function fillInDefaultValues(event: GestureEvent<RotationExtendedHandlerData>) {
+  'worklet';
+  event.rotationChange = 0;
+}
+
 function transformRotationProps(
   config: RotationGestureConfig & RotationGestureInternalConfig
 ) {
   config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+  config.fillInDefaultValues = fillInDefaultValues;
 
   return config;
 }
 
 const RotationPropsMapping = new Map<string, string>();
 
+const EMPTY_ROTATION_CONFIG: RotationGestureConfig = {};
+
 export function useRotationGesture(
-  config: RotationGestureConfig
+  config: RotationGestureConfig = EMPTY_ROTATION_CONFIG
 ): RotationGesture {
   const rotationConfig = useClonedAndRemappedConfig<
-    RotationHandlerData,
     RotationGestureProperties,
+    RotationHandlerData,
     // no internal props, pass record as RotationGestureProperties maps everything to never
-    Record<string, unknown>
+    Record<string, unknown>,
+    RotationExtendedHandlerData
   >(config, RotationPropsMapping, transformRotationProps);
 
   return useGesture(SingleGestureName.Rotation, rotationConfig);

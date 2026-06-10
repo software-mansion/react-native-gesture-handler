@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dispatchGestureEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)event;
 
+- (void)dispatchAnimatedGestureEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)event;
+
 - (void)dispatchTouchEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerTouchEvent)event;
 
 - (void)dispatchReanimatedStateChangeEvent:
@@ -30,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tryAttachNativeHandlersToChildView;
 
 - (void)detachNativeGestureHandlers;
-
-- (BOOL)shouldAttachGestureToSubview:(nonnull NSNumber *)handlerTag;
 
 @end
 

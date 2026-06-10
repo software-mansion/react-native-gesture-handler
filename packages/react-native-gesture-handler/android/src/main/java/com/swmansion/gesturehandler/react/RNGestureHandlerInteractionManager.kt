@@ -14,6 +14,7 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   fun dropRelationsForHandlerWithTag(handlerTag: Int) {
     waitForRelations.remove(handlerTag)
     simultaneousRelations.remove(handlerTag)
+    blockingRelations.remove(handlerTag)
   }
 
   private fun convertHandlerTagsArray(config: ReadableMap, key: String): IntArray {
@@ -49,7 +50,7 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
 
   override fun shouldHandlerBeCancelledBy(handler: GestureHandler, otherHandler: GestureHandler): Boolean {
     if (otherHandler is NativeViewGestureHandler) {
-      return otherHandler.disallowInterruption
+      return !otherHandler.canBeInterruptedBy(handler)
     }
 
     if (otherHandler is RNGestureHandlerRootHelper.RootViewGestureHandler) {
@@ -64,6 +65,7 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   fun reset() {
     waitForRelations.clear()
     simultaneousRelations.clear()
+    blockingRelations.clear()
   }
 
   companion object {

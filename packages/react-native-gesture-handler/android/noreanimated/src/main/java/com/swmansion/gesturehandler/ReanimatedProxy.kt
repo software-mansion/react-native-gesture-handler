@@ -9,8 +9,4 @@ class ReanimatedProxy {
   fun <T : Event<T>> sendEvent(event: T, reactApplicationContext: ReactContext) {
     // no-op
   }
-
-  companion object {
-    const val REANIMATED_INSTALLED = false
-  }
 }

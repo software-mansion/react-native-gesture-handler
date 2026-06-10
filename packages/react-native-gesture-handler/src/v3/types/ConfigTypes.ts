@@ -1,4 +1,4 @@
-import {
+import type {
   ActiveCursor,
   GestureTouchEvent,
   HitSlop,
@@ -6,32 +6,40 @@ import {
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
-import {
+import type {
   AnimatedEvent,
   ChangeCalculatorType,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
+  GestureEndEvent,
+  GestureEvent,
 } from './EventTypes';
-import { WithSharedValue } from './ReanimatedTypes';
+import type { WithSharedValue } from './ReanimatedTypes';
 
-export type GestureCallbacks<THandlerData> = {
-  onBegin?: (event: GestureStateChangeEvent<THandlerData>) => void;
-  onStart?: (event: GestureStateChangeEvent<THandlerData>) => void;
-  onEnd?: (
-    event: GestureStateChangeEvent<THandlerData>,
-    didSucceed: boolean
-  ) => void;
-  onFinalize?: (
-    event: GestureStateChangeEvent<THandlerData>,
-    didSucceed: boolean
-  ) => void;
+export type GestureEventCallback<THandlerData> = (
+  event: GestureEvent<THandlerData>
+) => void;
+
+export type GestureEndEventCallback<THandlerData> = (
+  event: GestureEndEvent<THandlerData>
+) => void;
+
+export type GestureTouchEventCallback = (event: GestureTouchEvent) => void;
+
+export type GestureCallbacks<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> = {
+  onBegin?: GestureEventCallback<THandlerData> | undefined;
+  onActivate?: GestureEventCallback<TExtendedHandlerData> | undefined;
   onUpdate?:
-    | ((event: GestureUpdateEvent<THandlerData>) => void)
-    | AnimatedEvent;
-  onTouchesDown?: (event: GestureTouchEvent) => void;
-  onTouchesMove?: (event: GestureTouchEvent) => void;
-  onTouchesUp?: (event: GestureTouchEvent) => void;
-  onTouchesCancel?: (event: GestureTouchEvent) => void;
+    | GestureEventCallback<TExtendedHandlerData>
+    | AnimatedEvent
+    | undefined;
+  onDeactivate?: GestureEndEventCallback<TExtendedHandlerData> | undefined;
+  onFinalize?: GestureEndEventCallback<THandlerData> | undefined;
+  onTouchesDown?: GestureTouchEventCallback | undefined;
+  onTouchesMove?: GestureTouchEventCallback | undefined;
+  onTouchesUp?: GestureTouchEventCallback | undefined;
+  onTouchesCancel?: GestureTouchEventCallback | undefined;
 };
 
 export type GestureRelations = {
@@ -40,30 +48,39 @@ export type GestureRelations = {
   blocksHandlers: number[];
 };
 
-export type InternalConfigProps<THandlerData> = {
-  shouldUseReanimatedDetector?: boolean;
-  dispatchesReanimatedEvents?: boolean;
-  dispatchesAnimatedEvents?: boolean;
-  needsPointerData?: boolean;
-  changeEventCalculator?: ChangeCalculatorType<THandlerData>;
+export type InternalConfigProps<TExtendedHandlerData> = {
+  shouldUseReanimatedDetector?: boolean | undefined;
+  dispatchesReanimatedEvents?: boolean | undefined;
+  dispatchesAnimatedEvents?: boolean | undefined;
+  needsPointerData?: boolean | undefined;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
+  changeEventCalculator?:
+    | ChangeCalculatorType<TExtendedHandlerData>
+    | undefined;
+  fillInDefaultValues?:
+    | ((event: GestureEvent<TExtendedHandlerData>) => void)
+    | undefined;
 };
 
 export type CommonGestureConfig = {
-  disableReanimated?: boolean;
-  useAnimated?: boolean;
+  disableReanimated?: boolean | undefined;
+  useAnimated?: boolean | undefined;
+  testID?: string | undefined;
 } & WithSharedValue<
   {
-    runOnJS?: boolean;
-    enabled?: boolean;
-    shouldCancelWhenOutside?: boolean;
-    hitSlop?: HitSlop;
-    userSelect?: UserSelect;
-    activeCursor?: ActiveCursor;
-    mouseButton?: MouseButton;
-    enableContextMenu?: boolean;
-    touchAction?: TouchAction;
+    runOnJS?: boolean | undefined;
+    enabled?: boolean | undefined;
+    shouldCancelWhenOutside?: boolean | undefined;
+    hitSlop?: HitSlop | undefined;
+    activeCursor?: ActiveCursor | undefined;
+    mouseButton?: MouseButton | undefined;
+    cancelsTouchesInView?: boolean | undefined;
+    cancelsJSResponder?: boolean | undefined;
+    manualActivation?: boolean | undefined;
   },
-  HitSlop | UserSelect | ActiveCursor | MouseButton | TouchAction
+  ActiveCursor | MouseButton
 >;
 
 export type ComposedGestureConfig = {

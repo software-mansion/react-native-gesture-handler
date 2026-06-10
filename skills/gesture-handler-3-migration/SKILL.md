@@ -1,0 +1,253 @@
+---
+name: gesture-handler-3-migration
+description: Migrates files containing React Native components which use the React Native Gesture Handler 2 API to Gesture Handler 3.
+---
+
+# Migrate to Gesture Handler 3
+
+This skill scans React Native components that use the Gesture Handler builder-based API and updates them to use the new hook-based API. It also updates related types and components to adapt to the new version.
+
+## When to Use
+
+- Updating the usage of components imported from `react-native-gesture-handler`
+- Upgrading to Gesture Handler 3
+- Migrating to the new hook-based gesture API
+
+## Instructions
+
+Use the instructions below to correctly replace all legacy APIs with the modern ones.
+
+1. Identify all imports from 'react-native-gesture-handler'
+2. For each `Gesture.X()` call, replace with corresponding `useXGesture()` hook
+3. Replace `Gesture` import with imports for the used hooks
+4. Convert builder method chains to configuration objects
+5. Update callback names (onStart → onActivate, etc.)
+6. Replace composed gestures with relation hooks. Keep rules of hooks in mind
+7. Update GestureDetector usage if SVG is involved to Intercepting/Virtual GestureDetector
+8. Update usage of compoenent imported from 'react-native-gesture-handler' according to "Legacy components" section
+
+### Migrating gestures
+
+All hook gestures have their counterparts in the builder API: `Gesture.X()` becomes `useXGesture(config)`. The methods are now config object fields with the same name as the relevant builder methods, unless specified otherwise.
+
+The exception to thait is `Gesture.ForceTouch` which DOES NOT have a counterpart in the hook API.
+
+#### Callback changes
+
+In Gesture Handler 3 some of the callbacks were renamed, namely:
+
+- `onStart` -> `onActivate`
+- `onEnd` -> `onDeactivate`
+- `onTouchesCancelled` -> `onTouchesCancel`
+
+The `onDeactivate` and `onFinalize` callbacks no longer receive a second `didSucceed`/`success` boolean parameter. Instead, the event object now contains a `canceled` property. Note that the logic is inverted — `canceled: true` corresponds to the old `success: false`.
+
+```jsx
+// Old (RNGH2)
+.onEnd((event, success) => {
+  if (success) { /* gesture succeeded */ }
+})
+
+// New (RNGH3)
+onDeactivate: (event) => {
+  if (!event.canceled) { /* gesture succeeded */ }
+}
+```
+
+In the hooks API `onChange` is no longer available. Instead the `*change*` properties were moved to the event available inside `onUpdate`.
+
+All callbacks of a gesture are now using the same type:
+
+- `usePanGesture()` -> `PanGestureEvent`
+- `useTapGesture()` -> `TapGestureEvent`
+- `useLongPressGesture()` -> `LongPressGestureEvent`
+- `useRotationGesture()` -> `RotationGestureEvent`
+- `usePinchGesture()` -> `PinchGestureEvent`
+- `useFlingGesture()` -> `FlingGestureEvent`
+- `useHoverGesture()` -> `HoverGestureEvent`
+- `useNativeGesture()` -> `RotationGestureEvent`
+- `useManualGesture()` -> `ManualGestureEvent`
+
+The exception to this is touch events:
+
+- `onTouchesDown`
+- `onTouchesUp`
+- `onTouchesMove`
+- `onTouchesCancel`
+
+Where each callback receives `GestureTouchEvent` regardless of the hook used.
+
+#### StateManager
+
+In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global `GestureStateManager`.
+
+`GestureStateManager` provides methods for imperative state management:
+
+- .activate(handlerTag: number)
+- .deactivate(handlerTag: number) (.end() in the old API)
+- .fail(handlerTag: number)
+
+`handlerTag` can be obtained in two ways:
+
+1. From the gesture object returned by the hook (`gesture.handlerTag`)
+2. From the event inside callback (`event.handlerTag`)
+
+Callback definitions CANNOT reference the gesture that's being defined. In this scenario use events to get access to the handler tag.
+
+Remove GestureStateManager.begin() as gestures must now automatically enter the BEGAN state via touch events before they can be activated through the GestureStateManager.
+
+### Migrating relations
+
+#### Composed gestures
+
+`Gesture.Simultaneous(gesture1, gesture2);` becomes `useSimultaneousGestures(pan1, pan2);`
+
+All relations from the old API and their counterparts in the new one:
+
+- `Gesture.Race()` -> `useCompetingGestures()`
+- `Gesture.Simultaneous()` -> `useSimultaneousGestures()`
+- `Gesture.Exclusive()` -> `useExclusiveGestures()`
+
+#### Cross components relations properties
+
+Properties used to define cross-components interactions were renamed:
+
+- `.simultaneousWithExternalGesture` -> `simultaneousWith:`
+- `.requireExternalGestureToFail` -> `requireToFail:`
+- `.blocksExternalGesture` -> `block:`
+
+### GestureDetector
+
+The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hooks API or the builder pattern (but those cannot be mixed, it's either or).
+
+Don't use the same instance of a gesture across multiple Gesture Detectors as it will lead to an undefined behavior.
+
+### Integration with Reanimated
+
+Worklets' Babel plugin is setup in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets. This means that you don't need to add a `'worklet';` directive at the beginning of the functions.
+
+This will not be workletized because the callback is defined outside of the gesture object:
+
+```jsx
+const callback = () => {
+  console.log(_WORKLET);
+};
+
+const gesture = useTapGesture({
+  onBegin: callback,
+});
+```
+
+The callback wrapped by any other higher order function will not be workletized:
+
+```jsx
+const gesture = useTapGesture({
+  onBegin: useCallback(() => {
+    console.log(_WORKLET);
+  }, []),
+});
+```
+
+In the above cases, you should add a `"worklet";` directive as the first line of the callback.
+
+### Disabling Reanimated
+
+Gestures created with the hook API have `Reanimated` integration enabled by default (if it's installed), meaning all callbacks are executed on the UI thread.
+
+#### runOnJS
+
+The `runOnJS` property allows you to dynamically control whether callbacks are executed on the JS thread or the UI thread. When set to `true`, callbacks will run on the JS thread. Setting it to `false` will execute them on the UI thread. Default value is `false`.
+
+### Migrating components relying on view hierarchy
+
+Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: `InterceptingGestureDetector` and `VirtualGestureDetector`.
+
+`InterceptingGestureDetector` functions similarly to the `GestureDetector`, but it can also act as a proxy for `VirtualGestureDetector` within its component subtree. Because it can be used solely to establish the context for virtual detectors, the `gesture` property is optional.
+
+`VirtualGestureDetector` is similar to the `GestureDetector` from RNGH2. Because it is not a host component, it does not interfere with the host view hierarchy. This allows you to attach gestures without disrupting functionality that depends on it.
+
+**Warning:** `VirtualGestureDetector` has to be a descendant of `InterceptingGestureDetector`.
+
+#### Migrating SVG
+
+In Gesture Handler 2 it was possible to use `GestureDetector` directly on `SVG`. In Gesture Handler 3, the correct way to interact with `SVG` is to use `InterceptingGestureDetector` and `VirtualGestureDetector`.
+
+### Legacy components
+
+When the code using the component relies on the APIs that are no longer available on the components in Gesture Handler 3 (like `waitFor`, `simultaneousWith`, `blocksHandler`, `onHandlerStateChange`, `onGestureEvent` props), it cannot be easily migrated in isolation. In this case update the imports to the Legacy version of the component, and inform the user that the dependencies need to be migrated first.
+
+If the migration is possible, use the ask questions tool to clarify the user intent unless clearly stated beforehand: should the components be using the new implementation (no `Legacy` prefix when imported), or should they revert to the old implementation (`Legacy` prefix when imported)?
+
+Don't suggest replacing buttons from Gesture Handler with components from React Native and vice versa.
+
+The implementation of buttons has been updated, resolving most button-related issues. They have also been internally rewritten to utilize the new hook API. The legacy JS implementations of button components are still accessible but have been renamed with the prefix `Legacy`, e.g., `RectButton` is now available as `LegacyRectButton`. Those still use the new native component under the hood.
+
+`PureNativeButton` has been removed. If encountered, inform the user that it has been removed and let them decide how to handle that case. They can achieve similar functionality with other buttons.
+
+ReanimatedSwipeable prop `dragOffsetFromRight` now accepts negative values. If it was used with positive values, make sure to change the sign.
+
+Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the legacy components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
+
+Rename all instances of createNativeWrapper to legacy_createNativeWrapper. This includes both the import statements and the function calls.
+
+#### Migrating to `Touchable`
+
+In Gesture Handler 3 the `Touchable` component replaces both the old buttons (`BaseButton`, `RectButton`, `BorderlessButton`) and the legacy core-style touchables (`TouchableOpacity`, `TouchableHighlight`, `TouchableWithoutFeedback`, `TouchableNativeFeedback`). It is a single component whose visual feedback is controlled entirely through props — pick the right combination instead of picking a different component.
+
+The props you will use when migrating:
+
+- `onPress(event)` — fired on a successful tap. Note: the callback signature changed; the old `BaseButton.onPress` received `(pointerInside: boolean)`, `Touchable.onPress` receives a gesture event object instead.
+- `onPressIn(event)` / `onPressOut(event)` — fired when the pointer first touches and when it is released or leaves the component.
+- `onLongPress()` — fired after the press is held for `delayLongPress` milliseconds (default `600`). When a long press fires, the subsequent release does **not** call `onPress`.
+- `disabled` — replaces the old `enabled` prop (note the inverted sense). Defaults to `false`.
+- `cancelOnLeave` — whether the press is cancelled when the pointer leaves the component bounds. Defaults to `true`. Use this to replace `shouldCancelWhenOutside` from raw buttons.
+- `activeOpacity` — opacity applied to the component itself while pressed (mirrors `TouchableOpacity`). Defaults to `1` (no opacity change).
+- `underlayColor` + `activeUnderlayOpacity` — color and opacity of the underlay shown while pressed (mirrors `TouchableHighlight` / `RectButton`). `underlayColor` defaults to `'transparent'` and `activeUnderlayOpacity` to `0.105`.
+- `androidRipple` — Android ripple config (`{ color?, radius?, borderless?, foreground? }`). When omitted, no native ripple is rendered. Use this to replace `TouchableNativeFeedback`.
+- `animationDuration` — press/hover animation timing in milliseconds. Pass a single number to apply it to every phase, or `{ in, out }` (optionally with `tap`/`hover`/`longPress` overrides). Defaults to `50` in / `100` out.
+- `hitSlop`, `testID`, `style`, `children` — same as before.
+
+##### Replacing Gesture Handler buttons
+
+| Old component | Replace with (iOS / cross-platform default) |
+| ----------------- | --------------------------------------------------------- |
+| `BaseButton` | `<Touchable />` (default props) |
+| `RectButton` | `<Touchable underlayColor="black" animationDuration={0} />` |
+| `BorderlessButton`| `<Touchable activeOpacity={0.3} animationDuration={0} />` |
+
+**Android ripple:** legacy `RectButton`/`BorderlessButton` use the native theme ripple on Android, while `Touchable` disables the ripple unless `androidRipple` is set. To preserve the legacy Android feedback, set `androidRipple` on Android **instead of** `underlayColor`/`activeOpacity`/`animationDuration` (don't combine them — the ripple is the visual feedback on Android). The two configs are different:
+
+- `RectButton` → `androidRipple={{}}`
+- `BorderlessButton` → `androidRipple={{ borderless: true }}` (matches the legacy borderless ripple shape)
+
+Use `Platform.select` to apply different props per platform. Example for `RectButton`:
+
+```jsx
+import { Platform } from 'react-native';
+
+<Touchable
+  {...Platform.select({
+    android: { androidRipple: {} },
+    default: { underlayColor: 'black', animationDuration: 0 },
+  })}
+/>
+```
+
+##### Replacing legacy Touchables
+
+| Old component | Replace with |
+| --------------------------- | ---------------------------------------------------------------------------- |
+| `TouchableOpacity` | `<Touchable activeOpacity={0.2} animationDuration={{ in: 0, out: 150 }} />` |
+| `TouchableHighlight` | `<Touchable underlayColor={...} activeUnderlayOpacity={1} activeOpacity={...} />` — closest approximation only (not 1:1, see note below) |
+| `TouchableWithoutFeedback` | `<Touchable />` (plain, no visual feedback props) |
+| `TouchableNativeFeedback` | `<Touchable androidRipple={{ foreground: true }} />` (legacy default draws the ripple in the foreground; drop `foreground` if the original code passed `useForeground={false}`) |
+
+For `TouchableNativeFeedback`, `androidRipple` must be set explicitly — without it no ripple is rendered. The legacy component defaults to `useForeground: true`, so `{ foreground: true }` is the closest default replacement; omit `foreground` only when the original code set `useForeground={false}`. Add `color`, `radius`, or `borderless` if the original code customized the `background` prop.
+
+For `TouchableHighlight`, a perfect 1:1 replacement is **not possible** — in the legacy component the container's own background becomes the underlay (solid `underlayColor`) and `activeOpacity` dims just the children on top, so the underlay shows *through* the dimmed children. `Touchable` instead has a separate underlay layer between the background and children, and its `activeOpacity` dims the whole component (background + underlay + children together). The closest approximation: carry `underlayColor` and `activeOpacity` over unchanged, and add `activeUnderlayOpacity={1}` so the underlay layer is rendered solid. Inform the user that the visual feedback may differ from the legacy component because of the different layering.
+
+Do not swap Gesture Handler buttons/touchables for React Native core components or vice versa during migration — keep them within `react-native-gesture-handler`.
+
+### Replaced types
+
+Most of the types used in the builder API, like `TapGesture`, are still present in Gesture Handler 3. However, they are now used in new hook API. Types for builder API now have `Legacy` prefix, e.g. `TapGesture` becomes `LegacyTapGesture`.

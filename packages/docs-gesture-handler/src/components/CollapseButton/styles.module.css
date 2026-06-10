@@ -13,6 +13,7 @@
   font-size: 16px;
   color: var(--ifm-font-color-base);
   cursor: pointer;
+  user-select: none;
 }
 
 .arrow {

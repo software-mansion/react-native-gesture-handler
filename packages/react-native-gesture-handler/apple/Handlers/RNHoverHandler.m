@@ -40,21 +40,20 @@ API_AVAILABLE(ios(13.4))
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _hoverEffect = RNGestureHandlerHoverEffectNone;
   }
   return self;
 }
 
-- (void)triggerAction
+- (void)handleGesture:(UIHoverGestureRecognizer *)recognizer
 {
-  [_gestureHandler handleGesture:self];
-}
+  if (recognizer.state == UIGestureRecognizerStateBegan) {
+    [_gestureHandler setCurrentPointerType:RNGestureHandlerMouse];
+  }
 
-- (void)cancel
-{
-  self.enabled = NO;
+  [_gestureHandler handleGesture:self];
 }
 
 - (void)reset
@@ -153,11 +152,29 @@ API_AVAILABLE(ios(13.4))
 #endif
 }
 
+- (void)setCurrentPointerType:(RNGestureHandlerPointerType)pointerType
+{
+  _pointerType = pointerType;
+
+#if CHECK_TARGET(16_1)
+  if (@available(iOS 16.1, *)) {
+    if (((UIHoverGestureRecognizer *)self.recognizer).zOffset > 0.0) {
+      _pointerType = RNGestureHandlerStylus;
+    }
+  }
+#endif
+}
+
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:self.coordinateView]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                                     withPointerType:UITouchTypePencil];
+                                     withPointerType:_pointerType];
+}
+
+- (BOOL)isContinuous
+{
+  return YES;
 }
 
 @end
@@ -173,9 +190,15 @@ API_AVAILABLE(ios(13.4))
 {
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
+    _pointerType = RNGestureHandlerMouse;
   }
 
   return self;
+}
+
+- (BOOL)isContinuous
+{
+  return YES;
 }
 
 - (void)bindToView:(RNGHUIView *)view
@@ -199,21 +222,29 @@ API_AVAILABLE(ios(13.4))
 {
   [self sendEventsInState:RNGestureHandlerStateBegan
            forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:1
+                                                           withPointerType:_pointerType]];
   [self sendEventsInState:RNGestureHandlerStateActive
            forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:1
+                                                           withPointerType:_pointerType]];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
   [self sendEventsInState:RNGestureHandlerStateEnd
            forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
+                                                       withNumberOfTouches:1
+                                                           withPointerType:_pointerType]];
 
   [self sendEventsInState:RNGestureHandlerStateUndetermined
            forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
+                                                       withNumberOfTouches:1
+                                                           withPointerType:_pointerType]];
 }
 
 @end

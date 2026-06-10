@@ -5,42 +5,45 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
-import { GestureDetector } from '../../handlers/gestures/GestureDetector';
-import {
-  PressableEvent,
-  PressableProps,
-  PressableDimensions,
-} from './PressableProps';
-import {
+import type {
   Insets,
   LayoutChangeEvent,
-  Platform,
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import NativeButton from '../GestureHandlerButton';
-import {
-  gestureToPressableEvent,
-  addInsets,
-  numberAsInset,
-  gestureTouchToPressableEvent,
-  isTouchWithinInset,
-} from './utils';
+import { Platform } from 'react-native';
+
+import { GestureDetector } from '../../handlers/gestures/GestureDetector';
+import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
+import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 import { INT32_MAX, isTestEnv } from '../../utils';
-import {
-  applyRelationProp,
-  RelationPropName,
-  RelationPropType,
-} from '../utils';
+import { ButtonComponent as NativeButton } from '../GestureHandlerButton';
+import type { RelationPropName, RelationPropType } from '../utils';
+import { applyRelationProp } from '../utils';
+import type {
+  LegacyPressableProps,
+  PressableDimensions,
+  PressableEvent,
+} from './PressableProps';
 import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
 import { PressableStateMachine } from './StateMachine';
+import {
+  addInsets,
+  gestureToPressableEvent,
+  gestureTouchToPressableEvent,
+  isTouchWithinInset,
+  numberAsInset,
+  viewCenterToPressableEvent,
+} from './utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
 
-const Pressable = (props: PressableProps) => {
+/**
+ * @deprecated `LegacyPressable` is deprecated, use `Pressable` instead.
+ */
+const LegacyPressable = (props: LegacyPressableProps) => {
   const {
     testOnly_pressed,
     hitSlop,
@@ -199,11 +202,16 @@ const Pressable = (props: PressableProps) => {
   );
 
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
+  const isScreenReaderEnabled = useIsScreenReaderEnabled();
 
   useEffect(() => {
-    const configuration = getStatesConfig(handlePressIn, handlePressOut);
+    const configuration = getStatesConfig(
+      handlePressIn,
+      handlePressOut,
+      isScreenReaderEnabled
+    );
     stateMachine.setStates(configuration);
-  }, [handlePressIn, handlePressOut, stateMachine]);
+  }, [handlePressIn, handlePressOut, stateMachine, isScreenReaderEnabled]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
@@ -245,7 +253,7 @@ const Pressable = (props: PressableProps) => {
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
-        .minDuration(INT32_MAX) // Stops long press from blocking Gesture.Native()
+        .minDuration(Platform.OS === 'web' ? 0 : INT32_MAX) // Long press handles finalize on web, thus it must activate right away
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
@@ -256,7 +264,7 @@ const Pressable = (props: PressableProps) => {
           );
         })
         .onTouchesUp(() => {
-          if (Platform.OS === 'android') {
+          if (Platform.OS === 'android' && !isScreenReaderEnabled) {
             // Prevents potential soft-locks
             stateMachine.reset();
             handleFinalize();
@@ -277,7 +285,7 @@ const Pressable = (props: PressableProps) => {
             handleFinalize();
           }
         }),
-    [stateMachine, handleFinalize, handlePressOut]
+    [stateMachine, handleFinalize, handlePressOut, isScreenReaderEnabled]
   );
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
@@ -294,6 +302,13 @@ const Pressable = (props: PressableProps) => {
           }
         })
         .onBegin(() => {
+          if (Platform.OS === 'android' && isScreenReaderEnabled) {
+            stateMachine.handleEvent(
+              StateMachineEvent.NATIVE_BEGIN,
+              viewCenterToPressableEvent(dimensions.current)
+            );
+            return;
+          }
           stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
         })
         .onStart(() => {
@@ -316,8 +331,9 @@ const Pressable = (props: PressableProps) => {
               handleFinalize();
             }
           }
-        }),
-    [stateMachine, handlePressOut, handleFinalize]
+        })
+        .shouldActivateOnStart(Platform.OS === 'web'),
+    [stateMachine, handlePressOut, handleFinalize, isScreenReaderEnabled]
   );
 
   const isPressableEnabled = disabled !== true;
@@ -328,7 +344,6 @@ const Pressable = (props: PressableProps) => {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
-    gesture.shouldCancelWhenOutside(Platform.OS !== 'web');
 
     Object.entries(relationProps).forEach(([relationName, relation]) => {
       applyRelationProp(
@@ -370,6 +385,7 @@ const Pressable = (props: PressableProps) => {
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
+        needsOffscreenAlphaCompositing
         onLayout={setDimensions}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
@@ -391,4 +407,4 @@ const Pressable = (props: PressableProps) => {
   );
 };
 
-export default Pressable;
+export default LegacyPressable;

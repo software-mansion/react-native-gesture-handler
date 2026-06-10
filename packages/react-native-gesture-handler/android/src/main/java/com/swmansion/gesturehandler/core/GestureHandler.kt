@@ -21,6 +21,7 @@ import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.isHoverAction
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -29,6 +30,7 @@ open class GestureHandler {
   private var trackedPointersIDsCount = 0
   private val windowOffset = IntArray(2) { 0 }
   var tag = 0
+  var testID: String? = null
   var view: View? = null
     private set
 
@@ -36,30 +38,35 @@ open class GestureHandler {
   // Virtual Detector to which the gesture is assigned.
   var hostDetectorView: RNGestureHandlerDetectorView? = null
 
-  val viewForEvents: RNGestureHandlerDetectorView
+  val viewForEvents: View
     get() {
-      assert(usesNativeOrVirtualDetector(actionType)) {
-        "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
-      }
-
-      val detector = if (actionType ==
-        ACTION_TYPE_VIRTUAL_DETECTOR
-      ) {
-        this.hostDetectorView
-      } else if (this is NativeViewGestureHandler) {
-        this.view?.parent
+      return if (usesNativeOrVirtualDetector(actionType)) {
+        hostDetectorView!!
       } else {
-        view
+        view!!
       }
-
-      if (detector !is RNGestureHandlerDetectorView) {
-        throw Error(
-          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView to be the target for the event.",
-        )
-      }
-
-      return detector
     }
+
+  /**
+   * The view whose coordinate space should be used when reporting event positions to JS.
+   *
+   * Handlers attached via the V3 NativeDetector are registered against the DetectorView wrapper,
+   * which never carries user-applied transforms — those live on its child. When the detector has
+   * exactly one child we descend into it so reported coordinates match the visible (transformed)
+   * view, the same coordinate space V2 and the V3 VirtualGestureDetector report in. With
+   * multiple children there is no JS-side way to disambiguate which child caught the pointer,
+   * so we keep the detector itself as the reference frame.
+   */
+  val coordinateView: View?
+    get() {
+      val v = view
+      return if (v is RNGestureHandlerDetectorView && v.childCount == 1) {
+        v.getChildAt(0)
+      } else {
+        v
+      }
+    }
+
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
@@ -95,6 +102,7 @@ open class GestureHandler {
   var needsPointerData = false
   var dispatchesAnimatedEvents = false
   var dispatchesReanimatedEvents = false
+  var cancelsJSResponder = true
 
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
@@ -125,6 +133,11 @@ open class GestureHandler {
   var isAwaiting = false
   var shouldResetProgress = false
 
+  /**
+   * Whether the handler represents a continuous gesture rather than a discrete one.
+   */
+  open val isContinuous: Boolean = false
+
   open fun dispatchStateChange(newState: Int, prevState: Int) {
     onTouchEventListener?.onStateChange(this, newState, prevState)
   }
@@ -140,6 +153,7 @@ open class GestureHandler {
   }
 
   open fun resetConfig() {
+    testID = null
     needsPointerData = DEFAULT_NEEDS_POINTER_DATA
     manualActivation = DEFAULT_MANUAL_ACTIVATION
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
@@ -148,6 +162,7 @@ open class GestureHandler {
     mouseButton = DEFAULT_MOUSE_BUTTON
     dispatchesAnimatedEvents = DEFAULT_DISPATCHES_ANIMATED_EVENTS
     dispatchesReanimatedEvents = DEFAULT_DISPATCHES_REANIMATED_EVENTS
+    cancelsJSResponder = DEFAULT_CANCELS_JS_RESPONDER
   }
 
   fun hasCommonPointers(other: GestureHandler): Boolean {
@@ -396,18 +411,26 @@ open class GestureHandler {
       }
     }
 
+    numberOfPointers = when (adaptedTransformedEvent.actionMasked) {
+      MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
+      else -> adaptedTransformedEvent.pointerCount
+    }
+
     x = adaptedTransformedEvent.x
     y = adaptedTransformedEvent.y
-    numberOfPointers = adaptedTransformedEvent.pointerCount
-    isWithinBounds = isWithinBounds(view, x, y)
-    if (shouldCancelWhenOutside && !isWithinBounds) {
-      if (state == STATE_ACTIVE) {
-        cancel()
-      } else if (state == STATE_BEGAN) {
+    // The orchestrator transforms incoming events into the coordinate space of the detector's
+    // child (when the handler is attached to a NativeDetector wrapper), so bounds-checking must
+    // also use that child rather than the wrapper, otherwise hit-testing would ignore the user's
+    // transforms applied to the visible view.
+    isWithinBounds = isWithinBounds(coordinateView, x, y)
+
+    if (shouldCancelWhenOutside) {
+      if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
         fail()
+        return
       }
-      return
     }
+
     lastAbsolutePositionX = GestureUtils.getLastPointerX(adaptedTransformedEvent, true)
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
@@ -420,10 +443,7 @@ open class GestureHandler {
       setPointerType(sourceEvent)
     }
 
-    if (sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
-      sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE ||
-      sourceEvent.action == MotionEvent.ACTION_HOVER_EXIT
-    ) {
+    if (sourceEvent.isHoverAction()) {
       onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
     } else {
       onHandle(adaptedTransformedEvent, adaptedSourceEvent)
@@ -610,15 +630,36 @@ open class GestureHandler {
       // generated faster than they can be treated by JS thread
       eventCoalescingKey = nextEventCoalescingKey++
     }
+
+    check(hostDetectorView != null || orchestrator != null) {
+      "Manually handled gesture had not been assigned to any detector"
+    }
+
+    if (orchestrator == null) {
+      // If the state is set manually, the handler may not have been fully recorded by the orchestrator.
+      hostDetectorView?.recordHandlerIfNotPresent(this)
+    }
+
     orchestrator!!.onHandlerStateChange(this, newState, oldState)
     onStateChange(newState, oldState)
   }
 
-  fun wantsEvent(event: MotionEvent): Boolean = isEnabled &&
-    state != STATE_FAILED &&
-    state != STATE_CANCELLED &&
-    state != STATE_END &&
-    isTrackingPointer(event.getPointerId(event.actionIndex))
+  fun wantsEvent(event: MotionEvent): Boolean {
+    if (!isEnabled || state == STATE_FAILED || state == STATE_CANCELLED || state == STATE_END) {
+      return false
+    }
+
+    if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+      for (i in 0 until event.pointerCount) {
+        if (isTrackingPointer(event.getPointerId(i))) {
+          return true
+        }
+      }
+      return false
+    } else {
+      return isTrackingPointer(event.getPointerId(event.actionIndex))
+    }
+  }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler): Boolean {
     if (handler === this) {
@@ -651,6 +692,8 @@ open class GestureHandler {
 
     return interactionController?.shouldHandlerBeCancelledBy(this, handler) ?: false
   }
+
+  open fun shouldBeginWithRecordedHandlers(recorded: List<GestureHandler>): Boolean = true
 
   fun isWithinBounds(view: View?, posX: Float, posY: Float): Boolean {
     if (RNSVGHitTester.isSvgElement(view!!)) {
@@ -768,6 +811,10 @@ open class GestureHandler {
   protected open fun onCancel() {}
   protected open fun onFail() {}
 
+  fun recordHandlerIfNotPresent() {
+    hostDetectorView?.recordHandlerIfNotPresent(this)
+  }
+
   private fun isButtonInConfig(clickedButton: Int): Boolean {
     if (mouseButton == 0) {
       return clickedButton == MotionEvent.BUTTON_PRIMARY
@@ -825,7 +872,7 @@ open class GestureHandler {
    * This method modifies and transforms the received point.
    */
   protected fun transformPoint(point: PointF): PointF =
-    orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
+    orchestrator?.transformPointToViewCoords(coordinateView, point) ?: run {
       point.x = Float.NaN
       point.y = Float.NaN
       point
@@ -861,7 +908,7 @@ open class GestureHandler {
   open fun wantsToAttachDirectlyToView() = false
 
   override fun toString(): String {
-    val viewString = if (view == null) null else view!!.javaClass.simpleName
+    val viewString = testID ?: view?.javaClass?.simpleName
     return this.javaClass.simpleName + "@[" + tag + "]:" + viewString
   }
 
@@ -913,6 +960,12 @@ open class GestureHandler {
       if (config.hasKey(KEY_MOUSE_BUTTON)) {
         handler.mouseButton = config.getInt(KEY_MOUSE_BUTTON)
       }
+      if (config.hasKey(KEY_TEST_ID)) {
+        handler.testID = config.getString(KEY_TEST_ID)
+      }
+      if (config.hasKey(KEY_CANCELS_JS_RESPONDER)) {
+        handler.cancelsJSResponder = config.getBoolean(KEY_CANCELS_JS_RESPONDER)
+      }
     }
 
     abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
@@ -934,6 +987,8 @@ open class GestureHandler {
       private const val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
       private const val KEY_HIT_SLOP_WIDTH = "width"
       private const val KEY_HIT_SLOP_HEIGHT = "height"
+      private const val KEY_TEST_ID = "testID"
+      private const val KEY_CANCELS_JS_RESPONDER = "cancelsJSResponder"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
@@ -997,6 +1052,7 @@ open class GestureHandler {
     private const val DEFAULT_MOUSE_BUTTON = 0
     private const val DEFAULT_DISPATCHES_ANIMATED_EVENTS = false
     private const val DEFAULT_DISPATCHES_REANIMATED_EVENTS = false
+    private const val DEFAULT_CANCELS_JS_RESPONDER = true
 
     const val STATE_UNDETERMINED = 0
     const val STATE_FAILED = 1
@@ -1025,7 +1081,7 @@ open class GestureHandler {
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
     const val POINTER_TYPE_OTHER = 3
-    private const val MAX_POINTERS_COUNT = 12
+    private const val MAX_POINTERS_COUNT = 17
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {

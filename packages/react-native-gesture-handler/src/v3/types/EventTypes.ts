@@ -1,7 +1,8 @@
-import { Animated, NativeSyntheticEvent } from 'react-native';
-import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { PointerType } from '../../PointerType';
-import { State } from '../../State';
+import type { Animated, NativeSyntheticEvent } from 'react-native';
+
+import type { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
+import type { PointerType } from '../../PointerType';
+import type { State } from '../../State';
 
 type EventPayload = {
   handlerTag: number;
@@ -11,7 +12,7 @@ type StateChangeEventPayload = EventPayload & {
   oldState: State;
 };
 
-export type BaseHandlerData = {
+type BaseHandlerData = {
   numberOfPointers: number;
   pointerType: PointerType;
 };
@@ -27,13 +28,19 @@ export type GestureStateChangeEventWithHandlerData<T> =
     handlerData: HandlerData<T>;
   };
 
-export type GestureHandlerEventWithHandlerData<THandlerData> =
-  | UpdateEventWithHandlerData<THandlerData>
+export type GestureHandlerEventWithHandlerData<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> =
+  | UpdateEventWithHandlerData<TExtendedHandlerData>
   | StateChangeEventWithHandlerData<THandlerData>
   | TouchEvent;
 
-export type UnpackedGestureHandlerEventWithHandlerData<THandlerData> =
-  | GestureUpdateEventWithHandlerData<THandlerData>
+export type UnpackedGestureHandlerEventWithHandlerData<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> =
+  | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
   | GestureStateChangeEventWithHandlerData<THandlerData>
   | GestureTouchEvent;
 
@@ -49,13 +56,16 @@ export type TouchEvent =
   | GestureTouchEvent
   | NativeSyntheticEvent<GestureTouchEvent>;
 
-export type GestureStateChangeEvent<THandlerData> = StateChangeEventPayload &
-  THandlerData;
-export type GestureUpdateEvent<THandlerData> = EventPayload & THandlerData;
+export type GestureEvent<THandlerData> = {
+  handlerTag: number;
+} & HandlerData<THandlerData>;
+
+export type GestureEndEvent<THandlerData> = {
+  canceled: boolean;
+} & GestureEvent<THandlerData>;
 
 export type UnpackedGestureHandlerEvent<THandlerData> =
-  | GestureStateChangeEvent<THandlerData>
-  | GestureUpdateEvent<THandlerData>
+  | GestureEvent<THandlerData>
   | GestureTouchEvent;
 
 // This is not how Animated.event is typed in React Native. We add _argMapping in order to
@@ -65,12 +75,12 @@ export type AnimatedEvent = {
   _argMapping: (Animated.Mapping | null)[];
 };
 
-export type ChangeCalculatorType<THandlerData> = (
-  current: GestureUpdateEventWithHandlerData<THandlerData>,
-  previous?: GestureUpdateEventWithHandlerData<THandlerData>
-) => GestureUpdateEventWithHandlerData<THandlerData>;
+export type ChangeCalculatorType<TExtendedHandlerData> = (
+  current: GestureUpdateEventWithHandlerData<TExtendedHandlerData>,
+  previous?: GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+) => GestureUpdateEventWithHandlerData<TExtendedHandlerData>;
 
-export type DiffCalculatorType<THandlerData> = (
-  current: HandlerData<THandlerData>,
-  previous: HandlerData<THandlerData> | null
-) => Partial<HandlerData<THandlerData>>;
+export type DiffCalculatorType<TExtendedHandlerData> = (
+  current: HandlerData<TExtendedHandlerData>,
+  previous: HandlerData<TExtendedHandlerData> | null
+) => Partial<HandlerData<TExtendedHandlerData>>;

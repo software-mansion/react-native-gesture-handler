@@ -11,7 +11,7 @@ import GifGallery from '@site/components/GifGallery'
   <img src={useBaseUrl("gifs/sampleswipeable.gif")} height="120" />
 </GifGallery>
 
-This component allows for implementing swipeable rows or similar interaction. It renders its children within a panable container allows for horizontal swiping left and right. While swiping one of two "action" containers can be shown depends on whether user swipes left or right (containers can be rendered by `renderLeftActions` or `renderRightActions` props).
+This component allows for implementing swipeable rows or similar interaction. It renders its children within a pannable container that allows for horizontal swiping left and right. While swiping, one of two "action" containers can be shown depending on whether the user swipes left or right (containers can be rendered by `renderLeftActions` or `renderRightActions` props).
 
 ### Usage:
 
@@ -45,7 +45,7 @@ a boolean value indicating if the swipeable panel can be pulled further than the
 
 ### `overshootFriction`
 
-a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is 1, it mean no friction, for a native feel, try 8 or above.
+a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is 1, which means no friction; for a native feel, try 8 or above.
 
 ### `onSwipeableLeftOpen`
 

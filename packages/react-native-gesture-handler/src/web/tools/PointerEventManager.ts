@@ -1,12 +1,14 @@
-import EventManager from './EventManager';
-import { AdaptedEvent, EventTypes, Point } from '../interfaces';
-import {
-  PointerTypeMapping,
-  calculateViewScale,
-  tryExtractStylusData,
-  isPointerInBounds,
-} from '../utils';
 import { PointerType } from '../../PointerType';
+import type { AdaptedEvent, Point } from '../interfaces';
+import { EventTypes } from '../interfaces';
+import {
+  calculateViewScale,
+  getEffectiveBoundingRect,
+  isPointerInBounds,
+  PointerTypeMapping,
+  tryExtractStylusData,
+} from '../utils';
+import EventManager from './EventManager';
 
 const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
 
@@ -34,7 +36,10 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.DOWN);
     const target = event.target as HTMLElement;
 
-    if (!POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName)) {
+    if (
+      !POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName) &&
+      this.view.getAttribute('role') !== 'button'
+    ) {
       target.setPointerCapture(adaptedEvent.pointerId);
     }
 
@@ -61,7 +66,10 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
     const target = event.target as HTMLElement;
 
-    if (!POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName)) {
+    if (
+      !POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName) &&
+      this.view.getAttribute('role') !== 'button'
+    ) {
       target.releasePointerCapture(adaptedEvent.pointerId);
     }
 
@@ -98,7 +106,8 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     // God, I do love web development.
     if (
       !target?.hasPointerCapture(event.pointerId) &&
-      !POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName)
+      !POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName) &&
+      this.view.getAttribute('role') !== 'button'
     ) {
       target.setPointerCapture(event.pointerId);
     }
@@ -153,6 +162,18 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.LEAVE);
 
     this.onPointerMoveOut(adaptedEvent);
+
+    // When the view is not capturing the pointer (e.g. when `role="button"`),
+    // `pointermove` stops firing once the pointer leaves the view's bounds, so
+    // the out-of-bounds detection in `pointerMoveCallback` never runs. Fall back
+    // to the DOM `pointerleave` event for any tracked, in-bounds pointer.
+    if (
+      this.trackedPointers.has(event.pointerId) &&
+      this.pointersInBounds.indexOf(event.pointerId) >= 0
+    ) {
+      this.onPointerLeave(adaptedEvent);
+      this.markAsOutOfBounds(event.pointerId);
+    }
   };
 
   private lostPointerCaptureCallback = (event: PointerEvent) => {
@@ -200,7 +221,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   }
 
   protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
-    const rect = this.view.getBoundingClientRect();
+    const rect = getEffectiveBoundingRect(this.view);
     const { scaleX, scaleY } = calculateViewScale(this.view);
 
     return {

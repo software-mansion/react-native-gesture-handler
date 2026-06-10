@@ -45,13 +45,28 @@ class RNGestureHandlerDetectorShadowNode final
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment)
       : ConcreteViewShadowNode(sourceShadowNode, fragment) {
+    const auto &sourceDetectorNode =
+        static_cast<const RNGestureHandlerDetectorShadowNode &>(
+            sourceShadowNode);
+    previousLayoutMetrics_ = sourceDetectorNode.getLayoutMetrics();
+
     initialize();
   }
+
+  void appendChild(const std::shared_ptr<const ShadowNode> &child) override;
+  void replaceChild(
+      const ShadowNode &oldChild,
+      const std::shared_ptr<const ShadowNode> &newChild,
+      size_t suggestedIndex = SIZE_MAX) override;
 
   void layout(LayoutContext layoutContext) override;
 
  private:
+  std::shared_ptr<const ShadowNode> unflattenNode(
+      const std::shared_ptr<const ShadowNode> &node);
   void initialize();
+
+  std::optional<LayoutMetrics> previousLayoutMetrics_;
 };
 
 } // namespace facebook::react

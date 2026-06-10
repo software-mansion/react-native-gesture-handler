@@ -1,41 +1,21 @@
-import {
-  BaseGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  SingleGestureName,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
-} from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
-import { ManualGestureNativeProperties } from './ManualProperties';
-
-type ManualHandlerData = Record<string, never>;
-
-type ManualGestureProperties = ManualGestureNativeProperties;
-
-type ManualGestureInternalConfig = BaseGestureConfig<
+import type {
+  ManualGesture,
+  ManualGestureConfig,
+  ManualGestureProperties,
   ManualHandlerData,
-  ManualGestureProperties
->;
+} from './ManualTypes';
 
-export type ManualGestureConfig =
-  ExcludeInternalConfigProps<ManualGestureInternalConfig>;
+const EMPTY_MANUAL_CONFIG: ManualGestureConfig = {};
 
-export type ManualGestureStateChangeEvent =
-  GestureStateChangeEvent<ManualHandlerData>;
-export type ManualGestureUpdateEvent = GestureUpdateEvent<ManualHandlerData>;
-
-export type ManualGesture = SingleGesture<
-  ManualHandlerData,
-  ManualGestureProperties
->;
-
-export function useManualGesture(config: ManualGestureConfig): ManualGesture {
+export function useManualGesture(
+  config: ManualGestureConfig = EMPTY_MANUAL_CONFIG
+): ManualGesture {
   const manualConfig = useClonedAndRemappedConfig<
-    ManualHandlerData,
     ManualGestureProperties,
-    ManualGestureProperties
+    ManualHandlerData
   >(config);
 
   return useGesture(SingleGestureName.Manual, manualConfig);

@@ -1,76 +1,86 @@
-import { TouchEventType } from '../../../TouchEventType';
+import { useMemo } from 'react';
+
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import {
-  ChangeCalculatorType,
+import { TouchEventType } from '../../../TouchEventType';
+import type {
   GestureCallbacks,
+  GestureEndEventCallback,
+  GestureEventCallback,
+  GestureTouchEventCallback,
   UnpackedGestureHandlerEvent,
 } from '../../types';
 
-export function prepareStateChangeHandlers<THandlerData>(
-  callbacks: GestureCallbacks<THandlerData>
-): GestureCallbacks<THandlerData> {
-  'worklet';
-  const { onBegin, onStart, onEnd, onFinalize } = callbacks;
+export function useMemoizedGestureCallbacks<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>
+): GestureCallbacks<THandlerData, TExtendedHandlerData> {
+  return useMemo(() => {
+    const memoized: GestureCallbacks<THandlerData, TExtendedHandlerData> = {};
 
-  const handlers: GestureCallbacks<THandlerData> = {
-    ...(onBegin ? { onBegin } : {}),
-    ...(onStart ? { onStart } : {}),
-    ...(onEnd ? { onEnd } : {}),
-    ...(onFinalize ? { onFinalize } : {}),
-  };
+    if (callbacks.onBegin) {
+      memoized.onBegin = callbacks.onBegin;
+    }
+    if (callbacks.onActivate) {
+      memoized.onActivate = callbacks.onActivate;
+    }
+    if (callbacks.onDeactivate) {
+      memoized.onDeactivate = callbacks.onDeactivate;
+    }
+    if (callbacks.onFinalize) {
+      memoized.onFinalize = callbacks.onFinalize;
+    }
+    if (callbacks.onUpdate) {
+      memoized.onUpdate = callbacks.onUpdate;
+    }
+    if (callbacks.onTouchesDown) {
+      memoized.onTouchesDown = callbacks.onTouchesDown;
+    }
+    if (callbacks.onTouchesMove) {
+      memoized.onTouchesMove = callbacks.onTouchesMove;
+    }
+    if (callbacks.onTouchesUp) {
+      memoized.onTouchesUp = callbacks.onTouchesUp;
+    }
+    if (callbacks.onTouchesCancel) {
+      memoized.onTouchesCancel = callbacks.onTouchesCancel;
+    }
 
-  return handlers;
+    return memoized;
+  }, [
+    callbacks.onActivate,
+    callbacks.onBegin,
+    callbacks.onDeactivate,
+    callbacks.onFinalize,
+    callbacks.onTouchesCancel,
+    callbacks.onTouchesDown,
+    callbacks.onTouchesMove,
+    callbacks.onTouchesUp,
+    callbacks.onUpdate,
+  ]);
 }
 
-type UpdateHandlersReturnType<THandlerData> = {
-  handlers: GestureCallbacks<THandlerData>;
-  changeEventCalculator?: ChangeCalculatorType<THandlerData>;
-};
-
-export function prepareUpdateHandlers<THandlerData>(
-  callbacks: GestureCallbacks<THandlerData>,
-  changeEventCalculator?: ChangeCalculatorType<THandlerData>
-): UpdateHandlersReturnType<THandlerData> {
-  'worklet';
-  const { onUpdate } = callbacks;
-
-  const handlers: GestureCallbacks<THandlerData> = {
-    ...(onUpdate ? { onUpdate } : {}),
-  };
-
-  return { handlers, changeEventCalculator };
-}
-
-export function prepareTouchHandlers<THandlerData>(
-  callbacks: GestureCallbacks<THandlerData>
-): GestureCallbacks<THandlerData> {
-  const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancel } =
-    callbacks;
-
-  const handlers: GestureCallbacks<THandlerData> = {
-    ...(onTouchesDown ? { onTouchesDown } : {}),
-    ...(onTouchesMove ? { onTouchesMove } : {}),
-    ...(onTouchesUp ? { onTouchesUp } : {}),
-    ...(onTouchesCancel ? { onTouchesCancel } : {}),
-  };
-
-  return handlers;
-}
-
-export function getHandler<THandlerData>(
+function getHandler<THandlerData, TExtendedHandlerData extends THandlerData>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<THandlerData>
-) {
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>
+):
+  | GestureEventCallback<THandlerData>
+  | GestureEventCallback<TExtendedHandlerData>
+  | GestureEndEventCallback<THandlerData>
+  | GestureEndEventCallback<TExtendedHandlerData>
+  | GestureTouchEventCallback
+  | undefined {
   'worklet';
   switch (type) {
     case CALLBACK_TYPE.BEGAN:
       return callbacks.onBegin;
     case CALLBACK_TYPE.START:
-      return callbacks.onStart;
+      return callbacks.onActivate;
     case CALLBACK_TYPE.UPDATE:
-      return callbacks.onUpdate;
+      return callbacks.onUpdate as GestureEventCallback<TExtendedHandlerData>; // Animated event is handled in different place.
     case CALLBACK_TYPE.END:
-      return callbacks.onEnd;
+      return callbacks.onDeactivate;
     case CALLBACK_TYPE.FINALIZE:
       return callbacks.onFinalize;
     case CALLBACK_TYPE.TOUCHES_DOWN:
@@ -101,16 +111,22 @@ export function touchEventTypeToCallbackType(
   return CALLBACK_TYPE.UNDEFINED;
 }
 
-export function runCallback<THandlerData>(
+type SingleParameterCallback<T> = (event: T) => void;
+
+export function runCallback<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<THandlerData>,
-  event: UnpackedGestureHandlerEvent<THandlerData>,
-  ...args: unknown[]
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  event: UnpackedGestureHandlerEvent<THandlerData>
 ) {
   'worklet';
   const handler = getHandler(type, callbacks);
 
-  // TODO: add proper types (likely boolean)
-  // @ts-ignore It works, duh
-  handler?.(event, ...args);
+  if (!handler) {
+    return;
+  }
+
+  (handler as SingleParameterCallback<typeof event>)(event);
 }

@@ -21,6 +21,7 @@ namespace facebook::react {
 
 using RNGestureHandlerButtonComponentDescriptor =
     ConcreteComponentDescriptor<RNGestureHandlerButtonShadowNode>;
+
 using RNGestureHandlerRootViewComponentDescriptor =
     ConcreteComponentDescriptor<RNGestureHandlerRootViewShadowNode>;
 

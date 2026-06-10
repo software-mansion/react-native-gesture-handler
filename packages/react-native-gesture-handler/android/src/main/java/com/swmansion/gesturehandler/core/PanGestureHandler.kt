@@ -13,6 +13,8 @@ import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
 import com.swmansion.gesturehandler.react.events.eventbuilders.PanGestureHandlerEventDataBuilder
 
 class PanGestureHandler(context: Context?) : GestureHandler() {
+  override val isContinuous = true
+
   var velocityX = 0f
     private set
   var velocityY = 0f

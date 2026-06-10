@@ -4,7 +4,6 @@
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTModalHostViewController.h>
-#import <React/RCTRootContentView.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
@@ -171,6 +170,21 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   }
 
   [_attachRetryCounter removeObjectForKey:viewTag];
+  [self maybeBindHandler:handlerTag toViewWithTag:viewTag withActionType:actionType withHostDetector:hostDetector];
+}
+
+// Resolves a view tag to its native UIView (including contentView unwrapping),
+// sets reactTag, and binds the gesture handler to it. No-op if the handler is
+// already attached to the correct view.
+- (void)maybeBindHandler:(nonnull NSNumber *)handlerTag
+           toViewWithTag:(nonnull NSNumber *)viewTag
+          withActionType:(RNGestureHandlerActionType)actionType
+        withHostDetector:(nullable RNGHUIView *)hostDetector
+{
+  RNGHUIView *view = [_viewRegistry viewForReactTag:viewTag];
+  if (view == nil || view.superview == nil) {
+    return;
+  }
 
   // I think it should be moved to RNNativeViewHandler, but that would require
   // additional logic for setting contentView.reactTag, this works for now
@@ -181,12 +195,17 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     }
   }
 
+  RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
+
+  // Already attached to the correct native view, nothing to do.
+  if (handler != nil && handler.recognizer.view == view && handler.actionType == actionType) {
+    return;
+  }
+
   view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be
                            // returned as event.target
 
   [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType withHostDetector:hostDetector];
-
-  // register view if not already there
   [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
 }
 
@@ -224,6 +243,28 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   return [_registry handlerWithTag:handlerTag];
 }
 
+- (void)reattachHandlersIfNeeded
+{
+  // Re-bind handlers to their current native views. On Fabric, when a parent view has
+  // display:none and siblings change, the native UIView backing a component may be recycled
+  // and replaced. maybeBindHandler is a no-op if the view is nil or unchanged. This is only
+  // needed for handlers using the old api.
+  NSDictionary *handlers = _registry.handlers;
+
+  @synchronized(handlers) {
+    for (RNGestureHandler *handler in handlers.objectEnumerator) {
+      if (handler.viewTag == nil || [handler usesNativeOrVirtualDetector]) {
+        continue;
+      }
+
+      [self maybeBindHandler:handler.tag
+               toViewWithTag:handler.viewTag
+              withActionType:handler.actionType
+            withHostDetector:nil];
+    }
+  }
+}
+
 #pragma mark Root Views Management
 
 - (void)registerViewWithGestureRecognizerAttachedIfNeeded:(RNGHUIView *)childView
@@ -231,10 +272,14 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   RNGHUIView *touchHandlerView = childView;
 
 #if !TARGET_OS_OSX
+  Class fullWindowOverlayContainerClass = NSClassFromString(@"RNSFullWindowOverlayContainer");
+
   if ([[childView reactViewController] isKindOfClass:[RCTFabricModalHostViewController class]]) {
     touchHandlerView = [childView reactViewController].view;
   } else {
-    while (touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]]) {
+    while (
+        touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]] &&
+        (fullWindowOverlayContainerClass == nil || ![touchHandlerView isKindOfClass:fullWindowOverlayContainerClass])) {
       touchHandlerView = touchHandlerView.superview;
     }
   }
@@ -464,18 +509,21 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                          forView:(RNGHUIView *)detectorView
 {
   if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
+    RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
+
     switch (eventHandlerType) {
-      case RNGestureHandlerEventHandlerTypeAnimated:
+      case RNGestureHandlerEventHandlerTypeAnimated: {
         [self sendEventForNativeAnimatedEvent:event];
+        auto nativeEvent = [gestureEvent getNativeEvent];
+        [(RNGestureHandlerDetector *)detectorView dispatchAnimatedGestureEvent:nativeEvent];
         break;
+      }
       case RNGestureHandlerEventHandlerTypeReanimated: {
-        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getReanimatedNativeEvent];
         [(RNGestureHandlerDetector *)detectorView dispatchReanimatedGestureEvent:nativeEvent];
         break;
       }
       case RNGestureHandlerEventHandlerTypeJS: {
-        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getNativeEvent];
         [(RNGestureHandlerDetector *)detectorView dispatchGestureEvent:nativeEvent];
         break;

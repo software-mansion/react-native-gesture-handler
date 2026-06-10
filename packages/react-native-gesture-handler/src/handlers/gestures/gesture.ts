@@ -1,27 +1,30 @@
-import {
-  HitSlop,
-  CommonGestureConfig,
-  GestureTouchEvent,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
+import { isRemoteDebuggingEnabled } from '../../utils';
+import type {
   ActiveCursor,
+  CommonGestureConfig,
+  GestureStateChangeEvent,
+  GestureTouchEvent,
+  GestureUpdateEvent,
+  HitSlop,
   MouseButton,
 } from '../gestureHandlerCommon';
-import { getNextHandlerTag } from '../getNextHandlerTag';
-import { GestureStateManagerType } from './gestureStateManager';
 import type {
   FlingGestureHandlerEventPayload,
   ForceTouchGestureHandlerEventPayload,
+  HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
   PanGestureHandlerEventPayload,
   PinchGestureHandlerEventPayload,
   RotationGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
-  NativeViewGestureHandlerPayload,
-  HoverGestureHandlerEventPayload,
 } from '../GestureHandlerEventPayload';
-import { isRemoteDebuggingEnabled } from '../../utils';
+import { getNextHandlerTag } from '../getNextHandlerTag';
+import type { GestureStateManagerType } from './gestureStateManager';
 
+/**
+ * @deprecated `GestureType` is deprecated and will be removed in the future. Please use `SingleGesture` instead.
+ */
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
   | BaseGesture<Record<string, never>>
@@ -35,6 +38,9 @@ export type GestureType =
   | BaseGesture<NativeViewGestureHandlerPayload>
   | BaseGesture<HoverGestureHandlerEventPayload>;
 
+/**
+ * @deprecated `GestureRef` is deprecated and will be removed in the future.
+ */
 export type GestureRef =
   | number
   | GestureType
@@ -131,6 +137,17 @@ export abstract class BaseGesture<
   public handlerTag = -1;
   public handlerName = '';
   public config: BaseGestureConfig = {};
+  // Snapshot of the relations defined directly on this gesture (e.g. via
+  // `simultaneousWithExternalGesture`), captured before any composition extends
+  // them. Composition rebuilds the relation config from this snapshot on every
+  // `prepare`, so repeated renders don't accumulate references to gestures from
+  // previous renders (memory leak, see #3763), while keeping the original
+  // references so relations stay re-resolvable after a remount, such as a
+  // `react-freeze` unfreeze (see #4238).
+  public relationsSnapshot?: {
+    simultaneousWith: GestureRef[] | undefined;
+    requireToFail: GestureRef[] | undefined;
+  };
   public handlers: HandlerCallbacks<EventPayloadT> = {
     gestureId: -1,
     handlerTag: -1,

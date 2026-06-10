@@ -2,7 +2,7 @@
 #import "RNGHTouchEventType.h"
 #import "RNGHUIKit.h"
 
-#define MAX_POINTERS_COUNT 12
+#define MAX_POINTERS_COUNT 17
 
 @class RNGestureHandler;
 

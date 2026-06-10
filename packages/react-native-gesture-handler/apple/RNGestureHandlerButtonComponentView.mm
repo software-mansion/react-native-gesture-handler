@@ -7,16 +7,34 @@
 #import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
+#import <react/renderer/components/view/BaseViewProps.h>
+#import <react/renderer/components/view/ViewProps.h>
 
 #import "RNGestureHandlerButton.h"
 
 using namespace facebook::react;
+
+static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::PointerEventsMode pointerEvents)
+{
+  switch (pointerEvents) {
+    case facebook::react::PointerEventsMode::None:
+      return RNGestureHandlerPointerEventsNone;
+    case facebook::react::PointerEventsMode::BoxNone:
+      return RNGestureHandlerPointerEventsBoxNone;
+    case facebook::react::PointerEventsMode::BoxOnly:
+      return RNGestureHandlerPointerEventsBoxOnly;
+    case facebook::react::PointerEventsMode::Auto:
+    default:
+      return RNGestureHandlerPointerEventsAuto;
+  }
+}
 
 @interface RNGestureHandlerButtonComponentView () <RCTRNGestureHandlerButtonViewProtocol>
 @end
 
 @implementation RNGestureHandlerButtonComponentView {
   RNGestureHandlerButton *_buttonView;
+  BOOL _needsAnimationStateReset;
 }
 
 #if TARGET_OS_OSX
@@ -29,10 +47,12 @@ using namespace facebook::react;
 #endif
 
 // Needed because of this: https://github.com/facebook/react-native/pull/37274
+#ifdef RCT_DYNAMIC_FRAMEWORKS
 + (void)load
 {
   [super load];
 }
+#endif
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -40,6 +60,7 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const RNGestureHandlerButtonProps>();
     _props = defaultProps;
     _buttonView = [[RNGestureHandlerButton alloc] initWithFrame:self.bounds];
+    _buttonView.animationTarget = self;
 
     self.contentView = _buttonView;
   }
@@ -47,14 +68,69 @@ using namespace facebook::react;
   return self;
 }
 
+#if TARGET_OS_TV
+- (void)emitPressInEvent
+{
+  if (!_buttonView.userEnabled) {
+    return;
+  }
+
+  [_buttonView sendActionsForControlEvents:UIControlEventTouchDown];
+}
+
+- (void)emitPressOutEvent
+{
+  if (!_buttonView.userEnabled) {
+    return;
+  }
+
+  [_buttonView sendActionsForControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)animatePressIn
+{
+  if (!_buttonView.userEnabled) {
+    return;
+  }
+
+  [_buttonView handleAnimatePressIn];
+}
+
+- (void)animatePressOut
+{
+  if (!_buttonView.userEnabled) {
+    return;
+  }
+
+  [_buttonView handleAnimatePressOut];
+}
+#endif // TARGET_OS_TV
+
+- (void)prepareForRecycle
+{
+  [self.layer removeAnimationForKey:@"transform"];
+  self.layer.transform = CATransform3DIdentity;
+
+  [_buttonView prepareForRecycle];
+
+  // Force the next updateProps: to re-run applyStartAnimationState even if
+  // the new mount's defaults match the previous mount's.
+  _needsAnimationStateReset = YES;
+
+  [super prepareForRecycle];
+}
+
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [_buttonView mountChildComponentView:childComponentView index:index];
 }
 
-- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView
+                            index:(NSInteger)__unused index
 {
-  [_buttonView unmountChildComponentView:childComponentView index:index];
+  if (childComponentView.superview == _buttonView) {
+    [childComponentView removeFromSuperview];
+  }
 }
 
 - (LayoutMetrics)buildWrapperMetrics:(const LayoutMetrics &)metrics
@@ -88,8 +164,80 @@ using namespace facebook::react;
   const LayoutMetrics buttonMetrics = [self buildButtonMetrics:layoutMetrics];
   const LayoutMetrics oldbuttonMetrics = [self buildButtonMetrics:oldLayoutMetrics];
 
+  // The press-in animation sets a scale transform on `self.layer` (animationTarget
+  // is this wrapper). RN's layout path sets `self.frame = frame`, which is undefined
+  // behavior when the layer's transform is non-identity, so mid-press child re-layouts
+  // get squished against the old bounds before snapping to the new ones. Neutralize
+  // the transform and any in-flight animation around super's frame update, then
+  // restore both atomically within the same transaction.
+  CATransform3D savedTransform = self.layer.transform;
+  CAAnimation *savedTransformAnimation = [[self.layer animationForKey:@"transform"] copy];
+  BOOL hasPendingTransform = !CATransform3DIsIdentity(savedTransform) || savedTransformAnimation != nil;
+
+  if (hasPendingTransform) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    [self.layer removeAnimationForKey:@"transform"];
+    self.layer.transform = CATransform3DIdentity;
+  }
+
   [super updateLayoutMetrics:wrapperMetrics oldLayoutMetrics:oldWrapperMetrics];
+
+  if (hasPendingTransform) {
+    self.layer.transform = savedTransform;
+    if (savedTransformAnimation) {
+      [self.layer addAnimation:savedTransformAnimation forKey:@"transform"];
+    }
+    [CATransaction commit];
+  }
+
   [_buttonView updateLayoutMetrics:buttonMetrics oldLayoutMetrics:oldbuttonMetrics];
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  // super's invalidateLayer (called via finalizeUpdates) unconditionally sets
+  // self.layer.opacity to the React style.opacity, overwriting our
+  // applyStartAnimationState alpha and interrupting in-flight press
+  // animations. Save/restore around super, but only touch what super actually
+  // disturbed — re-adding an unchanged animation resets its progress.
+  float savedOpacity = self.layer.opacity;
+  CAAnimation *savedOpacityAnimation = [self.layer animationForKey:@"opacity"];
+
+  [super finalizeUpdates:updateMask];
+
+  BOOL opacityChanged = savedOpacity != self.layer.opacity;
+  BOOL animationChanged = savedOpacityAnimation != [self.layer animationForKey:@"opacity"];
+  if (opacityChanged || animationChanged) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    if (animationChanged) {
+      [self.layer removeAnimationForKey:@"opacity"];
+      if (savedOpacityAnimation) {
+        [self.layer addAnimation:savedOpacityAnimation forKey:@"opacity"];
+      }
+    }
+    if (opacityChanged) {
+      self.layer.opacity = savedOpacity;
+    }
+    [CATransaction commit];
+  }
+
+  // Resolve per-corner border radii from props and forward to the button
+  // so its underlay CALayer gets the matching shape.
+  const auto borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
+  [_buttonView setUnderlayCornerRadiiWithTopLeftHorizontal:borderMetrics.borderRadii.topLeft.horizontal
+                                           topLeftVertical:borderMetrics.borderRadii.topLeft.vertical
+                                        topRightHorizontal:borderMetrics.borderRadii.topRight.horizontal
+                                          topRightVertical:borderMetrics.borderRadii.topRight.vertical
+                                      bottomLeftHorizontal:borderMetrics.borderRadii.bottomLeft.horizontal
+                                        bottomLeftVertical:borderMetrics.borderRadii.bottomLeft.vertical
+                                     bottomRightHorizontal:borderMetrics.borderRadii.bottomRight.horizontal
+                                       bottomRightVertical:borderMetrics.borderRadii.bottomRight.vertical];
+  [_buttonView setUnderlayBorderInsetsWithTop:borderMetrics.borderWidths.top
+                                        right:borderMetrics.borderWidths.right
+                                       bottom:borderMetrics.borderWidths.bottom
+                                         left:borderMetrics.borderWidths.left];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -197,7 +345,37 @@ using namespace facebook::react;
 {
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
+  // After recycling, treat diffing branches as a fresh mount so values that
+  // survived recycling on _buttonView (e.g. pointerEvents) get re-applied.
+  BOOL treatAsFirstMount = !oldProps || _needsAnimationStateReset;
+  _needsAnimationStateReset = NO;
+
+  // Avoid re-running applyStartAnimationState on every commit — it would
+  // interrupt in-flight press animations during mid-press re-renders.
+  BOOL shouldApplyStartAnimationState = treatAsFirstMount;
+  if (!treatAsFirstMount) {
+    const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
+    shouldApplyStartAnimationState = oldButtonProps.defaultOpacity != newProps.defaultOpacity ||
+        oldButtonProps.defaultScale != newProps.defaultScale ||
+        oldButtonProps.defaultUnderlayOpacity != newProps.defaultUnderlayOpacity;
+  }
+
   _buttonView.userEnabled = newProps.enabled;
+  _buttonView.tapAnimationInDuration = newProps.tapAnimationInDuration > 0 ? newProps.tapAnimationInDuration : 0;
+  _buttonView.tapAnimationOutDuration = newProps.tapAnimationOutDuration > 0 ? newProps.tapAnimationOutDuration : 0;
+  _buttonView.longPressDuration = newProps.longPressDuration;
+  _buttonView.longPressAnimationOutDuration = newProps.longPressAnimationOutDuration;
+  _buttonView.activeOpacity = newProps.activeOpacity;
+  _buttonView.defaultOpacity = newProps.defaultOpacity;
+  _buttonView.activeScale = newProps.activeScale;
+  _buttonView.defaultScale = newProps.defaultScale;
+  _buttonView.defaultUnderlayOpacity = newProps.defaultUnderlayOpacity;
+  _buttonView.activeUnderlayOpacity = newProps.activeUnderlayOpacity;
+  if (newProps.underlayColor) {
+    _buttonView.underlayColor = RCTUIColorFromSharedColor(newProps.underlayColor);
+  } else {
+    _buttonView.underlayColor = nil;
+  }
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   _buttonView.exclusiveTouch = newProps.exclusive;
   [self setAccessibilityProps:props oldProps:oldProps];
@@ -205,8 +383,62 @@ using namespace facebook::react;
   _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
       -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);
 
+  // We need to cast to ViewProps to access the pointerEvents property with the correct type.
+  // This is necessary because pointerEvents is redefined in the spec,
+  // which shadows the base property with a different, incompatible type.
+  const auto &newViewProps = static_cast<const ViewProps &>(newProps);
+  if (treatAsFirstMount) {
+    _buttonView.pointerEvents = RCTPointerEventsToEnum(newViewProps.pointerEvents);
+  } else {
+    const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
+    const auto &oldViewProps = static_cast<const ViewProps &>(oldButtonProps);
+    if (oldViewProps.pointerEvents != newViewProps.pointerEvents) {
+      _buttonView.pointerEvents = RCTPointerEventsToEnum(newViewProps.pointerEvents);
+    }
+  }
+
   [super updateProps:props oldProps:oldProps];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  // super's updateProps sets self.accessibilityIdentifier from testID via the
+  // standard Fabric mechanism. However, setAccessibilityProps already forwards
+  // testID to _buttonView.accessibilityIdentifier (the actual button element).
+  // Having the identifier on both views causes testing frameworks (e.g. Detox)
+  // to report multiple matches for the same testID. Clear it from the wrapper so
+  // only _buttonView carries the identifier.
+  if (!newProps.testId.empty()) {
+    self.accessibilityIdentifier = nil;
+  }
+#endif
+
+  if (shouldApplyStartAnimationState) {
+    [_buttonView applyStartAnimationState];
+  }
 }
+
+#if !TARGET_OS_OSX
+// Override hitTest to forward touches to _buttonView
+// This is necessary because RCTViewComponentView's hitTest might handle pointerEvents
+// from ViewProps and prevent touches from reaching _buttonView (which is the contentView).
+// Since _buttonView has its own pointerEvents handling, we always forward to it.
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  if (![self pointInside:point withEvent:event]) {
+    return nil;
+  }
+
+  CGPoint buttonPoint = [self convertPoint:point toView:_buttonView];
+
+  return [_buttonView hitTest:buttonPoint withEvent:event];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+  [_buttonView applyStartAnimationState];
+}
+#endif
+
 @end
 
 Class<RCTComponentViewProtocol> RNGestureHandlerButtonCls(void)

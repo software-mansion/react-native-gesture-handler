@@ -8,7 +8,7 @@ import GifGallery from '@site/components/GifGallery'
 
 Example app code is located under [`Example/`](https://github.com/software-mansion/react-native-gesture-handler/tree/main/examples/Example) folder in the repo.
 It showcases the majority of the Gesture Handler library features.
-The app consist of the list of single screen examples presenting the capabilities of the library.
+The app consists of the list of single screen examples presenting the capabilities of the library.
 Each example is located under a separate folder under [`Example/`](https://github.com/software-mansion/react-native-gesture-handler/tree/main/examples/Example).
 
 <GifGallery>

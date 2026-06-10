@@ -1,6 +1,6 @@
-import { ContinousBaseGesture } from './gesture';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { RotationGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
+import { ContinousBaseGesture } from './gesture';
 
 type RotationGestureChangeEventPayload = {
   rotationChange: number;
@@ -25,6 +25,9 @@ function changeEventCalculator(
   return { ...current, ...changePayload };
 }
 
+/**
+ * @deprecated `RotationGesture` is deprecated and will be removed in the future. Please use `useRotationGesture` instead.
+ */
 export class RotationGesture extends ContinousBaseGesture<
   RotationGestureHandlerEventPayload,
   RotationGestureChangeEventPayload
@@ -48,4 +51,7 @@ export class RotationGesture extends ContinousBaseGesture<
   }
 }
 
+/**
+ * @deprecated `RotationGestureType` is deprecated and will be removed in the future. Please use `RotationGesture` instead.
+ */
 export type RotationGestureType = InstanceType<typeof RotationGesture>;

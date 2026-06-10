@@ -1,6 +1,9 @@
-import { ComponentClass } from 'react';
+import type { ComponentClass } from 'react';
+
+import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 import { tagMessage } from '../../utils';
-import {
+import { NativeProxy } from '../../v3/NativeProxy';
+import type {
   GestureCallbacks,
   GestureUpdateEventWithHandlerData,
   SharedValue,
@@ -29,6 +32,19 @@ export type ReanimatedHandler<THandlerData> = {
   context: ReanimatedContext<THandlerData>;
 };
 
+export type NativeEventsManager = new (component: {
+  props: Record<string, unknown>;
+  _componentRef: React.Ref<unknown>;
+  // Removed in https://github.com/software-mansion/react-native-reanimated/pull/6736
+  // but we likely want to keep it for compatibility with older Reanimated versions
+  _componentViewTag: number;
+  getComponentViewTag: () => number;
+}) => {
+  attachEvents: () => void;
+  detachEvents: () => void;
+  updateEvents: (prevProps: Record<string, unknown>) => void;
+};
+
 let Reanimated:
   | {
       default: {
@@ -38,9 +54,10 @@ let Reanimated:
           options?: unknown
         ): ComponentClass<P>;
       };
-      useHandler: <THandlerData>(
-        handlers: GestureCallbacks<THandlerData>
-      ) => ReanimatedHandler<THandlerData>;
+      NativeEventsManager: NativeEventsManager;
+      useHandler: <THandlerData, TExtendedHandlerData extends THandlerData>(
+        handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
+      ) => ReanimatedHandler<TExtendedHandlerData>;
       useEvent: <T>(
         callback: (event: T) => void,
         events: string[],
@@ -66,6 +83,25 @@ let Reanimated:
 
 try {
   Reanimated = require('react-native-reanimated');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
+  const Worklets = require('react-native-worklets');
+
+  // Make sure worklets are initialized before attempting to install UI runtime bindings
+  Worklets?.scheduleOnUI(() => {
+    'worklet';
+  });
+
+  ghQueueMicrotask(() => {
+    const decorated = NativeProxy.installUIRuntimeBindings();
+
+    if (!decorated) {
+      console.warn(
+        tagMessage(
+          'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
+        )
+      );
+    }
+  });
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized

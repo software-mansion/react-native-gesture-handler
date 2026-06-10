@@ -1,5 +1,9 @@
 <img src="https://user-images.githubusercontent.com/16062886/117444014-2d1ffd80-af39-11eb-9bbb-33c320599d93.png" width="100%" alt="React Native Gesture Handler by Software Mansion">
 
+[![Ad](https://swm-delivery.com/www/images/zone-gh-react-native-gesture-handler-1?n=1)](https://swm-delivery.com/www/delivery/ck-slug.php?zoneid=zone-gh-react-native-gesture-handler-1&n=1)
+[![Ad](https://swm-delivery.com/www/images/zone-gh-react-native-gesture-handler-2?n=1)](https://swm-delivery.com/www/delivery/ck-slug.php?zoneid=zone-gh-react-native-gesture-handler-2&n=1)
+[![Ad](https://swm-delivery.com/www/images/zone-gh-react-native-gesture-handler-3?n=1)](https://swm-delivery.com/www/delivery/ck-slug.php?zoneid=zone-gh-react-native-gesture-handler-3&n=1)
+
 ### Declarative API exposing platform native touch and gesture system to React Native.
 
 React Native Gesture Handler provides native-driven gesture management APIs for building best possible touch-based experiences in React Native.
@@ -32,6 +36,15 @@ You will need to have an Android or iOS device or emulator connected.
 ## React Native Support
 
 `react-native-gesture-handler` supports the three latest minor releases of `react-native`.
+
+### Gesture Handler 3
+
+Check out our [compatibility table](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation#requirements) in documentation.
+
+> [!IMPORTANT]
+> Minimal supported `react-native` version for Gesture Handler 3 is `0.82`
+
+### Gesture Handler 2
 
 | version | react-native version |
 | ------- | -------------------- |

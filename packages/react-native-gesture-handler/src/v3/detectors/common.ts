@@ -1,30 +1,66 @@
-import React from 'react';
-import { Gesture } from '../types';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import type React from 'react';
 import { Animated, StyleSheet } from 'react-native';
+
+import type {
+  TouchAction,
+  UserSelect,
+} from '../../handlers/gestureHandlerCommon';
+import type { GestureDetectorProps as LegacyDetectorProps } from '../../handlers/gestures/GestureDetector';
+import type { Gesture } from '../types';
 import HostGestureDetector from './HostGestureDetector';
-import { GestureDetectorProps as LegacyDetectorProps } from '../../handlers/gestures/GestureDetector';
 
-export interface NativeDetectorProps<THandlerData, TConfig> {
-  children?: React.ReactNode;
-  gesture: Gesture<THandlerData, TConfig>;
+export enum GestureDetectorType {
+  Native,
+  Virtual,
+  Intercepting,
 }
 
-export interface InterceptingGestureDetectorProps<THandlerData, TConfig> {
+interface CommonGestureDetectorProps {
   children?: React.ReactNode;
-  gesture?: Gesture<THandlerData, TConfig>;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
 }
 
-export type GestureDetectorProps<THandlerData, TConfig> =
-  | NativeDetectorProps<THandlerData, TConfig>
-  | InterceptingGestureDetectorProps<THandlerData, TConfig>
+export interface NativeDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+> extends CommonGestureDetectorProps {
+  gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>;
+}
+
+export interface InterceptingGestureDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+> extends CommonGestureDetectorProps {
+  gesture?: Gesture<TConfig, THandlerData, TExtendedHandlerData>;
+}
+
+export interface VirtualDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+> extends CommonGestureDetectorProps {
+  gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>;
+}
+
+export type GestureDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+> =
+  | NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>
+  | InterceptingGestureDetectorProps<
+      TConfig,
+      THandlerData,
+      TExtendedHandlerData
+    >
   | LegacyDetectorProps;
 
 export const AnimatedNativeDetector =
   Animated.createAnimatedComponent(HostGestureDetector);
-
-export const ReanimatedNativeDetector =
-  Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
 export const nativeDetectorStyles = StyleSheet.create({
   detector: {

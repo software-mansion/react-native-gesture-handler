@@ -1,6 +1,37 @@
-export * from './configUtils';
-export * from './eventHandlersUtils';
-export * from './eventUtils';
-export * from './reanimatedUtils';
-export * from './relationUtils';
-export * from './propsWhiteList';
+export {
+  prepareConfigForNativeSide,
+  useClonedAndRemappedConfig,
+} from './configUtils';
+export {
+  runCallback,
+  touchEventTypeToCallbackType,
+  useMemoizedGestureCallbacks,
+} from './eventHandlersUtils';
+export {
+  checkMappingForChangeProperties,
+  flattenAndFilterEvent,
+  getChangeEventCalculator,
+  isEventForHandlerWithTag,
+  isNativeAnimatedEvent,
+  maybeExtractNativeEvent,
+  shouldHandleTouchEvents,
+} from './eventUtils';
+export {
+  allowedNativeProps,
+  EMPTY_WHITE_LIST,
+  HandlerCallbacks,
+  NativeWrapperProps,
+  PropsToFilter,
+  PropsWhiteLists,
+} from './propsWhiteList';
+export {
+  bindSharedValues,
+  hasWorkletEventHandlers,
+  maybeUnpackValue,
+  unbindSharedValues,
+} from './reanimatedUtils';
+export {
+  containsDuplicates,
+  isComposedGesture,
+  prepareRelations,
+} from './relationUtils';

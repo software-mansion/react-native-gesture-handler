@@ -1,6 +1,7 @@
-import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { HoverGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
+import type { BaseGestureConfig } from './gesture';
+import { ContinousBaseGesture } from './gesture';
 
 export type HoverGestureChangeEventPayload = {
   changeX: number;
@@ -40,6 +41,9 @@ function changeEventCalculator(
   return { ...current, ...changePayload };
 }
 
+/**
+ * @deprecated `HoverGesture` is deprecated and will be removed in the future. Please use `useHoverGesture` instead.
+ */
 export class HoverGesture extends ContinousBaseGesture<
   HoverGestureHandlerEventPayload,
   HoverGestureChangeEventPayload
@@ -74,4 +78,7 @@ export class HoverGesture extends ContinousBaseGesture<
   }
 }
 
+/**
+ * @deprecated `HoverGestureType` is deprecated and will be removed in the future. Please use `HoverGesture` instead.
+ */
 export type HoverGestureType = InstanceType<typeof HoverGesture>;

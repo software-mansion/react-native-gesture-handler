@@ -1,4 +1,4 @@
-import { AdaptedEvent } from '../interfaces';
+import type { AdaptedEvent } from '../interfaces';
 import CircularBuffer from './CircularBuffer';
 import LeastSquareSolver from './LeastSquareSolver';
 

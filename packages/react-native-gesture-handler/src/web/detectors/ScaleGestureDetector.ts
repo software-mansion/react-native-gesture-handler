@@ -1,7 +1,7 @@
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, EventTypes } from '../interfaces';
-
-import PointerTracker from '../tools/PointerTracker';
+import type { AdaptedEvent } from '../interfaces';
+import { EventTypes } from '../interfaces';
+import type PointerTracker from '../tools/PointerTracker';
 
 export interface ScaleGestureListener {
   onScaleBegin: (detector: ScaleGestureDetector) => boolean;
@@ -44,10 +44,16 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     const action: EventTypes = event.eventType;
     const numOfPointers = tracker.trackedPointersCount;
 
+    // When the last second pointer lifts (going down to 1), pause without
+    // touching span/time state so the gesture resumes cleanly on re-add.
+    // When 3+ → 2+ pointers, fall through so configChanged resets the span
+    // baseline to the remaining pointer set and avoids a scale jump.
+    if (action === EventTypes.ADDITIONAL_POINTER_UP && numOfPointers <= 2) {
+      return true;
+    }
+
     const streamComplete: boolean =
-      action === EventTypes.UP ||
-      action === EventTypes.ADDITIONAL_POINTER_UP ||
-      action === EventTypes.CANCEL;
+      action === EventTypes.UP || action === EventTypes.CANCEL;
 
     if (action === EventTypes.DOWN || streamComplete) {
       if (this.inProgress) {
@@ -76,7 +82,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     const div: number = pointerUp ? numOfPointers - 1 : numOfPointers;
 
-    const coordsSum = tracker.getAbsoluteCoordsSum();
+    const coordsSum = tracker.getAbsoluteCoordsSum(ignoredPointer);
 
     const focusX = coordsSum.x / div;
     const focusY = coordsSum.y / div;

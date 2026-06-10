@@ -1,11 +1,12 @@
+import { useMemo } from 'react';
+
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../../utils';
-import {
+import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   SingleGestureName,
 } from '../../types';
-import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
 import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 import {
   allowedNativeProps,
@@ -13,13 +14,13 @@ import {
   PropsToFilter,
   PropsWhiteLists,
 } from './propsWhiteList';
-import { useMemo } from 'react';
+import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
 
-export function prepareConfig<THandlerData, TConfig extends object>(
-  config: BaseGestureConfig<THandlerData, TConfig>
-) {
-  const runOnJS = maybeUnpackValue(config.runOnJS);
-
+export function resolveInternalConfigProps<
+  TConfig extends object,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
   if (
     __DEV__ &&
     isNativeAnimatedEvent(config.onUpdate) &&
@@ -60,25 +61,33 @@ export function prepareConfig<THandlerData, TConfig extends object>(
     hasWorkletEventHandlers(config) &&
     !config.dispatchesAnimatedEvents;
   config.needsPointerData = shouldHandleTouchEvents(config);
-  config.dispatchesReanimatedEvents =
-    config.shouldUseReanimatedDetector && !runOnJS;
 }
 
-export function prepareConfigForNativeSide<THandlerData, TConfig>(
+export function prepareConfigForNativeSide<
+  TConfig extends object,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerType: SingleGestureName,
-  config: BaseGestureConfig<THandlerData, TConfig>
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ) {
   // @ts-ignore Seems like TypeScript can't infer the type here properly because of generic
-  const filteredConfig: BaseGestureConfig<THandlerData, TConfig> = {};
+  const filteredConfig: BaseGestureConfig<
+    TConfig,
+    THandlerData,
+    TExtendedHandlerData
+  > = {
+    dispatchesReanimatedEvents:
+      config.shouldUseReanimatedDetector && !maybeUnpackValue(config.runOnJS),
+  };
   const handlerPropsWhiteList =
     PropsWhiteLists.get(handlerType) ?? EMPTY_WHITE_LIST;
 
   for (const [key, value] of Object.entries(config)) {
     // @ts-ignore That's the point, we want to see if key exists in the whitelists
     if (allowedNativeProps.has(key) || handlerPropsWhiteList.has(key)) {
-      Object.assign(filteredConfig, {
-        [key]: Reanimated?.isSharedValue(value) ? value.value : value,
-      });
+      (filteredConfig as Record<string, unknown>)[key] =
+        Reanimated?.isSharedValue(value) ? value.value : value;
     } else if (PropsToFilter.has(key)) {
       continue;
     } else {
@@ -93,18 +102,28 @@ export function prepareConfigForNativeSide<THandlerData, TConfig>(
   return filteredConfig;
 }
 
-export function cloneConfig<THandlerData, TConfig>(
-  config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>
-): BaseGestureConfig<THandlerData, TConfig> {
-  return { ...config } as BaseGestureConfig<THandlerData, TConfig>;
+function cloneConfig<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  config: ExcludeInternalConfigProps<
+    BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
+  >
+): BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData> {
+  return { ...config } as BaseGestureConfig<
+    TConfig,
+    THandlerData,
+    TExtendedHandlerData
+  >;
 }
 
-export function remapProps<
+function remapProps<
   TConfig extends object,
   TInternalConfig extends Record<string, unknown>,
 >(
   config: TConfig & TInternalConfig,
-  propsMapping: Map<string, string>
+  propsMapping: ReadonlyMap<string, string>
 ): TInternalConfig {
   type MergedConfig = TConfig & TInternalConfig;
 
@@ -121,23 +140,41 @@ export function remapProps<
   return config;
 }
 
-export function useClonedAndRemappedConfig<
-  THandlerData,
-  TConfig extends object,
-  TInternalConfig extends Record<string, unknown>,
->(
-  config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>,
-  propsMapping: Map<string, string> = new Map(),
-  propsTransformer: (config: TInternalConfig) => TInternalConfig = (cfg) => cfg
-): BaseGestureConfig<THandlerData, TInternalConfig> {
-  return useMemo(() => {
-    const clonedConfig = cloneConfig<THandlerData, TConfig>(config);
+const DEFAULT_PROPS_MAPPING = new Map<string, string>();
+const DEFAULT_PROPS_TRANSFORMER = <TConfig extends object>(
+  config: TConfig
+): TConfig => config;
 
-    return propsTransformer(
+export function useClonedAndRemappedConfig<
+  TConfig extends Record<string, unknown>,
+  THandlerData,
+  TInternalConfig extends Record<string, unknown> = TConfig,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+>(
+  config: ExcludeInternalConfigProps<
+    BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
+  >,
+  propsMapping: ReadonlyMap<string, string> = DEFAULT_PROPS_MAPPING,
+  propsTransformer: (
+    config: TInternalConfig
+  ) => TInternalConfig = DEFAULT_PROPS_TRANSFORMER
+): BaseGestureConfig<TInternalConfig, THandlerData, TExtendedHandlerData> {
+  return useMemo(() => {
+    const clonedConfig = cloneConfig<
+      TConfig,
+      THandlerData,
+      TExtendedHandlerData
+    >(config);
+
+    const transformedConfig = propsTransformer(
       remapProps<TConfig, TInternalConfig>(
         clonedConfig as TConfig & TInternalConfig,
         propsMapping
       )
     );
+
+    resolveInternalConfigProps(transformedConfig);
+
+    return transformedConfig;
   }, [config, propsMapping, propsTransformer]);
 }

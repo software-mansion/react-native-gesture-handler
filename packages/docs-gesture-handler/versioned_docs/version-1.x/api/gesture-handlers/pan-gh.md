@@ -6,7 +6,7 @@ sidebar_label: Pan
 
 A continuous gesture handler that can recognize a panning (dragging) gesture and track its movement.
 
-The handler [activates](/docs/under-the-hood/state#active) when a finger is placed on the screen and moved some initial distance.
+The handler [activates](/docs/1.x/state#active) when a finger is placed on the screen and moved some initial distance.
 
 Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](#minPointers) required for activation (allowing for multifinger swipes) may be specified.
 
@@ -16,7 +16,7 @@ The handler is implemented using [UIPanGestureRecognizer](https://developer.appl
 
 ## Custom activation criteria
 
-The `PanGestureHandler` component exposes a number of properties that can be used to customize the criteria under which a handler will [activate](/docs/under-the-hood/state#active) or [fail](/docs/under-the-hood/state#fail) when recognizing a gesture.
+The `PanGestureHandler` component exposes a number of properties that can be used to customize the criteria under which a handler will [activate](/docs/1.x/state#active) or [fail](/docs/1.x/state#fail) when recognizing a gesture.
 
 When more than one of such a property is set, `PanGestureHandler` expects all criteria to be met for successful recognition and at most one of the criteria to be overstepped to fail recognition.
 For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) are set to 20 we expect the finger to travel by 20 points in both the X and Y axis before the handler activates.
@@ -25,11 +25,11 @@ In such a case, if we move a finger along the X-axis by 20 points and along the 
 
 ## Multi touch pan handling
 
-If your app relies on multi touch pan handling this section provides some information how the default behavior differs between the platform and how (if necessary) it can be unified.
+If your app relies on multi touch pan handling, this section provides some information about how the default behavior differs between the platforms and how (if necessary) it can be unified.
 
-The difference in multi touch pan handling lies in the way how translation properties during the event are being calculated.
+The difference in multi touch pan handling lies in the way translation properties during the event are calculated.
 On iOS the default behavior when more than one finger is placed on the screen is to treat this situation as if only one pointer was placed in the center of mass (average position of all the pointers).
-This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions like for example UIScrollView component.
+This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions, like for example the UIScrollView component.
 
 The default behavior for native components like scroll view, pager views or drawers is different and hence gesture handler defaults to that when it comes to pan handling.
 The difference is that instead of treating the center of mass of all the fingers placed as a leading pointer it takes the latest placed finger as such.
@@ -45,38 +45,38 @@ See [set of properties inherited from base handler class](common-gh#properties).
 
 ### `minDist`
 
-Minimum distance the finger (or multiple finger) need to travel before the handler [activates](/docs/under-the-hood/state#active). Expressed in points.
+Minimum distance the finger (or multiple fingers) needs to travel before the handler [activates](/docs/1.x/state#active). Expressed in points.
 
 ### `minPointers`
 
-A number of fingers that is required to be placed before handler can [activate](/docs/under-the-hood/state#active). Should be a higher or equal to 0 integer.
+The number of fingers that is required to be placed before the handler can [activate](/docs/1.x/state#active). Should be an integer greater than or equal to 0.
 
 ### `maxPointers`
 
-When the given number of fingers is placed on the screen and handler hasn't yet [activated](/docs/under-the-hood/state#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+When the given number of fingers is placed on the screen and the handler hasn't yet [activated](/docs/1.x/state#active) it will fail recognizing the gesture. Should be an integer greater than or equal to 0.
 
 ### `activeOffsetX`
 
-Range along X axis (in points) where fingers travels without activation of handler. Moving outside of this range implies activation of handler. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+Range along the X axis (in points) where fingers travel without activation of the handler. Moving outside of this range implies activation of the handler. Range can be given as an array or a single number.
+If the range is set as an array, the first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `activeOffsetY`
 
-Range along Y axis (in points) where fingers travels without activation of handler. Moving outside of this range implies activation of handler. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+Range along the Y axis (in points) where fingers travel without activation of the handler. Moving outside of this range implies activation of the handler. Range can be given as an array or a single number.
+If the range is set as an array, the first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `failOffsetY`
 
-When the finger moves outside this range (in points) along Y axis and handler hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+When the finger moves outside this range (in points) along the Y axis and the handler hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
+If the range is set as an array, the first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `failOffsetX`
 
-When the finger moves outside this range (in points) along X axis and handler hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+When the finger moves outside this range (in points) along the X axis and the handler hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
+If the range is set as an array, the first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `avgTouches` (Android only)

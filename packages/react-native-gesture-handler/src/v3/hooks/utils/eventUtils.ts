@@ -1,23 +1,24 @@
-import { NativeSyntheticEvent } from 'react-native';
-import {
+import type { NativeSyntheticEvent } from 'react-native';
+
+import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import { tagMessage } from '../../../utils';
+import type {
   AnimatedEvent,
   BaseGestureConfig,
   ChangeCalculatorType,
   DiffCalculatorType,
+  GestureEvent,
   GestureHandlerEventWithHandlerData,
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
-  GestureUpdateEvent,
-  GestureStateChangeEvent,
-  UnpackedGestureHandlerEvent,
 } from '../../types';
-import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
-import { tagMessage } from '../../../utils';
 
-export function isNativeEvent<THandlerData>(
-  event: GestureHandlerEventWithHandlerData<THandlerData>
+function isNativeEvent<THandlerData, TExtendedHandlerData extends THandlerData>(
+  event: GestureHandlerEventWithHandlerData<THandlerData, TExtendedHandlerData>
 ): event is
-  | NativeSyntheticEvent<GestureUpdateEventWithHandlerData<THandlerData>>
+  | NativeSyntheticEvent<
+      GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+    >
   | NativeSyntheticEvent<GestureStateChangeEventWithHandlerData<THandlerData>>
   | NativeSyntheticEvent<GestureTouchEvent> {
   'worklet';
@@ -25,34 +26,39 @@ export function isNativeEvent<THandlerData>(
   return 'nativeEvent' in event;
 }
 
-export function maybeExtractNativeEvent<THandlerData>(
-  event: GestureHandlerEventWithHandlerData<THandlerData>
-) {
+export function maybeExtractNativeEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  event: GestureHandlerEventWithHandlerData<THandlerData, TExtendedHandlerData>
+):
+  | GestureTouchEvent
+  | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+  | GestureStateChangeEventWithHandlerData<THandlerData> {
   'worklet';
 
   return isNativeEvent(event) ? event.nativeEvent : event;
 }
 
-export function flattenEvent<THandlerData>(
-  event: GestureStateChangeEventWithHandlerData<THandlerData>
-): GestureStateChangeEvent<THandlerData>;
-export function flattenEvent<THandlerData>(
-  event: GestureUpdateEventWithHandlerData<THandlerData>
-): GestureUpdateEvent<THandlerData>;
-export function flattenEvent<THandlerData>(
+export function flattenAndFilterEvent<THandlerData>(
   event:
     | GestureUpdateEventWithHandlerData<THandlerData>
     | GestureStateChangeEventWithHandlerData<THandlerData>
-) {
+): GestureEvent<THandlerData> {
   'worklet';
 
-  const { handlerData, ...rest } = event;
-  return { ...rest, ...handlerData };
+  return { handlerTag: event.handlerTag, ...event.handlerData };
 }
 
-export function isEventForHandlerWithTag<THandlerData>(
+export function isEventForHandlerWithTag<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  event: UnpackedGestureHandlerEvent<THandlerData>
+  event:
+    | GestureStateChangeEventWithHandlerData<THandlerData>
+    | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+    | GestureTouchEvent
 ) {
   'worklet';
 
@@ -61,7 +67,7 @@ export function isEventForHandlerWithTag<THandlerData>(
 
 export function isNativeAnimatedEvent<THandlerData>(
   callback:
-    | ((event: GestureUpdateEvent<THandlerData>) => void)
+    | ((event: GestureEvent<THandlerData>) => void)
     | AnimatedEvent
     | undefined
 ): callback is AnimatedEvent {
@@ -89,9 +95,11 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
   }
 }
 
-export function shouldHandleTouchEvents<THandlerData, TConfig>(
-  config: BaseGestureConfig<THandlerData, TConfig>
-) {
+export function shouldHandleTouchEvents<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
   return (
     !!config.onTouchesDown ||
     !!config.onTouchesMove ||
@@ -100,13 +108,13 @@ export function shouldHandleTouchEvents<THandlerData, TConfig>(
   );
 }
 
-export function getChangeEventCalculator<THandlerData>(
-  diffCalculator: DiffCalculatorType<THandlerData>
-): ChangeCalculatorType<THandlerData> {
+export function getChangeEventCalculator<TExtendedHandlerData>(
+  diffCalculator: DiffCalculatorType<TExtendedHandlerData>
+): ChangeCalculatorType<TExtendedHandlerData> {
   'worklet';
   return (
-    current: GestureUpdateEventWithHandlerData<THandlerData>,
-    previous?: GestureUpdateEventWithHandlerData<THandlerData>
+    current: GestureUpdateEventWithHandlerData<TExtendedHandlerData>,
+    previous?: GestureUpdateEventWithHandlerData<TExtendedHandlerData>
   ) => {
     'worklet';
     const currentEventData = current.handlerData;
@@ -118,4 +126,32 @@ export function getChangeEventCalculator<THandlerData>(
 
     return current;
   };
+}
+
+export function isTouchEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  event:
+    | GestureStateChangeEventWithHandlerData<THandlerData>
+    | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+    | GestureTouchEvent
+): event is GestureTouchEvent {
+  'worklet';
+
+  return 'allTouches' in event;
+}
+
+export function isStateChangeEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  event:
+    | GestureStateChangeEventWithHandlerData<THandlerData>
+    | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+    | GestureTouchEvent
+): event is GestureStateChangeEventWithHandlerData<THandlerData> {
+  'worklet';
+
+  return 'oldState' in event && event.oldState !== undefined;
 }

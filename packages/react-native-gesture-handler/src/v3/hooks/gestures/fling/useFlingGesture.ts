@@ -1,48 +1,21 @@
-import {
-  BaseDiscreteGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  SingleGestureName,
-  WithSharedValue,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
-} from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
-import type { FlingGestureNativeProperties } from './FlingProperties';
-
-type FlingHandlerData = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-};
-
-type FlingGestureProperties = WithSharedValue<FlingGestureNativeProperties>;
-
-type FlingGestureInternalConfig = BaseDiscreteGestureConfig<
+import type {
+  FlingGesture,
+  FlingGestureConfig,
+  FlingGestureProperties,
   FlingHandlerData,
-  FlingGestureProperties
->;
+} from './FlingTypes';
 
-export type FlingGestureConfig =
-  ExcludeInternalConfigProps<FlingGestureInternalConfig>;
+const EMPTY_FLING_CONFIG: FlingGestureConfig = {};
 
-export type FlingGestureStateChangeEvent =
-  GestureStateChangeEvent<FlingHandlerData>;
-
-export type FlingGestureUpdateEvent = GestureUpdateEvent<FlingHandlerData>;
-
-export type FlingGesture = SingleGesture<
-  FlingHandlerData,
-  FlingGestureProperties
->;
-
-export function useFlingGesture(config: FlingGestureConfig): FlingGesture {
+export function useFlingGesture(
+  config: FlingGestureConfig = EMPTY_FLING_CONFIG
+): FlingGesture {
   const flingConfig = useClonedAndRemappedConfig<
-    FlingHandlerData,
     FlingGestureProperties,
-    FlingGestureProperties
+    FlingHandlerData
   >(config);
 
   return useGesture(SingleGestureName.Fling, flingConfig);

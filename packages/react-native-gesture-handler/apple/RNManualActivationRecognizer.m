@@ -2,7 +2,7 @@
 #import "RNGestureHandler.h"
 
 @implementation RNManualActivationRecognizer {
-  RNGestureHandler *_handler;
+  __weak RNGestureHandler *_handler;
   int _activePointers;
 }
 

@@ -1,28 +1,26 @@
-import { Platform } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
 
 import { isTestEnv, tagMessage } from '../../../utils';
-import { GestureRef, BaseGesture, GestureType } from '../gesture';
-
-import { flingGestureHandlerProps } from '../../FlingGestureHandler';
-import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
-import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
-import {
-  panGestureHandlerProps,
-  panGestureHandlerCustomNativeProps,
-} from '../../PanGestureHandler';
-import { tapGestureHandlerProps } from '../../TapGestureHandler';
-import { hoverGestureHandlerProps } from '../hoverGesture';
-import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
-import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
-import { RNRenderer } from '../../../RNRenderer';
-import { useCallback, useRef, useState } from 'react';
-import { Reanimated } from '../reanimatedWrapper';
-import { onGestureHandlerEvent } from '../eventReceiver';
-import {
+import type {
   GestureHandlerNativeEvent,
   PropsRef,
   ResultEvent,
 } from '../../../web/interfaces';
+import { flingGestureHandlerProps } from '../../FlingGestureHandler';
+import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
+import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
+import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
+import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
+import {
+  panGestureHandlerCustomNativeProps,
+  panGestureHandlerProps,
+} from '../../PanGestureHandler';
+import { tapGestureHandlerProps } from '../../TapGestureHandler';
+import { onGestureHandlerEvent } from '../eventReceiver';
+import type { GestureRef, GestureType } from '../gesture';
+import { BaseGesture } from '../gesture';
+import { hoverGestureHandlerProps } from '../hoverGesture';
+import { Reanimated } from '../reanimatedWrapper';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
@@ -35,6 +33,16 @@ export const ALLOWED_PROPS = [
   ...hoverGestureHandlerProps,
   ...nativeViewGestureHandlerProps,
 ];
+
+// In some environments (e.g. `Next.js`) Reanimated Babel plugin might not be used.
+// In that case we would wrongly suggest to add `runOnJS` to gesture configuration, even if the user doesn't use worklets at all.
+// To prevent this, we check whether the plugin is enabled by defining a worklet and checking if the `__workletHash` property is available.
+function emptyWorklet() {
+  'worklet';
+}
+
+// @ts-expect-error if `emptyWorklet` is a worklet, `__workletHash` will be available, if not then the check will return false.
+const wasBabelPluginEnabled = emptyWorklet.__workletHash !== undefined;
 
 function convertToHandlerTag(ref: GestureRef): number {
   if (typeof ref === 'number') {
@@ -57,20 +65,16 @@ function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
 }
 
 export function extractGestureRelations(gesture: GestureType) {
-  gesture.config.requireToFail = extractValidHandlerTags(
-    gesture.config.requireToFail
-  );
-  gesture.config.simultaneousWith = extractValidHandlerTags(
+  const requireToFail = extractValidHandlerTags(gesture.config.requireToFail);
+  const simultaneousWith = extractValidHandlerTags(
     gesture.config.simultaneousWith
   );
-  gesture.config.blocksHandlers = extractValidHandlerTags(
-    gesture.config.blocksHandlers
-  );
+  const blocksHandlers = extractValidHandlerTags(gesture.config.blocksHandlers);
 
   return {
-    waitFor: gesture.config.requireToFail,
-    simultaneousHandlers: gesture.config.simultaneousWith,
-    blocksHandlers: gesture.config.blocksHandlers,
+    waitFor: requireToFail,
+    simultaneousHandlers: simultaneousWith,
+    blocksHandlers: blocksHandlers,
   };
 }
 
@@ -105,62 +109,12 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
   const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
   // If none of the callbacks are worklets and the gesture is not explicitly marked with
   // `.runOnJS(true)` show a warning
-  if (areAllNotWorklets && !isTestEnv()) {
+  if (areAllNotWorklets && wasBabelPluginEnabled && !isTestEnv()) {
     console.warn(
       tagMessage(
         `None of the callbacks in the gesture are worklets. If you wish to run them on the JS thread use '.runOnJS(true)' modifier on the gesture to make this explicit. Otherwise, mark the callbacks as 'worklet' to run them on the UI thread.`
       )
     );
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function validateDetectorChildren(ref: any) {
-  // Finds the first native view under the Wrap component and traverses the fiber tree upwards
-  // to check whether there is more than one native view as a pseudo-direct child of GestureDetector
-  // i.e. this is not ok:
-  //            Wrap
-  //             |
-  //            / \
-  //           /   \
-  //          /     \
-  //         /       \
-  //   NativeView  NativeView
-  //
-  // but this is fine:
-  //            Wrap
-  //             |
-  //         NativeView
-  //             |
-  //            / \
-  //           /   \
-  //          /     \
-  //         /       \
-  //   NativeView  NativeView
-  if (__DEV__ && Platform.OS !== 'web') {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const wrapType =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      ref._reactInternals.elementType;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    let instance =
-      RNRenderer.findHostInstance_DEPRECATED(
-        ref
-      )._internalFiberInstanceHandleDEV;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    while (instance && instance.elementType !== wrapType) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (instance.sibling) {
-        throw new Error(
-          'GestureDetector has more than one native view as its children. This can happen if you are using a custom component that renders multiple views, like React.Fragment. You should wrap content of GestureDetector with a <View> or <Animated.View>.'
-        );
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      instance = instance.return;
-    }
   }
 }
 

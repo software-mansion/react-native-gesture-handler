@@ -1,5 +1,5 @@
 {
-  "main": "../lib/commonjs/components/ReanimatedSwipeable/",
+  "main": "../lib/module/components/ReanimatedSwipeable/",
   "module": "../lib/module/components/ReanimatedSwipeable/",
   "react-native": "../src/components/ReanimatedSwipeable/",
   "types": "../lib/typescript/components/ReanimatedSwipeable/"

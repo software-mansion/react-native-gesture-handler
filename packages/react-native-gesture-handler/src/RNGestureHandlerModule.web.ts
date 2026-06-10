@@ -1,12 +1,12 @@
 import React from 'react';
 
 import type { ActionType } from './ActionType';
+import type { GestureRelations } from './v3/types';
 import { Gestures } from './web/Gestures';
 import type { Config, PropsRef } from './web/interfaces';
+import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
-import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
-import { GestureRelations } from './v3/types';
 
 // init method is called inside attachGestureHandler function. However, this function may
 // fail when received view is not valid HTML element. On the other hand, dropGestureHandler
@@ -67,7 +67,7 @@ export default {
   setGestureHandlerConfig(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).setGestureConfig(newConfig);
   },
-  updateGestureHandlerConfig(handlerTag: number, newConfig: Config) {
+  updateGestureHandlerConfig(handlerTag: number, newConfig: Partial<Config>) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag: number) {
@@ -82,6 +82,9 @@ export default {
     NodeManager.dropGestureHandler(handlerTag);
   },
   configureRelations(handlerTag: number, relations: GestureRelations) {
+    if (!NodeManager.hasHandler(handlerTag)) {
+      return;
+    }
     InteractionManager.instance.configureInteractions(
       NodeManager.getHandler(handlerTag),
       relations
@@ -89,4 +92,8 @@ export default {
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   flushOperations() {},
+  installUIRuntimeBindings() {
+    // No-op on web
+    return true;
+  },
 };

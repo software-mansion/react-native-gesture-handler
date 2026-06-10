@@ -2,72 +2,80 @@ package com.swmansion.gesturehandler.react
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
+import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 
 class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
-  private var handlersToAttach: List<Int>? = null
-  private var virtualChildrenToAttach: List<VirtualChildren>? = null
+  private var handlersToAttach: List<Int> = emptyList()
+  private var virtualChildrenToAttach: List<VirtualChildren> = emptyList()
   private var nativeHandlers: MutableSet<Int> = mutableSetOf()
+  private var subscribedHandlers: MutableSet<Int> = mutableSetOf()
   private var attachedHandlers: MutableSet<Int> = mutableSetOf()
-  private var attachedVirtualHandlers: MutableMap<Int, MutableSet<Int>> = mutableMapOf()
+  private var subscribedVirtualHandlers: MutableMap<Int, MutableSet<Int>> = mutableMapOf()
   private var moduleId: Int = -1
 
   data class VirtualChildren(val handlerTags: List<Int>, val viewTag: Int)
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
-    val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
-    if (moduleId == -1) {
-      // It's possible that handlerTags will be set before module id. In that case, store
-      // the handler ids and attach them after setting module id.
-      handlersToAttach = newHandlers
-      return
+    handlersToAttach = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
+    if (moduleId != -1) {
+      attachHandlers(handlersToAttach)
     }
+  }
 
-    attachHandlers(newHandlers)
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    if (moduleId != -1) {
+      attachHandlers(handlersToAttach)
+      attachVirtualChildren(virtualChildrenToAttach)
+    }
+  }
+
+  override fun onDetachedFromWindow() {
+    detachAllHandlers()
+    super.onDetachedFromWindow()
   }
 
   fun setModuleId(id: Int) {
-    assert(this.moduleId == -1) { "Tried to change moduleId of a native detector" }
-
-    this.moduleId = id
-    this.attachHandlers(handlersToAttach ?: return)
-    handlersToAttach = null
-    this.attachVirtualChildren(virtualChildrenToAttach ?: return)
-    virtualChildrenToAttach = null
-  }
-
-  fun setVirtualChildren(newVirtualChildren: ReadableArray?) {
-    val mappedChildren = newVirtualChildren?.mapVirtualChildren().orEmpty()
-
-    if (moduleId == -1) {
-      // It's possible that handlerTags will be set before module id. In that case, store
-      // the handler ids and attach them after setting module id.
-      virtualChildrenToAttach = mappedChildren
+    if (this.moduleId == id) {
       return
     }
 
-    attachVirtualChildren(mappedChildren)
+    assert(this.moduleId == -1) { "Tried to change moduleId of a native detector" }
+
+    this.moduleId = id
+    attachHandlers(handlersToAttach)
+    attachVirtualChildren(virtualChildrenToAttach)
   }
 
-  private fun shouldAttachGestureToChildView(tag: Int): Boolean {
-    val registry = RNGestureHandlerModule.registries[moduleId]
-      ?: throw Exception("Tried to access a non-existent registry")
-
-    return registry.getHandler(tag)?.wantsToAttachDirectlyToView() ?: false
+  fun setVirtualChildren(newVirtualChildren: ReadableArray?) {
+    virtualChildrenToAttach = newVirtualChildren?.mapVirtualChildren().orEmpty()
+    if (moduleId != -1) {
+      attachVirtualChildren(virtualChildrenToAttach)
+    }
   }
 
   // We override this `addView` because it is called inside `addView(child: View?, index: Int)`
   override fun addView(child: View, index: Int, params: LayoutParams?) {
     super.addView(child, index, params)
 
-    tryAttachNativeHandlersToChildView(child.id)
+    if (nativeHandlers.isNotEmpty()) {
+      assert(childCount == 1) {
+        "Cannot have more than one child view when native gesture handlers are attached to the detector"
+      }
+    }
+
+    tryAttachNativeHandlersToChildView(child)
   }
 
   override fun removeViewAt(index: Int) {
@@ -80,46 +88,61 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     newHandlers: List<Int>,
     viewTag: Int = this.id,
     actionType: Int = GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
-    attachedHandlers: MutableSet<Int> = this.attachedHandlers,
+    subscribedHandlers: MutableSet<Int> = this.subscribedHandlers,
   ) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
-    val handlersToDetach = attachedHandlers.toMutableSet()
+    val handlersToDetach = subscribedHandlers.toMutableSet()
 
     for (tag in newHandlers) {
       handlersToDetach.remove(tag)
-      if (!attachedHandlers.contains(tag)) {
-        if (shouldAttachGestureToChildView(tag) && actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
-          // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
-          // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
-          nativeHandlers.add(tag)
-        } else {
-          registry.attachHandlerToView(tag, viewTag, actionType)
-          if (actionType == GestureHandler.ACTION_TYPE_VIRTUAL_DETECTOR) {
-            registry.getHandler(tag)?.hostDetectorView = this
-          }
-          attachedHandlers.add(tag)
+      if (!subscribedHandlers.contains(tag)) {
+        registry.observeHandler(tag, this) { handler ->
+          attachReadyHandler(handler, actionType, viewTag)
         }
+        subscribedHandlers.add(tag)
       }
     }
 
     for (tag in handlersToDetach) {
-      registry.detachHandler(tag)
+      registry.cancelObservation(tag, this)
+      if (attachedHandlers.contains(tag)) {
+        registry.detachHandlerFromHostDetector(tag, this)
+        attachedHandlers.remove(tag)
+      }
+      subscribedHandlers.remove(tag)
       nativeHandlers.remove(tag)
-      attachedHandlers.remove(tag)
-    }
-
-    val child = getChildAt(0)
-
-    // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
-    if (child != null) {
-      tryAttachNativeHandlersToChildView(child.id)
     }
   }
 
+  // Invoked from the registry's `observeHandler` callback once the handler is known to exist.
+  // Branches on handler kind + actionType to pick the right binding flow. May be called multiple
+  // times for the same tag (handler re-registration), so each branch must be idempotent.
+  private fun attachReadyHandler(handler: GestureHandler, actionType: Int, viewTag: Int) {
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+
+    if (handler.wantsToAttachDirectlyToView() && actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+      assert(childCount <= 1) {
+        "Cannot attach native gesture handlers when the detector has multiple children"
+      }
+      nativeHandlers.add(handler.tag)
+      if (childCount != 0) {
+        tryAttachNativeHandlersToChildView(getChildAt(0))
+      }
+      return
+    }
+
+    registry.attachHandlerToView(handler.tag, viewTag, actionType, this)
+    if (actionType == GestureHandler.ACTION_TYPE_VIRTUAL_DETECTOR) {
+      handler.hostDetectorView = this
+    }
+    attachedHandlers.add(handler.tag)
+  }
+
   private fun attachVirtualChildren(virtualChildrenToAttach: List<VirtualChildren>) {
-    val virtualChildrenToDetach = attachedVirtualHandlers.keys.toMutableSet()
+    val virtualChildrenToDetach = subscribedVirtualHandlers.keys.toMutableSet()
 
     for (child in virtualChildrenToAttach) {
       virtualChildrenToDetach.remove(child.viewTag)
@@ -129,33 +152,63 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       ?: throw Exception("Tried to access a non-existent registry")
 
     for (child in virtualChildrenToDetach) {
-      for (tag in attachedVirtualHandlers[child]!!) {
-        registry.detachHandler(tag)
+      for (tag in subscribedVirtualHandlers[child]!!) {
+        registry.cancelObservation(tag, this)
+        if (attachedHandlers.contains(tag)) {
+          registry.detachHandlerFromHostDetector(tag, this)
+          attachedHandlers.remove(tag)
+        }
       }
-      attachedVirtualHandlers.remove(tag)
+      subscribedVirtualHandlers.remove(child)
     }
 
     for (child in virtualChildrenToAttach) {
-      if (!attachedVirtualHandlers.containsKey(child.viewTag)) {
-        attachedVirtualHandlers[child.viewTag] = mutableSetOf()
+      if (!subscribedVirtualHandlers.containsKey(child.viewTag)) {
+        subscribedVirtualHandlers[child.viewTag] = mutableSetOf()
       }
 
       attachHandlers(
         child.handlerTags,
         child.viewTag,
         GestureHandler.ACTION_TYPE_VIRTUAL_DETECTOR,
-        attachedVirtualHandlers[child.viewTag]!!,
+        subscribedVirtualHandlers[child.viewTag]!!,
       )
     }
   }
 
-  private fun tryAttachNativeHandlersToChildView(childId: Int) {
+  private fun tryAttachNativeHandlersToChildView(child: View) {
+    if (nativeHandlers.isEmpty()) {
+      return
+    }
+
+    assert(childCount == 1) {
+      "Cannot have more than one child view when native gesture handlers are attached to the detector"
+    }
+
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
-    for (tag in nativeHandlers) {
-      registry.attachHandlerToView(tag, childId, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
+    // In the native view hierarchy, a ScrollView is a child of a RefreshControl.
+    // When attaching Native gestures to a ScrollView, first check if it is wrapped by a RefreshControl.
+    // If so, attach the handler to the child of RefreshControl, not the RefreshControl itself.
+    // Note: RefreshControl is wrapped with a VirtualDetector, and native gestures for it are attached in `attachVirtualChildren`.
+    val id = if (child is ReactSwipeRefreshLayout) {
+      child.getChildAt(0).id
+      // TODO: figure out how to do it correctly
+    } else if (child is ViewGroup && child.isNotEmpty()) {
+      child.tryFindGestureHandlerButton()?.id ?: child.id
+    } else {
+      child.id
+    }
 
+    for (tag in nativeHandlers) {
+      // Defensive: a tag may be in `nativeHandlers` from an earlier ready callback but the
+      // underlying handler may have been dropped since. Skip; a re-registration will fire the
+      // observation again.
+      if (registry.getHandler(tag) == null) {
+        continue
+      }
+      registry.attachHandlerToView(tag, id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, this)
       attachedHandlers.add(tag)
     }
   }
@@ -165,7 +218,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       ?: throw Exception("Tried to access a non-existent registry")
 
     for (tag in nativeHandlers) {
-      registry.detachHandler(tag)
+      if (!attachedHandlers.contains(tag)) {
+        continue
+      }
+      registry.detachHandlerFromHostDetector(tag, this)
       attachedHandlers.remove(tag)
     }
   }
@@ -175,21 +231,21 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     eventDispatcher?.dispatchEvent(event)
   }
 
-  fun onViewDrop() {
-    val registry = RNGestureHandlerModule.registries[moduleId]
-      ?: throw Exception("Tried to access a non-existent registry")
-
-    for (tag in attachedHandlers.toMutableSet()) {
-      registry.detachHandler(tag)
-      attachedHandlers.remove(tag)
-    }
-
-    for (child in attachedVirtualHandlers) {
-      for (tag in child.value) {
-        registry.detachHandler(tag)
+  fun detachAllHandlers() {
+    RNGestureHandlerModule.registries[moduleId]?.let { registry ->
+      registry.cancelAllObservationsForOwner(this)
+      for (tag in attachedHandlers) {
+        registry.detachHandlerFromHostDetector(tag, this)
       }
-      child.value.clear()
     }
+    attachedHandlers.clear()
+    subscribedVirtualHandlers.clear()
+    subscribedHandlers.clear()
+    nativeHandlers.clear()
+  }
+
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    RNGestureHandlerRootView.findGestureHandlerRootView(this)?.recordHandlerIfNotPresent(handler)
   }
 
   private fun ReadableArray.mapVirtualChildren(): List<VirtualChildren> = List(size()) { i ->
@@ -201,4 +257,15 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }.filterNotNull()
 
   private fun ReadableArray.toIntList(): List<Int> = List(size()) { getInt(it) }
+
+  private fun ViewGroup.tryFindGestureHandlerButton(): RNGestureHandlerButtonViewManager.ButtonViewGroup? {
+    if (isNotEmpty()) {
+      val child = getChildAt(0)
+      if (child is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
+        return child
+      }
+    }
+
+    return null
+  }
 }

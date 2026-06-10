@@ -1,17 +1,19 @@
-import React from 'react';
-import styles from './styles.module.css';
+/* eslint-disable import-x/extensions */
+import { useColorMode } from '@docusaurus/theme-common';
 import Arrow from '@site/static/img/Arrow.svg';
 import ArrowDark from '@site/static/img/Arrow-dark.svg';
-import { useColorMode } from '@docusaurus/theme-common';
 import clsx from 'clsx';
+import React from 'react';
+
+import styles from './styles.module.css';
 
 const CollapseButton: React.FC<{
   label: string;
-  labelCollapsed: string;
+  expandedLabel: string;
   collapsed: boolean;
   onCollapse: () => void;
   className?: string;
-}> = ({ label, labelCollapsed, collapsed, onCollapse, className }) => {
+}> = ({ label, expandedLabel, collapsed, onCollapse, className }) => {
   const { colorMode } = useColorMode();
 
   return (
@@ -25,7 +27,7 @@ const CollapseButton: React.FC<{
         <ArrowDark className={styles.arrow} />
       )}
 
-      <button>{collapsed ? labelCollapsed : label}</button>
+      <button type="button">{collapsed ? label : expandedLabel}</button>
     </div>
   );
 };

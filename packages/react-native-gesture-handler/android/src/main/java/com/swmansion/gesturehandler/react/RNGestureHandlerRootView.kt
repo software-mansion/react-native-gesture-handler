@@ -5,11 +5,13 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.view.ReactViewGroup
+import com.swmansion.gesturehandler.core.GestureHandler
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var moduleId: Int = -1
@@ -39,14 +41,29 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     rootHelper?.tearDown()
   }
 
-  override fun dispatchTouchEvent(event: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
-    true
-  } else {
-    super.dispatchTouchEvent(event)
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    rootHelper?.recordHandlerIfNotPresent(handler)
+  }
+
+  override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+    // When starting a new event stream, dispatch CANCEL event so the subtree
+    // can clean up its internal state that may be stale due to Gesture Handler
+    // starting to intercept events mid-stream.
+    if (rootViewEnabled && event.actionMasked == MotionEvent.ACTION_DOWN) {
+      val cancelEvent = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_CANCEL }
+      super.dispatchTouchEvent(cancelEvent)
+      cancelEvent.recycle()
+    }
+
+    return if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
+      true
+    } else {
+      super.dispatchTouchEvent(event)
+    }
   }
 
   override fun dispatchGenericMotionEvent(ev: MotionEvent) =
-    if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(ev)) {
+    if (rootViewEnabled && ev.isHoverAction() && rootHelper!!.dispatchTouchEvent(ev)) {
       true
     } else {
       super.dispatchGenericMotionEvent(ev)
@@ -86,6 +103,20 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
         parent = parent.parent
       }
       return false
+    }
+
+    fun findGestureHandlerRootView(viewGroup: ViewGroup): RNGestureHandlerRootView? {
+      var parent: ViewParent? = viewGroup.parent
+      var gestureHandlerRootView: RNGestureHandlerRootView? = null
+
+      while (parent != null) {
+        if (parent is RNGestureHandlerRootView) {
+          gestureHandlerRootView = parent
+        }
+        parent = parent.parent
+      }
+
+      return gestureHandlerRootView
     }
   }
 }
