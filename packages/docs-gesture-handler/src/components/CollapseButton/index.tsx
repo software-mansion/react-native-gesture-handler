@@ -1,10 +1,11 @@
 /* eslint-disable import-x/extensions */
-import React from 'react';
-import styles from './styles.module.css';
+import { useColorMode } from '@docusaurus/theme-common';
 import Arrow from '@site/static/img/Arrow.svg';
 import ArrowDark from '@site/static/img/Arrow-dark.svg';
-import { useColorMode } from '@docusaurus/theme-common';
 import clsx from 'clsx';
+import React from 'react';
+
+import styles from './styles.module.css';
 
 const CollapseButton: React.FC<{
   label: string;

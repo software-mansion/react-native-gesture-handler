@@ -1,6 +1,7 @@
-import React from 'react';
-import styles from './styles.module.css';
 import HomepageButton from '@site/src/components/HomepageButton';
+import React from 'react';
+
+import styles from './styles.module.css';
 
 const StartScreen = () => {
   return (
