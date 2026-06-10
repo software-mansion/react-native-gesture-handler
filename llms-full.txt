@@ -483,13 +483,21 @@ minSwipeDistance?: number;
 
 Minimal distance to swipe before the drawer starts moving.
 
+### rootContainerStyle
+
+```ts
+rootContainerStyle?: StyleProp<ViewStyle>;
+```
+
+Style applied to the outermost container that wraps both the content view and the drawer. Note that this container has `flex: 1` and `overflow: 'hidden'` applied by default.
+
 ### contentContainerStyle
 
 ```ts
 contentContainerStyle?: StyleProp<ViewStyle>;
 ```
 
-Style of the content view container.
+Style applied to the container wrapping the content view (the [`children`](#children)) and the background overlay.
 
 ### drawerContainerStyle
 
@@ -497,7 +505,7 @@ Style of the content view container.
 drawerContainerStyle?: StyleProp<ViewStyle>;
 ```
 
-Style wrapping the drawer.
+Style applied to the container wrapping the drawer (the view returned by [`renderNavigationView`](#rendernavigationview)).
 
 ### edgeWidth
 
