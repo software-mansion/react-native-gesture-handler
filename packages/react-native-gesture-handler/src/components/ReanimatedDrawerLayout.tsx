@@ -198,9 +198,9 @@ export interface DrawerLayoutProps {
   drawerContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-  * Style wrapping the background component.
-  */
-  backgroundContainerStyle?: StyleProp<ViewStyle>;
+   * Style wrapping the background component.
+   */
+  rootContainerStyle?: StyleProp<ViewStyle>;
 
   /**
    * Enables two-finger gestures on supported devices, for example iPads with
@@ -287,7 +287,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       drawerType = defaultProps.drawerType,
       drawerBackgroundColor,
       drawerContainerStyle,
-      backgroundContainerStyle,
+      rootContainerStyle,
       contentContainerStyle,
       minSwipeDistance = defaultProps.minSwipeDistance,
       edgeWidth = defaultProps.edgeWidth,
@@ -674,7 +674,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         gesture={panGesture}
         userSelect={userSelect}
         enableContextMenu={enableContextMenu}>
-        <Animated.View style={[styles.main, backgroundContainerStyle]} onLayout={handleContainerLayout}>
+        <Animated.View
+          style={[styles.main, rootContainerStyle]}
+          onLayout={handleContainerLayout}>
           <GestureDetector gesture={overlayDismissGesture}>
             <Animated.View
               style={[
