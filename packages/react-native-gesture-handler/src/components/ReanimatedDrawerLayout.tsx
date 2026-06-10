@@ -188,17 +188,20 @@ export type DrawerLayoutProps = {
   overlayColor?: string;
 
   /**
-   * Style wrapping the content.
+   * Style applied to the container wrapping the content view (the `children`)
+   * and the background overlay.
    */
   contentContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-   * Style wrapping the drawer.
+   * Style applied to the container wrapping the drawer (the view returned by
+   * `renderNavigationView`).
    */
   drawerContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-   * Style wrapping the background component.
+   * Style applied to the outermost container that wraps both the content view
+   * and the drawer.
    */
   rootContainerStyle?: StyleProp<ViewStyle>;
 
