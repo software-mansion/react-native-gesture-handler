@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import * as prettier from 'prettier/standalone';
-import tsParser from 'prettier/plugins/typescript';
 import estreeParser from 'prettier/plugins/estree';
+import tsParser from 'prettier/plugins/typescript';
+import * as prettier from 'prettier/standalone';
+import { useEffect, useState } from 'react';
 
 const prettierOptions = {
   parser: 'typescript',
