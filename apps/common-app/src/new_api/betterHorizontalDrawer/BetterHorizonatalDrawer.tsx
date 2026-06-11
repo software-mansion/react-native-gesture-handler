@@ -19,6 +19,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
+  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -42,7 +43,7 @@ export interface BetterDrawerLayoutProps {
    * while the drawer is opening or closing.
    */
   renderNavigationView: (
-    progressAnimatedValue: Animated.SharedValue<number>
+    progressAnimatedValue: SharedValue<number>
   ) => React.ReactNode;
 
   drawerPosition?: DrawerPosition;
@@ -134,7 +135,7 @@ export interface BetterDrawerLayoutProps {
 interface OverlayProps {
   drawerType: DrawerType;
   color: string;
-  progress: Animated.SharedValue<number>;
+  progress: SharedValue<number>;
   lockMode: DrawerLockMode;
   close: () => void;
 }

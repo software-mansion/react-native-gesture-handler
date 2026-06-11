@@ -2397,7 +2397,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated (4.2.3):
+  - RNReanimated (4.3.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2424,11 +2424,12 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 4.2.3)
+    - RNReanimated/apple (= 4.3.1)
+    - RNReanimated/common (= 4.3.1)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated (4.2.3):
+  - RNReanimated/apple (4.3.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2455,11 +2456,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 4.2.3)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated/apple (4.2.3):
+  - RNReanimated/common (4.3.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2546,7 +2546,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets (0.7.4):
+  - RNWorklets (0.8.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -2573,10 +2573,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets (= 0.7.4)
+    - RNWorklets/apple (= 0.8.3)
+    - RNWorklets/common (= 0.8.3)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets (0.7.4):
+  - RNWorklets/apple (0.8.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -2603,10 +2604,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets/apple (= 0.7.4)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets/apple (0.7.4):
+  - RNWorklets/common (0.8.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -2954,9 +2954,9 @@ SPEC CHECKSUMS:
   ReactCommon: 9f8189efbc1aa52926df2791a2e47b3340353849
   RNCAsyncStorage: 7e57f4fe4332cbf21bf6bdbffaf9fd34c9268abd
   RNGestureHandler: e667a8d7128ff261440323c6c13693a6195037ed
-  RNReanimated: 0017f5b53563a6d2c7801d81bdb12ac346214d82
+  RNReanimated: 475b050772aaddb82af69ddb607ea2fcbca9a233
   RNSVG: 4dd2d79b3cb224bcb3ae666a2adda2ede9d3772f
-  RNWorklets: ca03ce776c15a592ef0700386071466810c41ea0
+  RNWorklets: 81607e980aa2b80a7ae07313f2a167ed4d4d3871
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 6048a55441c73f8e3916a8eac6b83886708c77f9
 
