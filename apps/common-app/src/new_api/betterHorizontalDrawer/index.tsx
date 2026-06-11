@@ -8,6 +8,7 @@ import {
   DrawerLayout,
 } from './BetterHorizonatalDrawer';
 import Animated, {
+  SharedValue,
   useAnimatedStyle,
   interpolate,
 } from 'react-native-reanimated';
@@ -57,7 +58,7 @@ function Page({
 }
 
 function DrawerContent(
-  offset: Animated.SharedValue<number>,
+  offset: SharedValue<number>,
   parallax: boolean,
   fromLeft: boolean
 ) {

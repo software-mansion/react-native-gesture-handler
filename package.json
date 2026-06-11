@@ -22,6 +22,7 @@
     "@types/react": "^19.0.12",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
+    "@yarnpkg/types": "^4.0.1",
     "eslint": "^8.57.0",
     "eslint-config-satya164": "3.3.0",
     "eslint-import-resolver-babel-module": "^5.2.0",

@@ -1,12 +1,12 @@
-import ViewPagerAndroid from '@react-native-community/viewpager';
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import {
   createNativeWrapper,
   DrawerLayoutAndroid,
 } from 'react-native-gesture-handler';
+import PagerView from 'react-native-pager-view';
 
-const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid, {
+const WrappedPagerView = createNativeWrapper(PagerView, {
   disallowInterruption: true,
 });
 
@@ -33,7 +33,7 @@ export default class Example extends Component {
       </View>
     );
     return (
-      <WrappedViewPagerAndroid style={styles.container}>
+      <WrappedPagerView style={styles.container}>
         <View>
           <DrawerLayoutAndroid
             drawerWidth={200}
@@ -52,7 +52,7 @@ export default class Example extends Component {
             <Page backgroundColor="blue" text="Fourth 😎" />
           </DrawerLayoutAndroid>
         </View>
-      </WrappedViewPagerAndroid>
+      </WrappedPagerView>
     );
   }
 }

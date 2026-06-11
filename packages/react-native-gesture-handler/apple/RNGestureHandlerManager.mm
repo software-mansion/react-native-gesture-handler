@@ -435,11 +435,11 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)sendEventForNativeAnimatedEvent:(RNGestureHandlerStateChange *)event
 {
-  // Delivers the event to NativeAnimatedModule.
-  // Currently, NativeAnimated[Turbo]Module is RCTEventDispatcherObserver so we can
-  // simply send a direct event which is handled by the observer but ignored on JS side.
-  // TODO: send event directly to NativeAnimated[Turbo]Module
-  [self sendEventForDirectEvent:event];
+  // Delivers the event to NativeAnimated[Turbo]Module via the dispatcher's
+  // observer mechanism. We don't go through sendEvent: because that also
+  // dispatches the event to JS via RCTEventEmitter.receiveEvent, which is no
+  // longer a registered callable module in RN 0.86+ (Fabric-only).
+  [_eventDispatcher notifyObserversOfEvent:event];
 }
 
 - (void)sendEventForJSFunctionOldAPI:(RNGestureHandlerStateChange *)event
@@ -456,12 +456,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 {
   // Delivers the event to JS (new RNGH API).
   [self sendEventForDeviceEvent:event];
-}
-
-- (void)sendEventForDirectEvent:(RNGestureHandlerStateChange *)event
-{
-  // Delivers the event to JS as a direct event.
-  [_eventDispatcher sendEvent:event];
 }
 
 - (void)sendEventForDeviceEvent:(RNGestureHandlerStateChange *)event
