@@ -25,9 +25,6 @@ jest.mock('./lib/module/components/GestureButtons', () =>
 jest.mock('./lib/module/components/Pressable', () =>
   require('./lib/module/mocks/Pressable')
 );
-jest.mock('./lib/module/components/GestureComponents', () =>
-  require('./lib/module/mocks/gestureComponents')
-);
 
 jest.mock('react-native-worklets', () =>
   require('react-native-worklets/src/mock')
