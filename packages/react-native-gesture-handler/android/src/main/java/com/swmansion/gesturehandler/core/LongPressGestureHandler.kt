@@ -199,7 +199,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
         handler.maxDist = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DIST))
       }
       if (config.hasKey(KEY_NUMBER_OF_POINTERS)) {
-        handler.numberOfPointers = config.getInt(KEY_NUMBER_OF_POINTERS)
+        handler.numberOfPointersRequired = config.getInt(KEY_NUMBER_OF_POINTERS)
       }
     }
 
