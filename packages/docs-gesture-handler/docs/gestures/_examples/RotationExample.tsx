@@ -5,16 +5,16 @@ import {
   useRotationGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
 } from 'react-native-reanimated';
 
 export default function App() {
-  const rotation = useSharedValue(1);
+  const rotation = useSharedValue(0);
 
   const rotationGesture = useRotationGesture({
     onUpdate: (e) => {
-      rotation.value = savedRotation.value + e.rotation;
+      rotation.value += e.rotationChange;
     },
   });
 

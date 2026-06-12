@@ -16,6 +16,7 @@ export interface RawButtonProps
       | 'activeOpacity'
       | 'activeScale'
       | 'activeUnderlayOpacity'
+      | 'needsOffscreenAlphaCompositing'
     >,
     Omit<
       NativeWrapperProperties<React.ComponentRef<typeof GestureHandlerButton>>,

@@ -411,7 +411,10 @@ open class GestureHandler {
       }
     }
 
-    numberOfPointers = adaptedTransformedEvent.pointerCount
+    numberOfPointers = when (adaptedTransformedEvent.actionMasked) {
+      MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
+      else -> adaptedTransformedEvent.pointerCount
+    }
 
     x = adaptedTransformedEvent.x
     y = adaptedTransformedEvent.y

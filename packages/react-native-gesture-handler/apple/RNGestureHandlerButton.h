@@ -51,6 +51,11 @@
  */
 - (void)applyStartAnimationState;
 
+#if TARGET_OS_TV
+- (void)handleAnimatePressIn;
+- (void)handleAnimatePressOut;
+#endif // TARGET_OS_TV
+
 /**
  * Resets all transient press/animation state so the button can be safely reused
  * by Fabric view recycling. Cancels pending press-out blocks, removes in-flight

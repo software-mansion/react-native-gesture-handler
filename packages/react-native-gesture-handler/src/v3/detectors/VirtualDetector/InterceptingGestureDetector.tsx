@@ -18,7 +18,8 @@ import { AnimatedNativeDetector, nativeDetectorStyles } from '../common';
 import HostGestureDetector from '../HostGestureDetector';
 import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
 import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
-import { configureRelations, ensureNativeDetectorComponent } from '../utils';
+import { useGestureRelationsUpdater } from '../useGestureRelationsUpdater';
+import { ensureNativeDetectorComponent } from '../utils';
 import type { InterceptingDetectorContextValue } from './useInterceptingDetectorContext';
 import {
   InterceptingDetectorContext,
@@ -221,9 +222,7 @@ export function InterceptingGestureDetector<
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
 
-  if (gesture) {
-    configureRelations(gesture);
-  }
+  useGestureRelationsUpdater(gesture);
 
   const handlerTags = useMemo(() => {
     if (gesture) {

@@ -147,6 +147,10 @@
   [super viewWillMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self applyStartAnimationState];
+    _isTouchInsideBounds = NO;
+    _suppressSuperControlActionDispatch = NO;
+    _pressInTimestamp = 0;
   }
 }
 #else
@@ -155,6 +159,10 @@
   [super willMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self applyStartAnimationState];
+    _isTouchInsideBounds = NO;
+    _suppressSuperControlActionDispatch = NO;
+    _pressInTimestamp = 0;
   }
 }
 #endif
@@ -193,10 +201,27 @@
   [self applyUnderlayCornerRadii];
 }
 
+- (BOOL)shouldReduceMotion
+{
+#if TARGET_OS_OSX
+  return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceMotion];
+#else
+  return UIAccessibilityIsReduceMotionEnabled();
+#endif
+}
+
 - (void)animateUnderlayToOpacity:(float)toOpacity duration:(NSTimeInterval)durationMs
 {
-  _underlayLayer.opacity =
-      _underlayLayer.presentationLayer ? [_underlayLayer.presentationLayer opacity] : _underlayLayer.opacity;
+  if ([self shouldReduceMotion]) {
+    durationMs = 0;
+  }
+  // Only sync the model from the presentation layer when an animation is actually
+  // in flight.
+  CALayer *presentation = _underlayLayer.presentationLayer;
+  BOOL hasInFlightAnimation = presentation != nil && _underlayLayer.animationKeys.count > 0;
+  if (hasInFlightAnimation) {
+    _underlayLayer.opacity = presentation.opacity;
+  }
   [_underlayLayer removeAllAnimations];
 
   // CABasicAnimation with duration 0 resolves to the current CATransaction's
@@ -258,19 +283,63 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #endif
 }
 
+// Duration of a single frame at the current screen's max refresh rate, in ms.
+- (NSTimeInterval)minFrameDurationMs
+{
+#if !TARGET_OS_OSX
+  UIScreen *screen = self.window.screen ?: UIScreen.mainScreen;
+  NSInteger maxFps = screen.maximumFramesPerSecond;
+#else
+  NSScreen *screen = self.window.screen ?: NSScreen.mainScreen;
+  NSInteger maxFps = 60;
+  if (@available(macOS 12.0, *)) {
+    maxFps = screen.maximumFramesPerSecond;
+  }
+#endif
+  return maxFps > 0 ? 1000.0 / (NSTimeInterval)maxFps : 1000.0 / 60.0;
+}
+
 - (void)animateTarget:(RNGHUIView *)target
             toOpacity:(CGFloat)opacity
                 scale:(CGFloat)scale
              duration:(NSTimeInterval)durationMs
 {
-  target.layer.transform =
-      target.layer.presentationLayer ? target.layer.presentationLayer.transform : target.layer.transform;
-  NSTimeInterval duration = durationMs / 1000.0;
+  if ([self shouldReduceMotion]) {
+    durationMs = 0;
+  }
+  CALayer *layer = target.layer;
+  CALayer *presentation = layer.presentationLayer;
+  NSTimeInterval snapThresholdMs = [self minFrameDurationMs];
+
+  // Only snap to the presentation layer when an animation is in flight,
+  // that's the only case where it tells us something the model layer doesn't.
+  BOOL hasInFlightAnimation = presentation != nil && layer.animationKeys.count > 0;
+  if (hasInFlightAnimation) {
+    layer.transform = presentation.transform;
+  }
 
 #if !TARGET_OS_OSX
-  target.alpha = target.layer.presentationLayer ? target.layer.presentationLayer.opacity : target.alpha;
-  [target.layer removeAllAnimations];
+  if (hasInFlightAnimation) {
+    target.alpha = presentation.opacity;
+  }
+  [layer removeAllAnimations];
 
+  // Sub-frame durations: snap with implicit actions disabled instead of
+  // routing through UIView.animate. Same rationale as animateUnderlayToOpacity.
+  if (durationMs < snapThresholdMs) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+      target.alpha = opacity;
+    }
+    if (_activeScale != 1.0 || _defaultScale != 1.0) {
+      layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
+    }
+    [CATransaction commit];
+    return;
+  }
+
+  NSTimeInterval duration = durationMs / 1000.0;
   [UIView animateWithDuration:duration
                         delay:0
                       options:UIViewAnimationOptionCurveEaseInOut
@@ -285,9 +354,25 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                    completion:nil];
 #else
   target.wantsLayer = YES;
-  target.alphaValue = target.layer.presentationLayer ? target.layer.presentationLayer.opacity : target.alphaValue;
-  [target.layer removeAllAnimations];
+  if (hasInFlightAnimation) {
+    target.alphaValue = presentation.opacity;
+  }
+  [layer removeAllAnimations];
 
+  if (durationMs < snapThresholdMs) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+      target.alphaValue = opacity;
+    }
+    if (_activeScale != 1.0 || _defaultScale != 1.0) {
+      layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
+    }
+    [CATransaction commit];
+    return;
+  }
+
+  NSTimeInterval duration = durationMs / 1000.0;
   [NSAnimationContext
       runAnimationGroup:^(NSAnimationContext *context) {
         context.allowsImplicitAnimation = YES;
@@ -375,8 +460,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         }
       }
     });
+    NSTimeInterval scheduledDelay = [self shouldReduceMotion] ? 0 : remaining;
     dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)),
+        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(scheduledDelay * NSEC_PER_MSEC)),
         dispatch_get_main_queue(),
         _pendingPressOutBlock);
   }
@@ -764,7 +850,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   for (UIGestureRecognizer *recognizer in enabledGestureRecognizers) {
     RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:recognizer];
     if (handler != nil) {
-      CGPoint pointInView = [self convertPoint:point toView:view];
+      CGPoint pointInView = [self convertPoint:point toView:handler.recognizer.view];
       gestureRecognizerWantsEvent = [handler wantsToHandleEventsAtPoint:pointInView];
     } else {
       gestureRecognizerWantsEvent = YES;

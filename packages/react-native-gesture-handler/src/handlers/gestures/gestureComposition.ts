@@ -31,16 +31,29 @@ export class ComposedGesture extends Gesture {
     requireGesturesToFail: GestureType[]
   ) {
     if (gesture instanceof BaseGesture) {
+      // Capture the relations defined directly on the gesture before composition
+      // extends them, then always rebuild from that snapshot. Otherwise, when the
+      // gesture is stable (e.g. wrapped in `useMemo`) but the composition is
+      // recreated on every render, the relations would keep accumulating
+      // references to gestures from previous renders, leaking memory (see #3763).
+      // We keep the original references (instead of collapsing them to handler
+      // tags) so relations can still be re-resolved after a remount, such as a
+      // `react-freeze` unfreeze (see #4238).
+      gesture.relationsSnapshot ??= {
+        simultaneousWith: gesture.config.simultaneousWith,
+        requireToFail: gesture.config.requireToFail,
+      };
+
       const newConfig = { ...gesture.config };
 
       // No need to extend `blocksHandlers` here, because it's not changed in composition.
       // The same effect is achieved by reversing the order of 2 gestures in `Exclusive`
       newConfig.simultaneousWith = extendRelation(
-        newConfig.simultaneousWith,
+        gesture.relationsSnapshot.simultaneousWith,
         simultaneousGestures
       );
       newConfig.requireToFail = extendRelation(
-        newConfig.requireToFail,
+        gesture.relationsSnapshot.requireToFail,
         requireGesturesToFail
       );
 

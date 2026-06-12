@@ -145,13 +145,6 @@ class GestureHandlerOrchestrator(
   fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
 
-    if (isFinished(newState) && handler.isActive && handler.cancelsJSResponder) {
-      // Check if there are any other active handlers that still request the JS responder to be cancelled.
-      if (gestureHandlers.none { it !== handler && it.isActive && it.cancelsJSResponder }) {
-        onJSResponderCancelListener?.onCancelJSResponderReleased(handler)
-      }
-    }
-
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
       // while iterating over its elements
@@ -191,14 +184,16 @@ class GestureHandlerOrchestrator(
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
       if (handler.isActive) {
         handler.dispatchStateChange(newState, prevState)
-      } else if (prevState == GestureHandler.STATE_ACTIVE &&
-        (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED)
+      } else if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED
       ) {
         // Handle edge case where handler awaiting for another one tries to activate but finishes
         // before the other would not send state change event upon ending. Note that we only want
         // to do this if the newState is either CANCELLED or FAILED, if it is END we still want to
         // wait for the other handler to finish as in that case synthetic events will be sent by the
         // makeActive method.
+        // This also covers the case where a discrete gesture (e.g. Tap) ends immediately after
+        // activation (STATE_ACTIVE -> STATE_END) while still awaiting another handler, and is later
+        // cancelled when that handler activates.
         handler.dispatchStateChange(newState, GestureHandler.STATE_BEGAN)
       }
     } else if (prevState != GestureHandler.STATE_UNDETERMINED ||
@@ -497,7 +492,7 @@ class GestureHandlerOrchestrator(
       top + view.height > parent.height
   }
 
-  private fun extractAncestorHandlers(view: View, coords: FloatArray, pointerId: Int): Boolean {
+  private fun extractAncestorHandlers(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean {
     var found = false
     var parent = view.parent
 
@@ -514,6 +509,10 @@ class GestureHandlerOrchestrator(
         handlerRegistry.getHandlersForView(parent)?.let {
           synchronized(it) {
             for (handler in it) {
+              if (shouldHandlerSkipHoverEvents(handler, event)) {
+                continue
+              }
+
               if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
                 found = true
                 recordHandlerIfNotPresent(handler, parentViewGroup)
@@ -573,15 +572,21 @@ class GestureHandlerOrchestrator(
     if (coords[0] in 0f..view.width.toFloat() &&
       coords[1] in 0f..view.height.toFloat() &&
       isViewOverflowingParent(view) &&
-      extractAncestorHandlers(view, coords, pointerId)
+      extractAncestorHandlers(view, coords, pointerId, event)
     ) {
       found = true
     }
 
     if (view is ReactCompoundView) {
-      val tagForCoords = view.reactTagForTouch(coords[0], coords[1])
+      // Some implementations (e.g. RNScreens' DimmingView) intentionally throw from `reactTagForTouch`
+      val tagForCoords =
+        try {
+          view.reactTagForTouch(coords[0], coords[1])
+        } catch (e: IllegalStateException) {
+          null
+        }
 
-      if (tagForCoords != view.id) {
+      if (tagForCoords != null && tagForCoords != view.id) {
         handlerRegistry.getHandlersForViewWithTag(tagForCoords)?.let {
           synchronized(it) {
             for (handler in it) {

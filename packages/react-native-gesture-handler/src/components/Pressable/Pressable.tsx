@@ -34,6 +34,7 @@ import {
   gestureTouchToPressableEvent,
   isTouchWithinInset,
   numberAsInset,
+  viewCenterToPressableEvent,
 } from './utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
@@ -301,6 +302,13 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           }
         })
         .onBegin(() => {
+          if (Platform.OS === 'android' && isScreenReaderEnabled) {
+            stateMachine.handleEvent(
+              StateMachineEvent.NATIVE_BEGIN,
+              viewCenterToPressableEvent(dimensions.current)
+            );
+            return;
+          }
           stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
         })
         .onStart(() => {
@@ -325,7 +333,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           }
         })
         .shouldActivateOnStart(Platform.OS === 'web'),
-    [stateMachine, handlePressOut, handleFinalize]
+    [stateMachine, handlePressOut, handleFinalize, isScreenReaderEnabled]
   );
 
   const isPressableEnabled = disabled !== true;
@@ -377,6 +385,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
+        needsOffscreenAlphaCompositing
         onLayout={setDimensions}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}

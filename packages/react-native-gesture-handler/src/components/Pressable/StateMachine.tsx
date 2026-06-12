@@ -3,6 +3,7 @@ import type { PressableEvent } from './PressableProps';
 export interface StateDefinition {
   eventName: string;
   callback?: (event: PressableEvent) => void;
+  optional?: boolean;
 }
 
 class PressableStateMachine {
@@ -30,9 +31,23 @@ class PressableStateMachine {
       return;
     }
 
-    const step = this.states[this.currentStepIndex];
     this.eventPayload = eventPayload || this.eventPayload;
 
+    // Skip past optional steps that don't match the incoming event
+    while (
+      this.currentStepIndex < this.states.length &&
+      this.states[this.currentStepIndex].eventName !== eventName &&
+      this.states[this.currentStepIndex].optional
+    ) {
+      this.currentStepIndex++;
+    }
+
+    if (this.currentStepIndex >= this.states.length) {
+      this.reset();
+      return;
+    }
+
+    const step = this.states[this.currentStepIndex];
     if (step.eventName !== eventName) {
       if (this.currentStepIndex > 0) {
         // retry with position at index 0

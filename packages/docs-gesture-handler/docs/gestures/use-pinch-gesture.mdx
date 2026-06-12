@@ -61,7 +61,7 @@ export default function App() {
 
   const pinchGesture = usePinchGesture({
     onUpdate: (e) => {
-      scale.value = savedScale.value * e.scale;
+      scale.value *= e.scaleChange;
     },
   });
 
