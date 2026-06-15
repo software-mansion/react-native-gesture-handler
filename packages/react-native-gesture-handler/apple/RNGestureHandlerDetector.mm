@@ -254,14 +254,14 @@
                    withHostDetector:self];
     } else {
       // Hierarchy was folded into a single UIView.
-      [manager.registry attachHandlerWithTag:handler.tag toView:self withActionType:actionType withHostDetector:self];
+      [manager attachHandlerForDetectorWithTag:handler.tag toView:self withActionType:actionType withHostDetector:self];
       handler.virtualViewTag = @(viewTag);
     }
     [_attachedHandlers addObject:handler.tag];
     return;
   }
 
-  [manager.registry attachHandlerWithTag:handler.tag toView:self withActionType:actionType withHostDetector:self];
+  [manager attachHandlerForDetectorWithTag:handler.tag toView:self withActionType:actionType withHostDetector:self];
   [_attachedHandlers addObject:handler.tag];
 }
 
@@ -351,10 +351,10 @@
     if ([handlerManager.registry handlerWithTag:handlerTag] == nil) {
       continue;
     }
-    [handlerManager.registry attachHandlerWithTag:handlerTag
-                                           toView:view
-                                   withActionType:RNGestureHandlerActionTypeNativeDetector
-                                 withHostDetector:self];
+    [handlerManager attachHandlerForDetectorWithTag:handlerTag
+                                             toView:view
+                                     withActionType:RNGestureHandlerActionTypeNativeDetector
+                                   withHostDetector:self];
     [_attachedHandlers addObject:handlerTag];
   }
 }
