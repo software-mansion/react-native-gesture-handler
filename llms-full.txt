@@ -1827,16 +1827,6 @@ export function CustomModal({ children, ...rest }) {
 }
 ```
 
-Gesture Handler on Android is implemented in Kotlin. If you need to set a specific Kotlin version to be used by the library, set the `kotlinVersion` ext property in the `android/build.gradle` file and RNGH will use that version:
-
-```groovy
-buildscript {
-    ext {
-        kotlinVersion = "2.1.20"
-    }
-}
-```
-
 #### iOS
 
 While developing for iOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
