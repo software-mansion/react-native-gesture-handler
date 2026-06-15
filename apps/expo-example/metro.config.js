@@ -27,7 +27,10 @@ config.resolver.blacklistRE = exclusionList(
     modulesBlacklist.map(
       (m) => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
     )
-  )
+  ).concat([
+    // Ignore .rnrepo-cache folder and its contents to avoid watchman Invariant Violation
+    /.*\.rnrepo-cache\/.*/
+  ])
 );
 
 config.transformer.getTransformOptions = async () => ({
