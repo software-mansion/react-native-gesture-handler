@@ -44,7 +44,10 @@ import {
   useSimultaneousGestures,
 } from '../hooks';
 import { PureNativeButton } from './GestureButtons';
-import { JSResponderContext } from './ScrollViewResponderInterceptor';
+import {
+  JSResponderContext,
+  updateResponderEventValue,
+} from './ScrollViewResponderInterceptor';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
@@ -400,11 +403,7 @@ const Pressable = (props: PressableProps) => {
   // when there are no RN responder components between it and this Pressable.
   const handleStartShouldSetResponder = useCallback(() => {
     if (!disabled) {
-      const responderEventRef = jsResponderContext?.isRNGHResponderEvent;
-
-      if (responderEventRef) {
-        responderEventRef.current = true;
-      }
+      updateResponderEventValue(jsResponderContext, true);
     }
 
     return false;

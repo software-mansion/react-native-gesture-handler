@@ -1,7 +1,10 @@
 import { use, useCallback, useEffect, useRef, useState } from 'react';
 
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import { JSResponderContext } from '../components/ScrollViewResponderInterceptor';
+import {
+  JSResponderContext,
+  updateResponderEventValue,
+} from '../components/ScrollViewResponderInterceptor';
 import { type Gesture, type SharedValue, SingleGestureName } from '../types';
 import { isComposedGesture, isGestureEnabled } from './utils';
 import {
@@ -103,11 +106,7 @@ export function useJSResponderHandler<
 
   const handleStartShouldSetResponder = useCallback(() => {
     if (shouldHandleJSResponderEvent()) {
-      const responderEventRef = jsResponderContext?.isRNGHResponderEvent;
-
-      if (responderEventRef) {
-        responderEventRef.current = true;
-      }
+      updateResponderEventValue(jsResponderContext, true);
     }
 
     return false;

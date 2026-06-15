@@ -10,6 +10,17 @@ export type JSResponderContextValue = {
 export const JSResponderContext =
   React.createContext<JSResponderContextValue | null>(null);
 
+export function updateResponderEventValue(
+  jsResponderContext: JSResponderContextValue | null | undefined,
+  value: boolean
+) {
+  const responderEventRef = jsResponderContext?.isRNGHResponderEvent;
+
+  if (responderEventRef) {
+    responderEventRef.current = value;
+  }
+}
+
 type ScrollViewResponderInterceptorProps = PropsWithChildren<{
   keyboardShouldPersistTaps?: RNScrollViewProps['keyboardShouldPersistTaps'];
 }>;
