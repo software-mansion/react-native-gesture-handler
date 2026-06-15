@@ -4,7 +4,10 @@ import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { JSResponderContext } from '../components/ScrollViewResponderInterceptor';
 import { type Gesture, type SharedValue, SingleGestureName } from '../types';
 import { isComposedGesture, isGestureEnabled } from './utils';
-import { SHARED_VALUE_OFFSET } from './utils/reanimatedUtils';
+import {
+  getEnabledSharedValues,
+  SHARED_VALUE_OFFSET,
+} from './utils/reanimatedUtils';
 
 // adding 0.5 to not call Math.random and to make sure that listener ID is not an integer to avoid conflicts
 let nextJSResponderContextListenerId = SHARED_VALUE_OFFSET + 0.5;
@@ -28,25 +31,6 @@ function isSupportedGesture<
     default:
       return false;
   }
-}
-
-function getEnabledSharedValues<
-  TConfig,
-  THandlerData,
-  TExtendedHandlerData extends THandlerData,
->(
-  gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>
-): SharedValue<boolean>[] {
-  if (Reanimated === undefined) {
-    return [];
-  }
-
-  if (isComposedGesture(gesture)) {
-    return gesture.gestures.flatMap(getEnabledSharedValues);
-  }
-
-  const enabled = gesture.config.enabled;
-  return Reanimated.isSharedValue<boolean>(enabled) ? [enabled] : [];
 }
 
 export function useJSResponderHandler<
