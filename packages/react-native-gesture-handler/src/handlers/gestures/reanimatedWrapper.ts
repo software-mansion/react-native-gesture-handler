@@ -75,6 +75,7 @@ let Reanimated:
       useComposedEventHandler<T>(
         handlers: (((event: T) => void) | null)[]
       ): (event: T) => void;
+      // TODO: runOnJS and runOnUI are deprecated. These should be removed in near future.
       runOnJS<A extends unknown[], R>(
         fn: (...args: A) => R
       ): (...args: Parameters<typeof fn>) => void;
