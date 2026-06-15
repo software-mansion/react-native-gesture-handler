@@ -3,24 +3,11 @@ import { use, useCallback, useEffect, useRef, useState } from 'react';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { JSResponderContext } from '../components/ScrollViewResponderInterceptor';
 import { type Gesture, type SharedValue, SingleGestureName } from '../types';
-import { isComposedGesture, maybeUnpackValue } from './utils';
+import { isComposedGesture, isGestureEnabled } from './utils';
 import { SHARED_VALUE_OFFSET } from './utils/reanimatedUtils';
 
 // adding 0.5 to not call Math.random and to make sure that listener ID is not an integer to avoid conflicts
 let nextJSResponderContextListenerId = SHARED_VALUE_OFFSET + 0.5;
-
-function isGestureEnabled<
-  TConfig,
-  THandlerData,
-  TExtendedHandlerData extends THandlerData,
->(gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>): boolean {
-  if (isComposedGesture(gesture)) {
-    // For composed gestures, we need to check if at least one of the composed gestures is enabled
-    return gesture.gestures.some(isGestureEnabled);
-  }
-
-  return maybeUnpackValue(gesture.config.enabled) !== false;
-}
 
 function isSupportedGesture<
   TConfig,

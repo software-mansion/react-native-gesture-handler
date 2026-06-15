@@ -1,4 +1,5 @@
 export {
+  isGestureEnabled,
   prepareConfigForNativeSide,
   useClonedAndRemappedConfig,
 } from './configUtils';
