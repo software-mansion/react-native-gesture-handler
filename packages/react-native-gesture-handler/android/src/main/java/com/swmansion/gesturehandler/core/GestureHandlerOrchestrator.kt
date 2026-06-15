@@ -546,13 +546,33 @@ class GestureHandlerOrchestrator(
     coords: FloatArray,
     pointerId: Int,
     event: MotionEvent,
+    useChildBounds: Boolean = false,
   ): Boolean {
+    var boundsView = view
+    var boundsX = coords[0]
+    var boundsY = coords[1]
+
+    // When `useChildBounds` is set, handler bounds are checked in the coordinate space of the view's
+    // single child instead of against the view itself. The caller only sets this for a native detector
+    // with exactly one child, so its interactive area follows the child's transforms (e.g. `translateX`)
+    // rather than the detector's transform-agnostic frame. For an identity transform the child fills the
+    // detector, so this matches the detector's own frame and `hitSlop` expansion (#4049) keeps working;
+    // for a translated child the area follows the content.
+    if (useChildBounds) {
+      val child = (view as RNGestureHandlerDetectorView).getChildAt(0)
+      val childPoint = tempPoint
+      transformPointToChildViewCoords(coords[0], coords[1], view, child, childPoint)
+      boundsView = child
+      boundsX = childPoint.x
+      boundsY = childPoint.y
+    }
+
     var found = false
     handlerRegistry.getHandlersForView(view)?.let {
       synchronized(it) {
         for (handler in it) {
           // skip disabled and out-of-bounds handlers
-          if (!handler.isEnabled || !handler.isWithinBounds(view, coords[0], coords[1])) {
+          if (!handler.isEnabled || !handler.isWithinBounds(boundsView, boundsX, boundsY)) {
             continue
           }
 
@@ -690,8 +710,16 @@ class GestureHandlerOrchestrator(
             is ViewGroup -> {
               extractGestureHandlers(view, coords, pointerId, event).also { found ->
                 // A child view is handling touch, also extract handlers attached to this view
-                if (found || view is RNGestureHandlerDetectorView) {
+                if (found) {
                   recordViewHandlersForPointer(view, coords, pointerId, event)
+                } else if (view is RNGestureHandlerDetectorView) {
+                  // No child consumed the touch, but we still record the detector's own handlers so
+                  // that `hitSlop` expansion keeps working. The detector's frame ignores
+                  // child transforms, so for a single-child detector we check bounds in the child's
+                  // transform-aware coordinate space - otherwise the detector would steal presses over
+                  // areas its content has been moved away from.
+                  val useChildBounds = view.childCount == 1
+                  recordViewHandlersForPointer(view, coords, pointerId, event, useChildBounds)
                 }
               }
             }
