@@ -22,14 +22,17 @@ config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, 'node_modules'),
 ];
 
+const monorepoExclusions = [monorepoRoot, commonAppRoot].flatMap((root) =>
+  modulesBlacklist.map(
+    (m) => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
+  )
+);
+
+// Concat arrays before passing to exclusionList to prevent runtime crash
 config.resolver.blacklistRE = exclusionList(
-  [monorepoRoot, commonAppRoot].flatMap((root) =>
-    modulesBlacklist.map(
-      (m) => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
-    )
-  ).concat([
-    // Ignore .rnrepo-cache folder and its contents to avoid watchman Invariant Violation
-    /.*\.rnrepo-cache\/.*/
+  monorepoExclusions.concat([
+    // Regex [\/\\] ensures cross-platform compatibility (macOS/Linux/Windows)
+    /.*[\/\\]\.rnrepo-cache[\/\\].*/
   ])
 );
 
