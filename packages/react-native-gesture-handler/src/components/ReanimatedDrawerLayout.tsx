@@ -41,7 +41,10 @@ import type {
   UserSelect,
 } from '../handlers/gestureHandlerCommon';
 import { MouseButton } from '../handlers/gestureHandlerCommon';
-import { GestureDetector } from '../v3/detectors';
+import {
+  InterceptingGestureDetector,
+  VirtualGestureDetector,
+} from '../v3/detectors';
 import type { PanGestureActiveEvent } from '../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
 import type { WithSharedValue } from '../v3/types';
@@ -185,15 +188,28 @@ export type DrawerLayoutProps = {
   overlayColor?: string;
 
   /**
-   * Style wrapping the content.
+   * Style applied to the container wrapping the content view (the `children`)
+   * and the background overlay.
    */
   contentContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-   * Style wrapping the drawer.
+   * Style applied to the container wrapping the drawer (the view returned by
+   * `renderNavigationView`).
    */
   drawerContainerStyle?: StyleProp<ViewStyle>;
 
+  /**
+   * Style applied to the outermost container that wraps both the content view
+   * and the drawer.
+   */
+  rootContainerStyle?: StyleProp<ViewStyle>;
+
+  /**
+   * Called while the drawer is moving or animating, with a `position`
+   * parameter indicating the progress of the opening/closing animation.
+   * It equals `0` when the drawer is closed and `1` when it is fully opened.
+   */
   onDrawerSlide?: (position: number) => void;
 
   // Implicit `children` prop has been removed in @types/react^18.0.
@@ -283,6 +299,7 @@ const DrawerLayout = function DrawerLayout(
     drawerType = defaultProps.drawerType,
     drawerBackgroundColor,
     drawerContainerStyle,
+    rootContainerStyle,
     contentContainerStyle,
     minSwipeDistance = defaultProps.minSwipeDistance,
     edgeWidth = defaultProps.edgeWidth,
@@ -657,12 +674,14 @@ const DrawerLayout = function DrawerLayout(
   );
 
   return (
-    <GestureDetector
+    <InterceptingGestureDetector
       gesture={panGesture}
       userSelect={userSelect}
       enableContextMenu={enableContextMenu}>
-      <Animated.View style={styles.main} onLayout={handleContainerLayout}>
-        <GestureDetector
+      <Animated.View
+        style={[styles.main, rootContainerStyle]}
+        onLayout={handleContainerLayout}>
+        <VirtualGestureDetector
           gesture={overlayDismissGesture}
           userSelect={userSelect}>
           <Animated.View
@@ -680,7 +699,7 @@ const DrawerLayout = function DrawerLayout(
               style={[styles.overlay, overlayAnimatedStyle]}
             />
           </Animated.View>
-        </GestureDetector>
+        </VirtualGestureDetector>
         <Animated.View
           pointerEvents="box-none"
           animatedProps={drawerAnimatedProps}
@@ -694,7 +713,7 @@ const DrawerLayout = function DrawerLayout(
           </Animated.View>
         </Animated.View>
       </Animated.View>
-    </GestureDetector>
+    </InterceptingGestureDetector>
   );
 };
 

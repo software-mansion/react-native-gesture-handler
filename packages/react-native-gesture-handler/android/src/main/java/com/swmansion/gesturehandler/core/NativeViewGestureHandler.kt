@@ -14,10 +14,8 @@ import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.text.ReactTextView
 import com.facebook.react.views.textinput.ReactEditText
 import com.facebook.react.views.view.ReactViewGroup
-import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.events.eventbuilders.NativeGestureHandlerEventDataBuilder
-import com.swmansion.gesturehandler.react.isScreenReaderOn
 
 class NativeViewGestureHandler : GestureHandler() {
   override val isContinuous = true
@@ -121,17 +119,6 @@ class NativeViewGestureHandler : GestureHandler() {
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
-
-    val isTouchExplorationEnabled = view.context.isScreenReaderOn()
-
-    if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup && isTouchExplorationEnabled) {
-      // Fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
-      // When TalkBack is enabled, events are often not being sent to the orchestrator for processing.
-      // Instead, states will be changed directly by an alternative mechanism added in this PR:
-      // https://github.com/software-mansion/react-native-gesture-handler/pull/2234
-      return
-    }
-
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
         cancel()

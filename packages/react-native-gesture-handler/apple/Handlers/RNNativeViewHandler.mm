@@ -145,10 +145,13 @@
     // Pressing UISwitch triggers only touchUp and valueChanged callbacks. In order to align its behavior
     // with other UIControls, we have to dispatch full Gesture Handler events flow in one callback, as
     // touchesDown is not executed.
+#if !TARGET_OS_TV
     if ([view isKindOfClass:[UISwitch class]]) {
       _pointerType = RNGestureHandlerTouch;
       [control addTarget:self action:@selector(handleSwitch:) forControlEvents:UIControlEventValueChanged];
-    } else {
+    } else
+#endif // !TARGET_OS_TV
+    {
       [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
       [control addTarget:self
                     action:@selector(handleTouchUpOutside:forEvent:)

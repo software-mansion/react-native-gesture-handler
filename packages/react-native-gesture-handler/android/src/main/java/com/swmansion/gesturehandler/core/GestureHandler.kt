@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.PointF
-import android.os.Build
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
@@ -411,7 +410,10 @@ open class GestureHandler {
       }
     }
 
-    numberOfPointers = adaptedTransformedEvent.pointerCount
+    numberOfPointers = when (adaptedTransformedEvent.actionMasked) {
+      MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
+      else -> adaptedTransformedEvent.pointerCount
+    }
 
     x = adaptedTransformedEvent.x
     y = adaptedTransformedEvent.y
@@ -820,44 +822,38 @@ open class GestureHandler {
     return clickedButton and mouseButton != 0
   }
 
-  protected fun shouldActivateWithMouse(sourceEvent: MotionEvent): Boolean {
-    // While using mouse, we get both sets of events, for example ACTION_DOWN and ACTION_BUTTON_PRESS. That's why we want to take actions to only one of them.
-    // On API >= 23, we will use events with infix BUTTON, otherwise we use standard action events (like ACTION_DOWN).
+  // Decides whether the gesture should ignore this event. While using a mouse we receive both the
+  // touch-compatible stream (ACTION_DOWN/UP/...) and the BUTTON_* events, so we act on only the
+  // latter, and we drop events coming from a button other than the configured `mouseButton`.
+  // Non-mouse input is never skipped here.
+  protected fun shouldSkipEvent(sourceEvent: MotionEvent): Boolean {
+    if (sourceEvent.getToolType(0) != MotionEvent.TOOL_TYPE_MOUSE) {
+      return false
+    }
 
     with(sourceEvent) {
-      // To use actionButton, we need API >= 23.
-      if (getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE &&
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+      // While using mouse, we want to ignore default events for touch.
+      if (actionMasked == MotionEvent.ACTION_DOWN ||
+        actionMasked == MotionEvent.ACTION_UP ||
+        actionMasked == MotionEvent.ACTION_POINTER_UP ||
+        actionMasked == MotionEvent.ACTION_POINTER_DOWN
       ) {
-        // While using mouse, we want to ignore default events for touch.
-        if (action == MotionEvent.ACTION_DOWN ||
-          action == MotionEvent.ACTION_UP ||
-          action == MotionEvent.ACTION_POINTER_UP ||
-          action == MotionEvent.ACTION_POINTER_DOWN
-        ) {
-          return@shouldActivateWithMouse false
-        }
+        return@shouldSkipEvent true
+      }
 
-        // We don't want to do anything if wrong button was clicked. If we received event for BUTTON, we have to use actionButton to get which one was clicked.
-        if (action != MotionEvent.ACTION_MOVE && !isButtonInConfig(actionButton)) {
-          return@shouldActivateWithMouse false
-        }
+      // Skip events from a button other than the configured one. For BUTTON_* events the clicked
+      // button is read from `actionButton`.
+      if (actionMasked != MotionEvent.ACTION_MOVE && !isButtonInConfig(actionButton)) {
+        return@shouldSkipEvent true
+      }
 
-        // When we receive ACTION_MOVE, we have to check buttonState field.
-        if (action == MotionEvent.ACTION_MOVE && !isButtonInConfig(buttonState)) {
-          return@shouldActivateWithMouse false
-        }
-      } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        // We do not fully support mouse below API 23, so we will ignore BUTTON events.
-        if (action == MotionEvent.ACTION_BUTTON_PRESS ||
-          action == MotionEvent.ACTION_BUTTON_RELEASE
-        ) {
-          return@shouldActivateWithMouse false
-        }
+      // For ACTION_MOVE the pressed button is read from `buttonState`.
+      if (actionMasked == MotionEvent.ACTION_MOVE && !isButtonInConfig(buttonState)) {
+        return@shouldSkipEvent true
       }
     }
 
-    return true
+    return false
   }
 
   /**

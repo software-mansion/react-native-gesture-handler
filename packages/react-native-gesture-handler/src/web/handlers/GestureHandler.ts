@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
+import { ActionType } from '../../ActionType';
 import type {
   ActiveCursor,
   GestureTouchEvent,
@@ -96,6 +96,13 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.state = State.UNDETERMINED;
 
     this.delegate.init(viewRef, this);
+  }
+
+  public usesNativeOrVirtualDetector(): boolean {
+    return (
+      this.actionType === ActionType.NATIVE_DETECTOR ||
+      this.actionType === ActionType.VIRTUAL_DETECTOR
+    );
   }
 
   public detach() {
@@ -413,7 +420,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    if (!usesNativeOrVirtualDetector(this.actionType)) {
+    if (!this.usesNativeOrVirtualDetector()) {
       onGestureHandlerEvent?.(touchEvent);
       return;
     }
@@ -440,9 +447,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     const isStateChange = this.lastSentState !== newState;
 
-    const resultEvent: ResultEvent = !usesNativeOrVirtualDetector(
-      this.actionType
-    )
+    const resultEvent: ResultEvent = !this.usesNativeOrVirtualDetector()
       ? this.transformEventData(newState, oldState)
       : isStateChange
         ? this.transformStateChangeEvent(newState, oldState)
@@ -467,7 +472,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     // Cover only V3 path due to different event shape
-    if (!isStateChange && usesNativeOrVirtualDetector(this.actionType)) {
+    if (!isStateChange && this.usesNativeOrVirtualDetector()) {
       const handlerData = (
         resultEvent.nativeEvent as GestureUpdateEventWithHandlerData<unknown>
       ).handlerData;

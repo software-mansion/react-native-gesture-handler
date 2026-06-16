@@ -5,6 +5,10 @@ import { View } from 'react-native';
 import { NativeGestureRole } from '../web/interfaces';
 import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
 
+const prefersReducedMotion = (): boolean =>
+  typeof window !== 'undefined' &&
+  !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
   enabled?: boolean;
@@ -165,11 +169,14 @@ export const ButtonComponent = ({
       } else {
         // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time.
         const remaining = tapAnimationInDuration - elapsed;
-        pressOutTimer.current = setTimeout(() => {
-          pressOutTimer.current = null;
-          setCurrentDuration(tapAnimationOutDuration);
-          setPressed(false);
-        }, remaining);
+        pressOutTimer.current = setTimeout(
+          () => {
+            pressOutTimer.current = null;
+            setCurrentDuration(tapAnimationOutDuration);
+            setPressed(false);
+          },
+          prefersReducedMotion() ? 0 : remaining
+        );
       }
     },
     [
@@ -234,12 +241,13 @@ export const ButtonComponent = ({
       : defaultScale;
 
   const easing = 'cubic-bezier(0.5, 1, 0.89, 1)';
+  const effectiveDuration = prefersReducedMotion() ? 0 : currentDuration;
   const transitionProps: string[] = [];
   if (hasOpacity) {
-    transitionProps.push(`opacity ${currentDuration}ms ${easing}`);
+    transitionProps.push(`opacity ${effectiveDuration}ms ${easing}`);
   }
   if (hasScale) {
-    transitionProps.push(`transform ${currentDuration}ms ${easing}`);
+    transitionProps.push(`transform ${effectiveDuration}ms ${easing}`);
   }
   const transition = transitionProps.join(', ');
 
@@ -275,7 +283,7 @@ export const ButtonComponent = ({
             backgroundColor: underlayColor as string,
             opacity: currentUnderlayOpacity,
             // @ts-ignore - web-only CSS properties
-            transition: `opacity ${currentDuration}ms ${easing}`,
+            transition: `opacity ${effectiveDuration}ms ${easing}`,
             pointerEvents: 'none',
           }}
         />

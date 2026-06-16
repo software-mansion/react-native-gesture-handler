@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import CodeBlock from '@theme/CodeBlock';
-import styles from './styles.module.css';
-
 import CollapseButton from '@site/src/components/CollapseButton';
-
 import useFormattedCode from '@site/src/hooks/useFormattedCode';
+import CodeBlock from '@theme/CodeBlock';
+import React, { useState } from 'react';
+
+import styles from './styles.module.css';
 interface Props {
   src: string;
   label: string;

@@ -33,6 +33,8 @@ export default interface IGestureHandler {
   readonly touchAction?: TouchAction | undefined;
   readonly userSelect?: UserSelect | undefined;
 
+  usesNativeOrVirtualDetector: () => boolean;
+
   attachEventManager: (manager: EventManager<unknown>) => void;
 
   isButtonInConfig: (

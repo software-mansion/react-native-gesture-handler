@@ -38,6 +38,7 @@ export function bindSharedValues<
   }
 
   const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
+  const { shouldUseReanimatedDetector } = config;
 
   const attachListener = (sharedValue: SharedValue, configKey: string) => {
     'worklet';
@@ -45,16 +46,14 @@ export function bindSharedValues<
     const listenerId = baseListenerId + keyHash;
 
     sharedValue.addListener(listenerId, (value) => {
-      if (configKey === 'runOnJS') {
-        config.dispatchesReanimatedEvents =
-          config.shouldUseReanimatedDetector && !value;
-
-        updateGestureHandlerConfig(handlerTag, {
-          dispatchesReanimatedEvents: config.dispatchesReanimatedEvents,
-        });
-      } else {
-        updateGestureHandlerConfig(handlerTag, { [configKey]: value });
-      }
+      updateGestureHandlerConfig(
+        handlerTag,
+        configKey === 'runOnJS'
+          ? {
+              dispatchesReanimatedEvents: shouldUseReanimatedDetector && !value,
+            }
+          : { [configKey]: value }
+      );
     });
   };
 

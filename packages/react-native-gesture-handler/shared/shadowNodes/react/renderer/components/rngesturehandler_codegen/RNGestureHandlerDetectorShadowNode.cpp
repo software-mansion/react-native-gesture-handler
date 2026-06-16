@@ -29,11 +29,14 @@ void RNGestureHandlerDetectorShadowNode::initialize() {
     // Will clone the child and ensure it's not flattened
     replaceChild(*children[i], children[i], i);
   }
+
+  updateOrderIndexFromChildren();
 }
 
 void RNGestureHandlerDetectorShadowNode::appendChild(
     const std::shared_ptr<const ShadowNode> &child) {
   YogaLayoutableShadowNode::appendChild(unflattenNode(child));
+  updateOrderIndexFromChildren();
 }
 
 void RNGestureHandlerDetectorShadowNode::replaceChild(
@@ -42,6 +45,7 @@ void RNGestureHandlerDetectorShadowNode::replaceChild(
     size_t suggestedIndex) {
   YogaLayoutableShadowNode::replaceChild(
       oldChild, unflattenNode(newChild), suggestedIndex);
+  updateOrderIndexFromChildren();
 }
 
 void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
@@ -125,6 +129,21 @@ RNGestureHandlerDetectorShadowNode::unflattenNode(
       ShadowNodeTraits::FormsStackingContext);
 
   return clonedNode;
+}
+
+void RNGestureHandlerDetectorShadowNode::updateOrderIndexFromChildren() {
+  const auto &children = getChildren();
+  if (children.size() != 1) {
+    ShadowNode::orderIndex_ = 0;
+    return;
+  }
+
+  // The detector behaves like a transparent wrapper around its child.
+  // With a single child, mirror the child's RN-computed order index so styles
+  // such as zIndex keep affecting sibling ordering despite the extra native
+  // detector node. With multiple children, no single order index can preserve
+  // each child's independent ordering relative to outside siblings.
+  ShadowNode::orderIndex_ = children.front()->getOrderIndex();
 }
 
 } // namespace facebook::react
