@@ -18,6 +18,11 @@ function isConfigParam(param: unknown, name: string) {
   );
 }
 
+export const selectProperties = (
+  obj: Record<string, unknown>,
+  keys: string[]
+) => Object.fromEntries(keys.filter((k) => k in obj).map((k) => [k, obj[k]]));
+
 export function filterConfig(
   props: Record<string, unknown>,
   validProps: string[],

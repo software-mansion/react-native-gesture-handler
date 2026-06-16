@@ -19,7 +19,7 @@ shouldCancelWhenOutside: boolean | SharedValue<boolean>;
 
 When `true`, the handler will stop recognition whenever the finger leaves the area of the connected view.
 Default value of this property is different depending on the handler type.
-Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](/docs/gestures/use-long-press-gesture) and [`TapGesture`](/docs/gestures/use-tap-gesture) which default to `true`.
+Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPress`](/docs/gestures/use-long-press-gesture), [`Tap`](/docs/gestures/use-tap-gesture) and [`Native`](/docs/gestures/use-native-gesture) (on Android and web), which default to `true`.
 
 ### hitSlop
 

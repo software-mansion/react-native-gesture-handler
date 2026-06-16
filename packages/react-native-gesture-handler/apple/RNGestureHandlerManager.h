@@ -29,6 +29,11 @@
               withActionType:(RNGestureHandlerActionType)actionType
             withHostDetector:(nullable RNGHUIView *)hostDetector;
 
+- (void)attachHandlerForDetectorWithTag:(nonnull NSNumber *)handlerTag
+                                 toView:(nonnull RNGHUIView *)view
+                         withActionType:(RNGestureHandlerActionType)actionType
+                       withHostDetector:(nullable RNGHUIView *)hostDetector;
+
 - (void)setGestureHandlerConfig:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;
 
 - (void)updateGestureHandlerConfig:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;

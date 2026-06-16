@@ -2,6 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 
 import GestureHandlerButton from '../../../components/GestureHandlerButton';
+import { getTVProps } from '../../../components/utils';
 import { NativeDetector } from '../../detectors/NativeDetector';
 import { useNativeGesture } from '../../hooks';
 import type {
@@ -208,10 +209,13 @@ export const Touchable = (props: TouchableProps) => {
       }
     : TRANSPARENT_RIPPLE;
 
+  const tvProps = getTVProps(rest);
+
   return (
     <NativeDetector gesture={nativeGesture}>
       <GestureHandlerButton
         {...rest}
+        {...tvProps}
         {...rippleProps}
         {...resolvedDurations}
         ref={ref ?? null}

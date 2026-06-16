@@ -47,6 +47,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   fun setModuleId(id: Int) {
+    if (this.moduleId == id) {
+      return
+    }
+
     assert(this.moduleId == -1) { "Tried to change moduleId of a native detector" }
 
     this.moduleId = id

@@ -71,7 +71,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
-    if (!shouldActivateWithMouse(sourceEvent)) {
+    if (shouldSkipEvent(sourceEvent)) {
       return
     }
 
@@ -108,7 +108,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
       currentPointers == numberOfPointersRequired &&
       (
         sourceEvent.actionMasked == MotionEvent.ACTION_DOWN ||
-          sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN
+          sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN ||
+          sourceEvent.actionMasked == MotionEvent.ACTION_BUTTON_PRESS
         )
     ) {
       handler = Handler(Looper.getMainLooper())
@@ -199,7 +200,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
         handler.maxDist = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DIST))
       }
       if (config.hasKey(KEY_NUMBER_OF_POINTERS)) {
-        handler.numberOfPointers = config.getInt(KEY_NUMBER_OF_POINTERS)
+        handler.numberOfPointersRequired = config.getInt(KEY_NUMBER_OF_POINTERS)
       }
     }
 
