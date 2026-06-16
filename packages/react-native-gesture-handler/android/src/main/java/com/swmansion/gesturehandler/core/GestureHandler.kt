@@ -833,22 +833,22 @@ open class GestureHandler {
 
     with(sourceEvent) {
       // While using mouse, we want to ignore default events for touch.
-      if (action == MotionEvent.ACTION_DOWN ||
-        action == MotionEvent.ACTION_UP ||
-        action == MotionEvent.ACTION_POINTER_UP ||
-        action == MotionEvent.ACTION_POINTER_DOWN
+      if (actionMasked == MotionEvent.ACTION_DOWN ||
+        actionMasked == MotionEvent.ACTION_UP ||
+        actionMasked == MotionEvent.ACTION_POINTER_UP ||
+        actionMasked == MotionEvent.ACTION_POINTER_DOWN
       ) {
         return@shouldSkipEvent true
       }
 
       // Skip events from a button other than the configured one. For BUTTON_* events the clicked
       // button is read from `actionButton`.
-      if (action != MotionEvent.ACTION_MOVE && !isButtonInConfig(actionButton)) {
+      if (actionMasked != MotionEvent.ACTION_MOVE && !isButtonInConfig(actionButton)) {
         return@shouldSkipEvent true
       }
 
       // For ACTION_MOVE the pressed button is read from `buttonState`.
-      if (action == MotionEvent.ACTION_MOVE && !isButtonInConfig(buttonState)) {
+      if (actionMasked == MotionEvent.ACTION_MOVE && !isButtonInConfig(buttonState)) {
         return@shouldSkipEvent true
       }
     }
