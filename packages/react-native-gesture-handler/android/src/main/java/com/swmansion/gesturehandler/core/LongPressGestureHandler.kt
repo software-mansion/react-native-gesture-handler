@@ -66,7 +66,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
-    if (!shouldActivateWithMouse(sourceEvent)) {
+    if (shouldSkipEvent(sourceEvent)) {
       return
     }
 
@@ -99,7 +99,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
       currentPointers == numberOfPointersRequired &&
       (
         sourceEvent.actionMasked == MotionEvent.ACTION_DOWN ||
-          sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN
+          sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN ||
+          sourceEvent.actionMasked == MotionEvent.ACTION_BUTTON_PRESS
         )
     ) {
       handler = Handler(Looper.getMainLooper())
