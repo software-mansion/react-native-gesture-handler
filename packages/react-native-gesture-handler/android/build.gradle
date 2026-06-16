@@ -68,7 +68,7 @@ def shouldEnableAgpFallback() {
     }
 
     def propertyVal = providers.gradleProperty("android.builtInKotlin").orNull
-    def isBuiltInKotlinEnabled = (propertyVal == "false") ? false : true
+    def isBuiltInKotlinEnabled = propertyVal != null ? propertyVal.toBoolean() : true
 
     return !isBuiltInKotlinEnabled
 }
