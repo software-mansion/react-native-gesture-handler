@@ -19,3 +19,6 @@ fun Context.isScreenReaderOn() =
 fun MotionEvent.isHoverAction(): Boolean = action == MotionEvent.ACTION_HOVER_MOVE ||
   action == MotionEvent.ACTION_HOVER_ENTER ||
   action == MotionEvent.ACTION_HOVER_EXIT
+
+fun MotionEvent.isButtonAction(): Boolean = actionMasked == MotionEvent.ACTION_BUTTON_PRESS ||
+  actionMasked == MotionEvent.ACTION_BUTTON_RELEASE

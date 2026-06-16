@@ -88,7 +88,7 @@ class FlingGestureHandler : GestureHandler() {
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
-    if (!shouldActivateWithMouse(sourceEvent)) {
+    if (shouldSkipEvent(sourceEvent)) {
       return
     }
 
