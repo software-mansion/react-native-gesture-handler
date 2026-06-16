@@ -9,6 +9,25 @@ const webpack = require('webpack');
 
 const redirectsData = require('./redirects.json');
 
+import { topbarBannerReservationScript } from '@swmansion/t-rex-ui/topbar-banner';
+// @ts-expect-error -- .ts extension is intentional; not type-checked by tsc here.
+import { TOP_BAR_BANNER } from './src/components/topBarBannerConfig.ts';
+
+const firstBannerZone = TOP_BAR_BANNER.zones[0];
+const bannerReservationHeadTags = firstBannerZone
+  ? [
+      {
+        tagName: 'script',
+        attributes: { type: 'text/javascript' },
+        innerHTML: topbarBannerReservationScript(
+          firstBannerZone.zoneId,
+          firstBannerZone.contentId,
+          TOP_BAR_BANNER.hiddenPaths
+        ),
+      },
+    ]
+  : [];
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'React Native Gesture Handler',
@@ -33,6 +52,8 @@ const config = {
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
+
+  headTags: bannerReservationHeadTags,
 
   presets: [
     [
