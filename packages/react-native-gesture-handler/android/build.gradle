@@ -60,7 +60,22 @@ if (isNewArchitectureEnabled()) {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+
+def shouldEnableAgpFallback() {
+    def agpMajorVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+    if (agpMajorVersion <= 8) {
+        return true
+    }
+
+    def propertyVal = providers.gradleProperty("android.builtInKotlin").orNull
+    def isBuiltInKotlinEnabled = (propertyVal == "false") ? false : true
+
+    return !isBuiltInKotlinEnabled
+}
+
+if (shouldEnableAgpFallback()) {
+    apply plugin: 'kotlin-android'
+}
 
 if (project == rootProject) {
     apply from: "spotless.gradle"
@@ -183,17 +198,17 @@ android {
     }
 
     sourceSets.main {
-        java {
+        kotlin {
             if (shouldUseCommonInterfaceFromReanimated()) {
-                srcDirs += 'reanimated/src/main/java'
+                directories.add('reanimated/src/main/java')
             } else {
-                srcDirs += 'noreanimated/src/main/java'
+                directories.add('noreanimated/src/main/java')
             }
 
             if (shouldUseCommonInterfaceFromRNSVG()) {
-                srcDirs += 'svg/src/main/java'
+                directories.add('svg/src/main/java')
             } else {
-                srcDirs += 'nosvg/src/main/java'
+                directories.add('nosvg/src/main/java')
             }
         }
     }
