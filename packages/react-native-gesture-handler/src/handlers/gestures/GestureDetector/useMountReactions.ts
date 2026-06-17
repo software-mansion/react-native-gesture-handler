@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
-
 import { MountRegistry } from '../../../mountRegistry';
+import { useIsomorphicLayoutEffect } from '../../../useIsomorphicLayoutEffect';
 import { transformIntoHandlerTags } from '../../utils';
 import type { GestureRef } from '../gesture';
 import type { AttachedGestureState } from './types';
@@ -26,8 +25,14 @@ export function useMountReactions(
   updateDetector: () => void,
   state: AttachedGestureState
 ) {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     return MountRegistry.addMountListener((gesture) => {
+      // The detector may already be unmounted when this fires; bail out to avoid
+      // updating a detached detector.
+      if (!state.isMounted) {
+        return;
+      }
+
       // At this point the ref in the gesture config should be updated, so we can check if one of the gestures
       // set in a relation with the gesture got mounted. If so, we need to update the detector to propagate
       // the changes to the native side.
