@@ -392,6 +392,9 @@ const Swipeable = (props: SwipeableProps) => {
 
   const leftActionAnimation = useAnimatedStyle(() => {
     return {
+      // Both action containers use `absoluteFill` and overlap, so the
+      // inactive one must not intercept touches meant for the visible
+      // actions.
       pointerEvents: showLeftProgress.value === 0 ? 'none' : 'auto',
     };
   });
@@ -422,6 +425,9 @@ const Swipeable = (props: SwipeableProps) => {
 
   const rightActionAnimation = useAnimatedStyle(() => {
     return {
+      // Both action containers use `absoluteFill` and overlap, so the
+      // inactive one must not intercept touches meant for the visible
+      // actions.
       pointerEvents: showRightProgress.value === 0 ? 'none' : 'auto',
     };
   });
