@@ -726,16 +726,20 @@ class GestureHandlerOrchestrator(
     viewsToCancel.clear()
   }
 
-  // Whether the view's touch is still owned by a NativeViewGestureHandler that survived arbitration
-  // (active, or non-conflicting with an active handler). Only those are fed through `onTouchEvent`,
-  // so only those break if cancelled. Other handlers are orchestrator-driven and unaffected.
-  private fun isViewDrivenByActiveNativeGesture(view: View, activeHandlers: List<GestureHandler>): Boolean {
-    val handlers = handlerRegistry.getHandlersForView(view) ?: return false
-    return handlers.any { handler ->
-      handler is NativeViewGestureHandler &&
-        (handler.isActive || activeHandlers.none { active -> shouldHandlerBeCancelledBy(handler, active) })
-    }
-  }
+  // Whether the view's touch is still owned by a NativeViewGestureHandler that survived arbitration.
+  // Only those are fed through `onTouchEvent`, so only those break if cancelled. Other handlers are
+  // orchestrator-driven and unaffected.
+  private fun isViewDrivenByActiveNativeGesture(view: View, activeHandlers: List<GestureHandler>) =
+    handlerRegistry.getHandlersForView(view)?.let { handlers ->
+      synchronized(handlers) {
+        handlers.any { nativeGestureSurvivesArbitration(it, activeHandlers) }
+      }
+    } ?: false
+
+  // A native handler survives arbitration if it is active, or it does not conflict with any active handler.
+  private fun nativeGestureSurvivesArbitration(handler: GestureHandler, activeHandlers: List<GestureHandler>) =
+    handler is NativeViewGestureHandler &&
+      (handler.isActive || activeHandlers.none { shouldHandlerBeCancelledBy(handler, it) })
 
   // Collects the view path under the point (topmost child first, like touch dispatch), leaf to root.
   private fun collectViewsAtPoint(view: View, coords: FloatArray, out: MutableList<View>): Boolean {
