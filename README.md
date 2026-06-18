@@ -48,6 +48,7 @@ Check out our [compatibility table](https://docs.swmansion.com/react-native-gest
 
 | version | react-native version |
 | ------- | -------------------- |
+| 2.32.0+ | 0.84.0+              |
 | 2.28.0+ | 0.79.0+              |
 | 2.26.0+ | 0.78.0+              |
 | 2.25.0+ | 0.76.0+              |
