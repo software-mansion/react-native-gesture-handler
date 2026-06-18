@@ -29,7 +29,6 @@ class GestureHandlerOrchestrator(
   var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
   private val gestureHandlers = arrayListOf<GestureHandler>()
   private val awaitingHandlers = arrayListOf<GestureHandler>()
-  private val preparedHandlers = arrayListOf<GestureHandler>()
 
   // In `onHandlerStateChange` method we iterate through `awaitingHandlers`, but calling `tryActivate` may modify this list.
   // To avoid `ConcurrentModificationException` we iterate through copy. There is one more problem though - if handler was
@@ -260,19 +259,18 @@ class GestureHandlerOrchestrator(
   }
 
   private fun deliverEventToGestureHandlers(event: MotionEvent) {
-    // Copy handlers to "prepared handlers" array, because the list of active handlers can change
+    // Copy handlers to a local snapshot, because the list of active handlers can change
     // as a result of state updates
-    preparedHandlers.clear()
-    preparedHandlers.addAll(gestureHandlers)
+    val handlersToProcess = gestureHandlers.toMutableList()
 
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
     // order in which handlers has been added ("most direct" children goes first). Therefore we rely
     // on Arrays.sort providing a stable sort (as children are registered in order in which they
     // should be tested)
-    preparedHandlers.sortWith(handlersComparator)
+    handlersToProcess.sortWith(handlersComparator)
 
-    for (handler in preparedHandlers) {
+    for (handler in handlersToProcess) {
       deliverEventToGestureHandler(handler, event)
     }
   }
@@ -284,12 +282,9 @@ class GestureHandlerOrchestrator(
       handler.cancel()
     }
 
-    // Copy handlers to "prepared handlers" array, because the list of active handlers can change
+    // Iterate over a copy, because the list of active handlers can change
     // as a result of state updates
-    preparedHandlers.clear()
-    preparedHandlers.addAll(gestureHandlers)
-
-    for (handler in gestureHandlers.asReversed()) {
+    for (handler in gestureHandlers.reversed()) {
       handler.cancel()
     }
   }
