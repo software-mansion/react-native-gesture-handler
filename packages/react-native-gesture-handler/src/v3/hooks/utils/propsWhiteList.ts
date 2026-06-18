@@ -23,6 +23,7 @@ const CommonConfig = new Set<keyof CommonGestureConfig>([
   'mouseButton',
   'testID',
   'cancelsTouchesInView',
+  'cancelsJSResponder',
   'manualActivation',
 ]);
 
@@ -41,15 +42,9 @@ export const allowedNativeProps = new Set<
   'userSelect',
   'enableContextMenu',
   'touchAction',
-  'dispatchesReanimatedEvents',
   'dispatchesAnimatedEvents',
   'needsPointerData',
 ]);
-
-// Don't pass testID to the native side in production
-if (!__DEV__) {
-  allowedNativeProps.delete('testID');
-}
 
 export const HandlerCallbacks = new Set<
   keyof Required<GestureCallbacks<unknown, unknown>>
@@ -85,6 +80,12 @@ export const PropsToFilter = new Set<
   'failOffsetY',
   'activeOffsetX',
 ]);
+
+// Don't pass testID to the native side in production
+if (!__DEV__) {
+  allowedNativeProps.delete('testID');
+  PropsToFilter.add('testID');
+}
 
 export const PropsWhiteLists = new Map<
   SingleGestureName,

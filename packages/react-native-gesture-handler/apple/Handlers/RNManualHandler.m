@@ -135,4 +135,9 @@
   return self;
 }
 
+- (BOOL)isContinuous
+{
+  return YES;
+}
+
 @end

@@ -25,7 +25,11 @@ import {
   unregisterOldGestureHandler,
 } from './handlersRegistry';
 import { PressabilityDebugView } from './PressabilityDebugView';
-import { filterConfig, scheduleFlushOperations } from './utils';
+import {
+  filterConfig,
+  scheduleFlushOperations,
+  selectProperties,
+} from './utils';
 
 customDirectEventTypes.topGestureHandlerEvent = {
   registrationName: 'onGestureHandlerEvent',
@@ -262,6 +266,15 @@ export default function createHandler<
         this.handlerTag,
         newConfig
       );
+
+      RNGestureHandlerModule.configureRelations(
+        this.handlerTag,
+        selectProperties(newConfig, [
+          'waitFor',
+          'simultaneousHandlers',
+          'blocksHandlers',
+        ])
+      );
     };
 
     private attachGestureHandler = (newViewTag: number) => {
@@ -334,7 +347,7 @@ export default function createHandler<
 
       RNGestureHandlerModule.configureRelations(
         this.handlerTag,
-        filterConfig(this.config, [
+        selectProperties(newConfig, [
           'waitFor',
           'simultaneousHandlers',
           'blocksHandlers',

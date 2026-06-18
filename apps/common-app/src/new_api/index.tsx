@@ -3,6 +3,7 @@ import EmptyExample from '../empty';
 import CameraExample from './complicated/camera';
 import ChatHeadsExample from './complicated/chat_heads';
 import LockExample from './complicated/lock';
+import TransformationsExample from './complicated/transformations';
 import VelocityExample from './complicated/velocity_test';
 import ButtonUnderlayExample from './components/button_underlay';
 import ButtonsExample from './components/buttons';
@@ -14,7 +15,7 @@ import SwitchTextInputExample from './components/switchAndInput';
 import TouchableExample from './components/touchable';
 import TouchableStressExample from './components/touchable_stress';
 import ContextMenuExample from './hover_mouse/context_menu';
-import HoverIconsExample from './hover_mouse/hover';
+import HoverPositioningExample from './hover_mouse/hover';
 import HoverableIconsExample from './hover_mouse/hoverable_icons';
 import MouseButtonsExample from './hover_mouse/mouse_buttons';
 import StylusDataExample from './hover_mouse/stylus_data';
@@ -40,6 +41,7 @@ import PointerTypeExample from './tests/pointerType';
 import PressableExample from './tests/pressable';
 import ReattachingExample from './tests/reattaching';
 import RectButtonExample from './tests/rectButton';
+import RNResponderCancellationExample from './tests/rnResponderCancellation';
 import TwoFingerPanExample from './tests/twoFingerPan';
 import WebStylesResetExample from './tests/webStylesReset';
 
@@ -82,7 +84,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
         component: ContextMenuExample,
         unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
       },
-      { name: 'Hover Icons', component: HoverIconsExample },
+      { name: 'Hover Positioning', component: HoverPositioningExample },
       { name: 'Hoverable Icons', component: HoverableIconsExample },
       { name: 'Mouse Buttons', component: MouseButtonsExample },
     ],
@@ -94,6 +96,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Velocity Test', component: VelocityExample },
       { name: 'Chat Heads', component: ChatHeadsExample },
       { name: 'Camera', component: CameraExample },
+      { name: 'Transformations', component: TransformationsExample },
     ],
   },
 
@@ -127,6 +130,10 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Nested pressables', component: NestedPressablesExample },
       { name: 'Nested touchables', component: NestedTouchablesExample },
       { name: 'Pressable', component: PressableExample },
+      {
+        name: 'RN responder cancellation',
+        component: RNResponderCancellationExample,
+      },
     ],
   },
 ];

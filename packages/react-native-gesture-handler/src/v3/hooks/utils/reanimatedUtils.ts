@@ -2,7 +2,6 @@ import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { NativeProxy } from '../../NativeProxy';
 import type {
   BaseGestureConfig,
-  GestureCallbacks,
   SharedValue,
   SharedValueOrT,
 } from '../../types';
@@ -21,7 +20,7 @@ function hash(str: string) {
   return h >>> 0;
 }
 
-const SHARED_VALUE_OFFSET = 1.618;
+export const SHARED_VALUE_OFFSET = 1.618;
 
 // Don't transfer entire NativeProxy to the UI thread
 const { updateGestureHandlerConfig } = NativeProxy;
@@ -39,6 +38,7 @@ export function bindSharedValues<
   }
 
   const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
+  const { shouldUseReanimatedDetector } = config;
 
   const attachListener = (sharedValue: SharedValue, configKey: string) => {
     'worklet';
@@ -46,16 +46,14 @@ export function bindSharedValues<
     const listenerId = baseListenerId + keyHash;
 
     sharedValue.addListener(listenerId, (value) => {
-      if (configKey === 'runOnJS') {
-        config.dispatchesReanimatedEvents =
-          config.shouldUseReanimatedDetector && !value;
-
-        updateGestureHandlerConfig(handlerTag, {
-          dispatchesReanimatedEvents: config.dispatchesReanimatedEvents,
-        });
-      } else {
-        updateGestureHandlerConfig(handlerTag, { [configKey]: value });
-      }
+      updateGestureHandlerConfig(
+        handlerTag,
+        configKey === 'runOnJS'
+          ? {
+              dispatchesReanimatedEvents: shouldUseReanimatedDetector && !value,
+            }
+          : { [configKey]: value }
+      );
     });
   };
 
@@ -101,14 +99,15 @@ export function hasWorkletEventHandlers<
   THandlerData,
   TExtendedHandlerData extends THandlerData,
 >(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
-  return Object.entries(config).some(
-    ([key, value]) =>
-      HandlerCallbacks.has(
-        key as keyof GestureCallbacks<THandlerData, TExtendedHandlerData>
-      ) &&
-      typeof value === 'function' &&
-      '__workletHash' in value
-  );
+  for (const key of HandlerCallbacks) {
+    const value = config[key];
+
+    if (typeof value === 'function' && '__workletHash' in value) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function maybeUnpackValue<T>(

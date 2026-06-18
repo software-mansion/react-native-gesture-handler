@@ -1,7 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { Platform } from 'react-native';
 
-import { RNRenderer } from '../../../RNRenderer';
 import { isTestEnv, tagMessage } from '../../../utils';
 import type {
   GestureHandlerNativeEvent,
@@ -67,20 +65,16 @@ function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
 }
 
 export function extractGestureRelations(gesture: GestureType) {
-  gesture.config.requireToFail = extractValidHandlerTags(
-    gesture.config.requireToFail
-  );
-  gesture.config.simultaneousWith = extractValidHandlerTags(
+  const requireToFail = extractValidHandlerTags(gesture.config.requireToFail);
+  const simultaneousWith = extractValidHandlerTags(
     gesture.config.simultaneousWith
   );
-  gesture.config.blocksHandlers = extractValidHandlerTags(
-    gesture.config.blocksHandlers
-  );
+  const blocksHandlers = extractValidHandlerTags(gesture.config.blocksHandlers);
 
   return {
-    waitFor: gesture.config.requireToFail,
-    simultaneousHandlers: gesture.config.simultaneousWith,
-    blocksHandlers: gesture.config.blocksHandlers,
+    waitFor: requireToFail,
+    simultaneousHandlers: simultaneousWith,
+    blocksHandlers: blocksHandlers,
   };
 }
 
@@ -121,56 +115,6 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
         `None of the callbacks in the gesture are worklets. If you wish to run them on the JS thread use '.runOnJS(true)' modifier on the gesture to make this explicit. Otherwise, mark the callbacks as 'worklet' to run them on the UI thread.`
       )
     );
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function validateDetectorChildren(ref: any) {
-  // Finds the first native view under the Wrap component and traverses the fiber tree upwards
-  // to check whether there is more than one native view as a pseudo-direct child of GestureDetector
-  // i.e. this is not ok:
-  //            Wrap
-  //             |
-  //            / \
-  //           /   \
-  //          /     \
-  //         /       \
-  //   NativeView  NativeView
-  //
-  // but this is fine:
-  //            Wrap
-  //             |
-  //         NativeView
-  //             |
-  //            / \
-  //           /   \
-  //          /     \
-  //         /       \
-  //   NativeView  NativeView
-  if (__DEV__ && Platform.OS !== 'web') {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const wrapType =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      ref._reactInternals.elementType;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    let instance =
-      RNRenderer.findHostInstance_DEPRECATED(
-        ref
-      )._internalFiberInstanceHandleDEV;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    while (instance && instance.elementType !== wrapType) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (instance.sibling) {
-        throw new Error(
-          'GestureDetector has more than one native view as its children. This can happen if you are using a custom component that renders multiple views, like React.Fragment. You should wrap content of GestureDetector with a <View> or <Animated.View>.'
-        );
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      instance = instance.return;
-    }
   }
 }
 

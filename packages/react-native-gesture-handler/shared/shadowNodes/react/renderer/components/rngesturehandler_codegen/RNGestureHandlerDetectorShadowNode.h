@@ -65,6 +65,7 @@ class RNGestureHandlerDetectorShadowNode final
   std::shared_ptr<const ShadowNode> unflattenNode(
       const std::shared_ptr<const ShadowNode> &node);
   void initialize();
+  void updateOrderIndexFromChildren();
 
   std::optional<LayoutMetrics> previousLayoutMetrics_;
 };

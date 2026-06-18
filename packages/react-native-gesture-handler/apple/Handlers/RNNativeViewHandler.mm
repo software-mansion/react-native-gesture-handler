@@ -113,6 +113,7 @@
 @implementation RNNativeViewGestureHandler {
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
+  BOOL _yieldsToContinuousGestures;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
 }
 
@@ -129,6 +130,7 @@
   [super updateConfig:config];
   _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
   _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
+  _yieldsToContinuousGestures = [RCTConvert BOOL:config[@"yieldsToContinuousGestures"]];
 }
 
 #if !TARGET_OS_OSX
@@ -143,10 +145,13 @@
     // Pressing UISwitch triggers only touchUp and valueChanged callbacks. In order to align its behavior
     // with other UIControls, we have to dispatch full Gesture Handler events flow in one callback, as
     // touchesDown is not executed.
+#if !TARGET_OS_TV
     if ([view isKindOfClass:[UISwitch class]]) {
       _pointerType = RNGestureHandlerTouch;
       [control addTarget:self action:@selector(handleSwitch:) forControlEvents:UIControlEventValueChanged];
-    } else {
+    } else
+#endif // !TARGET_OS_TV
+    {
       [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
       [control addTarget:self
                     action:@selector(handleTouchUpOutside:forEvent:)
@@ -239,11 +244,18 @@
 
   if (_disallowInterruption) {
     // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
-    // gets DOWN event
+    // gets DOWN event. When `yieldsToContinuousGestures` is also set we leave alone:
+    //   - non-RNGH recognizers (e.g. UIScrollView's pan), so native containers can take over
+    //   - continuous RNGH recognizers, so other continuous gestures wrapping the touchable can still take over
     for (RNGHUITouch *touch in [event allTouches]) {
-      for (UIGestureRecognizer *recogn in [touch gestureRecognizers]) {
-        recogn.enabled = NO;
-        recogn.enabled = YES;
+      for (UIGestureRecognizer *recognizer in [touch gestureRecognizers]) {
+        if (_yieldsToContinuousGestures &&
+            (recognizer.gestureHandler == nil || [recognizer.gestureHandler isContinuous])) {
+          continue;
+        }
+
+        recognizer.enabled = NO;
+        recognizer.enabled = YES;
       }
     }
   }
@@ -347,6 +359,11 @@
   return [RNGestureHandlerEventExtraData forPointerInside:[self containsPointInView]
                                       withNumberOfTouches:1
                                           withPointerType:RNGestureHandlerMouse];
+}
+
+- (BOOL)isContinuous
+{
+  return YES;
 }
 
 @end

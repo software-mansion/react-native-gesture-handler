@@ -258,7 +258,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
   _tapsSoFar = 0;
   _maxNumberOfTouches = 0;
-  self.enabled = YES;
+  self.enabled = _gestureHandler.enabled;
   [super reset];
   [_gestureHandler reset];
 }

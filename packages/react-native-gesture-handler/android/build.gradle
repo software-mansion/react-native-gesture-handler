@@ -2,17 +2,18 @@ import groovy.json.JsonSlurper
 import com.android.build.gradle.tasks.ExternalNativeBuildJsonTask
 
 buildscript {
-    def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
-
     repositories {
         mavenCentral()
         google()
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-        classpath("com.android.tools.build:gradle:8.10.1")
-        classpath("com.diffplug.spotless:spotless-plugin-gradle:7.0.4")
+        if (project == rootProject) {
+            def kotlin_version = project.properties['RNGH_kotlinVersion']
+            classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+            classpath("com.android.tools.build:gradle:8.10.1")
+            classpath("com.diffplug.spotless:spotless-plugin-gradle:7.0.4")
+        }
     }
 }
 

@@ -68,6 +68,44 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   return self;
 }
 
+#if TARGET_OS_TV
+- (void)emitPressInEvent
+{
+  if (!_buttonView.userEnabled) {
+    return;
+  }
+
+  [_buttonView sendActionsForControlEvents:UIControlEventTouchDown];
+}
+
+- (void)emitPressOutEvent
+{
+  if (!_buttonView.userEnabled) {
+    return;
+  }
+
+  [_buttonView sendActionsForControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)animatePressIn
+{
+  if (!_buttonView.userEnabled) {
+    return;
+  }
+
+  [_buttonView handleAnimatePressIn];
+}
+
+- (void)animatePressOut
+{
+  if (!_buttonView.userEnabled) {
+    return;
+  }
+
+  [_buttonView handleAnimatePressOut];
+}
+#endif // TARGET_OS_TV
+
 - (void)prepareForRecycle
 {
   [self.layer removeAnimationForKey:@"transform"];
@@ -323,8 +361,10 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 
   _buttonView.userEnabled = newProps.enabled;
-  _buttonView.pressAndHoldAnimationDuration = newProps.pressAndHoldAnimationDuration;
-  _buttonView.tapAnimationDuration = newProps.tapAnimationDuration > 0 ? newProps.tapAnimationDuration : 0;
+  _buttonView.tapAnimationInDuration = newProps.tapAnimationInDuration > 0 ? newProps.tapAnimationInDuration : 0;
+  _buttonView.tapAnimationOutDuration = newProps.tapAnimationOutDuration > 0 ? newProps.tapAnimationOutDuration : 0;
+  _buttonView.longPressDuration = newProps.longPressDuration;
+  _buttonView.longPressAnimationOutDuration = newProps.longPressAnimationOutDuration;
   _buttonView.activeOpacity = newProps.activeOpacity;
   _buttonView.defaultOpacity = newProps.defaultOpacity;
   _buttonView.activeScale = newProps.activeScale;
@@ -358,6 +398,19 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 
   [super updateProps:props oldProps:oldProps];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  // super's updateProps sets self.accessibilityIdentifier from testID via the
+  // standard Fabric mechanism. However, setAccessibilityProps already forwards
+  // testID to _buttonView.accessibilityIdentifier (the actual button element).
+  // Having the identifier on both views causes testing frameworks (e.g. Detox)
+  // to report multiple matches for the same testID. Clear it from the wrapper so
+  // only _buttonView carries the identifier.
+  if (!newProps.testId.empty()) {
+    self.accessibilityIdentifier = nil;
+  }
+#endif
+
   if (shouldApplyStartAnimationState) {
     [_buttonView applyStartAnimationState];
   }

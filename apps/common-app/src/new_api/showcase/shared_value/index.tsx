@@ -1,10 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import {
   GestureDetector,
-  useLongPressGesture,
-  usePanGesture,
-  useSimultaneousGestures,
+  Touchable,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
@@ -15,76 +14,62 @@ import Animated, {
 
 import { COLORS, commonStyles } from '../../../common';
 
-export default function PanExample() {
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const colorProgress = useSharedValue(0);
-  const offsetX = useSharedValue(0);
-  const offsetY = useSharedValue(0);
-  const maxLongPressDistance = useSharedValue(20);
-  const panGesture = usePanGesture({
-    onBegin: () => {
-      colorProgress.value = withTiming(1, { duration: 150 });
-    },
-    onUpdate: (event) => {
-      translateX.value = offsetX.value + event.translationX;
-      translateY.value = offsetY.value + event.translationY;
-      maxLongPressDistance.value = Math.abs(event.translationY) * 2 + 20;
-    },
-    onFinalize: () => {
-      offsetX.value = translateX.value;
-      offsetY.value = translateY.value;
-    },
-  });
+export default function SharedValueConfigExample() {
+  const numberOfTaps = useSharedValue(1);
+  const flashProgress = useSharedValue(0);
 
-  const longPressGesture = useLongPressGesture({
-    onBegin: () => {
-      colorProgress.value = withTiming(1, {
-        duration: 100,
-      });
-    },
+  const tap = useTapGesture({
+    numberOfTaps,
     onActivate: () => {
-      colorProgress.value = withTiming(2, {
-        duration: 100,
-      });
+      flashProgress.value = 1;
+      flashProgress.value = withTiming(0, { duration: 400 });
     },
-    onFinalize: () => {
-      colorProgress.value = withTiming(0, {
-        duration: 100,
-      });
-    },
-    minDuration: 1000,
-    maxDistance: maxLongPressDistance,
   });
 
-  const gestures = useSimultaneousGestures(longPressGesture, panGesture);
-  const animatedStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(
-      colorProgress.value,
-      [0, 1, 2],
-      [COLORS.NAVY, COLORS.PURPLE, COLORS.KINDA_BLUE]
-    );
-    return {
-      transform: [
-        { translateX: translateX.value },
-        { translateY: translateY.value },
-      ],
-      backgroundColor,
-    };
-  });
+  const boxStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      flashProgress.value,
+      [0, 1],
+      [COLORS.NAVY, COLORS.KINDA_BLUE]
+    ),
+  }));
 
   return (
-    <View style={commonStyles.centerView}>
-      <View>
-        <GestureDetector gesture={gestures}>
-          <Animated.View style={[commonStyles.ball, animatedStyle]} />
-        </GestureDetector>
-      </View>
-      <Text style={commonStyles.instructions}>
-        The ball has simultanous pan and longPress gestures. Upon update pan
-        changes minDistance of longPress, such that longPress will fail if is
-        moved horizontally.
-      </Text>
+    <View style={styles.container}>
+      <GestureDetector gesture={tap}>
+        <Animated.View style={[commonStyles.box, boxStyle]} />
+      </GestureDetector>
+
+      <Touchable
+        style={styles.button}
+        activeOpacity={0.6}
+        animationDuration={{ in: 80, out: 200 }}
+        onPress={() => {
+          numberOfTaps.value += 1;
+        }}>
+        <Text style={styles.buttonLabel}>Increment required taps</Text>
+      </Touchable>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 24,
+  },
+
+  button: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: COLORS.PURPLE,
+    borderRadius: 8,
+  },
+  buttonLabel: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

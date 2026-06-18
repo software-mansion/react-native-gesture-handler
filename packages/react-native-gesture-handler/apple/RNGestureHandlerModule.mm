@@ -41,8 +41,6 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
   jsi::Runtime *_rnRuntime;
   int _moduleId;
-
-  bool _isReanimatedAvailable;
   bool _uiRuntimeDecorated;
 }
 
@@ -106,7 +104,7 @@ RCT_EXPORT_MODULE()
   _operations = [NSMutableArray new];
 }
 
-- (bool)installUIRuntimeBindings
+- (bool)decorateUIRuntime
 {
   __weak RNGestureHandlerModule *weakSelf = self;
 
@@ -118,16 +116,11 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (NSNumber *)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
+- (void)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
 {
-  if (_isReanimatedAvailable && !_uiRuntimeDecorated) {
-    _uiRuntimeDecorated = [self installUIRuntimeBindings];
-  }
-
-  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
-
-  return @1;
+  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
+    [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
+  }];
 }
 
 - (void)attachGestureHandler:(double)handlerTag newView:(double)viewTag actionType:(double)actionType
@@ -189,9 +182,13 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (void)setReanimatedAvailable:(BOOL)isAvailable
+- (nonnull NSNumber *)installUIRuntimeBindings
 {
-  _isReanimatedAvailable = isAvailable;
+  if (!_uiRuntimeDecorated) {
+    _uiRuntimeDecorated = [self decorateUIRuntime];
+  }
+
+  return _uiRuntimeDecorated ? @1 : @0;
 }
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag

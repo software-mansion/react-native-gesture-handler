@@ -4,12 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.PointF
-import android.os.Build
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
-import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
@@ -48,6 +46,26 @@ open class GestureHandler {
       }
     }
 
+  /**
+   * The view whose coordinate space should be used when reporting event positions to JS.
+   *
+   * Handlers attached via the V3 NativeDetector are registered against the DetectorView wrapper,
+   * which never carries user-applied transforms — those live on its child. When the detector has
+   * exactly one child we descend into it so reported coordinates match the visible (transformed)
+   * view, the same coordinate space V2 and the V3 VirtualGestureDetector report in. With
+   * multiple children there is no JS-side way to disambiguate which child caught the pointer,
+   * so we keep the detector itself as the reference frame.
+   */
+  val coordinateView: View?
+    get() {
+      val v = view
+      return if (v is RNGestureHandlerDetectorView && v.childCount == 1) {
+        v.getChildAt(0)
+      } else {
+        v
+      }
+    }
+
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
@@ -83,6 +101,7 @@ open class GestureHandler {
   var needsPointerData = false
   var dispatchesAnimatedEvents = false
   var dispatchesReanimatedEvents = false
+  var cancelsJSResponder = true
 
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
@@ -113,6 +132,11 @@ open class GestureHandler {
   var isAwaiting = false
   var shouldResetProgress = false
 
+  /**
+   * Whether the handler represents a continuous gesture rather than a discrete one.
+   */
+  open val isContinuous: Boolean = false
+
   open fun dispatchStateChange(newState: Int, prevState: Int) {
     onTouchEventListener?.onStateChange(this, newState, prevState)
   }
@@ -137,6 +161,7 @@ open class GestureHandler {
     mouseButton = DEFAULT_MOUSE_BUTTON
     dispatchesAnimatedEvents = DEFAULT_DISPATCHES_ANIMATED_EVENTS
     dispatchesReanimatedEvents = DEFAULT_DISPATCHES_REANIMATED_EVENTS
+    cancelsJSResponder = DEFAULT_CANCELS_JS_RESPONDER
   }
 
   fun hasCommonPointers(other: GestureHandler): Boolean {
@@ -385,44 +410,18 @@ open class GestureHandler {
       }
     }
 
-    numberOfPointers = adaptedTransformedEvent.pointerCount
-
-    // TODO: this is likely wrong, and the transformed event itself should be
-    // in the coordinate system of the child view, but I'm not sure of the
-    // consequences
-    val detectorView = hostDetectorView
-    if (detectorView != null && view == detectorView && detectorView.isNotEmpty()) {
-      val outPoint = PointF()
-      var foundChild = false
-
-      for (i in 0 until detectorView.childCount) {
-        val child = detectorView.getChildAt(i)
-        GestureHandlerOrchestrator.transformPointToChildViewCoords(
-          adaptedTransformedEvent.x,
-          adaptedTransformedEvent.y,
-          detectorView,
-          child,
-          outPoint,
-        )
-        if (isWithinBounds(child, outPoint.x, outPoint.y)) {
-          x = outPoint.x
-          y = outPoint.y
-          isWithinBounds = true
-          foundChild = true
-          break
-        }
-      }
-
-      if (!foundChild) {
-        x = adaptedTransformedEvent.x
-        y = adaptedTransformedEvent.y
-        isWithinBounds = false
-      }
-    } else {
-      x = adaptedTransformedEvent.x
-      y = adaptedTransformedEvent.y
-      isWithinBounds = isWithinBounds(view, x, y)
+    numberOfPointers = when (adaptedTransformedEvent.actionMasked) {
+      MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
+      else -> adaptedTransformedEvent.pointerCount
     }
+
+    x = adaptedTransformedEvent.x
+    y = adaptedTransformedEvent.y
+    // The orchestrator transforms incoming events into the coordinate space of the detector's
+    // child (when the handler is attached to a NativeDetector wrapper), so bounds-checking must
+    // also use that child rather than the wrapper, otherwise hit-testing would ignore the user's
+    // transforms applied to the visible view.
+    isWithinBounds = isWithinBounds(coordinateView, x, y)
 
     if (shouldCancelWhenOutside) {
       if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
@@ -823,44 +822,38 @@ open class GestureHandler {
     return clickedButton and mouseButton != 0
   }
 
-  protected fun shouldActivateWithMouse(sourceEvent: MotionEvent): Boolean {
-    // While using mouse, we get both sets of events, for example ACTION_DOWN and ACTION_BUTTON_PRESS. That's why we want to take actions to only one of them.
-    // On API >= 23, we will use events with infix BUTTON, otherwise we use standard action events (like ACTION_DOWN).
+  // Decides whether the gesture should ignore this event. While using a mouse we receive both the
+  // touch-compatible stream (ACTION_DOWN/UP/...) and the BUTTON_* events, so we act on only the
+  // latter, and we drop events coming from a button other than the configured `mouseButton`.
+  // Non-mouse input is never skipped here.
+  protected fun shouldSkipEvent(sourceEvent: MotionEvent): Boolean {
+    if (sourceEvent.getToolType(0) != MotionEvent.TOOL_TYPE_MOUSE) {
+      return false
+    }
 
     with(sourceEvent) {
-      // To use actionButton, we need API >= 23.
-      if (getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE &&
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+      // While using mouse, we want to ignore default events for touch.
+      if (actionMasked == MotionEvent.ACTION_DOWN ||
+        actionMasked == MotionEvent.ACTION_UP ||
+        actionMasked == MotionEvent.ACTION_POINTER_UP ||
+        actionMasked == MotionEvent.ACTION_POINTER_DOWN
       ) {
-        // While using mouse, we want to ignore default events for touch.
-        if (action == MotionEvent.ACTION_DOWN ||
-          action == MotionEvent.ACTION_UP ||
-          action == MotionEvent.ACTION_POINTER_UP ||
-          action == MotionEvent.ACTION_POINTER_DOWN
-        ) {
-          return@shouldActivateWithMouse false
-        }
+        return@shouldSkipEvent true
+      }
 
-        // We don't want to do anything if wrong button was clicked. If we received event for BUTTON, we have to use actionButton to get which one was clicked.
-        if (action != MotionEvent.ACTION_MOVE && !isButtonInConfig(actionButton)) {
-          return@shouldActivateWithMouse false
-        }
+      // Skip events from a button other than the configured one. For BUTTON_* events the clicked
+      // button is read from `actionButton`.
+      if (actionMasked != MotionEvent.ACTION_MOVE && !isButtonInConfig(actionButton)) {
+        return@shouldSkipEvent true
+      }
 
-        // When we receive ACTION_MOVE, we have to check buttonState field.
-        if (action == MotionEvent.ACTION_MOVE && !isButtonInConfig(buttonState)) {
-          return@shouldActivateWithMouse false
-        }
-      } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        // We do not fully support mouse below API 23, so we will ignore BUTTON events.
-        if (action == MotionEvent.ACTION_BUTTON_PRESS ||
-          action == MotionEvent.ACTION_BUTTON_RELEASE
-        ) {
-          return@shouldActivateWithMouse false
-        }
+      // For ACTION_MOVE the pressed button is read from `buttonState`.
+      if (actionMasked == MotionEvent.ACTION_MOVE && !isButtonInConfig(buttonState)) {
+        return@shouldSkipEvent true
       }
     }
 
-    return true
+    return false
   }
 
   /**
@@ -872,7 +865,7 @@ open class GestureHandler {
    * This method modifies and transforms the received point.
    */
   protected fun transformPoint(point: PointF): PointF =
-    orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
+    orchestrator?.transformPointToViewCoords(coordinateView, point) ?: run {
       point.x = Float.NaN
       point.y = Float.NaN
       point
@@ -963,6 +956,9 @@ open class GestureHandler {
       if (config.hasKey(KEY_TEST_ID)) {
         handler.testID = config.getString(KEY_TEST_ID)
       }
+      if (config.hasKey(KEY_CANCELS_JS_RESPONDER)) {
+        handler.cancelsJSResponder = config.getBoolean(KEY_CANCELS_JS_RESPONDER)
+      }
     }
 
     abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
@@ -985,6 +981,7 @@ open class GestureHandler {
       private const val KEY_HIT_SLOP_WIDTH = "width"
       private const val KEY_HIT_SLOP_HEIGHT = "height"
       private const val KEY_TEST_ID = "testID"
+      private const val KEY_CANCELS_JS_RESPONDER = "cancelsJSResponder"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
@@ -1048,6 +1045,7 @@ open class GestureHandler {
     private const val DEFAULT_MOUSE_BUTTON = 0
     private const val DEFAULT_DISPATCHES_ANIMATED_EVENTS = false
     private const val DEFAULT_DISPATCHES_REANIMATED_EVENTS = false
+    private const val DEFAULT_CANCELS_JS_RESPONDER = true
 
     const val STATE_UNDETERMINED = 0
     const val STATE_FAILED = 1

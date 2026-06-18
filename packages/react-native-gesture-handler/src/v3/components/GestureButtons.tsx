@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
 
 import GestureHandlerButton from '../../components/GestureHandlerButton';
+import { getTVProps } from '../../components/utils';
 import createNativeWrapper from '../createNativeWrapper';
 import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 import type { GestureEndEvent, GestureEvent } from '../types';
@@ -15,16 +16,24 @@ import type {
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 type EndCallbackEventType = GestureEndEvent<NativeHandlerData>;
 
-/**
- * @deprecated `RawButton` is deprecated, use `Clickable` instead
- */
-export const RawButton = createNativeWrapper<
+type RawButtonInnerProps = RawButtonProps & {
+  needsOffscreenAlphaCompositing?: boolean | undefined;
+};
+
+const RawButtonInner = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
-  RawButtonProps
+  RawButtonInnerProps
 >(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
+
+/**
+ * @deprecated `RawButton` is deprecated, use `Clickable` instead
+ */
+export const RawButton = (props: RawButtonProps) => (
+  <RawButtonInner {...props} needsOffscreenAlphaCompositing />
+);
 
 /**
  * @deprecated `BaseButton` is deprecated, use `Touchable` instead
@@ -87,10 +96,13 @@ export const BaseButton = (props: BaseButtonProps) => {
     props.onFinalize?.(e);
   };
 
+  const tvProps = getTVProps(rest);
+
   return (
     <RawButton
       style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
       {...rest}
+      {...tvProps}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
@@ -178,6 +190,7 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
 
   return (
     <AnimatedBaseButton
+      borderless
       {...rest}
       ref={ref ?? null}
       onActiveStateChange={onActiveStateChange}

@@ -1,10 +1,10 @@
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
-  usePanGesture,
-  useLongPressGesture,
   GestureHandlerRootView,
   useCompetingGestures,
+  useLongPressGesture,
+  usePanGesture,
 } from 'react-native-gesture-handler';
 
 export default function App() {
@@ -14,8 +14,8 @@ export default function App() {
     },
   });
   const longPressGesture = useLongPressGesture({
-    onDeactivate: (_, success) => {
-      if (success) {
+    onDeactivate: (e) => {
+      if (!e.canceled) {
         console.log('Long Press');
       }
     },

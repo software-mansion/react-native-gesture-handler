@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
   GestureHandlerRootView,
@@ -9,16 +9,16 @@ import {
 export default function App() {
   const innerTap = useTapGesture({
     numberOfTaps: 2,
-    onDeactivate: (_, success) => {
-      if (success) {
+    onDeactivate: (e) => {
+      if (!e.canceled) {
         console.log('inner tap');
       }
     },
   });
 
   const outerTap = useTapGesture({
-    onDeactivate: (_, success) => {
-      if (success) {
+    onDeactivate: (e) => {
+      if (!e.canceled) {
         console.log('outer tap');
       }
     },

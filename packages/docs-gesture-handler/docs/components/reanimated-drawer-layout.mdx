@@ -108,13 +108,21 @@ minSwipeDistance?: number;
 
 Minimal distance to swipe before the drawer starts moving.
 
+### rootContainerStyle
+
+```ts
+rootContainerStyle?: StyleProp<ViewStyle>;
+```
+
+Style applied to the outermost container that wraps both the content view and the drawer. Note that this container has `flex: 1` and `overflow: 'hidden'` applied by default.
+
 ### contentContainerStyle
 
 ```ts
 contentContainerStyle?: StyleProp<ViewStyle>;
 ```
 
-Style of the content view container.
+Style applied to the container wrapping the content view (the [`children`](#children)) and the background overlay.
 
 ### drawerContainerStyle
 
@@ -122,7 +130,7 @@ Style of the content view container.
 drawerContainerStyle?: StyleProp<ViewStyle>;
 ```
 
-Style wrapping the drawer.
+Style applied to the container wrapping the drawer (the view returned by [`renderNavigationView`](#rendernavigationview)).
 
 ### edgeWidth
 
@@ -219,12 +227,12 @@ export enum DrawerState {
 
 A function is called when the status of the drawer changes, taking `newState` to represent the drawer's interaction state and `drawerWillShow`, which is `true` when the drawer starts animating towards the open position and `false` otherwise.
 
-<Badges platforms={['ios']}>
+<Badges platforms={['ios', 'web']}>
 ### enableTrackpadTwoFingerGesture
 </Badges>
 
 ```ts
-enableTrackpadTwoFingerGesture?: boolean;
+enableTrackpadTwoFingerGesture?: boolean | SharedValue<boolean>;
 ```
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
@@ -265,7 +273,7 @@ This parameter allows specifying which `userSelect` property should be applied t
 </Badges>
 
 ```ts
-activeCursor: ActiveCursor;
+activeCursor?: ActiveCursor | SharedValue<ActiveCursor>;
 ```
 
 This parameter allows specifying which cursor should be used when the gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.

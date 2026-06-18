@@ -14,11 +14,12 @@ import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.text.ReactTextView
 import com.facebook.react.views.textinput.ReactEditText
 import com.facebook.react.views.view.ReactViewGroup
-import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.events.eventbuilders.NativeGestureHandlerEventDataBuilder
-import com.swmansion.gesturehandler.react.isScreenReaderOn
 
 class NativeViewGestureHandler : GestureHandler() {
+  override val isContinuous = true
+
   private var shouldActivateOnStart = false
 
   /**
@@ -27,6 +28,13 @@ class NativeViewGestureHandler : GestureHandler() {
    * aren't supposed to be cancelled by scrollview or other container that may also handle touches.
    */
   var disallowInterruption = false
+    private set
+
+  /**
+   * Composes with [disallowInterruption]. When both are `true`, the handler still resists
+   * discrete gesture peers but yields to continuous peers. No-op when [disallowInterruption] is `false`.
+   */
+  var yieldsToContinuousGestures = false
     private set
 
   private var hook: NativeViewGestureHandlerHook = defaultHook
@@ -43,6 +51,7 @@ class NativeViewGestureHandler : GestureHandler() {
     super.resetConfig()
     shouldActivateOnStart = DEFAULT_SHOULD_ACTIVATE_ON_START
     disallowInterruption = DEFAULT_DISALLOW_INTERRUPTION
+    yieldsToContinuousGestures = DEFAULT_YIELDS_TO_CONTINUOUS_GESTURES
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
   }
 
@@ -61,12 +70,15 @@ class NativeViewGestureHandler : GestureHandler() {
       // For the `disallowInterruption` to work correctly we need to check the property when
       // accessed as a peer, because simultaneous recognizers can be set on either side of the
       // connection.
-      if (handler.state == STATE_ACTIVE && handler.disallowInterruption) {
+      if (handler.state == STATE_ACTIVE &&
+        handler.disallowInterruption &&
+        !handler.yieldsToContinuousGestures
+      ) {
         // other handler is active and it disallows interruption, we don't want to get into its way
         return false
       }
     }
-    val canBeInterrupted = !disallowInterruption
+    val canBeInterrupted = canBeInterruptedBy(handler)
     val otherState = handler.state
     return if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
       // if both handlers are active and the current handler can be interrupted it we return `false`
@@ -81,7 +93,14 @@ class NativeViewGestureHandler : GestureHandler() {
     // otherwise we can only return `true` if already in an active state
   }
 
-  override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = !disallowInterruption
+  override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = canBeInterruptedBy(handler)
+
+  /**
+   * Whether this handler permits [other] to take over the touch stream, given its
+   * `disallowInterruption` and `yieldsToContinuousGestures` configuration.
+   */
+  fun canBeInterruptedBy(other: GestureHandler): Boolean = !disallowInterruption ||
+    (yieldsToContinuousGestures && other.isContinuous)
 
   override fun shouldBeginWithRecordedHandlers(recorded: List<GestureHandler>): Boolean =
     hook.shouldBeginWithRecordedHandlers(recorded, this)
@@ -100,17 +119,6 @@ class NativeViewGestureHandler : GestureHandler() {
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
-
-    val isTouchExplorationEnabled = view.context.isScreenReaderOn()
-
-    if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup && isTouchExplorationEnabled) {
-      // Fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
-      // When TalkBack is enabled, events are often not being sent to the orchestrator for processing.
-      // Instead, states will be changed directly by an alternative mechanism added in this PR:
-      // https://github.com/software-mansion/react-native-gesture-handler/pull/2234
-      return
-    }
-
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
         cancel()
@@ -203,6 +211,9 @@ class NativeViewGestureHandler : GestureHandler() {
       if (config.hasKey(KEY_DISALLOW_INTERRUPTION)) {
         handler.disallowInterruption = config.getBoolean(KEY_DISALLOW_INTERRUPTION)
       }
+      if (config.hasKey(KEY_YIELDS_TO_CONTINUOUS_GESTURES)) {
+        handler.yieldsToContinuousGestures = config.getBoolean(KEY_YIELDS_TO_CONTINUOUS_GESTURES)
+      }
     }
 
     override fun createEventBuilder(handler: NativeViewGestureHandler) = NativeGestureHandlerEventDataBuilder(handler)
@@ -210,6 +221,7 @@ class NativeViewGestureHandler : GestureHandler() {
     companion object {
       private const val KEY_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart"
       private const val KEY_DISALLOW_INTERRUPTION = "disallowInterruption"
+      private const val KEY_YIELDS_TO_CONTINUOUS_GESTURES = "yieldsToContinuousGestures"
     }
   }
 
@@ -217,6 +229,7 @@ class NativeViewGestureHandler : GestureHandler() {
     private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = true
     private const val DEFAULT_SHOULD_ACTIVATE_ON_START = false
     private const val DEFAULT_DISALLOW_INTERRUPTION = false
+    private const val DEFAULT_YIELDS_TO_CONTINUOUS_GESTURES = false
 
     private fun tryIntercept(view: View, event: MotionEvent) = view is ViewGroup && view.onInterceptTouchEvent(event)
 
@@ -317,11 +330,14 @@ class NativeViewGestureHandler : GestureHandler() {
       }
     }
 
-    // recognize alongside every handler besides RootViewGestureHandler, which is a private inner class
-    // of RNGestureHandlerRootHelper so no explicit type checks, but its tag is always negative
+    // recognize alongside every handler besides RootViewGestureHandler;
     // also if other handler is NativeViewGestureHandler then don't override the default implementation
-    override fun shouldRecognizeSimultaneously(handler: GestureHandler) =
-      handler.tag > 0 && handler !is NativeViewGestureHandler
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler): Boolean? =
+      if (handler is NativeViewGestureHandler) {
+        null
+      } else {
+        handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
+      }
 
     override fun wantsToHandleEventBeforeActivation() = true
 
