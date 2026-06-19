@@ -33,7 +33,7 @@ class GestureHandlerOrchestrator(
   // Pool of reusable lists for snapshotting `gestureHandlers` during event delivery.
   private val handlerListPool = ArrayDeque<ArrayList<GestureHandler>>()
 
-  private fun obtainHandlerList() = handlerListPool.removeLastOrNull() ?: ArrayList<GestureHandler>()
+  private fun obtainHandlerList() = handlerListPool.pollLast() ?: ArrayList<GestureHandler>()
 
   private fun recycleHandlerList(list: ArrayList<GestureHandler>) {
     list.clear()
