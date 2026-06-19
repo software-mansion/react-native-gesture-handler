@@ -44,6 +44,10 @@ endif()
 
 find_package(ReactAndroid REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
+if(${RNGH_USE_WORKLETS})
+  find_package(react-native-worklets REQUIRED CONFIG)
+  target_compile_definitions(${PACKAGE_NAME} PRIVATE RNGH_USE_WORKLETS=1)
+endif()
 
 target_link_libraries(
   ${PACKAGE_NAME}
@@ -51,3 +55,7 @@ target_link_libraries(
   ReactAndroid::jsi
   fbjni::fbjni
 )
+
+if(${RNGH_USE_WORKLETS})
+  target_link_libraries(${PACKAGE_NAME} react-native-worklets::worklets)
+endif()

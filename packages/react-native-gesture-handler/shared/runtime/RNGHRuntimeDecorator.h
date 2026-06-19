@@ -10,6 +10,9 @@ class RNGHRuntimeDecorator {
       jsi::Runtime &rnRuntime,
       int moduleId,
       std::function<void(int, int)> &&setGestureState);
+  static void decorateUIRuntime(
+      jsi::Runtime &uiRuntime,
+      std::function<void(int, int)> &&setGestureState);
   static bool installUIRuntimeBindings(
       jsi::Runtime &rnRuntime,
       int moduleId,

@@ -32,6 +32,10 @@ export type ReanimatedHandler<THandlerData> = {
   context: ReanimatedContext<THandlerData>;
 };
 
+type WorkletsModule = {
+  scheduleOnUI?: (worklet: () => void) => void;
+};
+
 export type NativeEventsManager = new (component: {
   props: Record<string, unknown>;
   _componentRef: React.Ref<unknown>;
@@ -82,12 +86,11 @@ let Reanimated:
   | undefined;
 
 try {
-  Reanimated = require('react-native-reanimated');
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-  const Worklets = require('react-native-worklets');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const Worklets = require('react-native-worklets') as WorkletsModule;
 
   // Make sure worklets are initialized before attempting to install UI runtime bindings
-  Worklets?.scheduleOnUI(() => {
+  Worklets.scheduleOnUI?.(() => {
     'worklet';
   });
 
@@ -102,6 +105,12 @@ try {
       );
     }
   });
+} catch (e) {
+  // When 'react-native-worklets' is not available we want to quietly continue
+}
+
+try {
+  Reanimated = require('react-native-reanimated');
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized

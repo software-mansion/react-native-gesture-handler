@@ -1844,6 +1844,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
+    - RNWorklets
     - Yoga
   - RNReanimated (4.4.1):
     - hermes-engine
@@ -2234,7 +2235,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: 554330476e4a1ccb243af96396942bbbb1cbc5f8
+  hermes-engine: abe786fb7735b124cf964a64c3fc915467e9f2d6
   RCTDeprecation: 2a74a2c57675e64419bd89078efde81f7c1de90b
   RCTRequired: 30451112e6fef4e6f31b4e7eee0845156e35e4b0
   RCTSwiftUI: 5aaf0b07e747ba749dc6acc94d8bd41eea4b570f
@@ -2283,7 +2284,7 @@ SPEC CHECKSUMS:
   React-RCTAppDelegate: a47de6fddb7eb0c028abba83138a5ce283bd7e77
   React-RCTBlob: 38c418d067e0c61818223503063310122e44c588
   React-RCTFabric: 480ca2a105730e1790cfd13291d086cb53725825
-  React-RCTFBReactNativeSpec: f85c67a24979d405d0ebfd3bbff490d34c3a84d2
+  React-RCTFBReactNativeSpec: 63131378510a5191515a4adfc308e65b465106f4
   React-RCTImage: 3ce36f82441b76b715818ee7ee95f6f5b34f9ee1
   React-RCTLinking: 2f7b5ed4983122e5115732d25a4360960eab583c
   React-RCTNetwork: dcd3b180f33da86f5dc5e928a816eb5464fa7f16
@@ -2307,7 +2308,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 21807c5e7d6d0e334667f755e23063834d581e62
   ReactCommon: d5c1bb4427bf51c443de5926aac332c89ddd9363
   ReactNativeDependencies: fa0a54b3f5319ae0e3b9aff32bfee7a424b88e66
-  RNGestureHandler: f07cf8b0a45a4eee18163629f78413b0a534aece
+  RNGestureHandler: 2d8900683c602d861399d08bac02cb91b683d298
   RNReanimated: d6e6865fa9d5ce60863a9e244de45de4f9890e46
   RNWorklets: 04a35c45bd72d24914cbaf24bdfa4e30e1eab2df
   Yoga: fe50ab299e578f397fef753cf309c6703a4db29b
