@@ -30,6 +30,16 @@ class GestureHandlerOrchestrator(
   private val gestureHandlers = arrayListOf<GestureHandler>()
   private val awaitingHandlers = arrayListOf<GestureHandler>()
 
+  // Pool of reusable lists for snapshotting `gestureHandlers` during event delivery.
+  private val handlerListPool = ArrayDeque<ArrayList<GestureHandler>>()
+
+  private fun obtainHandlerList() = handlerListPool.removeLastOrNull() ?: ArrayList<GestureHandler>()
+
+  private fun recycleHandlerList(list: ArrayList<GestureHandler>) {
+    list.clear()
+    handlerListPool.addLast(list)
+  }
+
   // In `onHandlerStateChange` method we iterate through `awaitingHandlers`, but calling `tryActivate` may modify this list.
   // To avoid `ConcurrentModificationException` we iterate through copy. There is one more problem though - if handler was
   // removed from `awaitingHandlers`, it was still present in copy of original list. This hashset helps us identify which handlers
@@ -259,9 +269,10 @@ class GestureHandlerOrchestrator(
   }
 
   private fun deliverEventToGestureHandlers(event: MotionEvent) {
-    // Copy handlers to a local snapshot, because the list of active handlers can change
-    // as a result of state updates
-    val handlersToProcess = gestureHandlers.toMutableList()
+    // Snapshot handlers into a pooled list, because the list of active handlers can change
+    // as a result of state updates (and delivery can be re-entrant).
+    val handlersToProcess = obtainHandlerList()
+    handlersToProcess.addAll(gestureHandlers)
 
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
@@ -270,8 +281,12 @@ class GestureHandlerOrchestrator(
     // should be tested)
     handlersToProcess.sortWith(handlersComparator)
 
-    for (handler in handlersToProcess) {
-      deliverEventToGestureHandler(handler, event)
+    try {
+      for (handler in handlersToProcess) {
+        deliverEventToGestureHandler(handler, event)
+      }
+    } finally {
+      recycleHandlerList(handlersToProcess)
     }
   }
 
