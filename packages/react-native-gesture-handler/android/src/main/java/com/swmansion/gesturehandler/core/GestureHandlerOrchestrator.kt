@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler.core
 
 import android.graphics.Matrix
 import android.graphics.PointF
+import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,10 @@ class GestureHandlerOrchestrator(
   private val awaitingHandlers = arrayListOf<GestureHandler>()
   private val preparedHandlers = arrayListOf<GestureHandler>()
 
+  // Used by `cancelTouchesInInterceptedViews`.
+  private val viewsToCancel = arrayListOf<View>()
+  private val pointerDownPoints = SparseArray<PointF>()
+
   // In `onHandlerStateChange` method we iterate through `awaitingHandlers`, but calling `tryActivate` may modify this list.
   // To avoid `ConcurrentModificationException` we iterate through copy. There is one more problem though - if handler was
   // removed from `awaitingHandlers`, it was still present in copy of original list. This hashset helps us identify which handlers
@@ -49,6 +54,7 @@ class GestureHandlerOrchestrator(
   fun onTouchEvent(event: MotionEvent): Boolean {
     isHandlingTouch = true
     val action = event.actionMasked
+    trackPointerDownPoints(event)
     if (action == MotionEvent.ACTION_DOWN ||
       action == MotionEvent.ACTION_POINTER_DOWN ||
       action == MotionEvent.ACTION_HOVER_MOVE
@@ -546,13 +552,33 @@ class GestureHandlerOrchestrator(
     coords: FloatArray,
     pointerId: Int,
     event: MotionEvent,
+    useChildBounds: Boolean = false,
   ): Boolean {
+    var boundsView = view
+    var boundsX = coords[0]
+    var boundsY = coords[1]
+
+    // When `useChildBounds` is set, handler bounds are checked in the coordinate space of the view's
+    // single child instead of against the view itself. The caller only sets this for a native detector
+    // with exactly one child, so its interactive area follows the child's transforms (e.g. `translateX`)
+    // rather than the detector's transform-agnostic frame. For an identity transform the child fills the
+    // detector, so this matches the detector's own frame and `hitSlop` expansion (#4049) keeps working;
+    // for a translated child the area follows the content.
+    if (useChildBounds) {
+      val child = (view as RNGestureHandlerDetectorView).getChildAt(0)
+      val childPoint = tempPoint
+      transformPointToChildViewCoords(coords[0], coords[1], view, child, childPoint)
+      boundsView = child
+      boundsX = childPoint.x
+      boundsY = childPoint.y
+    }
+
     var found = false
     handlerRegistry.getHandlersForView(view)?.let {
       synchronized(it) {
         for (handler in it) {
           // skip disabled and out-of-bounds handlers
-          if (!handler.isEnabled || !handler.isWithinBounds(view, coords[0], coords[1])) {
+          if (!handler.isEnabled || !handler.isWithinBounds(boundsView, boundsX, boundsY)) {
             continue
           }
 
@@ -661,6 +687,112 @@ class GestureHandlerOrchestrator(
     return false
   }
 
+  private fun trackPointerDownPoints(event: MotionEvent) {
+    val index = event.actionIndex
+    when (event.actionMasked) {
+      MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN ->
+        pointerDownPoints.put(event.getPointerId(index), PointF(event.getX(index), event.getY(index)))
+      MotionEvent.ACTION_POINTER_UP ->
+        pointerDownPoints.remove(event.getPointerId(index))
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
+        pointerDownPoints.clear()
+    }
+  }
+
+  fun cancelTouchesInInterceptedViews(event: MotionEvent) {
+    viewsToCancel.clear()
+    for (i in 0 until pointerDownPoints.size()) {
+      val point = pointerDownPoints.valueAt(i)
+      tempCoords[0] = point.x
+      tempCoords[1] = point.y
+      collectViewsAtPoint(wrapperView, tempCoords, viewsToCancel)
+    }
+
+    if (viewsToCancel.isEmpty()) {
+      return
+    }
+
+    val activeHandlers = gestureHandlers.filter { it.isActive }
+    val cancelEvent = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_CANCEL }
+
+    for (view in viewsToCancel) {
+      if (view === wrapperView || isViewDrivenByActiveNativeGesture(view, activeHandlers)) {
+        continue
+      }
+      view.onTouchEvent(cancelEvent)
+    }
+
+    cancelEvent.recycle()
+    viewsToCancel.clear()
+  }
+
+  // Whether the view's touch is still owned by a NativeViewGestureHandler that survived arbitration.
+  // Only those are fed through `onTouchEvent`, so only those break if cancelled. Other handlers are
+  // orchestrator-driven and unaffected.
+  private fun isViewDrivenByActiveNativeGesture(view: View, activeHandlers: List<GestureHandler>) =
+    handlerRegistry.getHandlersForView(view)?.let { handlers ->
+      synchronized(handlers) {
+        handlers.any { nativeGestureSurvivesArbitration(it, activeHandlers) }
+      }
+    } ?: false
+
+  // A native handler survives arbitration if it is active, or it does not conflict with any active handler.
+  private fun nativeGestureSurvivesArbitration(handler: GestureHandler, activeHandlers: List<GestureHandler>) =
+    handler is NativeViewGestureHandler &&
+      (handler.isActive || activeHandlers.none { shouldHandlerBeCancelledBy(handler, it) })
+
+  // Collects the view path under the point (topmost child first, like touch dispatch), leaf to root.
+  private fun collectViewsAtPoint(view: View, coords: FloatArray, out: MutableList<View>): Boolean {
+    if (shouldIgnoreSubtreeIfGestureHandlerRootView(view)) {
+      // A nested active root view manages its own subtree (and its own interception cancellation).
+      return false
+    }
+
+    val pointerEvents = viewConfigHelper.getPointerEventsConfigForView(view)
+    if (pointerEvents == PointerEventsConfig.NONE) {
+      return false
+    }
+
+    var found = false
+    if (view is ViewGroup && pointerEvents != PointerEventsConfig.BOX_ONLY) {
+      for (i in view.childCount - 1 downTo 0) {
+        val child = view.getChildAt(i)
+        if (!canReceiveEvents(child)) {
+          continue
+        }
+        val childPoint = tempPoint
+        transformPointToChildViewCoords(coords[0], coords[1], view, child, childPoint)
+        if (isClipping(child) && !isTransformedTouchPointInView(childPoint.x, childPoint.y, child)) {
+          continue
+        }
+        val restoreX = coords[0]
+        val restoreY = coords[1]
+        coords[0] = childPoint.x
+        coords[1] = childPoint.y
+        found = collectViewsAtPoint(child, coords, out)
+        coords[0] = restoreX
+        coords[1] = restoreY
+
+        if (found) {
+          break
+        }
+      }
+    }
+
+    // BOX_NONE views can't be the target themselves, only their children can
+    val selfIsTarget = pointerEvents != PointerEventsConfig.BOX_NONE &&
+      isTransformedTouchPointInView(coords[0], coords[1], view)
+
+    if (found || selfIsTarget) {
+      // `out` may already contain this view when several pointers share part of their path.
+      if (!out.contains(view)) {
+        out.add(view)
+      }
+      return true
+    }
+    return false
+  }
+
   private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean =
     if (shouldIgnoreSubtreeIfGestureHandlerRootView(view)) {
       // When we encounter another active root view while traversing the view hierarchy, we want
@@ -690,8 +822,16 @@ class GestureHandlerOrchestrator(
             is ViewGroup -> {
               extractGestureHandlers(view, coords, pointerId, event).also { found ->
                 // A child view is handling touch, also extract handlers attached to this view
-                if (found || view is RNGestureHandlerDetectorView) {
+                if (found) {
                   recordViewHandlersForPointer(view, coords, pointerId, event)
+                } else if (view is RNGestureHandlerDetectorView) {
+                  // No child consumed the touch, but we still record the detector's own handlers so
+                  // that `hitSlop` expansion keeps working. The detector's frame ignores
+                  // child transforms, so for a single-child detector we check bounds in the child's
+                  // transform-aware coordinate space - otherwise the detector would steal presses over
+                  // areas its content has been moved away from.
+                  val useChildBounds = view.childCount == 1
+                  recordViewHandlersForPointer(view, coords, pointerId, event, useChildBounds)
                 }
               }
             }

@@ -209,6 +209,15 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
 }
 
+- (void)attachHandlerForDetectorWithTag:(nonnull NSNumber *)handlerTag
+                                 toView:(nonnull RNGHUIView *)view
+                         withActionType:(RNGestureHandlerActionType)actionType
+                       withHostDetector:(nullable RNGHUIView *)hostDetector
+{
+  [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType withHostDetector:hostDetector];
+  [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
+}
+
 - (void)setGestureHandlerConfig:(NSNumber *)handlerTag config:(NSDictionary *)config
 {
   RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
