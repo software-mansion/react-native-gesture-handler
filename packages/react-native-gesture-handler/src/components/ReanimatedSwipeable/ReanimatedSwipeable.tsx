@@ -392,7 +392,6 @@ const Swipeable = (props: SwipeableProps) => {
 
   const leftActionAnimation = useAnimatedStyle(() => {
     return {
-      opacity: showLeftProgress.value === 0 ? 0 : 1,
       // Both action containers use `absoluteFill` and overlap, so the
       // inactive one must not intercept touches meant for the visible
       // actions.
@@ -426,7 +425,6 @@ const Swipeable = (props: SwipeableProps) => {
 
   const rightActionAnimation = useAnimatedStyle(() => {
     return {
-      opacity: showRightProgress.value === 0 ? 0 : 1,
       // Both action containers use `absoluteFill` and overlap, so the
       // inactive one must not intercept touches meant for the visible
       // actions.
