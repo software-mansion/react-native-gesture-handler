@@ -27,11 +27,7 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s);
 
-  worklets_podspec_paths = [
-    File.join(__dir__, "../react-native-worklets/RNWorklets.podspec"),
-    File.join(__dir__, "../../node_modules/react-native-worklets/RNWorklets.podspec"),
-  ]
-  if worklets_podspec_paths.any? { |path| File.exist?(path) }
+  if GestureHandlerUtils.react_native_worklets_podspec_exists()
     s.dependency "RNWorklets"
   end
 

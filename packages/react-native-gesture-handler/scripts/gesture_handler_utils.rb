@@ -28,4 +28,28 @@ module GestureHandlerUtils
 
         return react_native_json['version'].split('.')[1].to_i
     end
+
+    def node_package_dir(package_name)
+        package_json_path = `cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('#{package_name}/package.json')" 2>/dev/null`.strip
+
+        if !$?.success? || package_json_path.empty?
+            return nil
+        end
+
+        return File.dirname(package_json_path)
+    end
+
+    def react_native_worklets_package_dir()
+        return node_package_dir('react-native-worklets')
+    end
+
+    def react_native_worklets_podspec_exists()
+        package_dir = react_native_worklets_package_dir()
+
+        if package_dir == nil
+            return false
+        end
+
+        return File.exist?(File.join(package_dir, 'RNWorklets.podspec'))
+    end
 end
