@@ -5,6 +5,7 @@ import GestureHandlerButton from '../../../components/GestureHandlerButton';
 import { getTVProps } from '../../../components/utils';
 import { NativeDetector } from '../../detectors/NativeDetector';
 import { useNativeGesture } from '../../hooks';
+import { setAndForwardAnimatableRef } from '../animatableRef';
 import type {
   AnimationDuration,
   CallbackEventType,
@@ -99,6 +100,15 @@ export const Touchable = (props: TouchableProps) => {
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
+  );
+  const buttonRef = useRef<React.ComponentRef<
+    typeof GestureHandlerButton
+  > | null>(null);
+  const setButtonRef = useCallback(
+    (button: React.ComponentRef<typeof GestureHandlerButton> | null) => {
+      setAndForwardAnimatableRef(buttonRef, ref, button);
+    },
+    [ref]
   );
 
   const wrappedLongPress = useCallback(() => {
@@ -218,7 +228,7 @@ export const Touchable = (props: TouchableProps) => {
         {...tvProps}
         {...rippleProps}
         {...resolvedDurations}
-        ref={ref ?? null}
+        ref={setButtonRef}
         enabled={!disabled}
         defaultOpacity={defaultOpacity}
         defaultUnderlayOpacity={defaultUnderlayOpacity}

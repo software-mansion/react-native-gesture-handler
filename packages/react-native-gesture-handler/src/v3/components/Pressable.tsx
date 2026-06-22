@@ -42,6 +42,7 @@ import {
   useNativeGesture,
   useSimultaneousGestures,
 } from '../hooks';
+import { setAndForwardAnimatableRef } from './animatableRef';
 import { PureNativeButton } from './GestureButtons';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
@@ -72,6 +73,7 @@ const Pressable = (props: PressableProps) => {
     simultaneousWith,
     requireToFail,
     block,
+    ref,
     ...remainingProps
   } = props;
 
@@ -81,10 +83,19 @@ const Pressable = (props: PressableProps) => {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
   const isCurrentlyPressed = useRef<boolean>(false);
+  const buttonRef = useRef<React.ComponentRef<typeof PureNativeButton> | null>(
+    null
+  );
   const dimensions = useRef<PressableDimensions>({
     width: 0,
     height: 0,
   });
+  const setButtonRef = useCallback(
+    (button: React.ComponentRef<typeof PureNativeButton> | null) => {
+      setAndForwardAnimatableRef(buttonRef, ref, button);
+    },
+    [ref]
+  );
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
@@ -399,6 +410,7 @@ const Pressable = (props: PressableProps) => {
       <PureNativeButton
         {...remainingProps}
         {...tvProps}
+        ref={setButtonRef}
         onLayout={setDimensions}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}

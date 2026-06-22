@@ -1,12 +1,18 @@
 import { render, renderHook } from '@testing-library/react-native';
-import { act } from 'react';
+import { act, createRef } from 'react';
+import type { View } from 'react-native';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
-import { RectButton, Touchable } from '../v3/components';
+import { Pressable, RectButton, Touchable } from '../v3/components';
+import { setAndForwardAnimatableRef } from '../v3/components/animatableRef';
 import { usePanGesture } from '../v3/hooks/gestures';
 import type { SingleGesture } from '../v3/types';
+
+type AnimatableViewRef = View & {
+  getAnimatableRef?: () => View | null;
+};
 
 describe('[API v3] Hooks', () => {
   test('Pan gesture', () => {
@@ -34,6 +40,66 @@ describe('[API v3] Hooks', () => {
 });
 
 describe('[API v3] Components', () => {
+  test('Pressable exposes the native button as an animatable ref', () => {
+    const ref = createRef<AnimatableViewRef>();
+
+    render(
+      <GestureHandlerRootView>
+        <Pressable ref={ref} />
+      </GestureHandlerRootView>
+    );
+
+    expect(ref.current?.getAnimatableRef?.()).toBe(ref.current);
+  });
+
+  test('Pressable forwards function refs on mount and unmount', () => {
+    const ref = jest.fn();
+
+    const { unmount } = render(
+      <GestureHandlerRootView>
+        <Pressable ref={ref} />
+      </GestureHandlerRootView>
+    );
+
+    expect(ref).toHaveBeenCalledWith(expect.anything());
+
+    unmount();
+
+    expect(ref).toHaveBeenLastCalledWith(null);
+  });
+
+  test('Pressable animatable refs stay bound to their host instance', () => {
+    const ref = createRef<AnimatableViewRef>();
+    const renderPressable = (key: string) => (
+      <GestureHandlerRootView>
+        <Pressable key={key} ref={ref} />
+      </GestureHandlerRootView>
+    );
+    const { rerender } = render(renderPressable('first'));
+    const firstRef = ref.current;
+
+    rerender(renderPressable('second'));
+    const secondRef = ref.current;
+
+    expect(firstRef?.getAnimatableRef?.()).toBe(firstRef);
+    expect(secondRef?.getAnimatableRef?.()).toBe(secondRef);
+  });
+
+  test('setAndForwardAnimatableRef preserves an existing animatable ref', () => {
+    const localRef = createRef<AnimatableViewRef>();
+    const forwardedRef = createRef<AnimatableViewRef>();
+    const existingAnimatableRef = jest.fn();
+    const hostRef = {
+      getAnimatableRef: existingAnimatableRef,
+    } as unknown as AnimatableViewRef;
+
+    setAndForwardAnimatableRef(localRef, forwardedRef, hostRef);
+
+    expect(localRef.current).toBe(hostRef);
+    expect(forwardedRef.current).toBe(hostRef);
+    expect(hostRef.getAnimatableRef).toBe(existingAnimatableRef);
+  });
+
   test('Rect Button', () => {
     const pressFn = jest.fn();
 
@@ -61,6 +127,51 @@ describe('[API v3] Components', () => {
   });
 
   describe('Touchable', () => {
+    test('exposes the native button as an animatable ref', () => {
+      const ref = createRef<AnimatableViewRef>();
+
+      render(
+        <GestureHandlerRootView>
+          <Touchable ref={ref} />
+        </GestureHandlerRootView>
+      );
+
+      expect(ref.current?.getAnimatableRef?.()).toBe(ref.current);
+    });
+
+    test('forwards function refs on mount and unmount', () => {
+      const ref = jest.fn();
+
+      const { unmount } = render(
+        <GestureHandlerRootView>
+          <Touchable ref={ref} />
+        </GestureHandlerRootView>
+      );
+
+      expect(ref).toHaveBeenCalledWith(expect.anything());
+
+      unmount();
+
+      expect(ref).toHaveBeenLastCalledWith(null);
+    });
+
+    test('animatable refs stay bound to their host instance', () => {
+      const ref = createRef<AnimatableViewRef>();
+      const renderTouchable = (key: string) => (
+        <GestureHandlerRootView>
+          <Touchable key={key} ref={ref} />
+        </GestureHandlerRootView>
+      );
+      const { rerender } = render(renderTouchable('first'));
+      const firstRef = ref.current;
+
+      rerender(renderTouchable('second'));
+      const secondRef = ref.current;
+
+      expect(firstRef?.getAnimatableRef?.()).toBe(firstRef);
+      expect(secondRef?.getAnimatableRef?.()).toBe(secondRef);
+    });
+
     test('calls onPress on successful press', () => {
       const pressFn = jest.fn();
 
