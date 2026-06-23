@@ -133,7 +133,7 @@ describe('[API v3] Components', () => {
 
   describe('ScrollView', () => {
     test('handles responder event passed through Pressable for keyboardShouldPersistTaps handled', async () => {
-      const { getByTestId, UNSAFE_getAllByType } = render(
+      const { UNSAFE_getAllByType } = render(
         <GestureHandlerRootView>
           <ScrollView keyboardShouldPersistTaps="handled">
             <Pressable testID="pressable" />
@@ -143,14 +143,14 @@ describe('[API v3] Components', () => {
 
       await act(flushImmediate);
 
-      const pressable = getByTestId('pressable');
+      const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
       const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
 
       expect(scrollViewResponder).toBeDefined();
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(pressable.props.onStartShouldSetResponder()).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
@@ -158,7 +158,7 @@ describe('[API v3] Components', () => {
     });
 
     test('does not handle responder event passed through Pressable without keyboardShouldPersistTaps handled', async () => {
-      const { getByTestId, UNSAFE_getAllByType } = render(
+      const { UNSAFE_getAllByType } = render(
         <GestureHandlerRootView>
           <ScrollView>
             <Pressable testID="pressable" />
@@ -168,14 +168,14 @@ describe('[API v3] Components', () => {
 
       await act(flushImmediate);
 
-      const pressable = getByTestId('pressable');
+      const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
       const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
 
       expect(scrollViewResponder).toBeDefined();
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(pressable.props.onStartShouldSetResponder()).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );
