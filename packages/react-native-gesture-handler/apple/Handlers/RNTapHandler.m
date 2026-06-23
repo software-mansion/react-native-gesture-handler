@@ -38,6 +38,12 @@
   NSUInteger _tapsSoFar;
   CGPoint _initPosition;
   NSInteger _maxNumberOfTouches;
+  // Pending `cancel` invocations scheduled via dispatch_after. We use dispatch blocks instead of
+  // performSelector:afterDelay: because the latter schedules its timer in NSDefaultRunLoopMode only,
+  // which means it is starved while a sibling UIScrollView keeps the run loop in UITrackingRunLoopMode
+  // (during a drag or momentum deceleration). dispatch_after fires regardless of run loop mode, so the
+  // tap can still fail/finalize on time while a list is scrolling. See issue #3471.
+  NSMutableArray<dispatch_block_t> *_pendingCancellations;
 }
 
 static const NSUInteger defaultNumberOfTaps = 1;
@@ -57,8 +63,31 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
     _maxDeltaX = NAN;
     _maxDeltaY = NAN;
     _maxDistSq = NAN;
+    _pendingCancellations = [NSMutableArray array];
   }
   return self;
+}
+
+- (void)scheduleCancelAfterDelay:(NSTimeInterval)delay
+{
+  __weak typeof(self) weakSelf = self;
+
+  dispatch_block_t block = dispatch_block_create(0, ^{
+    [weakSelf cancel];
+  });
+
+  [_pendingCancellations addObject:block];
+
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), block);
+}
+
+- (void)cancelPendingCancellations
+{
+  for (dispatch_block_t block in _pendingCancellations) {
+    dispatch_block_cancel(block);
+  }
+
+  [_pendingCancellations removeAllObjects];
 }
 
 - (void)triggerAction
@@ -98,14 +127,14 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   }
   _tapsSoFar++;
   if (_tapsSoFar) {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
+    [self cancelPendingCancellations];
   }
   NSInteger numberOfTouches = [touches count];
   if (numberOfTouches > _maxNumberOfTouches) {
     _maxNumberOfTouches = numberOfTouches;
   }
   if (!isnan(_maxDuration)) {
-    [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDuration];
+    [self scheduleCancelAfterDelay:_maxDuration];
   }
   self.state = UIGestureRecognizerStatePossible;
   [self triggerAction];
@@ -137,10 +166,12 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
 
+  [self cancelPendingCancellations];
+
   if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
     self.state = UIGestureRecognizerStateEnded;
   } else {
-    [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDelay];
+    [self scheduleCancelAfterDelay:_maxDelay];
   }
 }
 
@@ -255,7 +286,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
   [_gestureHandler.pointerTracker reset];
 
-  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
+  [self cancelPendingCancellations];
   _tapsSoFar = 0;
   _maxNumberOfTouches = 0;
   self.enabled = _gestureHandler.enabled;
