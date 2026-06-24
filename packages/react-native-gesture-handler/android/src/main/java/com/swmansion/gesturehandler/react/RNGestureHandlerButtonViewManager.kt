@@ -18,6 +18,7 @@ import android.graphics.drawable.shapes.RectShape
 import android.os.Build
 import android.os.SystemClock
 import android.util.TypedValue
+import android.view.Choreographer
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -333,6 +334,31 @@ class RNGestureHandlerButtonViewManager :
     view.activeUnderlayOpacity = activeUnderlayOpacity
   }
 
+  @ReactProp(name = "hoverOpacity")
+  override fun setHoverOpacity(view: ButtonViewGroup, hoverOpacity: Float) {
+    view.hoverOpacity = hoverOpacity
+  }
+
+  @ReactProp(name = "hoverScale")
+  override fun setHoverScale(view: ButtonViewGroup, hoverScale: Float) {
+    view.hoverScale = hoverScale
+  }
+
+  @ReactProp(name = "hoverUnderlayOpacity")
+  override fun setHoverUnderlayOpacity(view: ButtonViewGroup, hoverUnderlayOpacity: Float) {
+    view.hoverUnderlayOpacity = hoverUnderlayOpacity
+  }
+
+  @ReactProp(name = "hoverAnimationInDuration")
+  override fun setHoverAnimationInDuration(view: ButtonViewGroup, value: Int) {
+    view.hoverAnimationInDuration = if (value > 0) value else 0
+  }
+
+  @ReactProp(name = "hoverAnimationOutDuration")
+  override fun setHoverAnimationOutDuration(view: ButtonViewGroup, value: Int) {
+    view.hoverAnimationOutDuration = if (value > 0) value else 0
+  }
+
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   override fun setPointerEvents(view: ButtonViewGroup, pointerEvents: String?) {
     view.pointerEvents = when (pointerEvents) {
@@ -383,6 +409,14 @@ class RNGestureHandlerButtonViewManager :
     var defaultOpacity: Float = 1.0f
     var activeScale: Float = 1.0f
     var defaultScale: Float = 1.0f
+    var hoverAnimationInDuration: Int = 50
+    var hoverAnimationOutDuration: Int = 100
+    var hoverOpacity: Float = -1f
+      get() = if (field < 0f) defaultOpacity else field
+    var hoverScale: Float = -1f
+      get() = if (field < 0f) defaultScale else field
+    var hoverUnderlayOpacity: Float = -1f
+      get() = if (field < 0f) defaultUnderlayOpacity else field
     var underlayColor: Int? = null
       set(color) = withBackgroundUpdate {
         field = color
@@ -404,7 +438,17 @@ class RNGestureHandlerButtonViewManager :
     private var underlayDrawable: PaintDrawable? = null
     private var pressInTimestamp = 0L
     private var pendingPressOut: Runnable? = null
+    private var pendingHoverOut: Choreographer.FrameCallback? = null
     private var isPointerInsideBounds = false
+    private var isHovered = false
+
+    // Resting (non-pressed) animation targets. While the pointer hovers the
+    // button, the press-out animation settles on the hover values instead of
+    // the defaults, mirroring the web priority order (pressed > hovered >
+    // default).
+    private val restingOpacity get() = if (isHovered) hoverOpacity else defaultOpacity
+    private val restingScale get() = if (isHovered) hoverScale else defaultScale
+    private val restingUnderlayOpacity get() = if (isHovered) hoverUnderlayOpacity else defaultUnderlayOpacity
 
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
@@ -503,6 +547,12 @@ class RNGestureHandlerButtonViewManager :
       val eventTime = event.eventTime
       val action = event.action
 
+      if (event.actionMasked == MotionEvent.ACTION_DOWN ||
+        event.actionMasked == MotionEvent.ACTION_POINTER_DOWN
+      ) {
+        cancelPendingHoverOut()
+      }
+
       if (touchResponder != null && touchResponder !== this && touchResponder!!.exclusive) {
         if (isPressed) {
           setPressed(false)
@@ -550,6 +600,17 @@ class RNGestureHandlerButtonViewManager :
       return false
     }
 
+    override fun onHoverEvent(event: MotionEvent): Boolean {
+      if (isEnabled) {
+        when (event.actionMasked) {
+          MotionEvent.ACTION_HOVER_ENTER -> animateHoverIn()
+          MotionEvent.ACTION_HOVER_EXIT -> animateHoverOut()
+        }
+      }
+
+      return super.onHoverEvent(event)
+    }
+
     private fun getAnimatorDurationScale(): Float = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       ValueAnimator.getDurationScale()
     } else {
@@ -564,10 +625,10 @@ class RNGestureHandlerButtonViewManager :
     }
 
     private fun applyStartAnimationState() {
-      if (activeOpacity != 1.0f || defaultOpacity != 1.0f) {
+      if (activeOpacity != 1.0f || defaultOpacity != 1.0f || hoverOpacity != 1.0f) {
         alpha = defaultOpacity
       }
-      if (activeScale != 1.0f || defaultScale != 1.0f) {
+      if (activeScale != 1.0f || defaultScale != 1.0f || hoverScale != 1.0f) {
         scaleX = defaultScale
         scaleY = defaultScale
       }
@@ -575,9 +636,10 @@ class RNGestureHandlerButtonViewManager :
     }
 
     private fun animateTo(opacity: Float, scale: Float, underlayOpacity: Float, durationMs: Long) {
-      val hasOpacity = activeOpacity != 1.0f || defaultOpacity != 1.0f
-      val hasScale = activeScale != 1.0f || defaultScale != 1.0f
-      val hasUnderlay = activeUnderlayOpacity != defaultUnderlayOpacity && underlayDrawable != null
+      val hasOpacity = activeOpacity != 1.0f || defaultOpacity != 1.0f || hoverOpacity != 1.0f
+      val hasScale = activeScale != 1.0f || defaultScale != 1.0f || hoverScale != 1.0f
+      val hasUnderlay = underlayDrawable != null &&
+        (activeUnderlayOpacity != defaultUnderlayOpacity || hoverUnderlayOpacity != defaultUnderlayOpacity)
       if (!hasOpacity && !hasScale && !hasUnderlay) {
         return
       }
@@ -637,6 +699,53 @@ class RNGestureHandlerButtonViewManager :
       animateTo(activeOpacity, activeScale, activeUnderlayOpacity, tapAnimationInDuration.toLong())
     }
 
+    private fun animateHoverIn() {
+      cancelPendingHoverOut()
+      isHovered = true
+
+      // While pressed the press visual owns the view; only record the hover
+      // state so the eventual press-out settles on the hover values.
+      if (isPressed) {
+        return
+      }
+
+      animateTo(hoverOpacity, hoverScale, hoverUnderlayOpacity, hoverAnimationInDuration.toLong())
+    }
+
+    private fun animateHoverOut() {
+      if (isPressed) {
+        isHovered = false
+        return
+      }
+
+      // Android brackets a pointer press with HOVER_EXIT (just before
+      // ACTION_DOWN) and HOVER_ENTER (just after ACTION_UP). Defer the
+      // hover-out to the next frame: Choreographer runs the input phase before
+      // the animation phase, so the bracketing ACTION_DOWN (delivered in the
+      // same input cycle that emitted this exit) cancels this first via
+      // onTouchEvent — keeping the hover state for a flicker-free
+      // hover → press → hover transition. A real pointer leave has no press
+      // following, so the callback runs and settles to the default state.
+      // `isHovered` is cleared inside the callback so a cancel keeps it set.
+      cancelPendingHoverOut()
+
+      // We have to defer hover-out due to MotionEvent orders.
+      // In case of a press, the hover-out is sent before the press-in, so we need to wait for the next frame to animate back to the default state.
+      val callback = Choreographer.FrameCallback {
+        pendingHoverOut = null
+        isHovered = false
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, hoverAnimationOutDuration.toLong())
+      }
+
+      pendingHoverOut = callback
+      Choreographer.getInstance().postFrameCallback(callback)
+    }
+
+    private fun cancelPendingHoverOut() {
+      pendingHoverOut?.let { Choreographer.getInstance().removeFrameCallback(it) }
+      pendingHoverOut = null
+    }
+
     private fun animatePressOut() {
       pendingPressOut?.let { handler.removeCallbacks(it) }
       val tapInMs = tapAnimationInDuration.toLong()
@@ -647,20 +756,20 @@ class RNGestureHandlerButtonViewManager :
 
       if (longPressMs >= 0 && elapsed >= longPressMs) {
         // Long-press release - use the configured long-press out duration.
-        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, longPressOutMs)
+        animateTo(restingOpacity, restingScale, restingUnderlayOpacity, longPressOutMs)
       } else if (elapsed >= tapInMs) {
         // Press-in animation fully finished — release with the configured out duration.
-        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
+        animateTo(restingOpacity, restingScale, restingUnderlayOpacity, tapOutMs)
         // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
       } else if (elapsed * 2 >= tapOutMs) {
-        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, elapsed)
+        animateTo(restingOpacity, restingScale, restingUnderlayOpacity, elapsed)
       } else {
         val remaining = tapInMs - elapsed
         animateTo(activeOpacity, activeScale, activeUnderlayOpacity, remaining)
 
         val runnable = Runnable {
           pendingPressOut = null
-          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapOutMs)
+          animateTo(restingOpacity, restingScale, restingUnderlayOpacity, tapOutMs)
         }
         pendingPressOut = runnable
         // The animator scales `remaining` by ANIMATOR_DURATION_SCALE internally,
@@ -788,8 +897,10 @@ class RNGestureHandlerButtonViewManager :
       super.onDetachedFromWindow()
       pendingPressOut?.let { handler.removeCallbacks(it) }
       pendingPressOut = null
+      cancelPendingHoverOut()
       currentAnimator?.cancel()
       currentAnimator = null
+      isHovered = false
       applyStartAnimationState()
 
       if (touchResponder === this) {
