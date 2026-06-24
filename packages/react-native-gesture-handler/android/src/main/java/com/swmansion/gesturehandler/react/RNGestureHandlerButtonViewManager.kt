@@ -621,11 +621,9 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun onHoverEvent(event: MotionEvent): Boolean {
-      if (isEnabled) {
-        when (event.actionMasked) {
-          MotionEvent.ACTION_HOVER_ENTER -> animateHoverIn()
-          MotionEvent.ACTION_HOVER_EXIT -> animateHoverOut()
-        }
+      when (event.actionMasked) {
+        MotionEvent.ACTION_HOVER_ENTER -> animateHoverIn()
+        MotionEvent.ACTION_HOVER_EXIT -> animateHoverOut()
       }
 
       return super.onHoverEvent(event)
@@ -719,28 +717,27 @@ class RNGestureHandlerButtonViewManager :
       animateTo(activeOpacity, activeScale, activeUnderlayOpacity, tapAnimationInDuration.toLong())
     }
 
+    private fun applyHoverState() {
+      if (isPressed) {
+        return
+      }
+
+      if (isEnabled && isHovered) {
+        animateTo(hoverOpacity, hoverScale, hoverUnderlayOpacity, hoverAnimationInDuration.toLong())
+      } else {
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, hoverAnimationOutDuration.toLong())
+      }
+    }
+
     private fun animateHoverIn() {
       cancelPendingHoverOut()
 
-      // A HOVER_ENTER while already hovered is the trailing bracket Android
-      // emits right after a press release (just after ACTION_UP). `isHovered`
-      // is kept true through the press and press-out already settles the view
-      // on the hover resting state, so animating here would just fight it. A
-      // genuine fresh hover always arrives with `isHovered == false` (hover-out
-      // clears it), so this only skips the redundant bracket.
       if (isHovered) {
         return
       }
 
       isHovered = true
-
-      // While pressed the press visual owns the view; only record the hover
-      // state so the eventual press-out settles on the hover values.
-      if (isPressed) {
-        return
-      }
-
-      animateTo(hoverOpacity, hoverScale, hoverUnderlayOpacity, hoverAnimationInDuration.toLong())
+      applyHoverState()
     }
 
     private fun animateHoverOut() {
@@ -757,7 +754,7 @@ class RNGestureHandlerButtonViewManager :
       val callback = Choreographer.FrameCallback {
         pendingHoverOut = null
         isHovered = false
-        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, hoverAnimationOutDuration.toLong())
+        applyHoverState()
       }
 
       pendingHoverOut = callback
@@ -1055,6 +1052,18 @@ class RNGestureHandlerButtonViewManager :
         }
       } else {
         false
+      }
+    }
+
+    override fun setEnabled(enabled: Boolean) {
+      val changed = enabled != isEnabled
+      super.setEnabled(enabled)
+
+      // Enabled is an input to the effective hover visual.
+      // `isHovered` keeps tracking across the disabled period,
+      // so re-evaluate the visual when it changes.
+      if (changed && isHovered) {
+        applyHoverState()
       }
     }
 
