@@ -380,7 +380,6 @@
   recognizer.activeOffsetYStart = NAN;
   recognizer.activeOffsetYEnd = NAN;
   recognizer.failOffsetYStart = NAN;
-  recognizer.failOffsetYStart = NAN;
   recognizer.failOffsetYEnd = NAN;
 #if !TARGET_OS_OSX && !TARGET_OS_TV
   recognizer.allowedScrollTypesMask = 0;
