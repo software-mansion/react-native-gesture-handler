@@ -234,22 +234,28 @@
   return _activeUnderlayOpacity != _defaultUnderlayOpacity || self.hoverUnderlayOpacity != _defaultUnderlayOpacity;
 }
 
-// Resting (non-pressed) animation targets. While the pointer hovers, press-out
-// settles on the hover values instead of the defaults, mirroring the web
-// priority order (pressed > hovered > default).
+// The hover visual is masked while disabled, so a hover only counts when the
+// button is also enabled.
+- (BOOL)isEffectivelyHovered
+{
+  return _isHovered && _userEnabled;
+}
+
+// Resting (non-pressed) animation targets. While the pointer effectively hovers,
+// press-out settles on the hover values instead of the defaults.
 - (CGFloat)restingOpacity
 {
-  return _isHovered ? self.hoverOpacity : _defaultOpacity;
+  return [self isEffectivelyHovered] ? self.hoverOpacity : _defaultOpacity;
 }
 
 - (CGFloat)restingScale
 {
-  return _isHovered ? self.hoverScale : _defaultScale;
+  return [self isEffectivelyHovered] ? self.hoverScale : _defaultScale;
 }
 
 - (CGFloat)restingUnderlayOpacity
 {
-  return _isHovered ? self.hoverUnderlayOpacity : _defaultUnderlayOpacity;
+  return [self isEffectivelyHovered] ? self.hoverUnderlayOpacity : _defaultUnderlayOpacity;
 }
 
 - (void)setUserEnabled:(BOOL)userEnabled
@@ -602,7 +608,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   RNGHUIView *target = self.animationTarget ?: self;
 
-  if (_isHovered && _userEnabled) {
+  if ([self isEffectivelyHovered]) {
     [self animateTarget:target toOpacity:self.hoverOpacity scale:self.hoverScale duration:_hoverAnimationInDuration];
 
     if ([self hasUnderlayAnimation]) {
@@ -1036,10 +1042,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   // Keep `_isHovered` in sync with the drag position for a hovering pointer.
   // An Apple Pencil suppresses hover events while in contact, so the hover
-  // recognizer can't track in/out transitions during a drag — this is the iOS
-  // analog of the Android touch-bounds tracking, letting press-out settle on
-  // the correct resting (hover vs default) state. A finger never hovers, so
-  // `_isHovered` is left untouched (stays NO) for finger touches.
+  // recognizer can't track in/out transitions during a drag.
   if ([self isHoveringTouch:touch]) {
     _isHovered = currentlyInside;
   }
@@ -1086,8 +1089,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     // A hovering pointer (trackpad / Apple Pencil) is still hovering after the
     // touch ends iff it lifted inside the bounds; settle press-out on the
     // matching resting state. Set before dispatching Up* (which drives
-    // handleAnimatePressOut, reading restingOpacity). A finger never hovers, so
-    // `_isHovered` is left untouched for finger touches.
+    // handleAnimatePressOut, reading restingOpacity).
     if ([self isHoveringTouch:touch]) {
       _isHovered = inside;
     }
@@ -1106,12 +1108,6 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)cancelTrackingWithEvent:(UIEvent *)event
 {
-  // A cancelled touch (e.g. a scroll view stealing the gesture) aborts the
-  // press entirely; drop the hover state so the TouchCancel-driven press-out
-  // settles on the default rather than the hover values. Cleared before super
-  // dispatches the cancel action so restingOpacity reads the new value. Cancel
-  // coordinates/tool are unreliable, so this is unconditional (matching the
-  // Android ACTION_CANCEL handling).
   _isHovered = NO;
   _isTouchInsideBounds = NO;
   [super cancelTrackingWithEvent:event];
