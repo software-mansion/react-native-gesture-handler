@@ -570,6 +570,26 @@ class RNGestureHandlerButtonViewManager :
       if (lastEventTime != eventTime || lastAction != action || action == MotionEvent.ACTION_CANCEL) {
         lastEventTime = eventTime
         lastAction = action
+
+        // Android delivers no hover events while a button is held, so derive
+        // the hover state from the touch stream for hovering pointers:
+        // hovered iff the pointer is within bounds. Done before
+        // super.onTouchEvent so a press-out it triggers (release, or
+        // cancel-on-leave) settles on the correct resting visual — hover while
+        // still over the view, default once the pointer leaves.
+        when (event.actionMasked) {
+          MotionEvent.ACTION_MOVE,
+          MotionEvent.ACTION_UP,
+          MotionEvent.ACTION_POINTER_UP,
+          ->
+            if (isHoveringPointer(event)) {
+              isHovered = isWithinBounds(event)
+            }
+          // The synthesized cancel event carries no real tool type or coordinates,
+          // so it must NOT be gated on isHoveringPointer or a bounds check
+          MotionEvent.ACTION_CANCEL -> isHovered = false
+        }
+
         val handled = super.onTouchEvent(event)
 
         // Replay press-in / press-out animations across drag transitions.
@@ -577,7 +597,7 @@ class RNGestureHandlerButtonViewManager :
           when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> isPointerInsideBounds = true
             MotionEvent.ACTION_MOVE -> {
-              val inside = event.x >= 0 && event.y >= 0 && event.x < width && event.y < height
+              val inside = isWithinBounds(event)
               if (inside != isPointerInsideBounds) {
                 isPointerInsideBounds = inside
                 if (inside) {
@@ -701,6 +721,17 @@ class RNGestureHandlerButtonViewManager :
 
     private fun animateHoverIn() {
       cancelPendingHoverOut()
+
+      // A HOVER_ENTER while already hovered is the trailing bracket Android
+      // emits right after a press release (just after ACTION_UP). `isHovered`
+      // is kept true through the press and press-out already settles the view
+      // on the hover resting state, so animating here would just fight it. A
+      // genuine fresh hover always arrives with `isHovered == false` (hover-out
+      // clears it), so this only skips the redundant bracket.
+      if (isHovered) {
+        return
+      }
+
       isHovered = true
 
       // While pressed the press visual owns the view; only record the hover
@@ -718,19 +749,11 @@ class RNGestureHandlerButtonViewManager :
         return
       }
 
-      // Android brackets a pointer press with HOVER_EXIT (just before
-      // ACTION_DOWN) and HOVER_ENTER (just after ACTION_UP). Defer the
-      // hover-out to the next frame: Choreographer runs the input phase before
-      // the animation phase, so the bracketing ACTION_DOWN (delivered in the
-      // same input cycle that emitted this exit) cancels this first via
-      // onTouchEvent — keeping the hover state for a flicker-free
-      // hover → press → hover transition. A real pointer leave has no press
-      // following, so the callback runs and settles to the default state.
-      // `isHovered` is cleared inside the callback so a cancel keeps it set.
       cancelPendingHoverOut()
 
       // We have to defer hover-out due to MotionEvent orders.
-      // In case of a press, the hover-out is sent before the press-in, so we need to wait for the next frame to animate back to the default state.
+      // In case of a press, the hover-out is sent before the press-in,
+      // so we need to wait for the next frame to animate back to the default state.
       val callback = Choreographer.FrameCallback {
         pendingHoverOut = null
         isHovered = false
@@ -745,6 +768,12 @@ class RNGestureHandlerButtonViewManager :
       pendingHoverOut?.let { Choreographer.getInstance().removeFrameCallback(it) }
       pendingHoverOut = null
     }
+
+    private fun isHoveringPointer(event: MotionEvent): Boolean = event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE ||
+      event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS
+
+    private fun isWithinBounds(event: MotionEvent): Boolean =
+      event.x >= 0 && event.y >= 0 && event.x < width && event.y < height
 
     private fun animatePressOut() {
       pendingPressOut?.let { handler.removeCallbacks(it) }
