@@ -107,11 +107,9 @@
       forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchDragExit |
       UIControlEventTouchCancel];
 
-  if (@available(iOS 13.4, *)) {
-    UIHoverGestureRecognizer *hoverRecognizer =
-        [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(handleHover:)];
-    [self addGestureRecognizer:hoverRecognizer];
-  }
+  UIHoverGestureRecognizer *hoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self
+                                                                                        action:@selector(handleHover:)];
+  [self addGestureRecognizer:hoverRecognizer];
 #endif
 }
 
@@ -394,10 +392,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   NSInteger maxFps = screen.maximumFramesPerSecond;
 #else
   NSScreen *screen = self.window.screen ?: NSScreen.mainScreen;
-  NSInteger maxFps = 60;
-  if (@available(macOS 12.0, *)) {
-    maxFps = screen.maximumFramesPerSecond;
-  }
+  NSInteger maxFps = screen.maximumFramesPerSecond;
 #endif
   return maxFps > 0 ? 1000.0 / (NSTimeInterval)maxFps : 1000.0 / 60.0;
 }
@@ -578,7 +573,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 }
 
 #if !TARGET_OS_OSX
-- (void)handleHover:(UIHoverGestureRecognizer *)recognizer API_AVAILABLE(ios(13.4))
+- (void)handleHover:(UIHoverGestureRecognizer *)recognizer
 {
   switch (recognizer.state) {
     case UIGestureRecognizerStateBegan:
@@ -980,12 +975,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 // hovers.
 - (BOOL)isHoveringTouch:(UITouch *)touch
 {
-  if (@available(iOS 13.4, *)) {
-    if (touch.type == UITouchTypeIndirectPointer) {
-      return YES;
-    }
-  }
-  return touch.type == UITouchTypePencil;
+  return touch.type == UITouchTypeIndirectPointer ? YES : touch.type == UITouchTypePencil;
 }
 
 // Mirrors `sendActionsForControlEvents:` but preserves the real `UIEvent`

@@ -382,12 +382,8 @@
   recognizer.failOffsetYStart = NAN;
   recognizer.failOffsetYStart = NAN;
   recognizer.failOffsetYEnd = NAN;
-#if !TARGET_OS_OSX && !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
-  if (@available(iOS 13.4, *)) {
-    recognizer.allowedScrollTypesMask = 0;
-  }
-#endif
 #if !TARGET_OS_OSX && !TARGET_OS_TV
+  recognizer.allowedScrollTypesMask = 0;
   recognizer.minimumNumberOfTouches = 1;
   recognizer.maximumNumberOfTouches = NSUIntegerMax;
 #endif
@@ -412,12 +408,10 @@
   APPLY_FLOAT_PROP(failOffsetYStart);
   APPLY_FLOAT_PROP(failOffsetYEnd);
 
-#if !TARGET_OS_OSX && !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
-  if (@available(iOS 13.4, *)) {
-    bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
-    if (enableTrackpadTwoFingerGesture) {
-      recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
-    }
+#if !TARGET_OS_OSX && !TARGET_OS_TV
+  bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
+  if (enableTrackpadTwoFingerGesture) {
+    recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
   }
 
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
