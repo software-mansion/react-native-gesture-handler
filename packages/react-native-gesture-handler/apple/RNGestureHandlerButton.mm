@@ -261,7 +261,6 @@
 - (void)setUserEnabled:(BOOL)userEnabled
 {
   if (userEnabled == _userEnabled) {
-    _userEnabled = userEnabled;
     return;
   }
 
