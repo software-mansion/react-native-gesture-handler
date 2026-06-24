@@ -28,6 +28,14 @@ interface NativeProps extends ViewProps {
   activeOpacity?: WithDefault<Float, 1>;
   activeScale?: WithDefault<Float, 1>;
   activeUnderlayOpacity?: WithDefault<Float, 0>;
+  // Hover values default to -1 as an "unset" sentinel; the native side
+  // resolves them to the corresponding default* value (matching web, where
+  // an omitted hover value falls back to its default counterpart).
+  hoverOpacity?: WithDefault<Float, -1>;
+  hoverScale?: WithDefault<Float, -1>;
+  hoverUnderlayOpacity?: WithDefault<Float, -1>;
+  hoverAnimationInDuration?: WithDefault<Int32, 50>;
+  hoverAnimationOutDuration?: WithDefault<Int32, 100>;
   defaultOpacity?: WithDefault<Float, 1>;
   defaultScale?: WithDefault<Float, 1>;
   defaultUnderlayOpacity?: WithDefault<Float, 0>;

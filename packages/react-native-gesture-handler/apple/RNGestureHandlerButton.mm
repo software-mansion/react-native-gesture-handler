@@ -47,9 +47,18 @@
   UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
   NSTimeInterval _pressInTimestamp;
   dispatch_block_t _pendingPressOutBlock;
+  BOOL _isHovered;
+  BOOL _isPressed;
+  dispatch_block_t _pendingHoverOutBlock;
+#if TARGET_OS_OSX
+  NSTrackingArea *_hoverTrackingArea;
+#endif
 }
 
 @synthesize longPressAnimationOutDuration = _longPressAnimationOutDuration;
+@synthesize hoverOpacity = _hoverOpacity;
+@synthesize hoverScale = _hoverScale;
+@synthesize hoverUnderlayOpacity = _hoverUnderlayOpacity;
 
 - (void)commonInit
 {
@@ -70,6 +79,14 @@
   _underlayColor = nil;
   _pressInTimestamp = 0;
   _pendingPressOutBlock = nil;
+  _hoverAnimationInDuration = 50;
+  _hoverAnimationOutDuration = 100;
+  _hoverOpacity = -1.0;
+  _hoverScale = -1.0;
+  _hoverUnderlayOpacity = -1.0;
+  _isHovered = NO;
+  _isPressed = NO;
+  _pendingHoverOutBlock = nil;
 #if TARGET_OS_OSX
   self.wantsLayer = YES; // Crucial for macOS layer-backing
 #endif
@@ -89,6 +106,12 @@
                 action:@selector(handleAnimatePressOut)
       forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchDragExit |
       UIControlEventTouchCancel];
+
+  if (@available(iOS 13.4, *)) {
+    UIHoverGestureRecognizer *hoverRecognizer =
+        [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(handleHover:)];
+    [self addGestureRecognizer:hoverRecognizer];
+  }
 #endif
 }
 
@@ -126,6 +149,7 @@
   // prior use leaks into the recycled view, and `updateProps:` won't undo it
   // when defaults are unchanged between mounts.
   [self cancelPendingPressOutAnimation];
+  [self cancelPendingHoverOut];
 
   RNGHUIView *target = self.animationTarget ?: self;
   target.layer.transform = CATransform3DIdentity;
@@ -139,6 +163,8 @@
   _isTouchInsideBounds = NO;
   _suppressSuperControlActionDispatch = NO;
   _pressInTimestamp = 0;
+  _isHovered = NO;
+  _isPressed = NO;
 }
 
 #if TARGET_OS_OSX
@@ -147,10 +173,13 @@
   [super viewWillMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self cancelPendingHoverOut];
     [self applyStartAnimationState];
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
     _pressInTimestamp = 0;
+    _isHovered = NO;
+    _isPressed = NO;
   }
 }
 #else
@@ -159,10 +188,13 @@
   [super willMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self cancelPendingHoverOut];
     [self applyStartAnimationState];
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
     _pressInTimestamp = 0;
+    _isHovered = NO;
+    _isPressed = NO;
   }
 }
 #endif
@@ -170,6 +202,72 @@
 - (NSInteger)longPressAnimationOutDuration
 {
   return _longPressAnimationOutDuration < 0 ? _tapAnimationOutDuration : _longPressAnimationOutDuration;
+}
+
+- (CGFloat)hoverOpacity
+{
+  return _hoverOpacity < 0 ? _defaultOpacity : _hoverOpacity;
+}
+
+- (CGFloat)hoverScale
+{
+  return _hoverScale < 0 ? _defaultScale : _hoverScale;
+}
+
+- (CGFloat)hoverUnderlayOpacity
+{
+  return _hoverUnderlayOpacity < 0 ? _defaultUnderlayOpacity : _hoverUnderlayOpacity;
+}
+
+- (BOOL)hasOpacityAnimation
+{
+  return _defaultOpacity != 1.0 || self.hoverOpacity != 1.0 || _activeOpacity != 1.0;
+}
+
+- (BOOL)hasScaleAnimation
+{
+  return _defaultScale != 1.0 || self.hoverScale != 1.0 || _activeScale != 1.0;
+}
+
+- (BOOL)hasUnderlayAnimation
+{
+  return _activeUnderlayOpacity != _defaultUnderlayOpacity || self.hoverUnderlayOpacity != _defaultUnderlayOpacity;
+}
+
+// Resting (non-pressed) animation targets. While the pointer hovers, press-out
+// settles on the hover values instead of the defaults, mirroring the web
+// priority order (pressed > hovered > default).
+- (CGFloat)restingOpacity
+{
+  return _isHovered ? self.hoverOpacity : _defaultOpacity;
+}
+
+- (CGFloat)restingScale
+{
+  return _isHovered ? self.hoverScale : _defaultScale;
+}
+
+- (CGFloat)restingUnderlayOpacity
+{
+  return _isHovered ? self.hoverUnderlayOpacity : _defaultUnderlayOpacity;
+}
+
+- (void)setUserEnabled:(BOOL)userEnabled
+{
+  if (userEnabled == _userEnabled) {
+    _userEnabled = userEnabled;
+    return;
+  }
+
+  _userEnabled = userEnabled;
+
+  // Enabled is an input to the effective hover visual: web masks hover while
+  // disabled (`hovered && enabled`) and resumes it on re-enable with the
+  // pointer still inside. `_isHovered` keeps tracking across the disabled
+  // period, so re-evaluate the visual when enabled changes.
+  if (_isHovered && !_isPressed) {
+    [self applyHoverState];
+  }
 }
 
 - (void)setUnderlayColor:(RNGHColor *)underlayColor
@@ -266,18 +364,18 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   _underlayLayer.opacity = _defaultUnderlayOpacity;
 
 #if !TARGET_OS_OSX
-  if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+  if ([self hasOpacityAnimation]) {
     target.alpha = _defaultOpacity;
   }
-  if (_activeScale != 1.0 || _defaultScale != 1.0) {
+  if ([self hasScaleAnimation]) {
     target.layer.transform = CATransform3DMakeScale(_defaultScale, _defaultScale, 1.0);
   }
 #else
   target.wantsLayer = YES;
-  if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+  if ([self hasOpacityAnimation]) {
     target.alphaValue = _defaultOpacity;
   }
-  if (_activeScale != 1.0 || _defaultScale != 1.0) {
+  if ([self hasScaleAnimation]) {
     target.layer.transform = RNGHCenterScaleTransform(target.bounds, _defaultScale);
   }
 #endif
@@ -329,10 +427,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   if (durationMs < snapThresholdMs) {
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+    if ([self hasOpacityAnimation]) {
       target.alpha = opacity;
     }
-    if (_activeScale != 1.0 || _defaultScale != 1.0) {
+    if ([self hasScaleAnimation]) {
       layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
     }
     [CATransaction commit];
@@ -344,10 +442,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                         delay:0
                       options:UIViewAnimationOptionCurveEaseInOut
                    animations:^{
-                     if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+                     if ([self hasOpacityAnimation]) {
                        target.alpha = opacity;
                      }
-                     if (_activeScale != 1.0 || _defaultScale != 1.0) {
+                     if ([self hasScaleAnimation]) {
                        target.layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
                      }
                    }
@@ -362,10 +460,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   if (durationMs < snapThresholdMs) {
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+    if ([self hasOpacityAnimation]) {
       target.alphaValue = opacity;
     }
-    if (_activeScale != 1.0 || _defaultScale != 1.0) {
+    if ([self hasScaleAnimation]) {
       layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
     }
     [CATransaction commit];
@@ -378,10 +476,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         context.allowsImplicitAnimation = YES;
         context.duration = duration;
         context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+        if ([self hasOpacityAnimation]) {
           target.animator.alphaValue = opacity;
         }
-        if (_activeScale != 1.0 || _defaultScale != 1.0) {
+        if ([self hasScaleAnimation]) {
           target.layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
         }
       }
@@ -395,16 +493,22 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     dispatch_block_cancel(_pendingPressOutBlock);
     _pendingPressOutBlock = nil;
   }
+  // A press is starting; cancel a pending (bracketing) hover-out so the hover
+  // state carries into the press and the hover -> press transition doesn't
+  // flicker through the default state.
+  [self cancelPendingHoverOut];
+  _isPressed = YES;
   _pressInTimestamp = CACurrentMediaTime();
   RNGHUIView *target = self.animationTarget ?: self;
   [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:_tapAnimationInDuration];
-  if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+  if ([self hasUnderlayAnimation]) {
     [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:_tapAnimationInDuration];
   }
 }
 
 - (void)handleAnimatePressOut
 {
+  _isPressed = NO;
   if (_pendingPressOutBlock) {
     dispatch_block_cancel(_pendingPressOutBlock);
   }
@@ -415,24 +519,24 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     // Long-press release - use the configured long-press out duration.
     NSInteger longPressOut = self.longPressAnimationOutDuration;
     RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:longPressOut];
-    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:longPressOut];
+    [self animateTarget:target toOpacity:self.restingOpacity scale:self.restingScale duration:longPressOut];
+    if ([self hasUnderlayAnimation]) {
+      [self animateUnderlayToOpacity:self.restingUnderlayOpacity duration:longPressOut];
     }
   } else if (elapsed >= _tapAnimationInDuration) {
     // Press-in animation fully finished - release with the configured out duration.
     RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:_tapAnimationOutDuration];
-    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:_tapAnimationOutDuration];
+    [self animateTarget:target toOpacity:self.restingOpacity scale:self.restingScale duration:_tapAnimationOutDuration];
+    if ([self hasUnderlayAnimation]) {
+      [self animateUnderlayToOpacity:self.restingUnderlayOpacity duration:_tapAnimationOutDuration];
     }
     // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
   } else if (elapsed * 2 >= _tapAnimationOutDuration) {
     // Past minimum but press-in animation still playing, animate out in elapsed time
     RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:elapsed];
-    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:elapsed];
+    [self animateTarget:target toOpacity:self.restingOpacity scale:self.restingScale duration:elapsed];
+    if ([self hasUnderlayAnimation]) {
+      [self animateUnderlayToOpacity:self.restingUnderlayOpacity duration:elapsed];
     }
   } else {
     // Before minimum duration, finish press-in in remaining time then animate out in tapAnimationOutDuration.
@@ -440,7 +544,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
     RNGHUIView *target = self.animationTarget ?: self;
     [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:remaining];
-    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+    if ([self hasUnderlayAnimation]) {
       [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:remaining];
     }
 
@@ -451,11 +555,11 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         strongSelf->_pendingPressOutBlock = nil;
         RNGHUIView *target = strongSelf.animationTarget ?: strongSelf;
         [strongSelf animateTarget:target
-                        toOpacity:strongSelf->_defaultOpacity
-                            scale:strongSelf->_defaultScale
+                        toOpacity:strongSelf.restingOpacity
+                            scale:strongSelf.restingScale
                          duration:strongSelf->_tapAnimationOutDuration];
-        if (strongSelf->_activeUnderlayOpacity != strongSelf->_defaultUnderlayOpacity) {
-          [strongSelf animateUnderlayToOpacity:strongSelf->_defaultUnderlayOpacity
+        if ([strongSelf hasUnderlayAnimation]) {
+          [strongSelf animateUnderlayToOpacity:strongSelf.restingUnderlayOpacity
                                       duration:strongSelf->_tapAnimationOutDuration];
         }
       }
@@ -466,6 +570,105 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         dispatch_get_main_queue(),
         _pendingPressOutBlock);
   }
+}
+
+#if !TARGET_OS_OSX
+- (void)handleHover:(UIHoverGestureRecognizer *)recognizer API_AVAILABLE(ios(13.4))
+{
+  switch (recognizer.state) {
+    case UIGestureRecognizerStateBegan:
+      [self animateHoverIn];
+      break;
+    case UIGestureRecognizerStateEnded:
+    case UIGestureRecognizerStateCancelled:
+      [self animateHoverOut];
+      break;
+    default:
+      break;
+  }
+}
+#endif
+
+// Animate to the effective hover visual, mirroring web's non-pressed render
+// `(hovered && enabled) ? hover : default`. The pressed state is owned by the
+// press animations, so this is a no-op while pressed (the hover state is still
+// recorded by the callers, and press-out reads it via resting*). Picks the
+// in/out duration from the direction it settles.
+- (void)applyHoverState
+{
+  if (_isPressed) {
+    return;
+  }
+
+  RNGHUIView *target = self.animationTarget ?: self;
+
+  if (_isHovered && _userEnabled) {
+    [self animateTarget:target toOpacity:self.hoverOpacity scale:self.hoverScale duration:_hoverAnimationInDuration];
+
+    if ([self hasUnderlayAnimation]) {
+      [self animateUnderlayToOpacity:self.hoverUnderlayOpacity duration:_hoverAnimationInDuration];
+    }
+  } else {
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:_hoverAnimationOutDuration];
+
+    if ([self hasUnderlayAnimation]) {
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:_hoverAnimationOutDuration];
+    }
+  }
+}
+
+- (void)cancelPendingHoverOut
+{
+  if (!_pendingHoverOutBlock) {
+    return;
+  }
+
+  dispatch_block_cancel(_pendingHoverOutBlock);
+  _pendingHoverOutBlock = nil;
+}
+
+- (void)animateHoverIn
+{
+  [self cancelPendingHoverOut];
+
+  if (_isHovered) {
+    return;
+  }
+
+  _isHovered = YES;
+  [self applyHoverState];
+}
+
+- (void)animateHoverOut
+{
+  if (_isPressed) {
+    // A genuine exit while pressed — drop hover so the release settles on the
+    // default state rather than animating back to the hover values.
+    _isHovered = NO;
+    return;
+  }
+
+  [self cancelPendingHoverOut];
+
+  // A pointer press is bracketed by a hover-out just before touch-down (e.g.
+  // Apple Pencil). Defer the hover-out so an immediately following press
+  // (which cancels it in handleAnimatePressIn) wins, keeping the hover state
+  // for a flicker-free hover -> press -> hover transition. A real pointer
+  // leave has no press following, so the block runs and settles to default.
+  __weak auto weakSelf = self;
+  _pendingHoverOutBlock = dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
+    __strong auto strongSelf = weakSelf;
+    if (strongSelf) {
+      strongSelf->_pendingHoverOutBlock = nil;
+      strongSelf->_isHovered = NO;
+      [strongSelf applyHoverState];
+    }
+  });
+  NSTimeInterval delay = [self shouldReduceMotion] ? 0 : [self minFrameDurationMs];
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_MSEC)),
+      dispatch_get_main_queue(),
+      _pendingHoverOutBlock);
 }
 
 - (void)applyUnderlayCornerRadii
@@ -683,6 +886,39 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 }
 
 #if TARGET_OS_OSX
+// macOS doesn't have UIHoverGestureRecognizer; instead we drive hover from an
+// NSTrackingArea. NSTrackingInVisibleRect keeps it sized to the view
+// automatically, and NSTrackingActiveAlways fires enter/exit even when the
+// window isn't key (matching how a desktop cursor hover behaves regardless of
+// focus). The area intentionally omits NSTrackingEnabledDuringMouseDrag, so
+// during a press-drag the in/out tracking is handled by mouseDragged: /
+// mouseUp: instead (the macOS analog of the iOS touch-bounds tracking).
+- (void)updateTrackingAreas
+{
+  if (_hoverTrackingArea) {
+    [self removeTrackingArea:_hoverTrackingArea];
+  }
+  _hoverTrackingArea = [[NSTrackingArea alloc]
+      initWithRect:NSZeroRect
+           options:NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingInVisibleRect
+             owner:self
+          userInfo:nil];
+  [self addTrackingArea:_hoverTrackingArea];
+  [super updateTrackingAreas];
+}
+
+- (void)mouseEntered:(NSEvent *)event
+{
+  [self animateHoverIn];
+  [super mouseEntered:event];
+}
+
+- (void)mouseExited:(NSEvent *)event
+{
+  [self animateHoverOut];
+  [super mouseExited:event];
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
   _isTouchInsideBounds = YES;
@@ -692,6 +928,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)mouseUp:(NSEvent *)event
 {
+  NSPoint locationInView = [self convertPoint:[event locationInWindow] fromView:nil];
+  _isHovered = NSPointInRect(locationInView, self.bounds);
+
   [self handleAnimatePressOut];
   _isTouchInsideBounds = NO;
   [super mouseUp:event];
@@ -702,6 +941,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   NSPoint locationInWindow = [event locationInWindow];
   NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
   BOOL currentlyInside = NSPointInRect(locationInView, self.bounds);
+
+  _isHovered = currentlyInside;
 
   if (currentlyInside && !_isTouchInsideBounds) {
     _isTouchInsideBounds = YES;
@@ -727,6 +968,19 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 {
   _isTouchInsideBounds = YES;
   return [super beginTrackingWithTouch:touch withEvent:event];
+}
+
+// Whether a touch comes from a hovering input — an indirect pointer
+// (trackpad / mouse) or an Apple Pencil — as opposed to a finger, which never
+// hovers.
+- (BOOL)isHoveringTouch:(UITouch *)touch
+{
+  if (@available(iOS 13.4, *)) {
+    if (touch.type == UITouchTypeIndirectPointer) {
+      return YES;
+    }
+  }
+  return touch.type == UITouchTypePencil;
 }
 
 // Mirrors `sendActionsForControlEvents:` but preserves the real `UIEvent`
@@ -780,6 +1034,16 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
   BOOL currentlyInside = CGRectContainsPoint(hitFrame, location);
 
+  // Keep `_isHovered` in sync with the drag position for a hovering pointer.
+  // An Apple Pencil suppresses hover events while in contact, so the hover
+  // recognizer can't track in/out transitions during a drag — this is the iOS
+  // analog of the Android touch-bounds tracking, letting press-out settle on
+  // the correct resting (hover vs default) state. A finger never hovers, so
+  // `_isHovered` is left untouched (stays NO) for finger touches.
+  if ([self isHoveringTouch:touch]) {
+    _isHovered = currentlyInside;
+  }
+
   if (currentlyInside) {
     if (!_isTouchInsideBounds) {
       [self rngh_sendActionsForControlEvents:UIControlEventTouchDragEnter withEvent:event];
@@ -817,7 +1081,18 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   if (touch != nil) {
     CGPoint location = [touch locationInView:self];
     CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
-    if (CGRectContainsPoint(hitFrame, location)) {
+    BOOL inside = CGRectContainsPoint(hitFrame, location);
+
+    // A hovering pointer (trackpad / Apple Pencil) is still hovering after the
+    // touch ends iff it lifted inside the bounds; settle press-out on the
+    // matching resting state. Set before dispatching Up* (which drives
+    // handleAnimatePressOut, reading restingOpacity). A finger never hovers, so
+    // `_isHovered` is left untouched for finger touches.
+    if ([self isHoveringTouch:touch]) {
+      _isHovered = inside;
+    }
+
+    if (inside) {
       [self rngh_sendActionsForControlEvents:UIControlEventTouchUpInside withEvent:event];
     } else {
       [self rngh_sendActionsForControlEvents:UIControlEventTouchUpOutside withEvent:event];
@@ -827,6 +1102,19 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   _isTouchInsideBounds = NO;
+}
+
+- (void)cancelTrackingWithEvent:(UIEvent *)event
+{
+  // A cancelled touch (e.g. a scroll view stealing the gesture) aborts the
+  // press entirely; drop the hover state so the TouchCancel-driven press-out
+  // settles on the default rather than the hover values. Cleared before super
+  // dispatches the cancel action so restingOpacity reads the new value. Cancel
+  // coordinates/tool are unreliable, so this is unconditional (matching the
+  // Android ACTION_CANCEL handling).
+  _isHovered = NO;
+  _isTouchInsideBounds = NO;
+  [super cancelTrackingWithEvent:event];
 }
 
 - (BOOL)shouldHandleTouch:(RNGHUIView *)view atPoint:(CGPoint)point

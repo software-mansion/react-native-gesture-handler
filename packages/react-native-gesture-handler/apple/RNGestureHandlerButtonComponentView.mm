@@ -357,7 +357,9 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
     const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
     shouldApplyStartAnimationState = oldButtonProps.defaultOpacity != newProps.defaultOpacity ||
         oldButtonProps.defaultScale != newProps.defaultScale ||
-        oldButtonProps.defaultUnderlayOpacity != newProps.defaultUnderlayOpacity;
+        oldButtonProps.defaultUnderlayOpacity != newProps.defaultUnderlayOpacity ||
+        oldButtonProps.hoverOpacity != newProps.hoverOpacity || oldButtonProps.hoverScale != newProps.hoverScale ||
+        oldButtonProps.hoverUnderlayOpacity != newProps.hoverUnderlayOpacity;
   }
 
   _buttonView.userEnabled = newProps.enabled;
@@ -371,6 +373,12 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   _buttonView.defaultScale = newProps.defaultScale;
   _buttonView.defaultUnderlayOpacity = newProps.defaultUnderlayOpacity;
   _buttonView.activeUnderlayOpacity = newProps.activeUnderlayOpacity;
+  _buttonView.hoverOpacity = newProps.hoverOpacity;
+  _buttonView.hoverScale = newProps.hoverScale;
+  _buttonView.hoverUnderlayOpacity = newProps.hoverUnderlayOpacity;
+  _buttonView.hoverAnimationInDuration = newProps.hoverAnimationInDuration > 0 ? newProps.hoverAnimationInDuration : 0;
+  _buttonView.hoverAnimationOutDuration =
+      newProps.hoverAnimationOutDuration > 0 ? newProps.hoverAnimationOutDuration : 0;
   if (newProps.underlayColor) {
     _buttonView.underlayColor = RCTUIColorFromSharedColor(newProps.underlayColor);
   } else {

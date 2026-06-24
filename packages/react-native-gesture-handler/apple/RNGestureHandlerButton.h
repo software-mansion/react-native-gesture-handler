@@ -37,6 +37,11 @@
 @property (nonatomic, assign) CGFloat defaultScale;
 @property (nonatomic, assign) CGFloat defaultUnderlayOpacity;
 @property (nonatomic, assign) CGFloat activeUnderlayOpacity;
+@property (nonatomic, assign) NSInteger hoverAnimationInDuration;
+@property (nonatomic, assign) NSInteger hoverAnimationOutDuration;
+@property (nonatomic, assign) CGFloat hoverOpacity;
+@property (nonatomic, assign) CGFloat hoverScale;
+@property (nonatomic, assign) CGFloat hoverUnderlayOpacity;
 @property (nonatomic, strong, nullable) RNGHColor *underlayColor;
 
 /**
