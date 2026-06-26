@@ -72,8 +72,8 @@ export default abstract class NodeManager {
     const handler = this.gestures[handlerTag] as IGestureHandler;
 
     if (
-      hostDetector !== undefined &&
-      handler.hostDetectorView !== hostDetector
+      !handler.attached ||
+      (hostDetector !== undefined && handler.hostDetectorView !== hostDetector)
     ) {
       return;
     }
