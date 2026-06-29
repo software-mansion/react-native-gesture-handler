@@ -442,13 +442,16 @@ class RNGestureHandlerButtonViewManager :
     private var isPointerInsideBounds = false
     private var isHovered = false
 
-    // Resting (non-pressed) animation targets. While the pointer hovers the
-    // button, the press-out animation settles on the hover values instead of
-    // the defaults, mirroring the web priority order (pressed > hovered >
-    // default).
-    private val restingOpacity get() = if (isHovered) hoverOpacity else defaultOpacity
-    private val restingScale get() = if (isHovered) hoverScale else defaultScale
-    private val restingUnderlayOpacity get() = if (isHovered) hoverUnderlayOpacity else defaultUnderlayOpacity
+    // The hover visual is masked while disabled
+    private val effectivelyHovered get() = isHovered && isEnabled
+
+    // Resting (non-pressed) animation targets. While the pointer effectively
+    // hovers the button, the press-out animation settles on the hover values
+    // instead of the defaults, mirroring the web priority order (pressed >
+    // hovered > default).
+    private val restingOpacity get() = if (effectivelyHovered) hoverOpacity else defaultOpacity
+    private val restingScale get() = if (effectivelyHovered) hoverScale else defaultScale
+    private val restingUnderlayOpacity get() = if (effectivelyHovered) hoverUnderlayOpacity else defaultUnderlayOpacity
 
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
@@ -722,7 +725,7 @@ class RNGestureHandlerButtonViewManager :
         return
       }
 
-      if (isEnabled && isHovered) {
+      if (effectivelyHovered) {
         animateTo(hoverOpacity, hoverScale, hoverUnderlayOpacity, hoverAnimationInDuration.toLong())
       } else {
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, hoverAnimationOutDuration.toLong())
