@@ -89,7 +89,9 @@ static const BOOL defaultFeedbackOnActivation = NO;
 {
 #if !TARGET_OS_TV && !TARGET_OS_VISION
   if (_feedbackOnActivation) {
-    [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
+    if (@available(iOS 10.0, *)) {
+      [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
+    }
   }
 #endif
 }

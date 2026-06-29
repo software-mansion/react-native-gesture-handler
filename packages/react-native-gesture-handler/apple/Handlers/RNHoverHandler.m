@@ -13,14 +13,19 @@
 #import <React/RCTConvert.h>
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
+#define CHECK_TARGET(__VERSION__)                                                \
+  defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_##__VERSION__) && \
+      __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_##__VERSION__ && !TARGET_OS_TV
+
 typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
   RNGestureHandlerHoverEffectNone = 0,
   RNGestureHandlerHoverEffectLift,
   RNGestureHandlerHoverEffectHightlight,
 };
 
-#if !TARGET_OS_TV
+#if CHECK_TARGET(13_4)
 
+API_AVAILABLE(ios(13.4))
 @interface RNBetterHoverGestureRecognizer : UIHoverGestureRecognizer <UIPointerInteractionDelegate>
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
@@ -80,7 +85,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
 #endif
 
 @implementation RNHoverGestureHandler {
-#if !TARGET_OS_TV
+#if CHECK_TARGET(13_4)
   UIPointerInteraction *_pointerInteraction;
 #endif
 }
@@ -92,9 +97,12 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
 #endif
 
   if ((self = [super initWithTag:tag])) {
-#if !TARGET_OS_TV
-    _recognizer = [[RNBetterHoverGestureRecognizer alloc] initWithGestureHandler:self];
-    _pointerInteraction = [[UIPointerInteraction alloc] initWithDelegate:(id<UIPointerInteractionDelegate>)_recognizer];
+#if CHECK_TARGET(13_4)
+    if (@available(iOS 13.4, *)) {
+      _recognizer = [[RNBetterHoverGestureRecognizer alloc] initWithGestureHandler:self];
+      _pointerInteraction =
+          [[UIPointerInteraction alloc] initWithDelegate:(id<UIPointerInteractionDelegate>)_recognizer];
+    }
 #endif
   }
   return self;
@@ -102,17 +110,21 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
 
 - (void)bindToView:(UIView *)view
 {
-#if !TARGET_OS_TV
-  [super bindToView:view];
-  [view addInteraction:_pointerInteraction];
+#if CHECK_TARGET(13_4)
+  if (@available(iOS 13.4, *)) {
+    [super bindToView:view];
+    [view addInteraction:_pointerInteraction];
+  }
 #endif
 }
 
 - (void)unbindFromView
 {
-#if !TARGET_OS_TV
-  [super unbindFromView];
-  [self.recognizer.view removeInteraction:_pointerInteraction];
+#if CHECK_TARGET(13_4)
+  if (@available(iOS 13.4, *)) {
+    [super unbindFromView];
+    [self.recognizer.view removeInteraction:_pointerInteraction];
+  }
 #endif
 }
 
@@ -120,9 +132,11 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
 {
   [super resetConfig];
 
-#if !TARGET_OS_TV
-  RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
-  recognizer.hoverEffect = RNGestureHandlerHoverEffectNone;
+#if CHECK_TARGET(13_4)
+  if (@available(iOS 13.4, *)) {
+    RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
+    recognizer.hoverEffect = RNGestureHandlerHoverEffectNone;
+  }
 #endif
 }
 
@@ -130,9 +144,11 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
 {
   [super updateConfig:config];
 
-#if !TARGET_OS_TV
-  RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
-  APPLY_INT_PROP(hoverEffect);
+#if CHECK_TARGET(13_4)
+  if (@available(iOS 13.4, *)) {
+    RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
+    APPLY_INT_PROP(hoverEffect);
+  }
 #endif
 }
 
@@ -140,7 +156,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
 {
   _pointerType = pointerType;
 
-#if !TARGET_OS_TV
+#if CHECK_TARGET(16_1)
   if (@available(iOS 16.1, *)) {
     if (((UIHoverGestureRecognizer *)self.recognizer).zOffset > 0.0) {
       _pointerType = RNGestureHandlerStylus;

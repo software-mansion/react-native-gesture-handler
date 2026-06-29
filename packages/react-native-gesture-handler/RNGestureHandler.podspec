@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/software-mansion/react-native-gesture-handler", :tag => "#{s.version}" }
   s.source_files = "apple/**/*.{h,m,mm}", "shared/**/*.{h,cpp}"
   s.requires_arc = true
-  s.platforms       = { ios: '15.1', tvos: '15.1', osx: '14.0', visionos: '1.0' }
+  s.platforms       = { ios: '11.0', tvos: '11.0', osx: '10.15', visionos: '1.0' }
   s.xcconfig = {
     "OTHER_CFLAGS" => "$(inherited) #{compilation_metadata_generation_flag} #{version_flag}"
   }
