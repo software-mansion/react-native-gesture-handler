@@ -442,6 +442,14 @@ class RNGestureHandlerButtonViewManager :
     private var isPointerInsideBounds = false
     private var isHovered = false
 
+    // Whether a real hover was active when the current press began. A
+    // hover-capable pointer (mouse, or a stylus that supports hover) fires
+    // ACTION_HOVER_ENTER before the press, so `isHovered` is already true at
+    // ACTION_DOWN; a stylus without hover support never does. The touch-stream
+    // derivation below uses this to only *maintain* an existing hover, never
+    // fabricate one for a non-hovering tool.
+    private var hoverActiveAtPressStart = false
+
     // The hover visual is masked while disabled
     private val effectivelyHovered get() = isHovered && isEnabled
 
@@ -575,21 +583,23 @@ class RNGestureHandlerButtonViewManager :
         lastAction = action
 
         // Android delivers no hover events while a button is held, so derive
-        // the hover state from the touch stream for hovering pointers:
-        // hovered iff the pointer is within bounds. Done before
-        // super.onTouchEvent so a press-out it triggers (release, or
-        // cancel-on-leave) settles on the correct resting visual — hover while
-        // still over the view, default once the pointer leaves.
+        // the hover state from the touch stream: hovered iff the pointer is
+        // within bounds. Gated on `hoverActiveAtPressStart` so it only
+        // maintains a hover that was already active (a real hovering pointer) —
+        // a stylus without hover support fires no hover events and must not
+        // enter the hover visual on a plain tap. Done before super.onTouchEvent
+        // so a press-out it triggers (release, or cancel-on-leave) settles on
+        // the correct resting visual — hover while still over the view, default
+        // once the pointer leaves.
         when (event.actionMasked) {
+          MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> hoverActiveAtPressStart = isHovered
           MotionEvent.ACTION_MOVE,
           MotionEvent.ACTION_UP,
           MotionEvent.ACTION_POINTER_UP,
           ->
-            if (isHoveringPointer(event)) {
+            if (hoverActiveAtPressStart) {
               isHovered = isWithinBounds(event)
             }
-          // The synthesized cancel event carries no real tool type or coordinates,
-          // so it must NOT be gated on isHoveringPointer or a bounds check
           MotionEvent.ACTION_CANCEL -> isHovered = false
         }
 
@@ -768,9 +778,6 @@ class RNGestureHandlerButtonViewManager :
       pendingHoverOut?.let { Choreographer.getInstance().removeFrameCallback(it) }
       pendingHoverOut = null
     }
-
-    private fun isHoveringPointer(event: MotionEvent): Boolean = event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE ||
-      event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS
 
     private fun isWithinBounds(event: MotionEvent): Boolean =
       event.x >= 0 && event.y >= 0 && event.x < width && event.y < height
