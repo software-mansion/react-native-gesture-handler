@@ -7,6 +7,5 @@
 
 #import "RNGestureHandler.h"
 
-API_AVAILABLE(ios(13.4))
 @interface RNHoverGestureHandler : RNGestureHandler
 @end
