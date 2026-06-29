@@ -355,12 +355,6 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   BOOL shouldApplyStartAnimationState = treatAsFirstMount;
   if (!treatAsFirstMount) {
     const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
-    // Only default* changes warrant re-applying the start state, because that's
-    // the only visual applyStartAnimationState writes. hover*/active* are read
-    // live by the hover/press animations, so re-running here on a hover change
-    // would strand a currently-hovering button at the default visual (no
-    // enter/exit event follows to restore it) and could interrupt an in-flight
-    // press.
     shouldApplyStartAnimationState = oldButtonProps.defaultOpacity != newProps.defaultOpacity ||
         oldButtonProps.defaultScale != newProps.defaultScale ||
         oldButtonProps.defaultUnderlayOpacity != newProps.defaultUnderlayOpacity;
