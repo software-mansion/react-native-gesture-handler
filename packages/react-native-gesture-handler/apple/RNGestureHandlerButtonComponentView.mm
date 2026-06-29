@@ -281,21 +281,17 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   if (!oldProps ||
       oldButtonProps.accessibilityShowsLargeContentViewer != newButtonProps.accessibilityShowsLargeContentViewer) {
-    if (@available(iOS 13.0, *)) {
-      if (newButtonProps.accessibilityShowsLargeContentViewer) {
-        _buttonView.showsLargeContentViewer = YES;
-        UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
-        [_buttonView addInteraction:interaction];
-      } else {
-        _buttonView.showsLargeContentViewer = NO;
-      }
+    if (newButtonProps.accessibilityShowsLargeContentViewer) {
+      _buttonView.showsLargeContentViewer = YES;
+      UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
+      [_buttonView addInteraction:interaction];
+    } else {
+      _buttonView.showsLargeContentViewer = NO;
     }
   }
 
   if (!oldProps || oldButtonProps.accessibilityLargeContentTitle != newButtonProps.accessibilityLargeContentTitle) {
-    if (@available(iOS 13.0, *)) {
-      _buttonView.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newButtonProps.accessibilityLargeContentTitle);
-    }
+    _buttonView.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newButtonProps.accessibilityLargeContentTitle);
   }
 
   if (!oldProps || oldButtonProps.accessibilityTraits != newButtonProps.accessibilityTraits) {
