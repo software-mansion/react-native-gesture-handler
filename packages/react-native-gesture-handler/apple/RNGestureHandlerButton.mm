@@ -492,6 +492,18 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #endif
 }
 
+- (void)animateToOpacity:(CGFloat)opacity
+                   scale:(CGFloat)scale
+         underlayOpacity:(CGFloat)underlayOpacity
+                duration:(NSTimeInterval)durationMs
+{
+  RNGHUIView *target = self.animationTarget ?: self;
+  [self animateTarget:target toOpacity:opacity scale:scale duration:durationMs];
+  if ([self hasUnderlayAnimation]) {
+    [self animateUnderlayToOpacity:underlayOpacity duration:durationMs];
+  }
+}
+
 - (void)handleAnimatePressIn
 {
   if (_pendingPressOutBlock) {
@@ -504,11 +516,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   [self cancelPendingHoverOut];
   _isPressed = YES;
   _pressInTimestamp = CACurrentMediaTime();
-  RNGHUIView *target = self.animationTarget ?: self;
-  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:_tapAnimationInDuration];
-  if ([self hasUnderlayAnimation]) {
-    [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:_tapAnimationInDuration];
-  }
+  [self animateToOpacity:_activeOpacity
+                   scale:_activeScale
+         underlayOpacity:_activeUnderlayOpacity
+                duration:_tapAnimationInDuration];
 }
 
 - (void)handleAnimatePressOut
@@ -523,50 +534,38 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   if (_longPressDuration >= 0 && elapsed >= _longPressDuration) {
     // Long-press release - use the configured long-press out duration.
     NSInteger longPressOut = self.longPressAnimationOutDuration;
-    RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:self.restingOpacity scale:self.restingScale duration:longPressOut];
-    if ([self hasUnderlayAnimation]) {
-      [self animateUnderlayToOpacity:self.restingUnderlayOpacity duration:longPressOut];
-    }
+    [self animateToOpacity:self.restingOpacity
+                     scale:self.restingScale
+           underlayOpacity:self.restingUnderlayOpacity
+                  duration:longPressOut];
   } else if (elapsed >= _tapAnimationInDuration) {
     // Press-in animation fully finished - release with the configured out duration.
-    RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:self.restingOpacity scale:self.restingScale duration:_tapAnimationOutDuration];
-    if ([self hasUnderlayAnimation]) {
-      [self animateUnderlayToOpacity:self.restingUnderlayOpacity duration:_tapAnimationOutDuration];
-    }
+    [self animateToOpacity:self.restingOpacity
+                     scale:self.restingScale
+           underlayOpacity:self.restingUnderlayOpacity
+                  duration:_tapAnimationOutDuration];
     // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
   } else if (elapsed * 2 >= _tapAnimationOutDuration) {
     // Past minimum but press-in animation still playing, animate out in elapsed time
-    RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:self.restingOpacity scale:self.restingScale duration:elapsed];
-    if ([self hasUnderlayAnimation]) {
-      [self animateUnderlayToOpacity:self.restingUnderlayOpacity duration:elapsed];
-    }
+    [self animateToOpacity:self.restingOpacity
+                     scale:self.restingScale
+           underlayOpacity:self.restingUnderlayOpacity
+                  duration:elapsed];
   } else {
     // Before minimum duration, finish press-in in remaining time then animate out in tapAnimationOutDuration.
     NSTimeInterval remaining = _tapAnimationInDuration - elapsed;
 
-    RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:remaining];
-    if ([self hasUnderlayAnimation]) {
-      [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:remaining];
-    }
+    [self animateToOpacity:_activeOpacity scale:_activeScale underlayOpacity:_activeUnderlayOpacity duration:remaining];
 
     __weak auto weakSelf = self;
     _pendingPressOutBlock = dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
       __strong auto strongSelf = weakSelf;
       if (strongSelf) {
         strongSelf->_pendingPressOutBlock = nil;
-        RNGHUIView *target = strongSelf.animationTarget ?: strongSelf;
-        [strongSelf animateTarget:target
-                        toOpacity:strongSelf.restingOpacity
-                            scale:strongSelf.restingScale
-                         duration:strongSelf->_tapAnimationOutDuration];
-        if ([strongSelf hasUnderlayAnimation]) {
-          [strongSelf animateUnderlayToOpacity:strongSelf.restingUnderlayOpacity
-                                      duration:strongSelf->_tapAnimationOutDuration];
-        }
+        [strongSelf animateToOpacity:strongSelf.restingOpacity
+                               scale:strongSelf.restingScale
+                     underlayOpacity:strongSelf.restingUnderlayOpacity
+                            duration:strongSelf->_tapAnimationOutDuration];
       }
     });
     NSTimeInterval scheduledDelay = [self shouldReduceMotion] ? 0 : remaining;
@@ -606,20 +605,16 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     return;
   }
 
-  RNGHUIView *target = self.animationTarget ?: self;
-
   if ([self isEffectivelyHovered]) {
-    [self animateTarget:target toOpacity:self.hoverOpacity scale:self.hoverScale duration:_hoverAnimationInDuration];
-
-    if ([self hasUnderlayAnimation]) {
-      [self animateUnderlayToOpacity:self.hoverUnderlayOpacity duration:_hoverAnimationInDuration];
-    }
+    [self animateToOpacity:self.hoverOpacity
+                     scale:self.hoverScale
+           underlayOpacity:self.hoverUnderlayOpacity
+                  duration:_hoverAnimationInDuration];
   } else {
-    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:_hoverAnimationOutDuration];
-
-    if ([self hasUnderlayAnimation]) {
-      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:_hoverAnimationOutDuration];
-    }
+    [self animateToOpacity:_defaultOpacity
+                     scale:_defaultScale
+           underlayOpacity:_defaultUnderlayOpacity
+                  duration:_hoverAnimationOutDuration];
   }
 }
 
