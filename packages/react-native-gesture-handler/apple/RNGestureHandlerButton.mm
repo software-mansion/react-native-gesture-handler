@@ -571,7 +571,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 }
 
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX && !TARGET_OS_TV
 - (void)handleHover:(UIHoverGestureRecognizer *)recognizer
 {
   switch (recognizer.state) {
