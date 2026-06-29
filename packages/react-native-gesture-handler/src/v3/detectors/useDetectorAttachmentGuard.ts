@@ -2,11 +2,10 @@ import { useEffect, useRef } from 'react';
 
 import { tagMessage } from '../../utils';
 
-// Maps a gesture's handlerTag to the id of the detector that currently renders
-// it. Ownership is claimed on mount and released on unmount rather than being
-// tied to the gesture's whole lifetime, so reattaching the same gesture to a
-// different detector (e.g. a conditionally rendered one) keeps working.
-// the previous detector releases the tag on unmount before the next one claims it.
+// Maps a gesture's handlerTag to the id of the detector currently rendering it.
+// Ownership is claimed in an effect and released in its cleanup (on unmount or
+// when handlerTags change), so moving a gesture instance between detectors works
+// as long as it isn't rendered by more than one detector at the same time.
 const detectorByHandlerTag = new Map<number, number>();
 
 let nextDetectorId = 0;
