@@ -190,6 +190,10 @@ export const Touchable = (props: TouchableProps) => {
 
   const onUpdate = useCallback(
     (e: CallbackEventType) => {
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
       if (pointerState.current === PointerState.UNKNOWN) {
         return;
       }

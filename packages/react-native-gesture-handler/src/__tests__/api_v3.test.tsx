@@ -337,23 +337,42 @@ describe('[API v3] Components', () => {
       addListenerSpy.mockRestore();
     });
 
-    test('Touchable does NOT fire onPress on the keyboard-dismissing tap (never)', async () => {
+    test('Touchable does NOT fire any press callback on the keyboard-dismissing tap (never)', async () => {
       const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
       const onPress = jest.fn();
+      const onPressIn = jest.fn();
+      const onPressOut = jest.fn();
 
       render(
         <GestureHandlerRootView>
           <ScrollView keyboardShouldPersistTaps="never">
-            <Touchable testID="touchable" onPress={onPress} />
+            <Touchable
+              testID="touchable"
+              onPress={onPress}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+            />
           </ScrollView>
         </GestureHandlerRootView>
       );
       await act(flushImmediate);
       showSoftKeyboard(addListenerSpy);
 
-      fireTap('touchable');
+      // Includes a move (second ACTIVE) so the onUpdate path is exercised too.
+      act(() => {
+        fireGestureHandler(getByGestureTestId('touchable'), [
+          { state: State.BEGAN },
+          { state: State.ACTIVE },
+          { state: State.ACTIVE },
+          { state: State.END },
+        ]);
+      });
 
+      // The whole interaction is swallowed - not just onPress, but the press-in/
+      // out side effects too (incl. via onUpdate as the finger moves).
       expect(onPress).not.toHaveBeenCalled();
+      expect(onPressIn).not.toHaveBeenCalled();
+      expect(onPressOut).not.toHaveBeenCalled();
       addListenerSpy.mockRestore();
     });
 
