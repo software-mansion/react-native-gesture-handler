@@ -125,6 +125,29 @@ describe('Sharing a gesture across detectors', () => {
     expect(() => rerender(<ReattachedGesture detectorKey="b" />)).not.toThrow();
   });
 
+  test('does not throw when gestures are swapped between two mounted detectors', () => {
+    // Prop-swap reattach: both detectors stay mounted and the two gestures
+    // trade places. The detector losing a gesture must release it (effect
+    // cleanup) before the detector gaining it claims it (effect setup).
+    function SwappedGestures({ swapped }: { swapped: boolean }) {
+      const tapA = useTapGesture({});
+      const tapB = useTapGesture({});
+      return (
+        <GestureHandlerRootView>
+          <GestureDetector gesture={swapped ? tapB : tapA}>
+            <View />
+          </GestureDetector>
+          <GestureDetector gesture={swapped ? tapA : tapB}>
+            <View />
+          </GestureDetector>
+        </GestureHandlerRootView>
+      );
+    }
+
+    const { rerender } = render(<SwappedGestures swapped={false} />);
+    expect(() => rerender(<SwappedGestures swapped />)).not.toThrow();
+  });
+
   test('throws when the same gesture is attached to two virtual detectors', () => {
     function SameGestureTwoVirtualDetectors() {
       const tap = useTapGesture({});
