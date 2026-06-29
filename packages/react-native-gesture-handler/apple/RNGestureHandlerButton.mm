@@ -586,6 +586,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       break;
     case UIGestureRecognizerStateEnded:
     case UIGestureRecognizerStateCancelled:
+    case UIGestureRecognizerStateFailed:
       [self animateHoverOut];
       break;
     default:
