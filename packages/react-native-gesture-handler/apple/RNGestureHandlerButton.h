@@ -59,6 +59,8 @@
 #if TARGET_OS_TV
 - (void)handleAnimatePressIn;
 - (void)handleAnimatePressOut;
+- (void)animateHoverIn;
+- (void)animateHoverOut;
 #endif // TARGET_OS_TV
 
 /**

@@ -104,6 +104,17 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   [_buttonView handleAnimatePressOut];
 }
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context
+       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  if (context.nextFocusedView == self) {
+    [_buttonView animateHoverIn];
+  } else if (context.previouslyFocusedView == self) {
+    [_buttonView animateHoverOut];
+  }
+  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+}
 #endif // TARGET_OS_TV
 
 - (void)prepareForRecycle
