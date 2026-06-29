@@ -22,6 +22,7 @@ import type {
   Config,
   GestureHandlerNativeEvent,
   HitSlop,
+  HostDetector,
   PointerData,
   PropsRef,
   ResultEvent,
@@ -45,6 +46,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _enabled: boolean | null = null;
 
   private viewRef: number | null = null;
+  private _hostDetectorView: HostDetector | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
   protected actionType: ActionType | null = null;
   private forAnimated: boolean = false;
@@ -84,15 +86,21 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Initializing handler
   //
 
-  protected init(
+  public init(
     viewRef: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType
+    actionType: ActionType,
+    hostDetector: HostDetector | null = null
   ) {
+    if (this.attached) {
+      this.detach();
+    }
+
     this.attached = true;
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
+    this.hostDetectorView = hostDetector;
     this.state = State.UNDETERMINED;
 
     this.delegate.init(viewRef, this);
@@ -1059,6 +1067,13 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   protected set attached(value) {
     this._attached = value;
+  }
+
+  public get hostDetectorView() {
+    return this._hostDetectorView;
+  }
+  protected set hostDetectorView(value) {
+    this._hostDetectorView = value;
   }
 
   public get activationIndex() {

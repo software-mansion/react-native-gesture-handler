@@ -3,7 +3,6 @@ import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
-import { tagMessage } from '../../../utils';
 import type {
   ChangeCalculatorType,
   GestureCallbacks,
@@ -93,16 +92,11 @@ export function handleUpdateEvent<
     : eventWithData;
 
   const event = flattenAndFilterEvent(eventWithChanges);
-
-  // This should never happen, but since we don't want to call hooks conditionally, we have to mark
-  // context as possibly undefined to make TypeScript happy.
-  if (!context) {
-    throw new Error(tagMessage('Event handler context is not defined'));
-  }
-
   runCallback(CALLBACK_TYPE.UPDATE, handlers, event);
 
-  context.lastUpdateEvent = eventWithData;
+  if (context) {
+    context.lastUpdateEvent = eventWithData;
+  }
 }
 
 export function handleTouchEvent<

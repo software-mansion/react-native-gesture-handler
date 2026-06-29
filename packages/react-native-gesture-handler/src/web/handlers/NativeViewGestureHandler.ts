@@ -10,7 +10,12 @@ import {
   DEFAULT_TOUCH_SLOP,
   NATIVE_GESTURE_ROLE_ATTRIBUTE,
 } from '../constants';
-import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
+import type {
+  AdaptedEvent,
+  Config,
+  HostDetector,
+  PropsRef,
+} from '../interfaces';
 import { NativeGestureRole } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import {
@@ -45,9 +50,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public override init(
     ref: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType
+    actionType: ActionType,
+    hostDetector: HostDetector | null = null
   ): void {
-    super.init(ref, propsRef, actionType);
+    super.init(ref, propsRef, actionType, hostDetector);
 
     this.shouldCancelWhenOutside = true;
 
