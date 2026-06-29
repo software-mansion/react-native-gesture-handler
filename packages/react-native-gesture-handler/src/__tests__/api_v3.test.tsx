@@ -285,13 +285,13 @@ describe('[API v3] Components', () => {
   describe('keyboardShouldPersistTaps="never" drop', () => {
     // The keyboard-visibility tracker subscribes via Keyboard.addListener when a
     // ScrollView mounts. We spy on it to grab the captured `keyboardDidShow`
-    // handler and invoke it, simulating the soft keyboard being open.
-    const showSoftKeyboard = (addListenerSpy: jest.SpyInstance) => {
+    // handler and invoke it, simulating the keyboard being open.
+    const showKeyboard = (addListenerSpy: jest.SpyInstance, height = 300) => {
       const showCall = addListenerSpy.mock.calls.find(
         (call) => call[0] === 'keyboardDidShow'
       );
       act(() => {
-        showCall?.[1]?.({ endCoordinates: { height: 300 } });
+        showCall?.[1]?.({ endCoordinates: { height } });
       });
     };
 
@@ -311,7 +311,7 @@ describe('[API v3] Components', () => {
         ]);
       });
 
-    test('isKeyboardDismissingTap is true only in never mode while the soft keyboard is visible', async () => {
+    test('isKeyboardDismissingTap is true only in never mode while the keyboard is visible', async () => {
       const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
 
       render(
@@ -324,7 +324,7 @@ describe('[API v3] Components', () => {
       // Keyboard not shown yet -> nothing to dismiss.
       expect(isKeyboardDismissingTap(makeContext('never'))).toBe(false);
 
-      showSoftKeyboard(addListenerSpy);
+      showKeyboard(addListenerSpy);
 
       // `never` (and its default, undefined) drops the tap; the others never do.
       expect(isKeyboardDismissingTap(makeContext('never'))).toBe(true);
@@ -333,6 +333,24 @@ describe('[API v3] Components', () => {
       expect(isKeyboardDismissingTap(makeContext('always'))).toBe(false);
       // Outside an RNGH ScrollView there is no context, so nothing is dropped.
       expect(isKeyboardDismissingTap(null)).toBe(false);
+
+      addListenerSpy.mockRestore();
+    });
+
+    test('isKeyboardDismissingTap is false for a detached (height 0) keyboard', async () => {
+      const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+
+      render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="never" />
+        </GestureHandlerRootView>
+      );
+      await act(flushImmediate);
+
+      // A detached/floating keyboard reports height 0 - nothing to dismiss.
+      showKeyboard(addListenerSpy, 0);
+
+      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(false);
 
       addListenerSpy.mockRestore();
     });
@@ -356,7 +374,7 @@ describe('[API v3] Components', () => {
         </GestureHandlerRootView>
       );
       await act(flushImmediate);
-      showSoftKeyboard(addListenerSpy);
+      showKeyboard(addListenerSpy);
 
       // Includes a move (second ACTIVE) so the onUpdate path is exercised too.
       act(() => {
@@ -407,7 +425,7 @@ describe('[API v3] Components', () => {
           </GestureHandlerRootView>
         );
         await act(flushImmediate);
-        showSoftKeyboard(addListenerSpy);
+        showKeyboard(addListenerSpy);
 
         fireTap('touchable');
 

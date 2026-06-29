@@ -2,6 +2,7 @@ import type { PropsWithChildren } from 'react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import type {
   EmitterSubscription,
+  KeyboardEvent,
   ScrollViewProps as RNScrollViewProps,
 } from 'react-native';
 import { Keyboard, StyleSheet, View } from 'react-native';
@@ -13,7 +14,11 @@ type KeyboardShouldPersistTaps = RNScrollViewProps['keyboardShouldPersistTaps'];
 // once the last one unmounts.
 let keyboardTrackerRefCount = 0;
 let keyboardTrackerSubscriptions: EmitterSubscription[] = [];
-let isSoftKeyboardVisible = false;
+let isKeyboardVisible = false;
+
+function keyboardIsOpen(height: number | undefined): boolean {
+  return height != null && height > 0;
+}
 
 function subscribeToKeyboardVisibility() {
   keyboardTrackerRefCount++;
@@ -22,12 +27,16 @@ function subscribeToKeyboardVisibility() {
     return;
   }
 
-  const setVisible = () => {
-    isSoftKeyboardVisible = true;
+  const setVisible = (event: KeyboardEvent) => {
+    isKeyboardVisible = keyboardIsOpen(event.endCoordinates?.height);
   };
   const setHidden = () => {
-    isSoftKeyboardVisible = false;
+    isKeyboardVisible = false;
   };
+
+  // Seed from the current keyboard metrics in case it is already open when the
+  // first ScrollView mounts (mirrors ScrollView seeding from Keyboard.metrics()).
+  isKeyboardVisible = keyboardIsOpen(Keyboard.metrics?.()?.height);
 
   keyboardTrackerSubscriptions = [
     Keyboard.addListener('keyboardDidShow', setVisible),
@@ -47,7 +56,7 @@ function unsubscribeFromKeyboardVisibility() {
     subscription.remove();
   }
   keyboardTrackerSubscriptions = [];
-  isSoftKeyboardVisible = false;
+  isKeyboardVisible = false;
 }
 
 export type JSResponderContextValue = {
@@ -79,7 +88,7 @@ export function isKeyboardDismissingTap(
   const mode = jsResponderContext.keyboardShouldPersistTaps;
   const keyboardNeverPersistTaps = !mode || mode === 'never';
 
-  return keyboardNeverPersistTaps && isSoftKeyboardVisible;
+  return keyboardNeverPersistTaps && isKeyboardVisible;
 }
 
 type ScrollViewResponderInterceptorProps = PropsWithChildren<{
