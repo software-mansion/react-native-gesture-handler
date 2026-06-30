@@ -11,17 +11,19 @@ const detectorByHandlerTag = new Map<number, number>();
 let nextDetectorId = 0;
 
 export function useDetectorAttachmentGuard(handlerTags: number[]) {
+  if (!__DEV__) {
+    return;
+  }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const detectorId = useRef(-1);
 
   if (detectorId.current === -1) {
     detectorId.current = nextDetectorId++;
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    if (!__DEV__) {
-      return;
-    }
-
     const id = detectorId.current;
 
     for (const tag of handlerTags) {
