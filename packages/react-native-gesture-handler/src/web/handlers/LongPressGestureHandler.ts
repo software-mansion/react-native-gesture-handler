@@ -1,7 +1,12 @@
 import type { ActionType } from '../../ActionType';
 import { State } from '../../State';
 import { SingleGestureName } from '../../v3/types';
-import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
+import type {
+  AdaptedEvent,
+  Config,
+  HostDetector,
+  PropsRef,
+} from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
@@ -35,13 +40,14 @@ export default class LongPressGestureHandler extends GestureHandler {
   public override init(
     ref: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType
+    actionType: ActionType,
+    hostDetector: HostDetector | null = null
   ) {
     if (this.enableContextMenu === undefined) {
       this.enableContextMenu = false;
     }
 
-    super.init(ref, propsRef, actionType);
+    super.init(ref, propsRef, actionType, hostDetector);
   }
 
   protected override transformNativeEvent() {

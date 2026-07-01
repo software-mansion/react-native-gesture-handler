@@ -5,7 +5,6 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Canvas
@@ -64,7 +63,6 @@ class RNGestureHandlerButtonViewManager :
 
   public override fun createViewInstance(context: ThemedReactContext) = ButtonViewGroup(context)
 
-  @TargetApi(Build.VERSION_CODES.M)
   @ReactProp(name = "foreground")
   override fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
     view.useDrawableOnForeground = useDrawableOnForeground
@@ -826,10 +824,7 @@ class RNGestureHandlerButtonViewManager :
         return
       }
       needBackgroundUpdate = false
-
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        foreground = null
-      }
+      foreground = null
 
       val selectable = createSelectableDrawable()
       val underlay = createUnderlayDrawable()
@@ -837,7 +832,7 @@ class RNGestureHandlerButtonViewManager :
       // Set this view as callback so ObjectAnimator alpha changes trigger redraws.
       underlay.callback = this
 
-      if (useDrawableOnForeground && selectable != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (useDrawableOnForeground && selectable != null) {
         // Explicit foreground mode — View natively forwards state/hotspot.
         foreground = selectable
         selectableDrawable = null
@@ -922,7 +917,7 @@ class RNGestureHandlerButtonViewManager :
         if (useBorderlessDrawable) null else ShapeDrawable(RectShape()),
       )
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && rippleRadius != null) {
+      if (rippleRadius != null) {
         drawable.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
       }
 
