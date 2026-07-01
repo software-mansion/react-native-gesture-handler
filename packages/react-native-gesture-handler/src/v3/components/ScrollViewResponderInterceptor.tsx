@@ -1,10 +1,67 @@
 import type { PropsWithChildren } from 'react';
-import React, { useCallback, useMemo, useRef } from 'react';
-import type { ScrollViewProps as RNScrollViewProps } from 'react-native';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import type {
+  EmitterSubscription,
+  KeyboardEvent,
+  ScrollViewProps as RNScrollViewProps,
+} from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
+
+type KeyboardShouldPersistTaps = RNScrollViewProps['keyboardShouldPersistTaps'];
+
+// The listeners are shared by every mounted ScrollView, so attach/detach is
+// reference-counted: we subscribe on the first interceptor and tear down only
+// once the last one unmounts.
+let keyboardTrackerRefCount = 0;
+let keyboardTrackerSubscriptions: EmitterSubscription[] = [];
+let isKeyboardVisible = false;
+
+function keyboardIsOpen(height: number | undefined): boolean {
+  return height != null && height > 0;
+}
+
+function subscribeToKeyboardVisibility() {
+  keyboardTrackerRefCount++;
+
+  if (keyboardTrackerRefCount > 1 || Keyboard?.addListener == null) {
+    return;
+  }
+
+  const setVisible = (event: KeyboardEvent) => {
+    isKeyboardVisible = keyboardIsOpen(event.endCoordinates?.height);
+  };
+  const setHidden = () => {
+    isKeyboardVisible = false;
+  };
+
+  // Seed from the current keyboard metrics in case it is already open when the
+  // first ScrollView mounts (mirrors ScrollView seeding from Keyboard.metrics()).
+  isKeyboardVisible = keyboardIsOpen(Keyboard.metrics?.()?.height);
+
+  keyboardTrackerSubscriptions = [
+    Keyboard.addListener('keyboardDidShow', setVisible),
+    Keyboard.addListener('keyboardWillShow', setVisible),
+    Keyboard.addListener('keyboardDidHide', setHidden),
+  ];
+}
+
+function unsubscribeFromKeyboardVisibility() {
+  keyboardTrackerRefCount--;
+
+  if (keyboardTrackerRefCount > 0) {
+    return;
+  }
+
+  for (const subscription of keyboardTrackerSubscriptions) {
+    subscription.remove();
+  }
+  keyboardTrackerSubscriptions = [];
+  isKeyboardVisible = false;
+}
 
 export type JSResponderContextValue = {
   isRNGHResponderEvent: React.MutableRefObject<boolean>;
+  keyboardShouldPersistTaps: KeyboardShouldPersistTaps;
 };
 
 export const JSResponderContext =
@@ -21,6 +78,19 @@ export function updateResponderEventValue(
   }
 }
 
+export function isKeyboardDismissingTap(
+  jsResponderContext: JSResponderContextValue | null | undefined
+): boolean {
+  if (jsResponderContext == null) {
+    return false;
+  }
+
+  const mode = jsResponderContext.keyboardShouldPersistTaps;
+  const keyboardNeverPersistTaps = !mode || mode === 'never';
+
+  return keyboardNeverPersistTaps && isKeyboardVisible;
+}
+
 type ScrollViewResponderInterceptorProps = PropsWithChildren<{
   keyboardShouldPersistTaps?: RNScrollViewProps['keyboardShouldPersistTaps'];
 }>;
@@ -31,9 +101,14 @@ const ScrollViewResponderInterceptor = ({
 }: ScrollViewResponderInterceptorProps) => {
   const isRNGHResponderEvent = useRef(false);
   const contextValue = useMemo(
-    () => ({ isRNGHResponderEvent }),
-    [isRNGHResponderEvent]
+    () => ({ isRNGHResponderEvent, keyboardShouldPersistTaps }),
+    [isRNGHResponderEvent, keyboardShouldPersistTaps]
   );
+
+  useEffect(() => {
+    subscribeToKeyboardVisibility();
+    return () => unsubscribeFromKeyboardVisibility();
+  }, []);
 
   const resetRNGHResponderEvent = useCallback(() => {
     isRNGHResponderEvent.current = false;
