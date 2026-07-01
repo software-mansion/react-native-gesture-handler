@@ -448,16 +448,11 @@ class RNGestureHandlerButtonViewManager :
     // fabricate one for a non-hovering tool.
     private var hoverActiveAtPressStart = false
 
-    // The hover visual is masked while disabled
-    private val effectivelyHovered get() = isHovered && isEnabled
+    private val shouldAnimateHover get() = isHovered && isEnabled
 
-    // Resting (non-pressed) animation targets. While the pointer effectively
-    // hovers the button, the press-out animation settles on the hover values
-    // instead of the defaults, mirroring the web priority order (pressed >
-    // hovered > default).
-    private val restingOpacity get() = if (effectivelyHovered) hoverOpacity else defaultOpacity
-    private val restingScale get() = if (effectivelyHovered) hoverScale else defaultScale
-    private val restingUnderlayOpacity get() = if (effectivelyHovered) hoverUnderlayOpacity else defaultUnderlayOpacity
+    private val restingOpacity get() = if (shouldAnimateHover) hoverOpacity else defaultOpacity
+    private val restingScale get() = if (shouldAnimateHover) hoverScale else defaultScale
+    private val restingUnderlayOpacity get() = if (shouldAnimateHover) hoverUnderlayOpacity else defaultUnderlayOpacity
 
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
@@ -633,8 +628,8 @@ class RNGestureHandlerButtonViewManager :
 
     override fun onHoverEvent(event: MotionEvent): Boolean {
       when (event.actionMasked) {
-        MotionEvent.ACTION_HOVER_ENTER -> animateHoverIn()
-        MotionEvent.ACTION_HOVER_EXIT -> animateHoverOut()
+        MotionEvent.ACTION_HOVER_ENTER -> onHoverIn()
+        MotionEvent.ACTION_HOVER_EXIT -> onHoverOut()
       }
 
       return super.onHoverEvent(event)
@@ -728,19 +723,19 @@ class RNGestureHandlerButtonViewManager :
       animateTo(activeOpacity, activeScale, activeUnderlayOpacity, tapAnimationInDuration.toLong())
     }
 
-    private fun applyHoverState() {
+    private fun animateHoverState() {
       if (isPressed) {
         return
       }
 
-      if (effectivelyHovered) {
+      if (shouldAnimateHover) {
         animateTo(hoverOpacity, hoverScale, hoverUnderlayOpacity, hoverAnimationInDuration.toLong())
       } else {
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, hoverAnimationOutDuration.toLong())
       }
     }
 
-    private fun animateHoverIn() {
+    private fun onHoverIn() {
       cancelPendingHoverOut()
 
       if (isHovered) {
@@ -748,10 +743,10 @@ class RNGestureHandlerButtonViewManager :
       }
 
       isHovered = true
-      applyHoverState()
+      animateHoverState()
     }
 
-    private fun animateHoverOut() {
+    private fun onHoverOut() {
       if (isPressed) {
         isHovered = false
         return
@@ -765,7 +760,7 @@ class RNGestureHandlerButtonViewManager :
       val callback = Choreographer.FrameCallback {
         pendingHoverOut = null
         isHovered = false
-        applyHoverState()
+        animateHoverState()
       }
 
       pendingHoverOut = callback
@@ -1068,7 +1063,7 @@ class RNGestureHandlerButtonViewManager :
       // `isHovered` keeps tracking across the disabled period,
       // so re-evaluate the visual when it changes.
       if (changed && isHovered) {
-        applyHoverState()
+        animateHoverState()
       }
     }
 
