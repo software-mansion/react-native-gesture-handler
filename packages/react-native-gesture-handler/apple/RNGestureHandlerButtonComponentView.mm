@@ -109,9 +109,9 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
        withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
 {
   if (context.nextFocusedView == self) {
-    [_buttonView animateHoverIn];
+    [_buttonView onHoverIn];
   } else if (context.previouslyFocusedView == self) {
-    [_buttonView animateHoverOut];
+    [_buttonView onHoverOut];
   }
   [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
 }

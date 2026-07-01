@@ -234,7 +234,7 @@
 
 // The hover visual is masked while disabled, so a hover only counts when the
 // button is also enabled.
-- (BOOL)isEffectivelyHovered
+- (BOOL)shouldAnimateHover
 {
   return _isHovered && _userEnabled;
 }
@@ -243,17 +243,17 @@
 // press-out settles on the hover values instead of the defaults.
 - (CGFloat)restingOpacity
 {
-  return [self isEffectivelyHovered] ? self.hoverOpacity : _defaultOpacity;
+  return [self shouldAnimateHover] ? self.hoverOpacity : _defaultOpacity;
 }
 
 - (CGFloat)restingScale
 {
-  return [self isEffectivelyHovered] ? self.hoverScale : _defaultScale;
+  return [self shouldAnimateHover] ? self.hoverScale : _defaultScale;
 }
 
 - (CGFloat)restingUnderlayOpacity
 {
-  return [self isEffectivelyHovered] ? self.hoverUnderlayOpacity : _defaultUnderlayOpacity;
+  return [self shouldAnimateHover] ? self.hoverUnderlayOpacity : _defaultUnderlayOpacity;
 }
 
 - (void)setUserEnabled:(BOOL)userEnabled
@@ -269,7 +269,7 @@
   // pointer still inside. `_isHovered` keeps tracking across the disabled
   // period, so re-evaluate the visual when enabled changes.
   if (_isHovered && !_isPressed) {
-    [self applyHoverState];
+    [self animateHoverState];
   }
 }
 
@@ -576,12 +576,12 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 {
   switch (recognizer.state) {
     case UIGestureRecognizerStateBegan:
-      [self animateHoverIn];
+      [self onHoverIn];
       break;
     case UIGestureRecognizerStateEnded:
     case UIGestureRecognizerStateCancelled:
     case UIGestureRecognizerStateFailed:
-      [self animateHoverOut];
+      [self onHoverOut];
       break;
     default:
       break;
@@ -594,13 +594,13 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 // press animations, so this is a no-op while pressed (the hover state is still
 // recorded by the callers, and press-out reads it via resting*). Picks the
 // in/out duration from the direction it settles.
-- (void)applyHoverState
+- (void)animateHoverState
 {
   if (_isPressed) {
     return;
   }
 
-  if ([self isEffectivelyHovered]) {
+  if ([self shouldAnimateHover]) {
     [self animateToOpacity:self.hoverOpacity
                      scale:self.hoverScale
            underlayOpacity:self.hoverUnderlayOpacity
@@ -623,7 +623,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   _pendingHoverOutBlock = nil;
 }
 
-- (void)animateHoverIn
+- (void)onHoverIn
 {
   [self cancelPendingHoverOut];
 
@@ -632,10 +632,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   _isHovered = YES;
-  [self applyHoverState];
+  [self animateHoverState];
 }
 
-- (void)animateHoverOut
+- (void)onHoverOut
 {
   if (_isPressed) {
     // A genuine exit while pressed — drop hover so the release settles on the
@@ -657,7 +657,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     if (strongSelf) {
       strongSelf->_pendingHoverOutBlock = nil;
       strongSelf->_isHovered = NO;
-      [strongSelf applyHoverState];
+      [strongSelf animateHoverState];
     }
   });
   NSTimeInterval delay = [self shouldReduceMotion] ? 0 : [self minFrameDurationMs];
@@ -905,13 +905,13 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)mouseEntered:(NSEvent *)event
 {
-  [self animateHoverIn];
+  [self onHoverIn];
   [super mouseEntered:event];
 }
 
 - (void)mouseExited:(NSEvent *)event
 {
-  [self animateHoverOut];
+  [self onHoverOut];
   [super mouseExited:event];
 }
 
