@@ -440,12 +440,8 @@ class RNGestureHandlerButtonViewManager :
     private var isPointerInsideBounds = false
     private var isHovered = false
 
-    // Whether a real hover was active when the current press began. A
-    // hover-capable pointer (mouse, or a stylus that supports hover) fires
-    // ACTION_HOVER_ENTER before the press, so `isHovered` is already true at
-    // ACTION_DOWN; a stylus without hover support never does. The touch-stream
-    // derivation below uses this to only *maintain* an existing hover, never
-    // fabricate one for a non-hovering tool.
+    // Whether a hover was active at press-start. A hovering pointer fires
+    // ACTION_HOVER_ENTER first (so isHovered is already true at DOWN).
     private var hoverActiveAtPressStart = false
 
     private val shouldAnimateHover get() = isHovered && isEnabled
@@ -454,9 +450,6 @@ class RNGestureHandlerButtonViewManager :
     private val restingScale get() = if (shouldAnimateHover) hoverScale else defaultScale
     private val restingUnderlayOpacity get() = if (shouldAnimateHover) hoverUnderlayOpacity else defaultUnderlayOpacity
 
-    // Whether any configured value differs from the idle default — used to skip
-    // animating a property that never changes (mirrors iOS hasOpacityAnimation
-    // / hasScaleAnimation / hasUnderlayAnimation).
     private val hasOpacityAnimation get() = activeOpacity != 1.0f || defaultOpacity != 1.0f || hoverOpacity != 1.0f
     private val hasScaleAnimation get() = activeScale != 1.0f || defaultScale != 1.0f || hoverScale != 1.0f
     private val hasUnderlayAnimation get() = underlayDrawable != null &&
@@ -583,15 +576,9 @@ class RNGestureHandlerButtonViewManager :
         lastEventTime = eventTime
         lastAction = action
 
-        // Android delivers no hover events while a button is held, so derive
-        // the hover state from the touch stream: hovered iff the pointer is
-        // within bounds. Gated on `hoverActiveAtPressStart` so it only
-        // maintains a hover that was already active (a real hovering pointer) —
-        // a stylus without hover support fires no hover events and must not
-        // enter the hover visual on a plain tap. Done before super.onTouchEvent
-        // so a press-out it triggers (release, or cancel-on-leave) settles on
-        // the correct resting visual — hover while still over the view, default
-        // once the pointer leaves.
+        // No hover events arrive while the button is held, so derive hover from
+        // the touch stream (within bounds). Gated on hoverActiveAtPressStart so
+        // it only maintains an already-active hover.
         when (event.actionMasked) {
           MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> hoverActiveAtPressStart = isHovered
           MotionEvent.ACTION_MOVE,
@@ -758,9 +745,8 @@ class RNGestureHandlerButtonViewManager :
 
       cancelPendingHoverOut()
 
-      // We have to defer hover-out due to MotionEvent orders.
-      // In case of a press, the hover-out is sent before the press-in,
-      // so we need to wait for the next frame to animate back to the default state.
+      // Hover-out arrives just before a press-down, so defer a frame to let a
+      // following press-in cancel it and keep the hover state through the press.
       val callback = Choreographer.FrameCallback {
         pendingHoverOut = null
         isHovered = false
@@ -1063,9 +1049,6 @@ class RNGestureHandlerButtonViewManager :
       val changed = enabled != isEnabled
       super.setEnabled(enabled)
 
-      // Enabled is an input to the effective hover visual.
-      // `isHovered` keeps tracking across the disabled period,
-      // so re-evaluate the visual when it changes.
       if (changed && isHovered) {
         animateHoverState()
       }
