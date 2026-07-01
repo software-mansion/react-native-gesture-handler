@@ -454,6 +454,14 @@ class RNGestureHandlerButtonViewManager :
     private val restingScale get() = if (shouldAnimateHover) hoverScale else defaultScale
     private val restingUnderlayOpacity get() = if (shouldAnimateHover) hoverUnderlayOpacity else defaultUnderlayOpacity
 
+    // Whether any configured value differs from the idle default — used to skip
+    // animating a property that never changes (mirrors iOS hasOpacityAnimation
+    // / hasScaleAnimation / hasUnderlayAnimation).
+    private val hasOpacityAnimation get() = activeOpacity != 1.0f || defaultOpacity != 1.0f || hoverOpacity != 1.0f
+    private val hasScaleAnimation get() = activeScale != 1.0f || defaultScale != 1.0f || hoverScale != 1.0f
+    private val hasUnderlayAnimation get() = underlayDrawable != null &&
+      (activeUnderlayOpacity != defaultUnderlayOpacity || hoverUnderlayOpacity != defaultUnderlayOpacity)
+
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
     private var selectableDrawable: Drawable? = null
@@ -649,10 +657,10 @@ class RNGestureHandlerButtonViewManager :
     }
 
     private fun applyStartAnimationState() {
-      if (activeOpacity != 1.0f || defaultOpacity != 1.0f || hoverOpacity != 1.0f) {
+      if (hasOpacityAnimation) {
         alpha = defaultOpacity
       }
-      if (activeScale != 1.0f || defaultScale != 1.0f || hoverScale != 1.0f) {
+      if (hasScaleAnimation) {
         scaleX = defaultScale
         scaleY = defaultScale
       }
@@ -660,11 +668,7 @@ class RNGestureHandlerButtonViewManager :
     }
 
     private fun animateTo(opacity: Float, scale: Float, underlayOpacity: Float, durationMs: Long) {
-      val hasOpacity = activeOpacity != 1.0f || defaultOpacity != 1.0f || hoverOpacity != 1.0f
-      val hasScale = activeScale != 1.0f || defaultScale != 1.0f || hoverScale != 1.0f
-      val hasUnderlay = underlayDrawable != null &&
-        (activeUnderlayOpacity != defaultUnderlayOpacity || hoverUnderlayOpacity != defaultUnderlayOpacity)
-      if (!hasOpacity && !hasScale && !hasUnderlay) {
+      if (!hasOpacityAnimation && !hasScaleAnimation && !hasUnderlayAnimation) {
         return
       }
 
@@ -682,28 +686,28 @@ class RNGestureHandlerButtonViewManager :
       val durationScale = getAnimatorDurationScale()
       val effectiveDurationMs = (durationMs * durationScale).toLong()
       if (effectiveDurationMs < (display?.minimumFrameTime ?: 16f)) {
-        if (hasOpacity) {
+        if (hasOpacityAnimation) {
           alpha = opacity
         }
-        if (hasScale) {
+        if (hasScaleAnimation) {
           scaleX = scale
           scaleY = scale
         }
-        if (hasUnderlay) {
+        if (hasUnderlayAnimation) {
           underlayDrawable!!.alpha = (underlayOpacity * 255).toInt()
         }
         return
       }
 
       val animators = ArrayList<Animator>()
-      if (hasOpacity) {
+      if (hasOpacityAnimation) {
         animators.add(ObjectAnimator.ofFloat(this, "alpha", opacity))
       }
-      if (hasScale) {
+      if (hasScaleAnimation) {
         animators.add(ObjectAnimator.ofFloat(this, "scaleX", scale))
         animators.add(ObjectAnimator.ofFloat(this, "scaleY", scale))
       }
-      if (hasUnderlay) {
+      if (hasUnderlayAnimation) {
         animators.add(ObjectAnimator.ofInt(underlayDrawable!!, "alpha", (underlayOpacity * 255).toInt()))
       }
       currentAnimator = AnimatorSet().apply {
