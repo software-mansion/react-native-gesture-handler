@@ -157,11 +157,17 @@
 }
 
 + (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
+                                        withPosition:(CGPoint)position
+                                withAbsolutePosition:(CGPoint)absolutePosition
                                  withNumberOfTouches:(NSUInteger)numberOfTouches
                                      withPointerType:(NSInteger)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"pointerInside" : @(pointerInside),
+    @"x" : @(position.x),
+    @"y" : @(position.y),
+    @"absoluteX" : @(absolutePosition.x),
+    @"absoluteY" : @(absolutePosition.y),
     @"numberOfPointers" : @(numberOfTouches),
     @"pointerType" : @(pointerType)
   }];
