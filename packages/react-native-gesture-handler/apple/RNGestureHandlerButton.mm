@@ -264,10 +264,6 @@
 
   _userEnabled = userEnabled;
 
-  // Enabled is an input to the effective hover visual: web masks hover while
-  // disabled (`hovered && enabled`) and resumes it on re-enable with the
-  // pointer still inside. `_isHovered` keeps tracking across the disabled
-  // period, so re-evaluate the visual when enabled changes.
   if (_isHovered && !_isPressed) {
     [self animateHoverState];
   }
@@ -505,9 +501,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     dispatch_block_cancel(_pendingPressOutBlock);
     _pendingPressOutBlock = nil;
   }
-  // A press is starting; cancel a pending (bracketing) hover-out so the hover
-  // state carries into the press and the hover -> press transition doesn't
-  // flicker through the default state.
+  // Cancel a pending hover-out so the hover state carries into the
+  // press without flickering through the default state.
   [self cancelPendingHoverOut];
   _isPressed = YES;
   _pressInTimestamp = CACurrentMediaTime();
@@ -589,11 +584,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 }
 #endif
 
-// Animate to the effective hover visual, mirroring web's non-pressed render
-// `(hovered && enabled) ? hover : default`. The pressed state is owned by the
-// press animations, so this is a no-op while pressed (the hover state is still
-// recorded by the callers, and press-out reads it via resting*). Picks the
-// in/out duration from the direction it settles.
+// Animate to the effective hover visual. No-op while pressed — the press owns
+// the visual and press-out settles on the recorded hover state via resting*.
 - (void)animateHoverState
 {
   if (_isPressed) {
@@ -646,11 +638,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   [self cancelPendingHoverOut];
 
-  // A pointer press is bracketed by a hover-out just before touch-down (e.g.
-  // Apple Pencil). Defer the hover-out so an immediately following press
-  // (which cancels it in handleAnimatePressIn) wins, keeping the hover state
-  // for a flicker-free hover -> press -> hover transition. A real pointer
-  // leave has no press following, so the block runs and settles to default.
+  // An Apple Pencil press is bracketed by a hover-out just before touch-down, so
+  // defer a frame to let a following press-in cancel it and keep the hover state
+  // through the press. A real leave has no press, so it settles to default.
   __weak auto weakSelf = self;
   _pendingHoverOutBlock = dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
     __strong auto strongSelf = weakSelf;
@@ -882,13 +872,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 }
 
 #if TARGET_OS_OSX
-// macOS doesn't have UIHoverGestureRecognizer; instead we drive hover from an
-// NSTrackingArea. NSTrackingInVisibleRect keeps it sized to the view
-// automatically, and NSTrackingActiveAlways fires enter/exit even when the
-// window isn't key (matching how a desktop cursor hover behaves regardless of
-// focus). The area intentionally omits NSTrackingEnabledDuringMouseDrag, so
-// during a press-drag the in/out tracking is handled by mouseDragged: /
-// mouseUp: instead (the macOS analog of the iOS touch-bounds tracking).
+// macOS has no UIHoverGestureRecognizer, so drive hover from an NSTrackingArea.
+// InVisibleRect keeps it view-sized; ActiveAlways fires enter/exit regardless of
+// window focus. Omits EnabledDuringMouseDrag — mouseDragged:/mouseUp: track
+// in/out during a press instead.
 - (void)updateTrackingAreas
 {
   if (_hoverTrackingArea) {
@@ -966,9 +953,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   return [super beginTrackingWithTouch:touch withEvent:event];
 }
 
-// Whether a touch comes from a hovering input — an indirect pointer
-// (trackpad / mouse) or an Apple Pencil — as opposed to a finger, which never
-// hovers.
+// Whether a touch comes from a hovering input
 - (BOOL)isHoveringTouch:(UITouch *)touch
 {
   return touch.type == UITouchTypeIndirectPointer ? YES : touch.type == UITouchTypePencil;
@@ -1071,10 +1056,6 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
     BOOL inside = CGRectContainsPoint(hitFrame, location);
 
-    // A hovering pointer (trackpad / Apple Pencil) is still hovering after the
-    // touch ends iff it lifted inside the bounds; settle press-out on the
-    // matching resting state. Set before dispatching Up* (which drives
-    // handleAnimatePressOut, reading restingOpacity).
     if ([self isHoveringTouch:touch]) {
       _isHovered = inside;
     }
