@@ -1156,7 +1156,7 @@ Press and hover animation timing, in milliseconds. Defaults to 50ms for the in p
 Each animation has two phases — `in` (running while the pointer engages the component) and `out` (running after the pointer releases) — across two categories:
 
 * `tap` — applies to presses.
-* `hover` — pointer hover (web only).
+* `hover` — pointer hover (web and Android).
 
 `longPress` is an optional override for the press-out timing once the press has been held past [`delayLongPress`](#delaylongpress). It only has an `out` field (the press-in is always the `tap` in duration). If omitted, the long-press release uses the resolved `tap` out duration.
 
