@@ -15,7 +15,7 @@ The obvious approach — keeping separate `scale`, `rotation` and `translation` 
 
 A single affine matrix fixes both. It bundles move, scale and rotation into one value that you compose by multiplying matrices together in whatever order you need, and the result is itself a matrix — so each gesture simply builds on top of the previous one. You don't need to follow the underlying math to use it; the full example has the handful of small helper functions that implement it.
 
-So keep the result so far in a single matrix, and let the in-progress gesture stay as plain `scale`, `rotation` and `translation` — that's what the callbacks hand you as the fingers move. Each frame you combine the two to draw the view, and when the gesture ends you fold its values into the matrix and reset them, so the next gesture picks up where it left off.
+So keep the accumulated transform in a single matrix, and let the in-progress gesture stay as plain `scale`, `rotation` and `translation` — that's what the callbacks hand you as the fingers move. Each frame you combine the two to draw the view, and when the gesture ends you fold its values into the matrix and reset them, so the next gesture picks up where it left off.
 
 ## Keep the origin stable
 
@@ -50,7 +50,7 @@ Put both ideas together and you have the whole interaction. Each gesture updates
 <CollapsibleCode
 label="Show full example"
 expandedLabel="Hide full example"
-lineBounds={[123, 260]}
+lineBounds={[123, 264]}
 src={`
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -111,6 +111,10 @@ function invert2(m: number[]) {
   const c = m[2];
   const d = m[3];
   const det = a * d - b * c;
+
+  if (Math.abs(det) < 1e-6) {
+    return [1, 0, 0, 1];
+  }
 
   return [d / det, -b / det, -c / det, a / det];
 }

@@ -53,6 +53,10 @@ function invert2(m: number[]) {
   const d = m[3];
   const det = a * d - b * c;
 
+  if (Math.abs(det) < 1e-6) {
+    return [1, 0, 0, 1];
+  }
+
   return [d / det, -b / det, -c / det, a / det];
 }
 
