@@ -36,7 +36,6 @@ export interface VirtualChildrenWeb {
 // one stable object keeps the helpers pure (no closures over component-render-scoped values),
 // which means the useEffects don't need them in their deps lists.
 type DetectorRefs = {
-  owner: object;
   viewRef: RefObject<Element | null>;
   propsRef: RefObject<GestureHandlerDetectorProps>;
   // Tags observed for the detector view (top-level).
@@ -94,7 +93,8 @@ function attachReadyHandler(
         tag,
         child.viewRef.current,
         actionType,
-        refs.propsRef
+        refs.propsRef,
+        refs.viewRef
       );
       refs.attachedHandlers.add(tag);
     }
@@ -116,7 +116,8 @@ function attachReadyHandler(
       tag,
       refs.viewRef.current,
       actionType,
-      refs.propsRef
+      refs.propsRef,
+      refs.viewRef
     );
     refs.attachedHandlers.add(tag);
   }
@@ -164,7 +165,8 @@ function tryAttachNativeHandlersToChildView(refs: DetectorRefs) {
       tag,
       target,
       ActionType.NATIVE_DETECTOR,
-      refs.propsRef
+      refs.propsRef,
+      refs.viewRef
     );
     refs.attachedHandlers.add(tag);
     RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
@@ -191,16 +193,16 @@ function syncSubscriptions(
     if (subscribedSet.has(tag)) {
       continue;
     }
-    NodeManager.observeHandler(tag, refs.owner, () => {
+    NodeManager.observeHandler(tag, refs.viewRef, () => {
       attachReadyHandler(refs, tag, actionType, virtualViewTag);
     });
     subscribedSet.add(tag);
   }
 
   for (const tag of toUnsubscribe) {
-    NodeManager.cancelObservation(tag, refs.owner);
+    NodeManager.cancelObservation(tag, refs.viewRef);
     if (refs.attachedHandlers.has(tag)) {
-      RNGestureHandlerModule.detachGestureHandler(tag);
+      RNGestureHandlerModule.detachGestureHandler(tag, refs.viewRef);
       refs.attachedHandlers.delete(tag);
     }
     subscribedSet.delete(tag);
@@ -209,9 +211,9 @@ function syncSubscriptions(
 }
 
 function teardown(refs: DetectorRefs) {
-  NodeManager.cancelAllObservationsForOwner(refs.owner);
+  NodeManager.cancelAllObservationsForOwner(refs.viewRef);
   for (const tag of refs.attachedHandlers) {
-    RNGestureHandlerModule.detachGestureHandler(tag);
+    RNGestureHandlerModule.detachGestureHandler(tag, refs.viewRef);
   }
   refs.attachedHandlers.clear();
   refs.subscribedHandlers.clear();
@@ -232,7 +234,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const refsRef = useRef<DetectorRefs | null>(null);
   if (refsRef.current === null) {
     refsRef.current = {
-      owner: {},
       viewRef,
       propsRef,
       subscribedHandlers: new Set<number>(),

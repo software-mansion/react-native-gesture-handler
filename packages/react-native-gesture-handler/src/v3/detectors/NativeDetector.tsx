@@ -7,6 +7,7 @@ import type { NativeDetectorProps } from './common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
 import HostGestureDetector from './HostGestureDetector';
 import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
+import { useDetectorAttachmentGuard } from './useDetectorAttachmentGuard';
 import { useGestureRelationsUpdater } from './useGestureRelationsUpdater';
 import { ensureNativeDetectorComponent } from './utils';
 
@@ -37,6 +38,8 @@ export function NativeDetector<
       ? gesture.handlerTags
       : [gesture.handlerTag];
   }, [gesture]);
+
+  useDetectorAttachmentGuard(handlerTags);
 
   // On web, we're triggering Reanimated callbacks ourselves, based on the type.
   // To handle this properly, we need to provide all three callbacks, so we set

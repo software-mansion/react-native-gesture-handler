@@ -83,6 +83,94 @@ describe('VirtualDetector', () => {
   });
 });
 
+describe('Sharing a gesture across detectors', () => {
+  beforeEach(() => (findNodeHandle as jest.Mock).mockReturnValue(123));
+
+  test('throws when the same gesture is attached to two detectors', () => {
+    function SameGestureTwoDetectors() {
+      const tap = useTapGesture({});
+      return (
+        <GestureHandlerRootView>
+          <GestureDetector gesture={tap}>
+            <View />
+          </GestureDetector>
+          <GestureDetector gesture={tap}>
+            <View />
+          </GestureDetector>
+        </GestureHandlerRootView>
+      );
+    }
+
+    expect(() => render(<SameGestureTwoDetectors />)).toThrow(
+      'Using the same gesture instance across multiple GestureDetectors is not possible. Create a separate gesture for each detector.'
+    );
+  });
+
+  test('does not throw when the same gesture is reattached to another detector', () => {
+    // Changing the key unmounts the previous detector and mounts a new one with
+    // the same gesture - the old detector must release the gesture before the
+    // new one claims it.
+    function ReattachedGesture({ detectorKey }: { detectorKey: string }) {
+      const tap = useTapGesture({});
+      return (
+        <GestureHandlerRootView>
+          <GestureDetector key={detectorKey} gesture={tap}>
+            <View />
+          </GestureDetector>
+        </GestureHandlerRootView>
+      );
+    }
+
+    const { rerender } = render(<ReattachedGesture detectorKey="a" />);
+    expect(() => rerender(<ReattachedGesture detectorKey="b" />)).not.toThrow();
+  });
+
+  test('does not throw when gestures are swapped between two mounted detectors', () => {
+    // Prop-swap reattach: both detectors stay mounted and the two gestures
+    // trade places. The detector losing a gesture must release it (effect
+    // cleanup) before the detector gaining it claims it (effect setup).
+    function SwappedGestures({ swapped }: { swapped: boolean }) {
+      const tapA = useTapGesture({});
+      const tapB = useTapGesture({});
+      return (
+        <GestureHandlerRootView>
+          <GestureDetector gesture={swapped ? tapB : tapA}>
+            <View />
+          </GestureDetector>
+          <GestureDetector gesture={swapped ? tapA : tapB}>
+            <View />
+          </GestureDetector>
+        </GestureHandlerRootView>
+      );
+    }
+
+    const { rerender } = render(<SwappedGestures swapped={false} />);
+    expect(() => rerender(<SwappedGestures swapped />)).not.toThrow();
+  });
+
+  test('throws when the same gesture is attached to two virtual detectors', () => {
+    function SameGestureTwoVirtualDetectors() {
+      const tap = useTapGesture({});
+      return (
+        <GestureHandlerRootView>
+          <InterceptingGestureDetector>
+            <VirtualDetector gesture={tap}>
+              <View />
+            </VirtualDetector>
+            <VirtualDetector gesture={tap}>
+              <View />
+            </VirtualDetector>
+          </InterceptingGestureDetector>
+        </GestureHandlerRootView>
+      );
+    }
+
+    expect(() => render(<SameGestureTwoVirtualDetectors />)).toThrow(
+      'Using the same gesture instance across multiple GestureDetectors is not possible. Create a separate gesture for each detector.'
+    );
+  });
+});
+
 describe('Check if descendant of root view', () => {
   test('gesture detector', () => {
     function GestureDetectorNoRootView() {
