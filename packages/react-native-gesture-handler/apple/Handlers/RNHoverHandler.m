@@ -122,8 +122,9 @@ API_AVAILABLE(ios(13.4))
 {
 #if CHECK_TARGET(13_4)
   if (@available(iOS 13.4, *)) {
-    [super unbindFromView];
+    // Remove the interaction before [super unbindFromView] detaches the recognizer and nils recognizer.view.
     [self.recognizer.view removeInteraction:_pointerInteraction];
+    [super unbindFromView];
   }
 #endif
 }
