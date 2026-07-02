@@ -16,6 +16,13 @@
 
 #import "RNGHRuntimeDecorator.h"
 
+#if __has_include(<worklets/apple/WorkletsModule.h>)
+#import <worklets/apple/WorkletsModule.h>
+#define RNGH_HAS_WORKLETS 1
+#else
+#define RNGH_HAS_WORKLETS 0
+#endif
+
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerState.h"
@@ -107,6 +114,26 @@ RCT_EXPORT_MODULE()
 - (bool)decorateUIRuntime
 {
   __weak RNGestureHandlerModule *weakSelf = self;
+
+#if RNGH_HAS_WORKLETS
+  WorkletsModule *workletsModule = (WorkletsModule *)[self.moduleRegistry moduleForName:"WorkletsModule"];
+  if (workletsModule != nil) {
+    auto workletsModuleProxy = [workletsModule getWorkletsModuleProxy];
+    if (workletsModuleProxy != nullptr) {
+      auto uiWorkletRuntime = workletsModuleProxy->getUIWorkletRuntime();
+      if (uiWorkletRuntime != nullptr) {
+        RNGHRuntimeDecorator::decorateUIRuntime(
+            uiWorkletRuntime->getJSIRuntime(), [weakSelf](int handlerTag, int state) {
+              RNGestureHandlerModule *strongSelf = weakSelf;
+              if (strongSelf != nil) {
+                [strongSelf setGestureState:state forHandler:handlerTag];
+              }
+            });
+        return true;
+      }
+    }
+  }
+#endif
 
   return RNGHRuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
