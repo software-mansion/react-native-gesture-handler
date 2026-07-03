@@ -124,17 +124,8 @@ export type {
   PanGestureEvent,
 };
 export { usePanGesture } from './pan/usePanGesture';
-
-export type SingleGesture =
-  | TapGesture
-  | FlingGesture
-  | LongPressGesture
-  | PinchGesture
-  | RotationGesture
-  | HoverGesture
-  | ManualGesture
-  | NativeGesture
-  | PanGesture;
+export type { AnySingleGesture } from './singleGestureUnion';
+export type { AnySingleGesture as SingleGesture } from './singleGestureUnion';
 
 /* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 export type SingleGestureEvent =

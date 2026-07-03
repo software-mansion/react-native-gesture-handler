@@ -25,10 +25,11 @@ export function useGesture<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData = THandlerData,
+  TType extends SingleGestureName = SingleGestureName,
 >(
-  type: SingleGestureName,
+  type: TType,
   config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
-): SingleGesture<TConfig, THandlerData, TExtendedHandlerData> {
+): SingleGesture<TConfig, THandlerData, TExtendedHandlerData, TType> {
   const handlerTag = useMemo(() => getNextHandlerTag(), []);
   const disableReanimated = useMemo(() => config.disableReanimated, []);
 

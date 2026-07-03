@@ -3,6 +3,7 @@ import type {
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
+  SingleGestureName,
   WithSharedValue,
 } from '../../../types';
 
@@ -58,5 +59,7 @@ export type NativeGestureActiveEvent = NativeGestureEvent;
 
 export type NativeGesture = SingleGesture<
   NativeGestureProperties,
-  NativeHandlerData
+  NativeHandlerData,
+  NativeHandlerData,
+  SingleGestureName.Native
 >;

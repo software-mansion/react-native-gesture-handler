@@ -4,6 +4,7 @@ import type {
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
+  SingleGestureName,
   WithSharedValue,
 } from '../../../types';
 
@@ -170,5 +171,6 @@ export type PanGestureActiveEvent = GestureEvent<PanExtendedHandlerData>;
 export type PanGesture = SingleGesture<
   PanGestureInternalProperties,
   PanHandlerData,
-  PanExtendedHandlerData
+  PanExtendedHandlerData,
+  SingleGestureName.Pan
 >;

@@ -39,8 +39,10 @@ export function useLongPressGesture(
     LongPressGestureInternalProperties
   >(config, LongPressPropsMapping, transformLongPressProps);
 
-  return useGesture<LongPressGestureInternalProperties, LongPressHandlerData>(
-    SingleGestureName.LongPress,
-    longPressConfig
-  );
+  return useGesture<
+    LongPressGestureInternalProperties,
+    LongPressHandlerData,
+    LongPressHandlerData,
+    SingleGestureName.LongPress
+  >(SingleGestureName.LongPress, longPressConfig);
 }

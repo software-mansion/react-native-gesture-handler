@@ -3,6 +3,7 @@ import type {
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
+  SingleGestureName,
 } from '../../../types';
 
 export type PinchGestureNativeProperties = Record<string, never>;
@@ -36,5 +37,6 @@ export type PinchGestureActiveEvent = GestureEvent<PinchExtendedHandlerData>;
 export type PinchGesture = SingleGesture<
   PinchGestureProperties,
   PinchHandlerData,
-  PinchExtendedHandlerData
+  PinchExtendedHandlerData,
+  SingleGestureName.Pinch
 >;

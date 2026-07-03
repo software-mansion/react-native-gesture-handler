@@ -3,6 +3,7 @@ import type {
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
+  SingleGestureName,
 } from '../../../types';
 
 export type RotationGestureNativeProperties = Record<string, never>;
@@ -37,5 +38,6 @@ export type RotationGestureActiveEvent =
 export type RotationGesture = SingleGesture<
   RotationGestureProperties,
   RotationHandlerData,
-  RotationExtendedHandlerData
+  RotationExtendedHandlerData,
+  SingleGestureName.Rotation
 >;

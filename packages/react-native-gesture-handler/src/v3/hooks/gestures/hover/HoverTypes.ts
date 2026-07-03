@@ -5,6 +5,7 @@ import type {
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
+  SingleGestureName,
   WithSharedValue,
 } from '../../../types';
 
@@ -72,5 +73,6 @@ export type HoverGestureActiveEvent = GestureEvent<HoverExtendedHandlerData>;
 export type HoverGesture = SingleGesture<
   HoverGestureInternalProperties,
   HoverHandlerData,
-  HoverExtendedHandlerData
+  HoverExtendedHandlerData,
+  SingleGestureName.Hover
 >;

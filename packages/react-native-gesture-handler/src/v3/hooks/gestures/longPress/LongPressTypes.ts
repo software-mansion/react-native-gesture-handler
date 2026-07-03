@@ -3,6 +3,7 @@ import type {
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
+  SingleGestureName,
   WithSharedValue,
 } from '../../../types';
 
@@ -68,5 +69,7 @@ export type LongPressGestureActiveEvent = LongPressGestureEvent;
 
 export type LongPressGesture = SingleGesture<
   LongPressGestureProperties,
-  LongPressHandlerData
+  LongPressHandlerData,
+  LongPressHandlerData,
+  SingleGestureName.LongPress
 >;

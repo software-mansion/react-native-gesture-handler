@@ -158,6 +158,7 @@ export function usePanGesture(
   return useGesture<
     PanGestureInternalProperties,
     PanHandlerData,
-    PanExtendedHandlerData
+    PanExtendedHandlerData,
+    SingleGestureName.Pan
   >(SingleGestureName.Pan, panConfig);
 }

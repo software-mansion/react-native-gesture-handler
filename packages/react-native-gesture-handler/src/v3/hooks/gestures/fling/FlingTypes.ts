@@ -3,6 +3,7 @@ import type {
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
+  SingleGestureName,
   WithSharedValue,
 } from '../../../types';
 
@@ -56,5 +57,7 @@ export type FlingGestureActiveEvent = FlingGestureEvent;
 
 export type FlingGesture = SingleGesture<
   FlingGestureProperties,
-  FlingHandlerData
+  FlingHandlerData,
+  FlingHandlerData,
+  SingleGestureName.Fling
 >;

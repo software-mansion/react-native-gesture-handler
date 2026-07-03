@@ -29,8 +29,10 @@ export function useTapGesture(
     TapGestureInternalProperties
   >(config, TapPropsMapping);
 
-  return useGesture<TapGestureInternalProperties, TapHandlerData>(
-    SingleGestureName.Tap,
-    tapConfig
-  );
+  return useGesture<
+    TapGestureInternalProperties,
+    TapHandlerData,
+    TapHandlerData,
+    SingleGestureName.Tap
+  >(SingleGestureName.Tap, tapConfig);
 }

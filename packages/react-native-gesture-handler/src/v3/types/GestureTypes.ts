@@ -39,9 +39,10 @@ export type SingleGesture<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData = THandlerData,
+  TType extends SingleGestureName = SingleGestureName,
 > = {
   handlerTag: number;
-  type: SingleGestureName;
+  type: TType;
   config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>;
   detectorCallbacks: DetectorCallbacks<THandlerData, TExtendedHandlerData>;
   gestureRelations: GestureRelations;
@@ -51,17 +52,19 @@ export type DiscreteSingleGesture<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData = THandlerData,
+  TType extends SingleGestureName = SingleGestureName,
 > = {
   [K in keyof SingleGesture<
     TConfig,
     THandlerData,
-    TExtendedHandlerData
+    TExtendedHandlerData,
+    TType
   >]: K extends 'config'
     ? Omit<
-        SingleGesture<TConfig, THandlerData, TExtendedHandlerData>[K],
+        SingleGesture<TConfig, THandlerData, TExtendedHandlerData, TType>[K],
         'onUpdate'
       >
-    : SingleGesture<TConfig, THandlerData, TExtendedHandlerData>[K];
+    : SingleGesture<TConfig, THandlerData, TExtendedHandlerData, TType>[K];
 };
 
 export type ComposedGesture = {

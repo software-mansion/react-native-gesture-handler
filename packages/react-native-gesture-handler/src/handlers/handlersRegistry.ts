@@ -1,4 +1,5 @@
 import { isTestEnv } from '../utils';
+import type { AnySingleGesture } from '../v3/hooks/gestures/singleGestureUnion';
 import type { SingleGesture } from '../v3/types';
 import type {
   GestureEvent,
@@ -8,10 +9,9 @@ import type { GestureType } from './gestures/gesture';
 
 export const handlerIDToTag: Record<string, number> = {};
 
-// There were attempts to create types that merge possible HandlerData and Config,
-// but ts was not able to infer them properly in many cases, so we use any here.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const hookGestures = new Map<number, SingleGesture<any, any, any>>();
+// Stored as the discriminated union of concrete v3 gestures so lookups by
+// test ID can narrow on the `type` field.
+const hookGestures = new Map<number, AnySingleGesture>();
 const gestures = new Map<number, GestureType>();
 const oldHandlers = new Map<number, GestureHandlerCallbacks>();
 const testIDs = new Map<string, number>();
@@ -25,7 +25,9 @@ export function registerGesture<
   gesture: SingleGesture<TConfig, THandlerData, TExtendedHandlerData>
 ) {
   if (isTestEnv() && gesture.config.testID) {
-    hookGestures.set(handlerTag, gesture);
+    // The generic parameters cannot be correlated with the union members
+    // here, but every gesture created by the v3 hooks is a union member.
+    hookGestures.set(handlerTag, gesture as unknown as AnySingleGesture);
     testIDs.set(gesture.config.testID, handlerTag);
   }
 }

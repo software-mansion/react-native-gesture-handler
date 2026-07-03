@@ -3,6 +3,7 @@ import type {
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
+  SingleGestureName,
 } from '../../../types';
 
 export type ManualGestureNativeProperties = Record<string, never>;
@@ -24,5 +25,7 @@ export type ManualGestureActiveEvent = ManualGestureEvent;
 
 export type ManualGesture = SingleGesture<
   ManualGestureProperties,
-  ManualHandlerData
+  ManualHandlerData,
+  ManualHandlerData,
+  SingleGestureName.Manual
 >;

@@ -3,6 +3,7 @@ import type {
   DiscreteSingleGesture,
   ExcludeInternalConfigProps,
   GestureEvent,
+  SingleGestureName,
   WithSharedValue,
 } from '../../../types';
 
@@ -96,5 +97,7 @@ export type TapGestureActiveEvent = TapGestureEvent;
 
 export type TapGesture = DiscreteSingleGesture<
   TapGestureInternalProperties,
-  TapHandlerData
+  TapHandlerData,
+  TapHandlerData,
+  SingleGestureName.Tap
 >;
