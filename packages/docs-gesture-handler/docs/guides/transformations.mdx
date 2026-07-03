@@ -11,11 +11,9 @@ This guide assumes you're using [Reanimated](https://docs.swmansion.com/react-na
 
 ## Use a matrix, not separate transforms
 
-The obvious approach — keeping separate `scale`, `rotation` and `translation` values and passing them to a `transform` array — falls apart once the gestures combine. The array applies its entries in a fixed order, so you can't decide whether scaling happens before or after rotation, and there's nowhere to accumulate the result of one gesture so the next can build on it.
+The obvious approach — keeping separate `scale`, `rotation` and `translation` values and passing them to a `transform` array — falls apart once you want each gesture to build on the last. The array does let you control the order its entries apply in, but there's no clean place to accumulate the running result: to preserve what previous gestures did, you'd have to keep appending an entry for every incremental translation, scale and rotation, and React would rebuild the whole matrix from that ever-growing list on each render.
 
-A single affine matrix fixes both. It bundles move, scale and rotation into one value that you compose by multiplying matrices together in whatever order you need, and the result is itself a matrix — so each gesture simply builds on top of the previous one. You don't need to follow the underlying math to use it; the full example has the handful of small helper functions that implement it.
-
-So keep the accumulated transform in a single matrix, and let the in-progress gesture stay as plain `scale`, `rotation` and `translation` — that's what the callbacks hand you as the fingers move. Each frame you combine the two to draw the view, and when the gesture ends you fold its values into the matrix and reset them, so the next gesture picks up where it left off.
+A single affine matrix fixes that. It bundles translation, scale and rotation into one value that you compose by multiplying matrices together in whatever order you need, and since the result is itself a matrix you can store it and let each new gesture build on top. That gives you a natural split: the accumulated transform lives in the matrix, while the in-progress gesture stays as the plain `scale`, `rotation` and `translation` the callbacks hand you as the fingers move. Each frame, combine the two to draw the view. When the gesture ends, fold its values into the matrix and reset them, so the next gesture picks up where it left off. You don't need to follow the underlying math — the [full example](#full-example) has the handful of small helper functions that implement it.
 
 ## Keep the origin stable
 
