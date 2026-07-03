@@ -237,9 +237,7 @@ defaultUnderlayOpacity?: number;
 
 Defines the initial opacity of underlay when the button is inactive. By default set to `0`.
 
-<Badges platforms={['web', 'android']}>
 ### hoverOpacity
-</Badges>
 
 ```ts
 hoverOpacity?: number;
@@ -247,9 +245,7 @@ hoverOpacity?: number;
 
 Defines the opacity of the whole component when the button is hovered. By default falls back to [`defaultOpacity`](#defaultopacity).
 
-<Badges platforms={['web', 'android']}>
 ### hoverScale
-</Badges>
 
 ```ts
 hoverScale?: number;
@@ -257,9 +253,7 @@ hoverScale?: number;
 
 Defines the scale of the whole component when the button is hovered. By default falls back to [`defaultScale`](#defaultscale).
 
-<Badges platforms={['web', 'android']}>
 ### hoverUnderlayOpacity
-</Badges>
 
 ```ts
 hoverUnderlayOpacity?: number;
@@ -296,7 +290,7 @@ Press and hover animation timing, in milliseconds. Defaults to 50ms for the in p
 
 Each animation has two phases — `in` (running while the pointer engages the component) and `out` (running after the pointer releases) — across two categories:
 - `tap` — applies to presses.
-- `hover` — pointer hover (web and Android).
+- `hover` — pointer hover.
 
 `longPress` is an optional override for the press-out timing once the press has been held past [`delayLongPress`](#delaylongpress). It only has an `out` field (the press-in is always the `tap` in duration). If omitted, the long-press release uses the resolved `tap` out duration.
 
