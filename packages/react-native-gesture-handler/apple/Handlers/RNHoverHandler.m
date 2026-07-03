@@ -111,8 +111,8 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
 - (void)unbindFromView
 {
 #if !TARGET_OS_TV
-  [super unbindFromView];
   [self.recognizer.view removeInteraction:_pointerInteraction];
+  [super unbindFromView];
 #endif
 }
 
