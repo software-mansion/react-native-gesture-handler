@@ -910,7 +910,6 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun onDetachedFromWindow() {
-      super.onDetachedFromWindow()
       pendingPressOut?.let { handler?.removeCallbacks(it) }
       pendingPressOut = null
       cancelPendingHoverOut()
@@ -925,6 +924,8 @@ class RNGestureHandlerButtonViewManager :
       if (soundResponder === this) {
         soundResponder = null
       }
+
+      super.onDetachedFromWindow()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
