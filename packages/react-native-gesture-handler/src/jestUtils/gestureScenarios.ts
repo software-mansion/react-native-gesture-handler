@@ -2,6 +2,7 @@ import { PointerType } from '../PointerType';
 import { tagMessage } from '../utils';
 import { SingleGestureName } from '../v3/types';
 import type {
+  FlingGestureScenario,
   GestureOutcome,
   PanGestureScenario,
   TapGestureScenario,
@@ -43,6 +44,14 @@ const PAN_DEFAULTS: JestHandlerDataPayload = {
 };
 
 const TAP_DEFAULTS: JestHandlerDataPayload = {
+  ...COMMON_DEFAULTS,
+  x: 0,
+  y: 0,
+  absoluteX: 0,
+  absoluteY: 0,
+};
+
+const FLING_DEFAULTS: JestHandlerDataPayload = {
   ...COMMON_DEFAULTS,
   x: 0,
   y: 0,
@@ -106,37 +115,62 @@ export function buildPanPayloads(
   };
 }
 
-export function buildTapPayloads(
-  scenario: TapGestureScenario
+// Tap and fling are discrete gestures: they never dispatch update events. A
+// single `event` payload drives the whole lifecycle by default, but each
+// state change carries its own snapshot on a real device, so `stageEvents`
+// may override individual stages (merged over `event`).
+function buildDiscretePayloads(
+  scenario: TapGestureScenario | FlingGestureScenario,
+  defaults: JestHandlerDataPayload,
+  gestureLabel: string
 ): JestGesturePayloads {
   if ('updates' in scenario) {
     throw new Error(
       tagMessage(
-        `fireGesture received 'updates' for a tap gesture. Tap is a discrete gesture and does not dispatch update events — pass the payload through 'event' instead.`
+        `fireGesture received 'updates' for a ${gestureLabel} gesture. ${gestureLabel} is a discrete gesture and does not dispatch update events — pass the payload through 'event' instead.`
       )
     );
   }
 
-  const event = { ...TAP_DEFAULTS, ...scenario.event };
-  validatePayload(scenario.event ?? {}, `'event'`);
+  const base = scenario.event ?? {};
+  const stages = scenario.stageEvents ?? {};
+
+  validatePayload(base, `'event'`);
+  validatePayload(stages.begin ?? {}, `'stageEvents.begin'`);
+  validatePayload(stages.activate ?? {}, `'stageEvents.activate'`);
+  validatePayload(stages.end ?? {}, `'stageEvents.end'`);
 
   return {
-    begin: event,
-    activate: event,
+    begin: { ...defaults, ...base, ...stages.begin },
+    activate: { ...defaults, ...base, ...stages.activate },
     updates: [],
-    end: event,
+    end: { ...defaults, ...base, ...stages.end },
   };
+}
+
+export function buildTapPayloads(
+  scenario: TapGestureScenario
+): JestGesturePayloads {
+  return buildDiscretePayloads(scenario, TAP_DEFAULTS, 'tap');
+}
+
+export function buildFlingPayloads(
+  scenario: FlingGestureScenario
+): JestGesturePayloads {
+  return buildDiscretePayloads(scenario, FLING_DEFAULTS, 'fling');
 }
 
 export function buildScenarioPayloads(
   type: SingleGestureName,
-  scenario: PanGestureScenario | TapGestureScenario
+  scenario: PanGestureScenario | TapGestureScenario | FlingGestureScenario
 ): JestGesturePayloads {
   switch (type) {
     case SingleGestureName.Pan:
       return buildPanPayloads(scenario);
     case SingleGestureName.Tap:
       return buildTapPayloads(scenario);
+    case SingleGestureName.Fling:
+      return buildFlingPayloads(scenario);
     default:
       throw new Error(
         tagMessage(`fireGesture does not support '${type}' scenarios.`)

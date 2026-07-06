@@ -1,4 +1,5 @@
 import type { GestureType } from '../handlers/gestures/gesture';
+import type { FlingGestureEvent } from '../v3/hooks/gestures/fling/FlingTypes';
 import type { PanGestureActiveEvent } from '../v3/hooks/gestures/pan/PanTypes';
 import type { AnySingleGesture } from '../v3/hooks/gestures/singleGestureUnion';
 import type { TapGestureEvent } from '../v3/hooks/gestures/tap/TapTypes';
@@ -17,6 +18,19 @@ export type GestureOutcome = 'success' | 'failed' | 'cancelled';
 // machine envelope. `handlerTag` is filled in by the implementation.
 type SemanticEventData<TEvent> = Partial<Omit<TEvent, 'handlerTag'>>;
 
+// Per-stage payload overrides for a discrete gesture. On a real device each
+// state change carries its own coordinate snapshot (e.g. a fling travels
+// between touch-down and recognition), so tests may describe distinct data
+// for each stage. Each stage is merged over `event`.
+type DiscreteStageEvents<TEvent> = {
+  /** Payload for `onBegin` (and `onFinalize` when the outcome is `failed`). */
+  begin?: SemanticEventData<TEvent>;
+  /** Payload for `onActivate`. */
+  activate?: SemanticEventData<TEvent>;
+  /** Payload for `onDeactivate` and `onFinalize`. */
+  end?: SemanticEventData<TEvent>;
+};
+
 export type PanGestureScenario = {
   /** Payloads dispatched as `onUpdate` events while the gesture is active. */
   updates?: SemanticEventData<PanGestureActiveEvent>[];
@@ -26,6 +40,16 @@ export type PanGestureScenario = {
 export type TapGestureScenario = {
   /** Payload used for every lifecycle callback of the tap. */
   event?: SemanticEventData<TapGestureEvent>;
+  /** Per-stage payload overrides, merged over `event`. */
+  stageEvents?: DiscreteStageEvents<TapGestureEvent>;
+  outcome?: GestureOutcome;
+};
+
+export type FlingGestureScenario = {
+  /** Payload used for every lifecycle callback of the fling. */
+  event?: SemanticEventData<FlingGestureEvent>;
+  /** Per-stage payload overrides, merged over `event`. */
+  stageEvents?: DiscreteStageEvents<FlingGestureEvent>;
   outcome?: GestureOutcome;
 };
 
@@ -37,7 +61,9 @@ export type GestureScenario<TGesture extends ResolvedGestureTarget> =
     ? PanGestureScenario
     : TGesture extends { type: SingleGestureName.Tap }
       ? TapGestureScenario
-      : never;
+      : TGesture extends { type: SingleGestureName.Fling }
+        ? FlingGestureScenario
+        : never;
 
 export type ScenarioForTarget<TTarget extends FireGestureTarget> =
   TTarget extends string

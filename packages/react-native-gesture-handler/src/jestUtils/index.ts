@@ -1,6 +1,7 @@
 export { fireGesture } from './fireGesture';
 export type {
   FireGestureTarget,
+  FlingGestureScenario,
   GestureOutcome,
   GestureScenario,
   PanGestureScenario,
