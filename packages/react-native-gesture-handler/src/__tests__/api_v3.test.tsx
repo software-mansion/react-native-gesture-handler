@@ -1,11 +1,15 @@
 import { render, renderHook } from '@testing-library/react-native';
 import { act } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
 import { Pressable, RectButton, ScrollView, Touchable } from '../v3/components';
+import {
+  isKeyboardDismissingTap,
+  type JSResponderContextValue,
+} from '../v3/components/ScrollViewResponderInterceptor';
 import { GestureDetector } from '../v3/detectors';
 import { useSimultaneousGestures } from '../v3/hooks';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
@@ -133,7 +137,7 @@ describe('[API v3] Components', () => {
 
   describe('ScrollView', () => {
     test('handles responder event passed through Pressable for keyboardShouldPersistTaps handled', async () => {
-      const { getByTestId, UNSAFE_getAllByType } = render(
+      const { UNSAFE_getAllByType } = render(
         <GestureHandlerRootView>
           <ScrollView keyboardShouldPersistTaps="handled">
             <Pressable testID="pressable" />
@@ -143,14 +147,14 @@ describe('[API v3] Components', () => {
 
       await act(flushImmediate);
 
-      const pressable = getByTestId('pressable');
+      const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
       const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
 
       expect(scrollViewResponder).toBeDefined();
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(pressable.props.onStartShouldSetResponder()).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
@@ -158,7 +162,7 @@ describe('[API v3] Components', () => {
     });
 
     test('does not handle responder event passed through Pressable without keyboardShouldPersistTaps handled', async () => {
-      const { getByTestId, UNSAFE_getAllByType } = render(
+      const { UNSAFE_getAllByType } = render(
         <GestureHandlerRootView>
           <ScrollView>
             <Pressable testID="pressable" />
@@ -168,14 +172,14 @@ describe('[API v3] Components', () => {
 
       await act(flushImmediate);
 
-      const pressable = getByTestId('pressable');
+      const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
       const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
 
       expect(scrollViewResponder).toBeDefined();
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(pressable.props.onStartShouldSetResponder()).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );
@@ -276,6 +280,159 @@ describe('[API v3] Components', () => {
         false
       );
     });
+  });
+
+  describe('keyboardShouldPersistTaps="never" drop', () => {
+    // The keyboard-visibility tracker subscribes via Keyboard.addListener when a
+    // ScrollView mounts. We spy on it to grab the captured `keyboardDidShow`
+    // handler and invoke it, simulating the keyboard being open.
+    const showKeyboard = (addListenerSpy: jest.SpyInstance, height = 300) => {
+      const showCall = addListenerSpy.mock.calls.find(
+        (call) => call[0] === 'keyboardDidShow'
+      );
+      act(() => {
+        showCall?.[1]?.({ endCoordinates: { height } });
+      });
+    };
+
+    const makeContext = (
+      keyboardShouldPersistTaps: JSResponderContextValue['keyboardShouldPersistTaps']
+    ): JSResponderContextValue => ({
+      isRNGHResponderEvent: { current: false },
+      keyboardShouldPersistTaps,
+    });
+
+    const fireTap = (testID: string) =>
+      act(() => {
+        fireGestureHandler(getByGestureTestId(testID), [
+          { state: State.BEGAN },
+          { state: State.ACTIVE },
+          { state: State.END },
+        ]);
+      });
+
+    test('isKeyboardDismissingTap is true only in never mode while the keyboard is visible', async () => {
+      const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+
+      render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="never" />
+        </GestureHandlerRootView>
+      );
+      await act(flushImmediate);
+
+      // Keyboard not shown yet -> nothing to dismiss.
+      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(false);
+
+      showKeyboard(addListenerSpy);
+
+      // `never` (and its default, undefined) drops the tap; the others never do.
+      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(true);
+      expect(isKeyboardDismissingTap(makeContext(undefined))).toBe(true);
+      expect(isKeyboardDismissingTap(makeContext('handled'))).toBe(false);
+      expect(isKeyboardDismissingTap(makeContext('always'))).toBe(false);
+      // Outside an RNGH ScrollView there is no context, so nothing is dropped.
+      expect(isKeyboardDismissingTap(null)).toBe(false);
+
+      addListenerSpy.mockRestore();
+    });
+
+    test('isKeyboardDismissingTap is false for a detached (height 0) keyboard', async () => {
+      const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+
+      render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="never" />
+        </GestureHandlerRootView>
+      );
+      await act(flushImmediate);
+
+      // A detached/floating keyboard reports height 0 - nothing to dismiss.
+      showKeyboard(addListenerSpy, 0);
+
+      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(false);
+
+      addListenerSpy.mockRestore();
+    });
+
+    test('Touchable does NOT fire any press callback on the keyboard-dismissing tap (never)', async () => {
+      const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+      const onPress = jest.fn();
+      const onPressIn = jest.fn();
+      const onPressOut = jest.fn();
+
+      render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="never">
+            <Touchable
+              testID="touchable"
+              onPress={onPress}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+            />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+      await act(flushImmediate);
+      showKeyboard(addListenerSpy);
+
+      // Includes a move (second ACTIVE) so the onUpdate path is exercised too.
+      act(() => {
+        fireGestureHandler(getByGestureTestId('touchable'), [
+          { state: State.BEGAN },
+          { state: State.ACTIVE },
+          { state: State.ACTIVE },
+          { state: State.END },
+        ]);
+      });
+
+      // The whole interaction is swallowed - not just onPress, but the press-in/
+      // out side effects too (incl. via onUpdate as the finger moves).
+      expect(onPress).not.toHaveBeenCalled();
+      expect(onPressIn).not.toHaveBeenCalled();
+      expect(onPressOut).not.toHaveBeenCalled();
+      addListenerSpy.mockRestore();
+    });
+
+    test('Touchable fires onPress in never mode when the keyboard is not visible', async () => {
+      const onPress = jest.fn();
+
+      render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="never">
+            <Touchable testID="touchable" onPress={onPress} />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+      await act(flushImmediate);
+
+      fireTap('touchable');
+
+      expect(onPress).toHaveBeenCalledTimes(1);
+    });
+
+    test.each(['handled', 'always'] as const)(
+      'Touchable fires onPress in %s mode even while the keyboard is visible',
+      async (mode) => {
+        const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+        const onPress = jest.fn();
+
+        render(
+          <GestureHandlerRootView>
+            <ScrollView keyboardShouldPersistTaps={mode}>
+              <Touchable testID="touchable" onPress={onPress} />
+            </ScrollView>
+          </GestureHandlerRootView>
+        );
+        await act(flushImmediate);
+        showKeyboard(addListenerSpy);
+
+        fireTap('touchable');
+
+        expect(onPress).toHaveBeenCalledTimes(1);
+        addListenerSpy.mockRestore();
+      }
+    );
   });
 
   describe('Touchable', () => {
