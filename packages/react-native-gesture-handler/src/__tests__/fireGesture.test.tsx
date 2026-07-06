@@ -16,6 +16,7 @@ import {
   useFlingGesture,
   useLongPressGesture,
   usePanGesture,
+  usePinchGesture,
   useTapGesture,
 } from '../v3/hooks/gestures';
 
@@ -229,6 +230,153 @@ describe('fireGesture: pan', () => {
     expect(callbacks.onDeactivate).toHaveBeenCalledWith(
       expect.objectContaining({ translationX: 100 })
     );
+  });
+});
+
+describe('fireGesture: pinch', () => {
+  test('successful pinch dispatches every supplied update in order', () => {
+    const { order, callbacks } = mockedV3Callbacks();
+    const pinch = renderHook(() =>
+      usePinchGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(pinch, {
+      updates: [{ scale: 1.5 }, { scale: 2 }],
+    });
+
+    expect(order).toEqual([
+      'onBegin',
+      'onActivate',
+      'onUpdate',
+      'onUpdate',
+      'onDeactivate',
+      'onFinalize',
+    ]);
+    expect(callbacks.onUpdate).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ scale: 1.5 })
+    );
+    expect(callbacks.onUpdate).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ scale: 2 })
+    );
+  });
+
+  test('scaleChange is calculated through the v3 callback pipeline', () => {
+    const { callbacks } = mockedV3Callbacks();
+    const pinch = renderHook(() =>
+      usePinchGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(pinch, {
+      updates: [{ scale: 2 }, { scale: 4 }],
+    });
+
+    // Activation fills the default scaleChange of 1; each update divides the
+    // current scale by the previous one.
+    expect(callbacks.onActivate).toHaveBeenCalledWith(
+      expect.objectContaining({ scaleChange: 1 })
+    );
+    expect(callbacks.onUpdate).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ scaleChange: 2 })
+    );
+    expect(callbacks.onUpdate).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ scaleChange: 2 })
+    );
+  });
+
+  test('empty updates still produce a complete successful lifecycle', () => {
+    const { order, callbacks } = mockedV3Callbacks();
+    const pinch = renderHook(() =>
+      usePinchGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(pinch);
+
+    expect(order).toEqual([
+      'onBegin',
+      'onActivate',
+      'onDeactivate',
+      'onFinalize',
+    ]);
+    expect(callbacks.onUpdate).not.toHaveBeenCalled();
+  });
+
+  test('event payload defaults use two pointers and identity scale', () => {
+    const { callbacks } = mockedV3Callbacks();
+    const pinch = renderHook(() =>
+      usePinchGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(pinch);
+
+    expect(callbacks.onActivate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        numberOfPointers: 2,
+        scale: 1,
+        velocity: 0,
+        focalX: 0,
+        focalY: 0,
+      })
+    );
+  });
+
+  test('cancelled pinch deactivates and finalizes as cancelled', () => {
+    const { order, callbacks } = mockedV3Callbacks();
+    const pinch = renderHook(() =>
+      usePinchGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(pinch, {
+      updates: [{ scale: 1.5 }],
+      outcome: 'cancelled',
+    });
+
+    expect(order).toEqual([
+      'onBegin',
+      'onActivate',
+      'onUpdate',
+      'onDeactivate',
+      'onFinalize',
+    ]);
+    expect(callbacks.onDeactivate).toHaveBeenCalledWith(
+      expect.objectContaining({ canceled: true })
+    );
+    expect(callbacks.onFinalize).toHaveBeenCalledWith(
+      expect.objectContaining({ canceled: true })
+    );
+  });
+
+  test('rejects an event payload for the continuous pinch gesture', () => {
+    const pinch = renderHook(() => usePinchGesture({ disableReanimated: true }))
+      .result.current;
+
+    expect(() => fireGesture(pinch, { event: { scale: 2 } } as never)).toThrow(
+      /continuous gesture/
+    );
+  });
+
+  test('resolves pinch gestures by test ID string', () => {
+    const { order, callbacks } = mockedV3Callbacks();
+    renderHook(() =>
+      usePinchGesture({
+        testID: 'string-target-pinch',
+        disableReanimated: true,
+        ...callbacks,
+      })
+    );
+
+    fireGesture('string-target-pinch', { updates: [{ scale: 3 }] });
+
+    expect(order).toEqual([
+      'onBegin',
+      'onActivate',
+      'onUpdate',
+      'onDeactivate',
+      'onFinalize',
+    ]);
   });
 });
 

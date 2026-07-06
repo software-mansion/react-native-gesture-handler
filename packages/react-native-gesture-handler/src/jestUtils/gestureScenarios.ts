@@ -5,6 +5,7 @@ import type {
   FlingGestureScenario,
   GestureOutcome,
   PanGestureScenario,
+  PinchGestureScenario,
   TapGestureScenario,
 } from './gestureScenarioTypes';
 import type {
@@ -59,6 +60,17 @@ const FLING_DEFAULTS: JestHandlerDataPayload = {
   absoluteY: 0,
 };
 
+const PINCH_DEFAULTS: JestHandlerDataPayload = {
+  ...COMMON_DEFAULTS,
+  numberOfPointers: 2,
+  scale: 1,
+  velocity: 0,
+  focalX: 0,
+  focalY: 0,
+  // `scaleChange` is derived by the change-event calculator, like pan's
+  // `changeX`, so it is intentionally omitted here.
+};
+
 function validatePayload(
   payload: Record<string, unknown>,
   description: string
@@ -91,28 +103,46 @@ export function validateOutcome(outcome: unknown): GestureOutcome {
   return outcome as GestureOutcome;
 }
 
-export function buildPanPayloads(
-  scenario: PanGestureScenario
+// Pan and pinch are continuous gestures: they dispatch a stream of update
+// events while active. The `updates` array is that stream — the first update
+// is the activation payload and the last is the end payload; `begin` uses the
+// defaults, since no movement has happened yet.
+function buildContinuousPayloads(
+  scenario: PanGestureScenario | PinchGestureScenario,
+  defaults: JestHandlerDataPayload,
+  gestureLabel: string
 ): JestGesturePayloads {
   if ('event' in scenario) {
     throw new Error(
       tagMessage(
-        `fireGesture received an 'event' field for a pan gesture. Pan is a continuous gesture — pass update payloads through 'updates' instead.`
+        `fireGesture received an 'event' field for a ${gestureLabel} gesture. ${gestureLabel} is a continuous gesture — pass update payloads through 'updates' instead.`
       )
     );
   }
 
   const updates = (scenario.updates ?? []).map((update, index) => {
     validatePayload(update, `updates[${index}]`);
-    return { ...PAN_DEFAULTS, ...update };
+    return { ...defaults, ...update };
   });
 
   return {
-    begin: PAN_DEFAULTS,
-    activate: updates[0] ?? PAN_DEFAULTS,
+    begin: defaults,
+    activate: updates[0] ?? defaults,
     updates,
-    end: updates[updates.length - 1] ?? PAN_DEFAULTS,
+    end: updates[updates.length - 1] ?? defaults,
   };
+}
+
+export function buildPanPayloads(
+  scenario: PanGestureScenario
+): JestGesturePayloads {
+  return buildContinuousPayloads(scenario, PAN_DEFAULTS, 'pan');
+}
+
+export function buildPinchPayloads(
+  scenario: PinchGestureScenario
+): JestGesturePayloads {
+  return buildContinuousPayloads(scenario, PINCH_DEFAULTS, 'pinch');
 }
 
 // Tap and fling are discrete gestures: they never dispatch update events. A
@@ -162,7 +192,11 @@ export function buildFlingPayloads(
 
 export function buildScenarioPayloads(
   type: SingleGestureName,
-  scenario: PanGestureScenario | TapGestureScenario | FlingGestureScenario
+  scenario:
+    | PanGestureScenario
+    | TapGestureScenario
+    | FlingGestureScenario
+    | PinchGestureScenario
 ): JestGesturePayloads {
   switch (type) {
     case SingleGestureName.Pan:
@@ -171,6 +205,8 @@ export function buildScenarioPayloads(
       return buildTapPayloads(scenario);
     case SingleGestureName.Fling:
       return buildFlingPayloads(scenario);
+    case SingleGestureName.Pinch:
+      return buildPinchPayloads(scenario);
     default:
       throw new Error(
         tagMessage(`fireGesture does not support '${type}' scenarios.`)

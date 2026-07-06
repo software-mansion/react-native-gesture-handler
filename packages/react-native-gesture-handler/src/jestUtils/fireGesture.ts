@@ -15,6 +15,7 @@ import type {
   FlingGestureScenario,
   NoInferT,
   PanGestureScenario,
+  PinchGestureScenario,
   ScenarioForTarget,
   TapGestureScenario,
 } from './gestureScenarioTypes';
@@ -42,10 +43,11 @@ const SUPPORTED_GESTURES = new Set<SingleGestureName>([
   SingleGestureName.Tap,
   SingleGestureName.Pan,
   SingleGestureName.Fling,
+  SingleGestureName.Pinch,
 ]);
 
 const SUPPORTED_GESTURES_MESSAGE =
-  'Currently supported gesture kinds: tap (useTapGesture), pan (usePanGesture) and fling (useFlingGesture).';
+  'Currently supported gesture kinds: tap (useTapGesture), pan (usePanGesture), fling (useFlingGesture) and pinch (usePinchGesture).';
 
 function isHookGesture(target: object): target is AnySingleGesture {
   return 'detectorCallbacks' in target && 'type' in target;
@@ -130,7 +132,8 @@ export function fireGesture<TTarget extends FireGestureTarget>(
   const gestureScenario:
     | PanGestureScenario
     | TapGestureScenario
-    | FlingGestureScenario = scenario ?? {};
+    | FlingGestureScenario
+    | PinchGestureScenario = scenario ?? {};
   const outcome = validateOutcome(gestureScenario.outcome);
   const payloads = buildScenarioPayloads(gesture.type, gestureScenario);
 

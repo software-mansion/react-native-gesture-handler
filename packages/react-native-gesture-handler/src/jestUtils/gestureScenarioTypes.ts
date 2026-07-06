@@ -1,6 +1,7 @@
 import type { GestureType } from '../handlers/gestures/gesture';
 import type { FlingGestureEvent } from '../v3/hooks/gestures/fling/FlingTypes';
 import type { PanGestureActiveEvent } from '../v3/hooks/gestures/pan/PanTypes';
+import type { PinchGestureActiveEvent } from '../v3/hooks/gestures/pinch/PinchTypes';
 import type { AnySingleGesture } from '../v3/hooks/gestures/singleGestureUnion';
 import type { TapGestureEvent } from '../v3/hooks/gestures/tap/TapTypes';
 import type { SingleGestureName } from '../v3/types';
@@ -37,6 +38,12 @@ export type PanGestureScenario = {
   outcome?: GestureOutcome;
 };
 
+export type PinchGestureScenario = {
+  /** Payloads dispatched as `onUpdate` events while the gesture is active. */
+  updates?: SemanticEventData<PinchGestureActiveEvent>[];
+  outcome?: GestureOutcome;
+};
+
 export type TapGestureScenario = {
   /** Payload used for every lifecycle callback of the tap. */
   event?: SemanticEventData<TapGestureEvent>;
@@ -63,7 +70,9 @@ export type GestureScenario<TGesture extends ResolvedGestureTarget> =
       ? TapGestureScenario
       : TGesture extends { type: SingleGestureName.Fling }
         ? FlingGestureScenario
-        : never;
+        : TGesture extends { type: SingleGestureName.Pinch }
+          ? PinchGestureScenario
+          : never;
 
 export type ScenarioForTarget<TTarget extends FireGestureTarget> =
   TTarget extends string
