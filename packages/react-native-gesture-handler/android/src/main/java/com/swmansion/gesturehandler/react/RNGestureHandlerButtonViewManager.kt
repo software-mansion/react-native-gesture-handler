@@ -707,7 +707,7 @@ class RNGestureHandlerButtonViewManager :
 
     private fun animatePressIn() {
       pendingPressOut?.let {
-        handler.removeCallbacks(it)
+        handler?.removeCallbacks(it)
         pendingPressOut = null
       }
       pressInTimestamp = SystemClock.uptimeMillis()
@@ -766,7 +766,7 @@ class RNGestureHandlerButtonViewManager :
       event.x >= 0 && event.y >= 0 && event.x < width && event.y < height
 
     private fun animatePressOut() {
-      pendingPressOut?.let { handler.removeCallbacks(it) }
+      pendingPressOut?.let { handler?.removeCallbacks(it) }
       val tapInMs = tapAnimationInDuration.toLong()
       val tapOutMs = tapAnimationOutDuration.toLong()
       val longPressMs = longPressDuration.toLong()
@@ -794,7 +794,7 @@ class RNGestureHandlerButtonViewManager :
         // The animator scales `remaining` by ANIMATOR_DURATION_SCALE internally,
         // so the press-in actually completes after `remaining * scale` ms. We need
         // to match that.
-        handler.postDelayed(runnable, (remaining * getAnimatorDurationScale()).toLong())
+        handler?.postDelayed(runnable, (remaining * getAnimatorDurationScale()).toLong())
       }
     }
 
@@ -911,7 +911,7 @@ class RNGestureHandlerButtonViewManager :
 
     override fun onDetachedFromWindow() {
       super.onDetachedFromWindow()
-      pendingPressOut?.let { handler.removeCallbacks(it) }
+      pendingPressOut?.let { handler?.removeCallbacks(it) }
       pendingPressOut = null
       cancelPendingHoverOut()
       currentAnimator?.cancel()
