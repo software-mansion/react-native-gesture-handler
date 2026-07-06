@@ -1,12 +1,69 @@
+---
+id: transformations
+title: Transforming a view with multiple gestures
+sidebar_label: Transforming a view
+sidebar_position: 6
+---
+
+Combining [Pan](/docs/gestures/use-pan-gesture), [Pinch](/docs/gestures/use-pinch-gesture) and [Rotation](/docs/gestures/use-rotation-gesture) on a single view — the "photo viewer" interaction where you can drag, zoom and twist an image at the same time — is a common use case. Gesture Handler doesn't ship a dedicated component for it, but you can build it yourself on top of the existing gestures. There are two ideas that make it work; the rest is wiring.
+
+This guide assumes you're using [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to run the transformation on the UI thread. The [full example](#full-example) is at the end of this page, and a version of it can be found in the [example app](https://github.com/software-mansion/react-native-gesture-handler/tree/main/apps/common-app/src/new_api/complicated/transformations).
+
+## Use a matrix, not separate transforms
+
+Store the whole transformation as a single affine matrix. It bundles translation, scale and rotation into one value that you compose by multiplying matrices together in whatever order you need, and since the result is itself a matrix you can store it and let each new gesture build on top. That gives you a natural split: the accumulated transform lives in the matrix, while the in-progress gesture stays as the plain `scale`, `rotation` and `translation` the callbacks hand you as the fingers move. Each frame, combine the two to draw the view. When the gesture ends, fold its values into the matrix and reset them, so the next gesture picks up where it left off. You don't need to follow the underlying math — the [full example](#full-example) has the handful of small helper functions that implement it.
+
+Why not keep separate `scale`, `rotation` and `translation` values and pass them to a `transform` array instead? That works for a single gesture, but falls apart once you want each one to build on the last. The array does let you control the order its entries apply in, but there's no clean place to accumulate the running result: to preserve what previous gestures did, you'd have to keep appending an entry for every incremental translation, scale and rotation, and React would rebuild the whole matrix from that ever-growing list on each render.
+
+## Keep the origin stable
+
+Scaling and rotation pivot around the origin, but the user expects them to pivot around the point between their fingers. To move the pivot, wrap the transform between two translations — shift that point to the origin, apply the scale or rotation, then shift it back. Do this while building the matrix, once for the scale and once for the rotation:
+
+```ts
+matrix = multiply(matrix, translate(origin.x, origin.y));
+matrix = multiply(matrix, scale(scaleValue, scaleValue));
+matrix = multiply(matrix, translate(-origin.x, -origin.y));
+```
+
+Capture that pivot once, when the gesture activates, and keep it in a shared value:
+
+```jsx
+const pinch = usePinchGesture({
+  onActivate: (e) => {
+    origin.value = {
+      x: -(e.focalX - size.width / 2),
+      y: -(e.focalY - size.height / 2),
+    };
+  },
+  // ...
+});
+```
+
+Set it only on activation and leave it untouched until the gesture ends, so the pivot stays stable — recomputing it every frame, or letting a second simultaneous gesture overwrite it, makes the view jump. The focal point arrives relative to the view rather than its center, which is what the size-based adjustment handles (read the size with [`onLayout`](https://reactnative.dev/docs/view#onlayout)). And when Pinch and Rotation run together, let only the first one set the pivot.
+
+## Full example
+
+Put both ideas together and you have the whole interaction. Each gesture updates its own shared value as the fingers move and folds the result into the stored matrix when it ends; [`useSimultaneousGestures`](/docs/fundamentals/gesture-composition) runs `Pan`, `Pinch`, `Rotation` and a double-tap zoom at the same time.
+
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[123, 264]}
+src={`
 import React, { useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
+import {
+  GestureDetector,
+  usePanGesture,
+  usePinchGesture,
+  useRotationGesture,
+  useSimultaneousGestures,
+  useTapGesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-
-import SIGNET from '../../../ListWithHeader/signet.png';
 
 function identity3() {
   'worklet';
@@ -145,13 +202,13 @@ function Photo() {
         { translateX: matrix[6] },
         { translateY: matrix[7] },
         { scale: Math.hypot(matrix[0], matrix[1]) },
-        { rotateZ: `${Math.atan2(matrix[1], matrix[0])}rad` },
+        { rotateZ: \`\${Math.atan2(matrix[1], matrix[0])}rad\` },
       ],
     };
   });
 
-  const rotationGesture = Gesture.Rotation()
-    .onStart((e) => {
+  const rotationGesture = useRotationGesture({
+    onActivate: (e) => {
       if (!isRotating.value && !isScaling.value) {
         origin.value = {
           x: -(e.anchorX - size.width / 2),
@@ -159,13 +216,11 @@ function Photo() {
         };
       }
       isRotating.value = true;
-    })
-    .onChange((e) => {
-      'worklet';
+    },
+    onUpdate: (e) => {
       rotation.value += e.rotationChange;
-    })
-    .onEnd(() => {
-      'worklet';
+    },
+    onDeactivate: () => {
       transform.value = applyTransformations(
         translation.value,
         scale.value,
@@ -178,10 +233,11 @@ function Photo() {
       translation.value = { x: 0, y: 0 };
       scale.value = 1;
       isRotating.value = false;
-    });
+    },
+  });
 
-  const scaleGesture = Gesture.Pinch()
-    .onStart((e) => {
+  const scaleGesture = usePinchGesture({
+    onActivate: (e) => {
       if (!isRotating.value && !isScaling.value) {
         origin.value = {
           x: -(e.focalX - size.width / 2),
@@ -189,13 +245,11 @@ function Photo() {
         };
       }
       isScaling.value = true;
-    })
-    .onChange((e) => {
-      'worklet';
+    },
+    onUpdate: (e) => {
       scale.value *= e.scaleChange;
-    })
-    .onEnd(() => {
-      'worklet';
+    },
+    onDeactivate: () => {
       transform.value = applyTransformations(
         translation.value,
         scale.value,
@@ -207,19 +261,18 @@ function Photo() {
       translation.value = { x: 0, y: 0 };
       scale.value = 1;
       isScaling.value = false;
-    });
+    },
+  });
 
-  const panGesture = Gesture.Pan()
-    .averageTouches(true)
-    .onChange((e) => {
-      'worklet';
+  const panGesture = usePanGesture({
+    averageTouches: true,
+    onUpdate: (e) => {
       translation.value = {
         x: translation.value.x + e.changeX,
         y: translation.value.y + e.changeY,
       };
-    })
-    .onEnd(() => {
-      'worklet';
+    },
+    onDeactivate: () => {
       transform.value = applyTransformations(
         translation.value,
         scale.value,
@@ -231,18 +284,17 @@ function Photo() {
       rotation.value = 0;
       translation.value = { x: 0, y: 0 };
       scale.value = 1;
-    });
+    },
+  });
 
-  const doubleTapGesture = Gesture.Tap()
-    .numberOfTaps(2)
-    .onEnd((_e, success) => {
-      'worklet';
-      if (success) {
-        scale.value *= 1.25;
-      }
-    });
+  const doubleTapGesture = useTapGesture({
+    numberOfTaps: 2,
+    onDeactivate: () => {
+      scale.value *= 1.25;
+    },
+  });
 
-  const gesture = Gesture.Simultaneous(
+  const gesture = useSimultaneousGestures(
     rotationGesture,
     scaleGesture,
     panGesture,
@@ -258,9 +310,8 @@ function Photo() {
             height: nativeEvent.layout.height,
           });
         }}
-        style={[styles.container, style]}>
-        <Image source={SIGNET} style={styles.image} resizeMode="contain" />
-      </Animated.View>
+        style={[styles.container, style]}
+      />
     </GestureDetector>
   );
 }
@@ -282,8 +333,7 @@ const styles = StyleSheet.create({
   container: {
     width: 240,
     height: 240,
-    backgroundColor: '#eef0ff',
-    padding: 16,
+    backgroundColor: '#5b6ef5',
     elevation: 8,
     borderRadius: 48,
     shadowColor: '#000',
@@ -291,8 +341,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
-  image: {
-    width: 208,
-    height: 208,
-  },
 });
+`}/>
+

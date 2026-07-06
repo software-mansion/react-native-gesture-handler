@@ -30,7 +30,16 @@ class GestureHandlerOrchestrator(
   var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
   private val gestureHandlers = arrayListOf<GestureHandler>()
   private val awaitingHandlers = arrayListOf<GestureHandler>()
-  private val preparedHandlers = arrayListOf<GestureHandler>()
+
+  // Pool of reusable lists for snapshotting `gestureHandlers` during event delivery.
+  private val handlerListPool = ArrayDeque<ArrayList<GestureHandler>>()
+
+  private fun obtainHandlerList() = handlerListPool.pollLast() ?: ArrayList<GestureHandler>()
+
+  private fun recycleHandlerList(list: ArrayList<GestureHandler>) {
+    list.clear()
+    handlerListPool.addLast(list)
+  }
 
   // Used by `cancelTouchesInInterceptedViews`.
   private val viewsToCancel = arrayListOf<View>()
@@ -266,20 +275,24 @@ class GestureHandlerOrchestrator(
   }
 
   private fun deliverEventToGestureHandlers(event: MotionEvent) {
-    // Copy handlers to "prepared handlers" array, because the list of active handlers can change
-    // as a result of state updates
-    preparedHandlers.clear()
-    preparedHandlers.addAll(gestureHandlers)
+    // Snapshot handlers into a pooled list, because the list of active handlers can change
+    // as a result of state updates (and delivery can be re-entrant).
+    val handlersToProcess = obtainHandlerList()
+    handlersToProcess.addAll(gestureHandlers)
 
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
     // order in which handlers has been added ("most direct" children goes first). Therefore we rely
     // on Arrays.sort providing a stable sort (as children are registered in order in which they
     // should be tested)
-    preparedHandlers.sortWith(handlersComparator)
+    handlersToProcess.sortWith(handlersComparator)
 
-    for (handler in preparedHandlers) {
-      deliverEventToGestureHandler(handler, event)
+    try {
+      for (handler in handlersToProcess) {
+        deliverEventToGestureHandler(handler, event)
+      }
+    } finally {
+      recycleHandlerList(handlersToProcess)
     }
   }
 
@@ -290,12 +303,9 @@ class GestureHandlerOrchestrator(
       handler.cancel()
     }
 
-    // Copy handlers to "prepared handlers" array, because the list of active handlers can change
+    // Iterate over a copy, because the list of active handlers can change
     // as a result of state updates
-    preparedHandlers.clear()
-    preparedHandlers.addAll(gestureHandlers)
-
-    for (handler in gestureHandlers.asReversed()) {
+    for (handler in gestureHandlers.reversed()) {
       handler.cancel()
     }
   }
