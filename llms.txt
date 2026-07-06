@@ -70,6 +70,7 @@
 
 - [Custom swipeable components inside ScrollView (web)](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/swipe-and-scroll)
 - [Testing with Jest](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/testing)
+- [Transforming a view with multiple gestures](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/transformations)
 - [Troubleshooting](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/troubleshooting)
 - [Upgrading to the new API introduced in Gesture Handler 3](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/upgrading-to-3)
 
