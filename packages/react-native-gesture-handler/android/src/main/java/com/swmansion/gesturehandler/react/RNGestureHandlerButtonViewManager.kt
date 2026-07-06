@@ -1084,6 +1084,8 @@ class RNGestureHandlerButtonViewManager :
       // by default Viewgroup would pass hotspot change events
     }
 
+    override fun shouldDelayChildPressedState(): Boolean = false
+
     // Default to skipping the offscreen buffer so children's border anti-aliasing
     // at the view edge isn't clipped by the layer bounds when alpha != 1.
     // `needsOffscreenAlphaCompositing` opts back into the standard View behavior.
