@@ -17,6 +17,7 @@ import {
   useLongPressGesture,
   usePanGesture,
   usePinchGesture,
+  useRotationGesture,
   useTapGesture,
 } from '../v3/hooks/gestures';
 
@@ -369,6 +370,154 @@ describe('fireGesture: pinch', () => {
     );
 
     fireGesture('string-target-pinch', { updates: [{ scale: 3 }] });
+
+    expect(order).toEqual([
+      'onBegin',
+      'onActivate',
+      'onUpdate',
+      'onDeactivate',
+      'onFinalize',
+    ]);
+  });
+});
+
+describe('fireGesture: rotation', () => {
+  test('successful rotation dispatches every supplied update in order', () => {
+    const { order, callbacks } = mockedV3Callbacks();
+    const rotation = renderHook(() =>
+      useRotationGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(rotation, {
+      updates: [{ rotation: 0.5 }, { rotation: 1 }],
+    });
+
+    expect(order).toEqual([
+      'onBegin',
+      'onActivate',
+      'onUpdate',
+      'onUpdate',
+      'onDeactivate',
+      'onFinalize',
+    ]);
+    expect(callbacks.onUpdate).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ rotation: 0.5 })
+    );
+    expect(callbacks.onUpdate).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ rotation: 1 })
+    );
+  });
+
+  test('rotationChange is calculated through the v3 callback pipeline', () => {
+    const { callbacks } = mockedV3Callbacks();
+    const rotation = renderHook(() =>
+      useRotationGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(rotation, {
+      updates: [{ rotation: 0.5 }, { rotation: 2 }],
+    });
+
+    // Activation fills the default rotationChange of 0; each update reports the
+    // delta from the previous rotation.
+    expect(callbacks.onActivate).toHaveBeenCalledWith(
+      expect.objectContaining({ rotationChange: 0 })
+    );
+    expect(callbacks.onUpdate).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ rotationChange: 0.5 })
+    );
+    expect(callbacks.onUpdate).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ rotationChange: 1.5 })
+    );
+  });
+
+  test('empty updates still produce a complete successful lifecycle', () => {
+    const { order, callbacks } = mockedV3Callbacks();
+    const rotation = renderHook(() =>
+      useRotationGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(rotation);
+
+    expect(order).toEqual([
+      'onBegin',
+      'onActivate',
+      'onDeactivate',
+      'onFinalize',
+    ]);
+    expect(callbacks.onUpdate).not.toHaveBeenCalled();
+  });
+
+  test('event payload defaults use two pointers and zeroed rotation', () => {
+    const { callbacks } = mockedV3Callbacks();
+    const rotation = renderHook(() =>
+      useRotationGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(rotation);
+
+    expect(callbacks.onActivate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        numberOfPointers: 2,
+        rotation: 0,
+        velocity: 0,
+        anchorX: 0,
+        anchorY: 0,
+      })
+    );
+  });
+
+  test('cancelled rotation deactivates and finalizes as cancelled', () => {
+    const { order, callbacks } = mockedV3Callbacks();
+    const rotation = renderHook(() =>
+      useRotationGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(rotation, {
+      updates: [{ rotation: 0.5 }],
+      outcome: 'cancelled',
+    });
+
+    expect(order).toEqual([
+      'onBegin',
+      'onActivate',
+      'onUpdate',
+      'onDeactivate',
+      'onFinalize',
+    ]);
+    expect(callbacks.onDeactivate).toHaveBeenCalledWith(
+      expect.objectContaining({ canceled: true })
+    );
+    expect(callbacks.onFinalize).toHaveBeenCalledWith(
+      expect.objectContaining({ canceled: true })
+    );
+  });
+
+  test('rejects an event payload for the continuous rotation gesture', () => {
+    const rotation = renderHook(() =>
+      useRotationGesture({ disableReanimated: true })
+    ).result.current;
+
+    expect(() =>
+      fireGesture(rotation, { event: { rotation: 1 } } as never)
+    ).toThrow(/continuous gesture/);
+  });
+
+  test('resolves rotation gestures by test ID string', () => {
+    const { order, callbacks } = mockedV3Callbacks();
+    renderHook(() =>
+      useRotationGesture({
+        testID: 'string-target-rotation',
+        disableReanimated: true,
+        ...callbacks,
+      })
+    );
+
+    fireGesture('string-target-rotation', { updates: [{ rotation: 1.2 }] });
 
     expect(order).toEqual([
       'onBegin',

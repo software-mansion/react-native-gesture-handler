@@ -6,6 +6,7 @@ import type {
   GestureOutcome,
   PanGestureScenario,
   PinchGestureScenario,
+  RotationGestureScenario,
   TapGestureScenario,
 } from './gestureScenarioTypes';
 import type {
@@ -71,6 +72,17 @@ const PINCH_DEFAULTS: JestHandlerDataPayload = {
   // `changeX`, so it is intentionally omitted here.
 };
 
+const ROTATION_DEFAULTS: JestHandlerDataPayload = {
+  ...COMMON_DEFAULTS,
+  numberOfPointers: 2,
+  rotation: 0,
+  velocity: 0,
+  anchorX: 0,
+  anchorY: 0,
+  // `rotationChange` is derived by the change-event calculator, so it is
+  // intentionally omitted here.
+};
+
 function validatePayload(
   payload: Record<string, unknown>,
   description: string
@@ -103,7 +115,7 @@ export function validateOutcome(outcome: unknown): GestureOutcome {
   return outcome as GestureOutcome;
 }
 
-// Pan and pinch are continuous gestures: they dispatch a stream of update
+// Continuous gestures dispatch a stream of update
 // events while active. The `updates` array is that stream — the first update
 // is the activation payload and the last is the end payload; `begin` uses the
 // defaults, since no movement has happened yet.
@@ -143,6 +155,12 @@ export function buildPinchPayloads(
   scenario: PinchGestureScenario
 ): JestGesturePayloads {
   return buildContinuousPayloads(scenario, PINCH_DEFAULTS, 'pinch');
+}
+
+export function buildRotationPayloads(
+  scenario: RotationGestureScenario
+): JestGesturePayloads {
+  return buildContinuousPayloads(scenario, ROTATION_DEFAULTS, 'rotation');
 }
 
 // Tap and fling are discrete gestures: they never dispatch update events. A
@@ -197,6 +215,7 @@ export function buildScenarioPayloads(
     | TapGestureScenario
     | FlingGestureScenario
     | PinchGestureScenario
+    | RotationGestureScenario
 ): JestGesturePayloads {
   switch (type) {
     case SingleGestureName.Pan:
@@ -207,6 +226,8 @@ export function buildScenarioPayloads(
       return buildFlingPayloads(scenario);
     case SingleGestureName.Pinch:
       return buildPinchPayloads(scenario);
+    case SingleGestureName.Rotation:
+      return buildRotationPayloads(scenario);
     default:
       throw new Error(
         tagMessage(`fireGesture does not support '${type}' scenarios.`)

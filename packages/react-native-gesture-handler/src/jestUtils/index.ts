@@ -6,6 +6,7 @@ export type {
   GestureScenario,
   PanGestureScenario,
   PinchGestureScenario,
+  RotationGestureScenario,
   TapGestureScenario,
 } from './gestureScenarioTypes';
 export { fireGestureHandler, getByGestureTestId } from './jestUtils';
