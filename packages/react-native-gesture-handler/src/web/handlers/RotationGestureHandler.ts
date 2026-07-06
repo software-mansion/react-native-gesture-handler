@@ -3,7 +3,7 @@ import { State } from '../../State';
 import { SingleGestureName } from '../../v3/types';
 import type { RotationGestureListener } from '../detectors/RotationGestureDetector';
 import RotationGestureDetector from '../detectors/RotationGestureDetector';
-import type { AdaptedEvent, PropsRef } from '../interfaces';
+import type { AdaptedEvent, HostDetector, PropsRef } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
@@ -62,9 +62,10 @@ export default class RotationGestureHandler extends GestureHandler {
   public override init(
     ref: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType
+    actionType: ActionType,
+    hostDetector: HostDetector | null = null
   ): void {
-    super.init(ref, propsRef, actionType);
+    super.init(ref, propsRef, actionType, hostDetector);
 
     this.shouldCancelWhenOutside = false;
   }

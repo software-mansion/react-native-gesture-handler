@@ -17,6 +17,7 @@ import type { InterceptingGestureDetectorProps } from '../common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from '../common';
 import HostGestureDetector from '../HostGestureDetector';
 import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
+import { useDetectorAttachmentGuard } from '../useDetectorAttachmentGuard';
 import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
 import { useGestureRelationsUpdater } from '../useGestureRelationsUpdater';
 import { ensureNativeDetectorComponent } from '../utils';
@@ -232,6 +233,8 @@ export function InterceptingGestureDetector<
     }
     return [];
   }, [gesture]);
+
+  useDetectorAttachmentGuard(handlerTags);
 
   // On web, we're triggering Reanimated callbacks ourselves, based on the type.
   // To handle this properly, we need to provide all three callbacks, so we set
