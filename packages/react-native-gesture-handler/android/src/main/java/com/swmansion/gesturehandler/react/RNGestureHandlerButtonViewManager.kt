@@ -554,6 +554,8 @@ class RNGestureHandlerButtonViewManager :
       // by default Viewgroup would pass hotspot change events
     }
 
+    override fun shouldDelayChildPressedState(): Boolean = false
+
     private fun findGestureHandlerRootView(): RNGestureHandlerRootView? {
       var parent: ViewParent? = this.parent
       var gestureHandlerRootView: RNGestureHandlerRootView? = null
