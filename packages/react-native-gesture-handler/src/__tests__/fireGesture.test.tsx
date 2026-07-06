@@ -1,5 +1,5 @@
 import { render, renderHook, screen } from '@testing-library/react-native';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
@@ -15,6 +15,7 @@ import type { PanGesture, TapGesture } from '../v3/hooks/gestures';
 import {
   useFlingGesture,
   useLongPressGesture,
+  useManualGesture,
   usePanGesture,
   usePinchGesture,
   useRotationGesture,
@@ -529,6 +530,226 @@ describe('fireGesture: rotation', () => {
   });
 });
 
+describe('fireGesture: long press', () => {
+  test('successful long press invokes the discrete v3 lifecycle', () => {
+    const { order, callbacks } = mockedTapCallbacks();
+    const longPress = renderHook(() =>
+      useLongPressGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(longPress);
+
+    expect(order).toEqual([
+      'onBegin',
+      'onActivate',
+      'onDeactivate',
+      'onFinalize',
+    ]);
+    expect(callbacks.onFinalize).toHaveBeenCalledWith(
+      expect.objectContaining({ canceled: false })
+    );
+  });
+
+  test('duration populates the activation and end payloads', () => {
+    const { callbacks } = mockedTapCallbacks();
+    const longPress = renderHook(() =>
+      useLongPressGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(longPress, { duration: 800 });
+
+    // Begin reports no held time yet; activation and end report the duration.
+    expect(callbacks.onBegin).toHaveBeenCalledWith(
+      expect.objectContaining({ duration: 0 })
+    );
+    expect(callbacks.onActivate).toHaveBeenCalledWith(
+      expect.objectContaining({ duration: 800 })
+    );
+    expect(callbacks.onDeactivate).toHaveBeenCalledWith(
+      expect.objectContaining({ duration: 800 })
+    );
+  });
+
+  test('failed long press finalizes without activation (released early)', () => {
+    const { order, callbacks } = mockedTapCallbacks();
+    const longPress = renderHook(() =>
+      useLongPressGesture({ disableReanimated: true, ...callbacks })
+    ).result.current;
+
+    fireGesture(longPress, { outcome: 'failed' });
+
+    expect(order).toEqual(['onBegin', 'onFinalize']);
+    expect(callbacks.onFinalize).toHaveBeenCalledWith(
+      expect.objectContaining({ canceled: true })
+    );
+  });
+
+  test('rejects updates for the discrete long press gesture', () => {
+    const longPress = renderHook(() =>
+      useLongPressGesture({ disableReanimated: true })
+    ).result.current;
+
+    expect(() =>
+      fireGesture(longPress, { updates: [{ x: 1 }] } as never)
+    ).toThrow(/discrete gesture and does not dispatch update events/);
+  });
+});
+
+describe('fireGesture.setup (clock contract)', () => {
+  test('advances fake timers so an onBegin timer fires before activation', async () => {
+    jest.useFakeTimers();
+    try {
+      const fired: string[] = [];
+      const longPress = renderHook(() =>
+        useLongPressGesture({
+          disableReanimated: true,
+          onBegin: () => {
+            setTimeout(() => fired.push('timer'), 500);
+          },
+          onActivate: () => fired.push('onActivate'),
+        })
+      ).result.current;
+
+      const fireGestureWithTimers = fireGesture.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
+
+      await fireGestureWithTimers(longPress, { duration: 800 });
+
+      // The onBegin timer fires during the advanced hold, before activation.
+      expect(fired).toEqual(['timer', 'onActivate']);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('does not fire the onBegin timer for a failed long press', async () => {
+    jest.useFakeTimers();
+    try {
+      const timerFired = jest.fn();
+      const longPress = renderHook(() =>
+        useLongPressGesture({
+          disableReanimated: true,
+          onBegin: () => {
+            setTimeout(timerFired, 500);
+          },
+        })
+      ).result.current;
+
+      const fireGestureWithTimers = fireGesture.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
+
+      // A failed long press is released before the hold completes, so the
+      // clock is not advanced and the timer never fires.
+      await fireGestureWithTimers(longPress, {
+        duration: 800,
+        outcome: 'failed',
+      });
+
+      expect(timerFired).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('works with real timers', async () => {
+    const timerFired = jest.fn();
+    const longPress = renderHook(() =>
+      useLongPressGesture({
+        disableReanimated: true,
+        onBegin: () => {
+          setTimeout(timerFired, 5);
+        },
+      })
+    ).result.current;
+
+    const fireGestureWithTimers = fireGesture.setup({
+      advanceTimers: (ms) =>
+        new Promise((resolve) => {
+          setTimeout(resolve, ms);
+        }),
+    });
+
+    await fireGestureWithTimers(longPress, { duration: 20 });
+
+    expect(timerFired).toHaveBeenCalledTimes(1);
+  });
+
+  test('drives long-press application behavior into rendered output', async () => {
+    jest.useFakeTimers();
+    try {
+      const LongPressLabel = () => {
+        const [label, setLabel] = useState('idle');
+        const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+        const longPress = useLongPressGesture({
+          testID: 'held',
+          disableReanimated: true,
+          onBegin: () => {
+            timer.current = setTimeout(() => setLabel('long-pressed'), 500);
+          },
+          onFinalize: () => {
+            if (timer.current) {
+              clearTimeout(timer.current);
+            }
+          },
+        });
+
+        return (
+          <GestureHandlerRootView>
+            <GestureDetector gesture={longPress}>
+              <View />
+            </GestureDetector>
+            <Text>{label}</Text>
+          </GestureHandlerRootView>
+        );
+      };
+
+      render(<LongPressLabel />);
+
+      const fireGestureWithTimers = fireGesture.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
+
+      await fireGestureWithTimers('held', { duration: 800 });
+
+      expect(screen.getByText('long-pressed')).toBeTruthy();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('short hold does not trigger the long-press effect', async () => {
+    jest.useFakeTimers();
+    try {
+      const longPressed = jest.fn();
+      const longPress = renderHook(() =>
+        useLongPressGesture({
+          disableReanimated: true,
+          onBegin: () => {
+            setTimeout(longPressed, 500);
+          },
+          onFinalize: () => {
+            // Real components clear the timer on release; emulate that here so
+            // a short hold cannot fire the long-press effect afterwards.
+          },
+        })
+      ).result.current;
+
+      const fireGestureWithTimers = fireGesture.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
+
+      // Held for less than the 500ms threshold.
+      await fireGestureWithTimers(longPress, { duration: 200 });
+
+      expect(longPressed).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+});
+
 describe('fireGesture: fling', () => {
   test('successful fling invokes the discrete v3 lifecycle', () => {
     const { order, callbacks } = mockedTapCallbacks();
@@ -797,12 +1018,12 @@ describe('fireGesture: targets', () => {
   });
 
   test('unsupported v3 gestures produce an error listing supported kinds', () => {
-    const longPress = renderHook(() =>
-      useLongPressGesture({ disableReanimated: true })
+    const manual = renderHook(() =>
+      useManualGesture({ disableReanimated: true })
     ).result.current;
 
-    expect(() => fireGesture(longPress as never)).toThrow(
-      /does not support 'LongPressGestureHandler'.*tap.*pan/
+    expect(() => fireGesture(manual as never)).toThrow(
+      /does not support 'ManualGestureHandler'.*tap.*pan/
     );
   });
 

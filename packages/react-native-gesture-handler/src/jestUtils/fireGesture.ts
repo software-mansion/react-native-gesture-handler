@@ -8,11 +8,14 @@ import { SingleGestureName } from '../v3/types';
 import {
   buildScenarioPayloads,
   runOutcome,
+  runOutcomeAsync,
   validateOutcome,
 } from './gestureScenarios';
 import type {
   FireGestureTarget,
   FlingGestureScenario,
+  GestureOutcome,
+  LongPressGestureScenario,
   NoInferT,
   PanGestureScenario,
   PinchGestureScenario,
@@ -25,6 +28,9 @@ import { JestGestureHandler } from './JestGestureHandler';
 import { getByGestureTestId } from './jestUtils';
 
 let act = (callback: () => void) => callback();
+let actAsync = async (callback: () => void | Promise<void>) => {
+  await callback();
+};
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -33,6 +39,11 @@ try {
     act = (callback: () => void) => {
       React.act(() => {
         callback();
+      });
+    };
+    actAsync = async (callback: () => void | Promise<void>) => {
+      await React.act(async () => {
+        await callback();
       });
     };
   }
@@ -46,10 +57,19 @@ const SUPPORTED_GESTURES = new Set<SingleGestureName>([
   SingleGestureName.Fling,
   SingleGestureName.Pinch,
   SingleGestureName.Rotation,
+  SingleGestureName.LongPress,
 ]);
 
 const SUPPORTED_GESTURES_MESSAGE =
-  'Currently supported gesture kinds: tap (useTapGesture), pan (usePanGesture), fling (useFlingGesture), pinch (usePinchGesture) and rotation (useRotationGesture).';
+  'Currently supported gesture kinds: tap (useTapGesture), pan (usePanGesture), fling (useFlingGesture), pinch (usePinchGesture), rotation (useRotationGesture) and long press (useLongPressGesture).';
+
+type AnyGestureScenario =
+  | PanGestureScenario
+  | TapGestureScenario
+  | FlingGestureScenario
+  | PinchGestureScenario
+  | RotationGestureScenario
+  | LongPressGestureScenario;
 
 function isHookGesture(target: object): target is AnySingleGesture {
   return 'detectorCallbacks' in target && 'type' in target;
@@ -66,31 +86,23 @@ const jestRelationPolicy: GestureRelationPolicy<JestGestureHandler> = {
   shouldBeginWithRecordedHandlers: () => true,
 };
 
+interface PreparedGesture {
+  handler: JestGestureHandler;
+  arbitrator: GestureArbitrator<JestGestureHandler>;
+  outcome: GestureOutcome;
+  /** Milliseconds the clock should advance between begin and activation. */
+  duration: number;
+}
+
 /**
- * Simulates the JavaScript callback lifecycle of a single v3 gesture
- * interaction.
- *
- * The target may be a gesture test ID or a gesture returned by a v3 hook.
- * The gesture kind is inferred from the resolved target.
- *
- * ```ts
- * fireGesture('save-button');
- *
- * fireGesture('draggable-card', {
- *   updates: [{ translationX: 20 }, { translationX: 100 }],
- * });
- *
- * fireGesture(pan, { updates: [{ translationX: 100 }], outcome: 'cancelled' });
- * ```
- *
- * Every requested state change is routed through the same arbitration core
- * that drives the web implementation, so the emitted callback lifecycle
- * matches the runtime contract.
+ * Resolves and validates the target, builds the scenario payloads and creates
+ * the lightweight Jest handler. Returns `null` when the interaction is a
+ * no-op (a disabled gesture), matching `fireGestureHandler`.
  */
-export function fireGesture<TTarget extends FireGestureTarget>(
-  target: TTarget,
-  scenario?: ScenarioForTarget<NoInferT<TTarget>>
-): void {
+function prepareGesture(
+  target: FireGestureTarget,
+  scenario: AnyGestureScenario | undefined
+): PreparedGesture | null {
   const resolved =
     typeof target === 'string' ? getByGestureTestId(target) : target;
 
@@ -128,17 +140,17 @@ export function fireGesture<TTarget extends FireGestureTarget>(
 
   // Disabled gestures produce no callbacks, matching fireGestureHandler.
   if (maybeUnpackValue<boolean>(gesture.config.enabled) === false) {
-    return;
+    return null;
   }
 
-  const gestureScenario:
-    | PanGestureScenario
-    | TapGestureScenario
-    | FlingGestureScenario
-    | PinchGestureScenario
-    | RotationGestureScenario = scenario ?? {};
+  const gestureScenario: AnyGestureScenario = scenario ?? {};
   const outcome = validateOutcome(gestureScenario.outcome);
   const payloads = buildScenarioPayloads(gesture.type, gestureScenario);
+
+  const duration =
+    gesture.type === SingleGestureName.LongPress
+      ? ((gestureScenario as LongPressGestureScenario).duration ?? 0)
+      : 0;
 
   const arbitrator = new GestureArbitrator<JestGestureHandler>(
     jestRelationPolicy
@@ -159,6 +171,66 @@ export function fireGesture<TTarget extends FireGestureTarget>(
     payloads
   );
 
+  return { handler, arbitrator, outcome, duration };
+}
+
+/**
+ * Advance the clock so JavaScript timers scheduled by the application (e.g. a
+ * long-press timer started in `onBegin`) fire. Provided to `fireGesture.setup`.
+ */
+export interface FireGestureSetupOptions {
+  /**
+   * Advances timers by the given number of milliseconds. Pass
+   * `jest.advanceTimersByTime` when using fake timers, or a real-timer waiter
+   * such as `(ms) => new Promise((r) => setTimeout(r, ms))`. The helper never
+   * switches Jest timer modes itself.
+   */
+  advanceTimers: (durationMs: number) => void | Promise<void>;
+}
+
+export type FireGestureWithTimers = <TTarget extends FireGestureTarget>(
+  target: TTarget,
+  scenario?: ScenarioForTarget<NoInferT<TTarget>>
+) => Promise<void>;
+
+/**
+ * Simulates the JavaScript callback lifecycle of a single v3 gesture
+ * interaction. It does not run the platform gesture recognizer — use
+ * device-level tests when behavior depends on recognition thresholds, hit
+ * testing, gesture competition or platform-specific input handling.
+ *
+ * The target may be a gesture test ID or a gesture returned by a v3 hook.
+ * The gesture kind is inferred from the resolved target.
+ *
+ * ```ts
+ * fireGesture('save-button');
+ *
+ * fireGesture('draggable-card', {
+ *   updates: [{ translationX: 20 }, { translationX: 100 }],
+ * });
+ *
+ * fireGesture(pan, { updates: [{ translationX: 100 }], outcome: 'cancelled' });
+ * ```
+ *
+ * Every requested state change is routed through the same arbitration core
+ * that drives the web implementation, so the emitted callback lifecycle
+ * matches the runtime contract.
+ *
+ * For gestures whose application logic depends on elapsed time (e.g. a long
+ * press whose component starts a timer in `onBegin`), create a timer-aware
+ * variant with {@link fireGesture.setup}.
+ */
+function fireGestureImpl<TTarget extends FireGestureTarget>(
+  target: TTarget,
+  scenario?: ScenarioForTarget<NoInferT<TTarget>>
+): void {
+  const prepared = prepareGesture(target, scenario as AnyGestureScenario);
+  if (!prepared) {
+    return;
+  }
+
+  const { handler, arbitrator, outcome } = prepared;
+
   try {
     act(() => {
       runOutcome(handler, outcome);
@@ -169,3 +241,39 @@ export function fireGesture<TTarget extends FireGestureTarget>(
     arbitrator.reset();
   }
 }
+
+/**
+ * Creates a timer-aware `fireGesture`. The returned function is async: it
+ * advances the clock between begin and activation using the supplied
+ * `advanceTimers`, so timers started in `onBegin` fire before activation.
+ *
+ * ```ts
+ * const fireGestureWithTimers = fireGesture.setup({
+ *   advanceTimers: jest.advanceTimersByTime,
+ * });
+ *
+ * await fireGestureWithTimers(longPress, { duration: 800 });
+ * ```
+ */
+function setup(options: FireGestureSetupOptions): FireGestureWithTimers {
+  const { advanceTimers } = options;
+
+  return async function fireGestureWithTimers(target, scenario) {
+    const prepared = prepareGesture(target, scenario as AnyGestureScenario);
+    if (!prepared) {
+      return;
+    }
+
+    const { handler, arbitrator, outcome, duration } = prepared;
+
+    try {
+      await actAsync(async () => {
+        await runOutcomeAsync(handler, outcome, () => advanceTimers(duration));
+      });
+    } finally {
+      arbitrator.reset();
+    }
+  };
+}
+
+export const fireGesture = Object.assign(fireGestureImpl, { setup });

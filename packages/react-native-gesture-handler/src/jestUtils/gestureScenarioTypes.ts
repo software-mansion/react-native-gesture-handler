@@ -1,5 +1,6 @@
 import type { GestureType } from '../handlers/gestures/gesture';
 import type { FlingGestureEvent } from '../v3/hooks/gestures/fling/FlingTypes';
+import type { LongPressGestureEvent } from '../v3/hooks/gestures/longPress/LongPressTypes';
 import type { PanGestureActiveEvent } from '../v3/hooks/gestures/pan/PanTypes';
 import type { PinchGestureActiveEvent } from '../v3/hooks/gestures/pinch/PinchTypes';
 import type { RotationGestureActiveEvent } from '../v3/hooks/gestures/rotation/RotationTypes';
@@ -67,6 +68,22 @@ export type FlingGestureScenario = {
   outcome?: GestureOutcome;
 };
 
+export type LongPressGestureScenario = {
+  /** Payload used for every lifecycle callback of the long press. */
+  event?: SemanticEventData<LongPressGestureEvent>;
+  /** Per-stage payload overrides, merged over `event`. */
+  stageEvents?: DiscreteStageEvents<LongPressGestureEvent>;
+  /**
+   * How long the press is held, in milliseconds. Populates the `duration`
+   * field of the activation/end payloads, and — when the helper is created
+   * with `fireGesture.setup({ advanceTimers })` — is the amount the clock is
+   * advanced between begin and activation so JavaScript timers started in
+   * `onBegin` fire.
+   */
+  duration?: number;
+  outcome?: GestureOutcome;
+};
+
 export type ResolvedGestureTarget = GestureType | AnySingleGesture;
 export type FireGestureTarget = string | ResolvedGestureTarget;
 
@@ -81,7 +98,9 @@ export type GestureScenario<TGesture extends ResolvedGestureTarget> =
           ? PinchGestureScenario
           : TGesture extends { type: SingleGestureName.Rotation }
             ? RotationGestureScenario
-            : never;
+            : TGesture extends { type: SingleGestureName.LongPress }
+              ? LongPressGestureScenario
+              : never;
 
 export type ScenarioForTarget<TTarget extends FireGestureTarget> =
   TTarget extends string

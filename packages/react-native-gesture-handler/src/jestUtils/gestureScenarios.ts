@@ -4,6 +4,7 @@ import { SingleGestureName } from '../v3/types';
 import type {
   FlingGestureScenario,
   GestureOutcome,
+  LongPressGestureScenario,
   PanGestureScenario,
   PinchGestureScenario,
   RotationGestureScenario,
@@ -59,6 +60,15 @@ const FLING_DEFAULTS: JestHandlerDataPayload = {
   y: 0,
   absoluteX: 0,
   absoluteY: 0,
+};
+
+const LONG_PRESS_DEFAULTS: JestHandlerDataPayload = {
+  ...COMMON_DEFAULTS,
+  x: 0,
+  y: 0,
+  absoluteX: 0,
+  absoluteY: 0,
+  duration: 0,
 };
 
 const PINCH_DEFAULTS: JestHandlerDataPayload = {
@@ -208,6 +218,46 @@ export function buildFlingPayloads(
   return buildDiscretePayloads(scenario, FLING_DEFAULTS, 'fling');
 }
 
+// Long press is discrete, but also carries a `duration`: the held time is
+// meaningful once the gesture activates, so `duration` is layered into the
+// activation and end payloads. Precedence is defaults < scenario.duration <
+// `event` < `stageEvents`, so an explicit payload value still wins, while
+// begin keeps the default duration of 0 (nothing has been held yet).
+export function buildLongPressPayloads(
+  scenario: LongPressGestureScenario
+): JestGesturePayloads {
+  if ('updates' in scenario) {
+    throw new Error(
+      tagMessage(
+        `fireGesture received 'updates' for a long press gesture. Long press is a discrete gesture and does not dispatch update events — pass the payload through 'event' instead.`
+      )
+    );
+  }
+
+  const base = scenario.event ?? {};
+  const stages = scenario.stageEvents ?? {};
+
+  validatePayload(base, `'event'`);
+  validatePayload(stages.begin ?? {}, `'stageEvents.begin'`);
+  validatePayload(stages.activate ?? {}, `'stageEvents.activate'`);
+  validatePayload(stages.end ?? {}, `'stageEvents.end'`);
+
+  const durationLayer =
+    scenario.duration !== undefined ? { duration: scenario.duration } : {};
+
+  return {
+    begin: { ...LONG_PRESS_DEFAULTS, ...base, ...stages.begin },
+    activate: {
+      ...LONG_PRESS_DEFAULTS,
+      ...durationLayer,
+      ...base,
+      ...stages.activate,
+    },
+    updates: [],
+    end: { ...LONG_PRESS_DEFAULTS, ...durationLayer, ...base, ...stages.end },
+  };
+}
+
 export function buildScenarioPayloads(
   type: SingleGestureName,
   scenario:
@@ -216,6 +266,7 @@ export function buildScenarioPayloads(
     | FlingGestureScenario
     | PinchGestureScenario
     | RotationGestureScenario
+    | LongPressGestureScenario
 ): JestGesturePayloads {
   switch (type) {
     case SingleGestureName.Pan:
@@ -228,6 +279,8 @@ export function buildScenarioPayloads(
       return buildPinchPayloads(scenario);
     case SingleGestureName.Rotation:
       return buildRotationPayloads(scenario);
+    case SingleGestureName.LongPress:
+      return buildLongPressPayloads(scenario);
     default:
       throw new Error(
         tagMessage(`fireGesture does not support '${type}' scenarios.`)
@@ -250,6 +303,37 @@ export function runOutcome(
     handler.fail();
     return;
   }
+
+  handler.activate();
+  handler.dispatchUpdates();
+
+  if (outcome === 'cancelled') {
+    handler.cancel();
+  } else {
+    handler.end();
+  }
+}
+
+/**
+ * Same lifecycle as `runOutcome`, but awaits `onBeforeActivate` between begin
+ * and activation. This is where the clock is advanced for long press, so that
+ * JavaScript timers started in `onBegin` fire before the gesture activates. A
+ * `failed` interaction returns before the hold completes, so the clock is not
+ * advanced (the press was released too early to be recognized).
+ */
+export async function runOutcomeAsync(
+  handler: JestGestureHandler,
+  outcome: GestureOutcome,
+  onBeforeActivate: () => void | Promise<void>
+) {
+  handler.begin();
+
+  if (outcome === 'failed') {
+    handler.fail();
+    return;
+  }
+
+  await onBeforeActivate();
 
   handler.activate();
   handler.dispatchUpdates();
