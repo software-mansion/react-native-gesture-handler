@@ -202,35 +202,33 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
   _view = nil;
 }
 
-// Hover events carry position (x/y + absoluteX/absoluteY), matching
-// HoverHandlerData and the iOS hover path. Mirrors the macOS coordinate
-// convention used by RNGestureHandlerPointerTracker (y-flip `locationInWindow`,
-// then convert into the view's coordinate space).
-- (RNGestureHandlerEventExtraData *)extraDataForEvent:(NSEvent *)event
-{
-  CGFloat windowHeight = _view.window.contentView.frame.size.height;
-  CGPoint yFlippedAbsolutePos = [event locationInWindow];
-  CGPoint absolutePos = CGPointMake(yFlippedAbsolutePos.x, windowHeight - yFlippedAbsolutePos.y);
-  CGPoint relativePos = [_view convertPoint:absolutePos fromView:_view.window.contentView];
-
-  return [RNGestureHandlerEventExtraData forPosition:relativePos
-                                withAbsolutePosition:absolutePos
-                                 withNumberOfTouches:1
-                                     withPointerType:_pointerType];
-}
-
 - (void)mouseEntered:(NSEvent *)event
 {
-  RNGestureHandlerEventExtraData *extraData = [self extraDataForEvent:event];
-  [self sendEventsInState:RNGestureHandlerStateBegan forViewWithTag:_view.reactTag withExtraData:extraData];
-  [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:_view.reactTag withExtraData:extraData];
+  [self sendEventsInState:RNGestureHandlerStateBegan
+           forViewWithTag:_view.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:1
+                                                           withPointerType:_pointerType]];
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:_view.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:1
+                                                           withPointerType:_pointerType]];
 }
 
-- (void)mouseExited:(NSEvent *)event
+- (void)mouseExited:(NSEvent *)theEvent
 {
-  RNGestureHandlerEventExtraData *extraData = [self extraDataForEvent:event];
-  [self sendEventsInState:RNGestureHandlerStateEnd forViewWithTag:_view.reactTag withExtraData:extraData];
-  [self sendEventsInState:RNGestureHandlerStateUndetermined forViewWithTag:_view.reactTag withExtraData:extraData];
+  [self sendEventsInState:RNGestureHandlerStateEnd
+           forViewWithTag:_view.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
+                                                       withNumberOfTouches:1
+                                                           withPointerType:_pointerType]];
+
+  [self sendEventsInState:RNGestureHandlerStateUndetermined
+           forViewWithTag:_view.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
+                                                       withNumberOfTouches:1
+                                                           withPointerType:_pointerType]];
 }
 
 @end
