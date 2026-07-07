@@ -223,8 +223,6 @@
 
 - (void)handleSwitch:(UIView *)sender
 {
-  // A UISwitch value change has no associated touch, so there is no meaningful
-  // position — emit zeros to keep the payload shape consistent.
   RNGestureHandlerEventExtraData * (^extraData)(void) = ^{
     return [RNGestureHandlerEventExtraData forPointerInside:YES
                                                withPosition:CGPointZero
