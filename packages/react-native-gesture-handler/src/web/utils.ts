@@ -2,11 +2,18 @@ import type { StylusData } from '../handlers/gestureHandlerCommon';
 import { PointerType } from '../PointerType';
 import type { GestureHandlerRef, Point, SVGRef } from './interfaces';
 
+export function hasDisplayContents(view: HTMLElement): boolean {
+  return (
+    view.style.display === 'contents' ||
+    getComputedStyle(view).display === 'contents'
+  );
+}
+
 // For display: contents elements (like the gesture detector wrapper), getBoundingClientRect
 // returns all zeros since the element has no box. Derive the bounds from the children instead
 // (recurse until we reach elements that actually have a box).
 export function getEffectiveBoundingRect(view: HTMLElement): DOMRect {
-  if (view.style.display === 'contents' && view.children.length > 0) {
+  if (hasDisplayContents(view) && view.children.length > 0) {
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
