@@ -204,10 +204,9 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
 
 - (RNGestureHandlerEventExtraData *)extraDataForEvent:(NSEvent *)event
 {
-  CGFloat windowHeight = _view.window.contentView.frame.size.height;
-  CGPoint yFlippedAbsolutePos = [event locationInWindow];
-  CGPoint absolutePos = CGPointMake(yFlippedAbsolutePos.x, windowHeight - yFlippedAbsolutePos.y);
-  CGPoint relativePos = [_view convertPoint:absolutePos fromView:_view.window.contentView];
+  CGPoint windowLocation = [event locationInWindow];
+  CGPoint relativePos = [_view convertPoint:windowLocation fromView:nil];
+  CGPoint absolutePos = [_view.window.contentView convertPoint:windowLocation fromView:nil];
 
   return [RNGestureHandlerEventExtraData forPosition:relativePos
                                 withAbsolutePosition:absolutePos
