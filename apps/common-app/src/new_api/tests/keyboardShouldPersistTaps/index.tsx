@@ -13,6 +13,7 @@ import {
   Pressable as RNGHPressable,
   ScrollView as RNGHScrollView,
   TextInput as RNGHTextInput,
+  Touchable as RNGHTouchable,
   useTapGesture,
 } from 'react-native-gesture-handler';
 
@@ -20,13 +21,14 @@ import type { FeedbackHandle } from '../../../common';
 import { COLORS, Feedback, InfoSection } from '../../../common';
 
 type Mode = 'never' | 'handled' | 'always';
-type Example = 'pressable' | 'tap';
+type Example = 'pressable' | 'touchable' | 'tap';
 
 const MODES: Mode[] = ['never', 'handled', 'always'];
-const EXAMPLES: Example[] = ['pressable', 'tap'];
+const EXAMPLES: Example[] = ['pressable', 'touchable', 'tap'];
 
 const EXAMPLE_LABELS: Record<Example, string> = {
   pressable: 'GH Pressable',
+  touchable: 'GH Touchable',
   tap: 'useTapGesture',
 };
 
@@ -105,6 +107,12 @@ export default function KeyboardShouldPersistTapsExample() {
               onPress={() => report('GH Pressable onPress')}>
               <Text style={styles.buttonText}>Press me</Text>
             </RNGHPressable>
+          ) : example === 'touchable' ? (
+            <RNGHTouchable
+              style={[styles.button, { backgroundColor: COLORS.GREEN }]}
+              onPress={() => report('GH Touchable onPress')}>
+              <Text style={styles.buttonText}>Press me</Text>
+            </RNGHTouchable>
           ) : (
             <GestureTapButton
               onTap={() => report('useTapGesture onActivate')}

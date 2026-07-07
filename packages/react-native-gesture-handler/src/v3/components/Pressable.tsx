@@ -45,8 +45,8 @@ import {
 } from '../hooks';
 import { PureNativeButton } from './GestureButtons';
 import {
+  isKeyboardDismissingTap,
   JSResponderContext,
-  updateResponderEventValue,
 } from './ScrollViewResponderInterceptor';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
@@ -91,6 +91,11 @@ const Pressable = (props: PressableProps) => {
     width: 0,
     height: 0,
   });
+
+  // When the touch that begins a press is the one dismissing the keyboard
+  // (keyboardShouldPersistTaps="never"), the press is swallowed to match RN's
+  // touchables.
+  const dropKeyboardTapRef = useRef<boolean | null>(null);
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
@@ -153,10 +158,15 @@ const Pressable = (props: PressableProps) => {
 
   const handleFinalize = useCallback(() => {
     isCurrentlyPressed.current = false;
+    dropKeyboardTapRef.current = null;
     cancelLongPress();
     cancelDelayedPress();
     setPressedState(false);
   }, [cancelDelayedPress, cancelLongPress]);
+
+  const captureKeyboardDismiss = useCallback(() => {
+    dropKeyboardTapRef.current ??= isKeyboardDismissingTap(jsResponderContext);
+  }, [jsResponderContext]);
 
   const handlePressIn = useCallback(
     (event: PressableEvent, skipBoundsCheck = false) => {
@@ -265,6 +275,12 @@ const Pressable = (props: PressableProps) => {
     maxDistance: INT32_MAX, // Stops long press from cancelling on touch move
     cancelsTouchesInView: false,
     onTouchesDown: (event) => {
+      captureKeyboardDismiss();
+
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
       const pressableEvent = gestureTouchToPressableEvent(event);
       stateMachine.handleEvent(
         StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
@@ -314,6 +330,12 @@ const Pressable = (props: PressableProps) => {
       }
     },
     onBegin: () => {
+      captureKeyboardDismiss();
+
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
       if (Platform.isTV) {
         // tvOS drives this native gesture from the focus-engine Select press.
         // The press state machine is touch-based and never
@@ -398,23 +420,11 @@ const Pressable = (props: PressableProps) => {
     [onLayout]
   );
 
-  // Let RN components higher in the tree handle JS responder negotiation.
-  // RNGH ScrollView uses this marker to preserve keyboardShouldPersistTaps='handled'
-  // when there are no RN responder components between it and this Pressable.
-  const handleStartShouldSetResponder = useCallback(() => {
-    if (!disabled) {
-      updateResponderEventValue(jsResponderContext, true);
-    }
-
-    return false;
-  }, [disabled, jsResponderContext]);
-
   const tvProps = getTVProps(remainingProps);
 
   return (
     <GestureDetector gesture={gesture}>
       <PureNativeButton
-        onStartShouldSetResponder={handleStartShouldSetResponder}
         {...remainingProps}
         {...tvProps}
         onLayout={setDimensions}
