@@ -202,10 +202,6 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
   _view = nil;
 }
 
-// Hover events carry position (x/y + absoluteX/absoluteY), matching
-// HoverHandlerData and the iOS hover path. Mirrors the macOS coordinate
-// convention used by RNGestureHandlerPointerTracker (y-flip `locationInWindow`,
-// then convert into the view's coordinate space).
 - (RNGestureHandlerEventExtraData *)extraDataForEvent:(NSEvent *)event
 {
   CGFloat windowHeight = _view.window.contentView.frame.size.height;
