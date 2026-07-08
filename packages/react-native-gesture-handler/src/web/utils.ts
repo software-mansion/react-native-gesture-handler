@@ -9,6 +9,16 @@ export function hasDisplayContents(view: HTMLElement): boolean {
   );
 }
 
+export function firstNonContentsView(view: HTMLElement): HTMLElement {
+  let current = view;
+
+  while (hasDisplayContents(current) && current.childElementCount > 0) {
+    current = current.children[0] as HTMLElement;
+  }
+
+  return current;
+}
+
 // For display: contents elements (like the gesture detector wrapper), getBoundingClientRect
 // returns all zeros since the element has no box. Derive the bounds from the children instead
 // (recurse until we reach elements that actually have a box).

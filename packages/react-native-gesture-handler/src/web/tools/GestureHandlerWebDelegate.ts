@@ -6,6 +6,7 @@ import { SingleGestureName } from '../../v3/types';
 import type IGestureHandler from '../handlers/IGestureHandler';
 import type { SVGRef } from '../interfaces';
 import {
+  firstNonContentsView,
   getEffectiveBoundingRect,
   hasDisplayContents,
   isPointerInBounds,
@@ -142,11 +143,9 @@ export class GestureHandlerWebDelegate
       throw new Error(tagMessage('Cannot convert coords on a null view'));
     }
 
-    const localView =
-      this.gestureHandler.usesNativeOrVirtualDetector() &&
-      hasDisplayContents(this.view)
-        ? (this.view.children[0] as HTMLElement)
-        : this.view;
+    const localView = this.gestureHandler.usesNativeOrVirtualDetector()
+      ? firstNonContentsView(this.view)
+      : this.view;
 
     const rect = getEffectiveBoundingRect(localView);
     const transform = getComputedStyle(localView).transform;
