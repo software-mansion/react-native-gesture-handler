@@ -2,10 +2,28 @@ import type { StylusData } from '../handlers/gestureHandlerCommon';
 import { PointerType } from '../PointerType';
 import type { GestureHandlerRef, Point, SVGRef } from './interfaces';
 
+export function hasDisplayContents(view: HTMLElement): boolean {
+  return (
+    view.style.display === 'contents' ||
+    getComputedStyle(view).display === 'contents'
+  );
+}
+
+export function firstNonContentsView(view: HTMLElement): HTMLElement {
+  let current = view;
+
+  while (hasDisplayContents(current) && current.childElementCount > 0) {
+    current = current.children[0] as HTMLElement;
+  }
+
+  return current;
+}
+
 // For display: contents elements (like the gesture detector wrapper), getBoundingClientRect
-// returns all zeros since the element has no box. Compute the bounding box from children instead.
+// returns all zeros since the element has no box. Derive the bounds from the children instead
+// (recurse until we reach elements that actually have a box).
 export function getEffectiveBoundingRect(view: HTMLElement): DOMRect {
-  if (view.style.display === 'contents' && view.children.length > 0) {
+  if (hasDisplayContents(view) && view.children.length > 0) {
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
@@ -13,16 +31,23 @@ export function getEffectiveBoundingRect(view: HTMLElement): DOMRect {
 
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < view.children.length; i++) {
-      const childRect = (
+      const childRect = getEffectiveBoundingRect(
         view.children[i] as HTMLElement
-      ).getBoundingClientRect();
+      );
+
+      if (childRect.width === 0 && childRect.height === 0) {
+        continue;
+      }
+
       minX = Math.min(minX, childRect.left);
       minY = Math.min(minY, childRect.top);
       maxX = Math.max(maxX, childRect.right);
       maxY = Math.max(maxY, childRect.bottom);
     }
 
-    return new DOMRect(minX, minY, maxX - minX, maxY - minY);
+    return minX === Infinity
+      ? view.getBoundingClientRect()
+      : new DOMRect(minX, minY, maxX - minX, maxY - minY);
   }
 
   return view.getBoundingClientRect();
