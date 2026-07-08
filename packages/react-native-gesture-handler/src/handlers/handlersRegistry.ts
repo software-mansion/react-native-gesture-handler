@@ -24,19 +24,23 @@ export function registerGesture<
   handlerTag: number,
   gesture: SingleGesture<TConfig, THandlerData, TExtendedHandlerData>
 ) {
-  if (isTestEnv() && gesture.config.testID) {
+  if (isTestEnv()) {
     // The generic parameters cannot be correlated with the union members
     // here, but every gesture created by the v3 hooks is a union member.
     hookGestures.set(handlerTag, gesture as unknown as AnySingleGesture);
-    testIDs.set(gesture.config.testID, handlerTag);
+    if (gesture.config.testID) {
+      testIDs.set(gesture.config.testID, handlerTag);
+    }
   }
 }
 
 export function unregisterGesture(handlerTag: number) {
   const gesture = hookGestures.get(handlerTag);
 
-  if (gesture && isTestEnv() && gesture.config.testID) {
-    testIDs.delete(gesture.config.testID);
+  if (gesture && isTestEnv()) {
+    if (gesture.config.testID) {
+      testIDs.delete(gesture.config.testID);
+    }
     hookGestures.delete(handlerTag);
   }
 }
