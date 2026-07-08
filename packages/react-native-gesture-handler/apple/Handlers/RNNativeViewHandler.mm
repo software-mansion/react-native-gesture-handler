@@ -203,7 +203,7 @@
 {
   RNGHUITouch *touch = [[event allTouches] anyObject];
   CGPoint position = touch ? [touch locationInView:sender] : CGPointZero;
-  CGPoint absolutePosition = touch ? [touch locationInView:nil] : CGPointZero;
+  CGPoint absolutePosition = touch ? [touch locationInView:nil] : [sender convertPoint:CGPointZero toView:nil];
 
   return [RNGestureHandlerEventExtraData forPointerInside:pointerInside
                                              withPosition:position
@@ -223,10 +223,12 @@
 
 - (void)handleSwitch:(UIView *)sender
 {
+  CGPoint center = CGPointMake(CGRectGetMidX(sender.bounds), CGRectGetMidY(sender.bounds));
+  CGPoint absoluteCenter = [sender convertPoint:center toView:nil];
   RNGestureHandlerEventExtraData * (^extraData)(void) = ^{
     return [RNGestureHandlerEventExtraData forPointerInside:YES
-                                               withPosition:CGPointZero
-                                       withAbsolutePosition:CGPointZero
+                                               withPosition:center
+                                       withAbsolutePosition:absoluteCenter
                                         withNumberOfTouches:1
                                             withPointerType:self->_pointerType];
   };
