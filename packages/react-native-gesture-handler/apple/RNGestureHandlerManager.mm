@@ -276,7 +276,22 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 #pragma mark Root Views Management
 
+#if !TARGET_OS_OSX
+static BOOL RNGHIsModallyPresentedScreen(RNGHUIView *view)
+{
+  Class screenViewClass = NSClassFromString(@"RNSScreenView");
+
+  return screenViewClass != nil && [view isKindOfClass:screenViewClass] &&
+      [view respondsToSelector:NSSelectorFromString(@"isModal")] && [[view valueForKey:@"isModal"] boolValue];
+}
+#endif // !TARGET_OS_OSX
+
 - (void)registerViewWithGestureRecognizerAttachedIfNeeded:(RNGHUIView *)childView
+{
+  [self registerViewWithGestureRecognizerAttachedIfNeeded:childView isRetry:NO];
+}
+
+- (void)registerViewWithGestureRecognizerAttachedIfNeeded:(RNGHUIView *)childView isRetry:(BOOL)isRetry
 {
   RNGHUIView *touchHandlerView = childView;
 
@@ -288,7 +303,8 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   } else {
     while (
         touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]] &&
-        (fullWindowOverlayContainerClass == nil || ![touchHandlerView isKindOfClass:fullWindowOverlayContainerClass])) {
+        (fullWindowOverlayContainerClass == nil || ![touchHandlerView isKindOfClass:fullWindowOverlayContainerClass]) &&
+        !RNGHIsModallyPresentedScreen(touchHandlerView)) {
       touchHandlerView = touchHandlerView.superview;
     }
   }
@@ -299,6 +315,17 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 #endif // !TARGET_OS_OSX
 
   if (touchHandlerView == nil) {
+#if !TARGET_OS_OSX
+    // Handlers are attached while the mounting transaction is still in progress — the view's
+    // ancestor chain may not be assembled yet (Fabric connects subtrees children-first), in
+    // which case the walk above dead-ends before reaching any touch-handling root. Retry once
+    // on the next run loop turn, when mounting has finished and the hierarchy is connected.
+    if (!isRetry) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self registerViewWithGestureRecognizerAttachedIfNeeded:childView isRetry:YES];
+      });
+    }
+#endif
     return;
   }
 
@@ -347,6 +374,19 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
       break;
     }
   }
+
+#if !TARGET_OS_OSX
+  if (touchHandler == nil && [viewWithTouchHandler respondsToSelector:NSSelectorFromString(@"touchHandler")]) {
+    // An RNSScreenView may not have the touch handler attached directly (e.g. touches on it are
+    // still driven by an ancestor's touch handler) — ask react-native-screens for the one
+    // responsible for this screen.
+    id screenTouchHandler = [viewWithTouchHandler valueForKey:@"touchHandler"];
+    if ([screenTouchHandler isKindOfClass:[RCTSurfaceTouchHandler class]]) {
+      touchHandler = screenTouchHandler;
+    }
+  }
+#endif // !TARGET_OS_OSX
+
   [touchHandler setEnabled:NO];
   [touchHandler setEnabled:YES];
 }
