@@ -277,21 +277,28 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 #pragma mark Root Views Management
 
 #if !TARGET_OS_OSX
-static BOOL RNGHIsModallyPresentedScreen(RNGHUIView *view)
+static BOOL RNGHIsScreensTouchHandlerHost(RNGHUIView *view)
 {
+  static Class fullWindowOverlayContainerClass;
   static Class screenViewClass;
   static SEL isModalSelector;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+    fullWindowOverlayContainerClass = NSClassFromString(@"RNSFullWindowOverlayContainer");
     screenViewClass = NSClassFromString(@"RNSScreenView");
     isModalSelector = NSSelectorFromString(@"isModal");
   });
 
-  if (screenViewClass == nil || ![view isKindOfClass:screenViewClass] || ![view respondsToSelector:isModalSelector]) {
-    return NO;
+  if (fullWindowOverlayContainerClass != nil && [view isKindOfClass:fullWindowOverlayContainerClass]) {
+    return YES;
   }
 
-  return [[view valueForKey:@"isModal"] boolValue];
+  if (screenViewClass != nil && [view isKindOfClass:screenViewClass]) {
+    // For now we consider only modals
+    return [view respondsToSelector:isModalSelector] && [[view valueForKey:@"isModal"] boolValue];
+  }
+
+  return NO;
 }
 #endif // !TARGET_OS_OSX
 
@@ -305,15 +312,11 @@ static BOOL RNGHIsModallyPresentedScreen(RNGHUIView *view)
   RNGHUIView *touchHandlerView = childView;
 
 #if !TARGET_OS_OSX
-  Class fullWindowOverlayContainerClass = NSClassFromString(@"RNSFullWindowOverlayContainer");
-
   if ([[childView reactViewController] isKindOfClass:[RCTFabricModalHostViewController class]]) {
     touchHandlerView = [childView reactViewController].view;
   } else {
-    while (
-        touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]] &&
-        (fullWindowOverlayContainerClass == nil || ![touchHandlerView isKindOfClass:fullWindowOverlayContainerClass]) &&
-        !RNGHIsModallyPresentedScreen(touchHandlerView)) {
+    while (touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]] &&
+           !RNGHIsScreensTouchHandlerHost(touchHandlerView)) {
       touchHandlerView = touchHandlerView.superview;
     }
   }
