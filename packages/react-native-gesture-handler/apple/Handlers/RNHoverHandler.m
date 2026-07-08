@@ -202,33 +202,30 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
   _view = nil;
 }
 
-- (void)mouseEntered:(NSEvent *)event
+- (RNGestureHandlerEventExtraData *)extraDataForEvent:(NSEvent *)event
 {
-  [self sendEventsInState:RNGestureHandlerStateBegan
-           forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
-  [self sendEventsInState:RNGestureHandlerStateActive
-           forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
+  CGPoint windowLocation = [event locationInWindow];
+  CGPoint relativePos = [_view convertPoint:windowLocation fromView:nil];
+  CGPoint absolutePos = [_view.window.contentView convertPoint:windowLocation fromView:nil];
+
+  return [RNGestureHandlerEventExtraData forPosition:relativePos
+                                withAbsolutePosition:absolutePos
+                                 withNumberOfTouches:1
+                                     withPointerType:_pointerType];
 }
 
-- (void)mouseExited:(NSEvent *)theEvent
+- (void)mouseEntered:(NSEvent *)event
 {
-  [self sendEventsInState:RNGestureHandlerStateEnd
-           forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
+  RNGestureHandlerEventExtraData *extraData = [self extraDataForEvent:event];
+  [self sendEventsInState:RNGestureHandlerStateBegan forViewWithTag:_view.reactTag withExtraData:extraData];
+  [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:_view.reactTag withExtraData:extraData];
+}
 
-  [self sendEventsInState:RNGestureHandlerStateUndetermined
-           forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
+- (void)mouseExited:(NSEvent *)event
+{
+  RNGestureHandlerEventExtraData *extraData = [self extraDataForEvent:event];
+  [self sendEventsInState:RNGestureHandlerStateEnd forViewWithTag:_view.reactTag withExtraData:extraData];
+  [self sendEventsInState:RNGestureHandlerStateUndetermined forViewWithTag:_view.reactTag withExtraData:extraData];
 }
 
 @end
