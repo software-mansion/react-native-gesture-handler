@@ -279,10 +279,19 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 #if !TARGET_OS_OSX
 static BOOL RNGHIsModallyPresentedScreen(RNGHUIView *view)
 {
-  Class screenViewClass = NSClassFromString(@"RNSScreenView");
+  static Class screenViewClass;
+  static SEL isModalSelector;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    screenViewClass = NSClassFromString(@"RNSScreenView");
+    isModalSelector = NSSelectorFromString(@"isModal");
+  });
 
-  return screenViewClass != nil && [view isKindOfClass:screenViewClass] &&
-      [view respondsToSelector:NSSelectorFromString(@"isModal")] && [[view valueForKey:@"isModal"] boolValue];
+  if (screenViewClass == nil || ![view isKindOfClass:screenViewClass] || ![view respondsToSelector:isModalSelector]) {
+    return NO;
+  }
+
+  return [[view valueForKey:@"isModal"] boolValue];
 }
 #endif // !TARGET_OS_OSX
 
