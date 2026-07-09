@@ -47,7 +47,7 @@ import { tapHandlerName } from '../handlers/TapGestureHandler';
 import { State } from '../State';
 import { hasProperty, withPrevAndCurrent } from '../utils';
 import { maybeUnpackValue } from '../v3/hooks/utils';
-import type { SingleGesture } from '../v3/types';
+import type { DetectorCallbacks, SingleGesture } from '../v3/types';
 
 // Load fireEvent conditionally, so RNGH may be used in setups without testing-library
 let fireEvent = (
@@ -491,6 +491,19 @@ type ExtractConfig<T> =
       ? ExtractPayloadFromProps<THandlerProps>
       : Record<string, unknown>;
 
+type ExtractHookGesturePayload<T> = T extends {
+  detectorCallbacks: DetectorCallbacks<any, infer TExtendedHandlerData>;
+}
+  ? TExtendedHandlerData
+  : never;
+
+type ExtractGestureControllerPayload<T> =
+  T extends SingleGesture<any, any, any>
+    ? ExtractHookGesturePayload<T>
+    : T extends BaseGesture<any>
+      ? ExtractConfig<T>
+      : Record<string, unknown>;
+
 export type GestureControllerEvent<
   TEventPayload extends Record<string, unknown> = Record<string, unknown>,
 > = Partial<TEventPayload> & {
@@ -535,7 +548,7 @@ function getStateName(state: State): string {
 function validateControllerEvent(event: Record<string, unknown>) {
   for (const field of FORBIDDEN_CONTROLLER_EVENT_FIELDS) {
     invariant(
-      !(field in event),
+      !hasProperty(event, field),
       `createGestureController manages '${field}' internally. Pass only gesture event payload fields.`
     );
   }
@@ -667,15 +680,23 @@ class GestureControllerImpl<
 }
 
 export function createGestureController<
+  TTarget extends GestureType | SingleGesture<any, any, any>,
+>(
+  componentOrGesture: TTarget
+): GestureController<ExtractGestureControllerPayload<TTarget>>;
+export function createGestureController<
   TEventPayload extends Record<string, unknown> = Record<string, unknown>,
 >(
+  componentOrGesture: ReactTestInstance | string
+): GestureController<TEventPayload>;
+export function createGestureController(
   componentOrGesture: GestureControllerTarget
-): GestureController<TEventPayload> {
+): GestureController<Record<string, unknown>> {
   const handlerData = getHandlerData(
     resolveGestureControllerTarget(componentOrGesture)
   );
 
-  return new GestureControllerImpl<TEventPayload>(handlerData);
+  return new GestureControllerImpl(handlerData);
 }
 
 export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(

@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react-native';
 
 import { createGestureController } from '../jestUtils';
 import { State } from '../State';
+import type { PanGesture, TapGesture } from '../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
 
 function mockedContinuousCallbacks() {
@@ -32,6 +33,30 @@ function mockedDiscreteCallbacks() {
     },
   };
 }
+
+function assertGestureControllerTypes(pan: PanGesture, tap: TapGesture) {
+  const panController = createGestureController(pan);
+  panController.begin({ x: 1 });
+  panController.update({ translationX: 1, velocityX: 2 });
+  // @ts-expect-error unknown pan payload field
+  panController.update({ translationXX: 1 });
+  // @ts-expect-error raw state-machine fields are managed internally
+  panController.begin({ state: State.BEGAN });
+
+  const tapController = createGestureController(tap);
+  tapController.begin({ x: 1 });
+  // @ts-expect-error tap payloads do not include pan translation fields
+  tapController.update({ translationX: 1 });
+
+  const stringController = createGestureController<{ translationX: number }>(
+    'pan-id'
+  );
+  stringController.update({ translationX: 1 });
+  // @ts-expect-error explicit payload type is respected for string targets
+  stringController.update({ translationXX: 1 });
+}
+
+void assertGestureControllerTypes;
 
 describe('createGestureController', () => {
   test('allows assertions after each gesture lifecycle step', () => {
