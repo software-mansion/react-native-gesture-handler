@@ -491,6 +491,193 @@ type ExtractConfig<T> =
       ? ExtractPayloadFromProps<THandlerProps>
       : Record<string, unknown>;
 
+export type GestureControllerEvent<
+  TEventPayload extends Record<string, unknown> = Record<string, unknown>,
+> = Partial<TEventPayload> & {
+  handlerTag?: never;
+  nativeEvent?: never;
+  oldState?: never;
+  state?: never;
+};
+
+type GestureControllerTarget =
+  | ReactTestInstance
+  | GestureType
+  | SingleGesture<any, any, any>
+  | string;
+
+export interface GestureController<
+  TEventPayload extends Record<string, unknown> = Record<string, unknown>,
+> {
+  begin: (event?: GestureControllerEvent<TEventPayload>) => void;
+  activate: (event?: GestureControllerEvent<TEventPayload>) => void;
+  update: (event?: GestureControllerEvent<TEventPayload>) => void;
+  end: (event?: GestureControllerEvent<TEventPayload>) => void;
+  fail: (event?: GestureControllerEvent<TEventPayload>) => void;
+  cancel: (event?: GestureControllerEvent<TEventPayload>) => void;
+  getState: () => State;
+}
+
+const FORBIDDEN_CONTROLLER_EVENT_FIELDS = [
+  'handlerTag',
+  'nativeEvent',
+  'oldState',
+  'state',
+];
+
+function getStateName(state: State): string {
+  return (
+    Object.entries(State).find(([, value]) => value === state)?.[0] ??
+    String(state)
+  );
+}
+
+function validateControllerEvent(event: Record<string, unknown>) {
+  for (const field of FORBIDDEN_CONTROLLER_EVENT_FIELDS) {
+    invariant(
+      !(field in event),
+      `createGestureController manages '${field}' internally. Pass only gesture event payload fields.`
+    );
+  }
+}
+
+function resolveGestureControllerTarget(target: GestureControllerTarget) {
+  return typeof target === 'string' ? getByGestureTestId(target) : target;
+}
+
+class GestureControllerImpl<
+  TEventPayload extends Record<string, unknown> = Record<string, unknown>,
+> implements GestureController<TEventPayload>
+{
+  private state: State = State.UNDETERMINED;
+
+  // eslint-disable-next-line no-useless-constructor
+  constructor(private handlerData: HandlerData) {}
+
+  public getState() {
+    return this.state;
+  }
+
+  public begin(event: GestureControllerEvent<TEventPayload> = {}) {
+    if (!this.isEnabled()) {
+      return;
+    }
+
+    this.transition('begin', State.BEGAN, [State.UNDETERMINED], event);
+  }
+
+  public activate(event: GestureControllerEvent<TEventPayload> = {}) {
+    if (!this.isEnabled()) {
+      return;
+    }
+
+    this.transition('activate', State.ACTIVE, [State.BEGAN], event);
+  }
+
+  public update(event: GestureControllerEvent<TEventPayload> = {}) {
+    if (!this.isEnabled()) {
+      return;
+    }
+
+    this.assertCurrentState('update', [State.ACTIVE]);
+
+    const nativeEvent = this.buildEvent(State.ACTIVE, event);
+    this.handlerData.emitEvent(
+      'onGestureHandlerEvent',
+      wrapWithNativeEvent(nativeEvent as GestureHandlerTestEvent)
+    );
+  }
+
+  public end(event: GestureControllerEvent<TEventPayload> = {}) {
+    if (!this.isEnabled()) {
+      return;
+    }
+
+    this.transition('end', State.END, [State.BEGAN, State.ACTIVE], event);
+  }
+
+  public fail(event: GestureControllerEvent<TEventPayload> = {}) {
+    if (!this.isEnabled()) {
+      return;
+    }
+
+    this.transition('fail', State.FAILED, [State.BEGAN, State.ACTIVE], event);
+  }
+
+  public cancel(event: GestureControllerEvent<TEventPayload> = {}) {
+    if (!this.isEnabled()) {
+      return;
+    }
+
+    this.transition(
+      'cancel',
+      State.CANCELLED,
+      [State.BEGAN, State.ACTIVE],
+      event
+    );
+  }
+
+  private transition(
+    action: string,
+    nextState: State,
+    allowedStates: State[],
+    event: GestureControllerEvent<TEventPayload>
+  ) {
+    this.assertCurrentState(action, allowedStates);
+
+    const oldState = this.state;
+    this.state = nextState;
+
+    const nativeEvent = {
+      oldState,
+      ...this.buildEvent(nextState, event),
+    } as GestureHandlerTestEvent;
+
+    this.handlerData.emitEvent(
+      'onGestureHandlerStateChange',
+      wrapWithNativeEvent(nativeEvent)
+    );
+  }
+
+  private isEnabled() {
+    return this.handlerData.enabled !== false;
+  }
+
+  private assertCurrentState(action: string, allowedStates: State[]) {
+    invariant(
+      allowedStates.includes(this.state),
+      `Cannot ${action} gesture from ${getStateName(this.state)} state.`
+    );
+  }
+
+  private buildEvent(
+    state: State,
+    event: GestureControllerEvent<TEventPayload>
+  ): Omit<GestureHandlerTestEvent, 'oldState'> {
+    validateControllerEvent(event);
+
+    return fillMissingDefaultsFor(this.handlerData)({
+      ...event,
+      state,
+    } as Partial<GestureHandlerTestEvent>) as Omit<
+      GestureHandlerTestEvent,
+      'oldState'
+    >;
+  }
+}
+
+export function createGestureController<
+  TEventPayload extends Record<string, unknown> = Record<string, unknown>,
+>(
+  componentOrGesture: GestureControllerTarget
+): GestureController<TEventPayload> {
+  const handlerData = getHandlerData(
+    resolveGestureControllerTarget(componentOrGesture)
+  );
+
+  return new GestureControllerImpl<TEventPayload>(handlerData);
+}
+
 export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
   componentOrGesture:
     | ReactTestInstance
