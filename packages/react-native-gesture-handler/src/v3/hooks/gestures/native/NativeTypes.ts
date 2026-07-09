@@ -40,6 +40,10 @@ export const NativeHandlerNativeProperties = new Set<
 
 export type NativeHandlerData = {
   pointerInside: boolean;
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
 };
 
 export type NativeGestureProperties =
