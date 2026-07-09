@@ -28,6 +28,19 @@ export type NativeGestureNativeProperties = {
    * `false`.
    */
   yieldsToContinuousGestures?: boolean;
+
+  /**
+   * When `false`, the wrapped scrollable container doesn't delay the pressed
+   * state of its children, making them display press feedback immediately.
+   *
+   * On iOS this controls `delaysContentTouches` on the underlying
+   * `UIScrollView`. On Android it controls whether the container delays the
+   * pressed state of its children (see
+   * `ViewGroup.shouldDelayChildPressedState`); requires React Native 0.87+.
+   *
+   * Defaults to `true`.
+   */
+  delaysChildPressedState?: boolean;
 };
 
 export const NativeHandlerNativeProperties = new Set<
@@ -36,6 +49,7 @@ export const NativeHandlerNativeProperties = new Set<
   'shouldActivateOnStart',
   'disallowInterruption',
   'yieldsToContinuousGestures',
+  'delaysChildPressedState',
 ]);
 
 export type NativeHandlerData = {

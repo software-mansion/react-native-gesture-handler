@@ -114,6 +114,7 @@
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
   BOOL _yieldsToContinuousGestures;
+  BOOL _delaysChildPressedState;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
 }
 
@@ -121,6 +122,7 @@
 {
   if ((self = [super initWithTag:tag])) {
     _recognizer = [[RNDummyGestureRecognizer alloc] initWithGestureHandler:self];
+    _delaysChildPressedState = YES;
   }
   return self;
 }
@@ -131,6 +133,17 @@
   _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
   _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
   _yieldsToContinuousGestures = [RCTConvert BOOL:config[@"yieldsToContinuousGestures"]];
+
+  id delaysChildPressedState = config[@"delaysChildPressedState"];
+  _delaysChildPressedState = delaysChildPressedState == nil ? YES : [RCTConvert BOOL:delaysChildPressedState];
+
+#if !TARGET_OS_OSX
+  // Config may be updated after the handler is bound to a view — re-apply to the connected
+  // scroll view if there is one.
+  if (self.recognizer.view != nil) {
+    [self retrieveScrollView:self.recognizer.view].delaysContentTouches = _delaysChildPressedState;
+  }
+#endif
 }
 
 #if !TARGET_OS_OSX
@@ -177,9 +190,10 @@
 
   // We can restore default scrollview behaviour to delay touches to scrollview's children
   // because gesture handler system can handle cancellation of scroll recognizer when JS responder
-  // is set
+  // is set. Setting `delaysChildPressedState` to `false` opts out of this, keeping touches delivered
+  // to children immediately.
   UIScrollView *scrollView = [self retrieveScrollView:view];
-  scrollView.delaysContentTouches = YES;
+  scrollView.delaysContentTouches = _delaysChildPressedState;
 }
 
 - (void)unbindFromView
