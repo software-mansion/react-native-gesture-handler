@@ -6,7 +6,9 @@ import { SingleGestureName } from '../../v3/types';
 import type IGestureHandler from '../handlers/IGestureHandler';
 import type { SVGRef } from '../interfaces';
 import {
+  firstNonContentsView,
   getEffectiveBoundingRect,
+  hasDisplayContents,
   isPointerInBounds,
   isRNSVGElement,
 } from '../utils';
@@ -141,11 +143,9 @@ export class GestureHandlerWebDelegate
       throw new Error(tagMessage('Cannot convert coords on a null view'));
     }
 
-    const localView =
-      this.gestureHandler.usesNativeOrVirtualDetector() &&
-      this.view.style.display === 'contents'
-        ? (this.view.children[0] as HTMLElement)
-        : this.view;
+    const localView = this.gestureHandler.usesNativeOrVirtualDetector()
+      ? firstNonContentsView(this.view)
+      : this.view;
 
     const rect = getEffectiveBoundingRect(localView);
     const transform = getComputedStyle(localView).transform;
@@ -345,11 +345,7 @@ export class GestureHandlerWebDelegate
   ): void {
     this.ensureView(this.view);
 
-    const hasDisplayContents =
-      this.view.style.display === 'contents' ||
-      getComputedStyle(this.view).display === 'contents';
-
-    if (hasDisplayContents) {
+    if (hasDisplayContents(this.view)) {
       for (const child of Array.from(this.view.children)) {
         if (child instanceof HTMLElement) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access

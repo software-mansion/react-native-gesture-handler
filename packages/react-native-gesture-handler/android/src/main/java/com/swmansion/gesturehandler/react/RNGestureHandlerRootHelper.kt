@@ -83,6 +83,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
     init {
       this.tag = handlerTag
+      this.cancelsJSResponder = false
     }
 
     private fun handleEvent(event: MotionEvent) {

@@ -55,6 +55,8 @@
                              withNumberOfTouches:(NSUInteger)numberOfTouches
                                  withPointerType:(NSInteger)pointerType;
 + (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
+                                        withPosition:(CGPoint)position
+                                withAbsolutePosition:(CGPoint)absolutePosition
                                  withNumberOfTouches:(NSUInteger)numberOfTouches
                                      withPointerType:(NSInteger)pointerType;
 @end

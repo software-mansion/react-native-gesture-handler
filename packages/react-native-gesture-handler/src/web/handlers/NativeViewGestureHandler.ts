@@ -2,7 +2,6 @@ import { Platform } from 'react-native';
 
 import { type ActionType } from '../../ActionType';
 import { State } from '../../State';
-import { deepEqual } from '../../utils';
 import type { NativeHandlerData } from '../../v3/hooks/gestures/native/NativeTypes';
 import type { HandlerData } from '../../v3/types';
 import { SingleGestureName } from '../../v3/types';
@@ -284,20 +283,33 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected override transformNativeEvent(): Record<string, unknown> {
+    const absolute = this.tracker.getAbsoluteCoordsAverage();
+    const relative = this.tracker.getRelativeCoordsAverage();
     return {
-      pointerInside: this.delegate.isPointerInBounds(
-        this.tracker.getAbsoluteCoordsAverage()
-      ),
+      pointerInside: this.delegate.isPointerInBounds(absolute),
+      x: relative.x,
+      y: relative.y,
+      absoluteX: absolute.x,
+      absoluteY: absolute.y,
     };
+  }
+
+  private arePointerStatesEqual(
+    a: HandlerData<NativeHandlerData>,
+    b: HandlerData<NativeHandlerData>
+  ): boolean {
+    return (
+      a.pointerInside === b.pointerInside &&
+      a.numberOfPointers === b.numberOfPointers &&
+      a.pointerType === b.pointerType
+    );
   }
 
   protected override shouldSuppressActiveUpdate(
     handlerData: HandlerData<NativeHandlerData>
   ): boolean {
-    if (
-      this.lastActiveHandlerData &&
-      deepEqual(this.lastActiveHandlerData, handlerData)
-    ) {
+    const last = this.lastActiveHandlerData;
+    if (last && this.arePointerStatesEqual(last, handlerData)) {
       return true;
     }
     this.lastActiveHandlerData = handlerData;
