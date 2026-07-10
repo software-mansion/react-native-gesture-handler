@@ -258,7 +258,7 @@ class NativeViewGestureHandler : GestureHandler() {
     private const val DEFAULT_SHOULD_ACTIVATE_ON_START = false
     private const val DEFAULT_DISALLOW_INTERRUPTION = false
     private const val DEFAULT_YIELDS_TO_CONTINUOUS_GESTURES = false
-    private val DEFAULT_DELAYS_CHILD_PRESSED_STATE: Boolean? = null
+    private val DEFAULT_DELAYS_CHILD_PRESSED_STATE: Boolean = true
 
     // `HasChildPressedStateDelay` was introduced in React Native 0.87 — it's accessed via
     // reflection so that the library compiles and runs on older versions.
