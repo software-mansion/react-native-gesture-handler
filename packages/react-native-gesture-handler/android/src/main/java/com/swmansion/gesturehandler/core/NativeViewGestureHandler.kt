@@ -277,8 +277,13 @@ class NativeViewGestureHandler : GestureHandler() {
       if (!setter.declaringClass.isInstance(view)) {
         return false
       }
-      setter.invoke(view, value)
-      return true
+
+      return try {
+        setter.invoke(view, value)
+        true
+      } catch (e: ReflectiveOperationException) {
+        false
+      }
     }
 
     private fun tryIntercept(view: View, event: MotionEvent) = view is ViewGroup && view.onInterceptTouchEvent(event)
