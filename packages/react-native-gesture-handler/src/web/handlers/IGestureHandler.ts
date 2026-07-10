@@ -13,6 +13,8 @@ import type { SingleGestureName } from '../../v3/types';
 import type { Config, HostDetector, PropsRef } from '../interfaces';
 import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import type GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
+import type InteractionManager from '../tools/InteractionManager';
 import type PointerTracker from '../tools/PointerTracker';
 
 export default interface IGestureHandler {
@@ -40,6 +42,10 @@ export default interface IGestureHandler {
   usesNativeOrVirtualDetector: () => boolean;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
+  setGestureHandlerOrchestrator: (
+    orchestrator: GestureHandlerOrchestrator
+  ) => void;
+  setInteractionManager: (interactionManager: InteractionManager) => void;
 
   isButtonInConfig: (
     mouseButton: MouseButton | undefined

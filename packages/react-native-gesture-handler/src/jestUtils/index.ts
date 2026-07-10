@@ -1,6 +1,30 @@
-export type { GestureController, GestureControllerEvent } from './jestUtils';
+export type {
+  DoubleTapOptions,
+  FireGestureOptions,
+  GestureController,
+  GestureControllerEvent,
+  LongPressOptions,
+  MultiPointerSequenceOptions,
+  PinchOptions,
+  PointerGesture,
+  PointerPath,
+  PointerPoint,
+  PointerSequenceOptions,
+  RotationOptions,
+  SwipeOptions,
+  TapOptions,
+} from './jestUtils';
 export {
   createGestureController,
+  doubleTap,
+  fireGesture,
   fireGestureHandler,
   getByGestureTestId,
+  longPress,
+  multiPointerSequence,
+  pinch,
+  pointerSequence,
+  rotate,
+  swipe,
+  tap,
 } from './jestUtils';

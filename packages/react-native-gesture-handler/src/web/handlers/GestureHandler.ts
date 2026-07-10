@@ -75,6 +75,8 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _shouldResetProgress = false;
   private _pointerType: PointerType = PointerType.MOUSE;
   private _delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
+  private gestureHandlerOrchestrator = GestureHandlerOrchestrator.instance;
+  private interactionManager = InteractionManager.instance;
 
   public constructor(
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
@@ -147,6 +149,23 @@ export default abstract class GestureHandler implements IGestureHandler {
     manager.registerListeners();
   }
 
+  /**
+   * Allows non-DOM runtimes, such as Jest's pointer simulator, to run a
+   * handler in an isolated arbitration session.
+   */
+  public setGestureHandlerOrchestrator(
+    orchestrator: GestureHandlerOrchestrator
+  ): void {
+    this.gestureHandlerOrchestrator = orchestrator;
+  }
+
+  /**
+   * Keeps relation configuration local to an isolated handler session.
+   */
+  public setInteractionManager(interactionManager: InteractionManager): void {
+    this.interactionManager = interactionManager;
+  }
+
   //
   // Resetting handler
   //
@@ -183,7 +202,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.cancelTouches();
     }
 
-    GestureHandlerOrchestrator.instance.onHandlerStateChange(
+    this.gestureHandlerOrchestrator.onHandlerStateChange(
       this,
       newState,
       oldState,
@@ -279,10 +298,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return false;
     }
 
-    return InteractionManager.instance.shouldWaitForHandlerFailure(
-      this,
-      handler
-    );
+    return this.interactionManager.shouldWaitForHandlerFailure(this, handler);
   }
 
   public shouldRequireToWaitForFailure(handler: IGestureHandler): boolean {
@@ -290,7 +306,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return false;
     }
 
-    return InteractionManager.instance.shouldRequireHandlerToWaitForFailure(
+    return this.interactionManager.shouldRequireHandlerToWaitForFailure(
       this,
       handler
     );
@@ -301,10 +317,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return true;
     }
 
-    return InteractionManager.instance.shouldRecognizeSimultaneously(
-      this,
-      handler
-    );
+    return this.interactionManager.shouldRecognizeSimultaneously(this, handler);
   }
 
   public shouldBeCancelledByOther(handler: IGestureHandler): boolean {
@@ -312,10 +325,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return false;
     }
 
-    return InteractionManager.instance.shouldHandlerBeCancelledBy(
-      this,
-      handler
-    );
+    return this.interactionManager.shouldHandlerBeCancelledBy(this, handler);
   }
 
   public shouldBeginWithRecordedHandlers(
@@ -333,11 +343,11 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   protected onPointerDown(event: AdaptedEvent): void {
-    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(this);
+    this.gestureHandlerOrchestrator.recordHandlerIfNotPresent(this);
     this._pointerType = event.pointerType;
 
     if (this.pointerType === PointerType.TOUCH) {
-      GestureHandlerOrchestrator.instance.cancelMouseAndPenGestures(this);
+      this.gestureHandlerOrchestrator.cancelMouseAndPenGestures(this);
     }
 
     this.tryToSendTouchEvent(event);
@@ -377,7 +387,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected onPointerCancel(_event: AdaptedEvent): void {
     // No need to send a cancel touch event explicitly here. `cancel` will
     // handle cancelling all tracked touches if the handler expects pointer data.
-    if (GestureHandlerOrchestrator.instance.isHandlerRecorded(this)) {
+    if (this.gestureHandlerOrchestrator.isHandlerRecorded(this)) {
       this.cancel();
     }
   }
@@ -851,7 +861,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         this.fail(true);
         break;
       case State.UNDETERMINED:
-        GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
+        this.gestureHandlerOrchestrator.removeHandlerFromOrchestrator(this);
         break;
       default:
         this.cancel(true);
@@ -999,7 +1009,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public onDestroy(): void {
-    GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
+    this.gestureHandlerOrchestrator.removeHandlerFromOrchestrator(this);
     this.delegate.destroy();
   }
 

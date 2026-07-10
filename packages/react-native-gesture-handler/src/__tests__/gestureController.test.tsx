@@ -1,9 +1,28 @@
 import { renderHook } from '@testing-library/react-native';
 
-import { createGestureController } from '../jestUtils';
+import {
+  createGestureController,
+  doubleTap,
+  fireGesture,
+  longPress,
+  pinch,
+  rotate,
+  swipe,
+  tap,
+} from '../jestUtils';
 import { State } from '../State';
+import {
+  useCompetingGestures,
+  useSimultaneousGestures,
+} from '../v3/hooks/composition';
 import type { PanGesture, TapGesture } from '../v3/hooks/gestures';
-import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
+import {
+  useLongPressGesture,
+  usePanGesture,
+  usePinchGesture,
+  useRotationGesture,
+  useTapGesture,
+} from '../v3/hooks/gestures';
 
 function mockedContinuousCallbacks() {
   const order: string[] = [];
@@ -191,5 +210,176 @@ describe('createGestureController', () => {
 
     expect(gesture.getState()).toBe(State.UNDETERMINED);
     expect(order).toEqual([]);
+  });
+});
+
+describe('fireGesture', () => {
+  test('provides a tap convenience helper', () => {
+    const onActivate = jest.fn();
+    const gesture = renderHook(() =>
+      useTapGesture({ disableReanimated: true, onActivate })
+    ).result.current;
+
+    fireGesture(gesture, tap({ at: { x: 20, y: 40 } }));
+
+    expect(onActivate).toHaveBeenCalledWith(
+      expect.objectContaining({ x: 20, y: 40 })
+    );
+  });
+
+  test('advances timer-dependent long presses explicitly', () => {
+    jest.useFakeTimers();
+
+    try {
+      const onActivate = jest.fn();
+      const gesture = renderHook(() =>
+        useLongPressGesture({
+          disableReanimated: true,
+          minDuration: 50,
+          onActivate,
+        })
+      ).result.current;
+
+      fireGesture(gesture, longPress({ at: { x: 20, y: 40 }, duration: 50 }), {
+        advanceTimers: jest.advanceTimersByTime,
+      });
+
+      expect(onActivate).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('supports multi-tap timing through doubleTap', () => {
+    jest.useFakeTimers();
+
+    try {
+      const onActivate = jest.fn();
+      const gesture = renderHook(() =>
+        useTapGesture({
+          disableReanimated: true,
+          numberOfTaps: 2,
+          onActivate,
+        })
+      ).result.current;
+
+      fireGesture(gesture, doubleTap({ at: { x: 20, y: 40 } }), {
+        advanceTimers: jest.advanceTimersByTime,
+      });
+
+      expect(onActivate).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('provides pinch and rotate helpers over multi-pointer input', () => {
+    const onPinchActivate = jest.fn();
+    const onRotationActivate = jest.fn();
+    const gestures = renderHook(() => ({
+      pinch: usePinchGesture({
+        disableReanimated: true,
+        onActivate: onPinchActivate,
+      }),
+      rotation: useRotationGesture({
+        disableReanimated: true,
+        onActivate: onRotationActivate,
+      }),
+    })).result.current;
+
+    fireGesture(
+      gestures.pinch,
+      pinch({
+        from: [
+          { x: 0, y: 0 },
+          { x: 0, y: 40 },
+        ],
+        to: [
+          { x: 0, y: 0 },
+          { x: 0, y: 100 },
+        ],
+        steps: 3,
+      })
+    );
+    fireGesture(
+      gestures.rotation,
+      rotate({
+        center: { x: 50, y: 50 },
+        radius: 30,
+        fromAngle: 0,
+        toAngle: Math.PI / 2,
+        steps: 3,
+      })
+    );
+
+    expect(onPinchActivate).toHaveBeenCalledTimes(1);
+    expect(onRotationActivate).toHaveBeenCalledTimes(1);
+  });
+
+  test('uses web recognizers and the arbitrator for competing gestures', () => {
+    const onPanActivate = jest.fn();
+    const onTapActivate = jest.fn();
+    const onTapFinalize = jest.fn();
+
+    const competingGestures = renderHook(() => {
+      const tap = useTapGesture({
+        disableReanimated: true,
+        maxDistance: 10,
+        onActivate: onTapActivate,
+        onFinalize: onTapFinalize,
+      });
+      const pan = usePanGesture({
+        disableReanimated: true,
+        minDistance: 10,
+        onActivate: onPanActivate,
+      });
+
+      return useCompetingGestures(tap, pan);
+    }).result.current;
+
+    fireGesture(
+      competingGestures,
+      swipe({
+        from: { x: 0, y: 0 },
+        to: { x: 100, y: 0 },
+        steps: 4,
+      })
+    );
+
+    expect(onPanActivate).toHaveBeenCalledTimes(1);
+    expect(onTapActivate).not.toHaveBeenCalled();
+    expect(onTapFinalize).toHaveBeenCalledWith(
+      expect.objectContaining({ canceled: true })
+    );
+  });
+
+  test('lets simultaneous gestures observe the same pointer stream', () => {
+    const onPanActivate = jest.fn();
+    const onTapActivate = jest.fn();
+
+    const simultaneousGestures = renderHook(() => {
+      const tap = useTapGesture({
+        disableReanimated: true,
+        onActivate: onTapActivate,
+      });
+      const pan = usePanGesture({
+        disableReanimated: true,
+        minDistance: 10,
+        onActivate: onPanActivate,
+      });
+
+      return useSimultaneousGestures(tap, pan);
+    }).result.current;
+
+    fireGesture(
+      simultaneousGestures,
+      swipe({
+        from: { x: 0, y: 0 },
+        to: { x: 100, y: 0 },
+      })
+    );
+
+    expect(onPanActivate).toHaveBeenCalledTimes(1);
+    expect(onTapActivate).toHaveBeenCalledTimes(1);
   });
 });

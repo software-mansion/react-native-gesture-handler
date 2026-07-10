@@ -9,10 +9,6 @@ export default class InteractionManager {
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
   private readonly blocksHandlersRelations: Map<number, number[]> = new Map();
 
-  // Private becaues of singleton
-  // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
-  private constructor() {}
-
   public configureInteractions(
     handler: IGestureHandler,
     config: GestureRelations | Config

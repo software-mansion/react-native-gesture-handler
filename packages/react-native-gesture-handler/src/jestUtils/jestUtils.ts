@@ -1,7 +1,9 @@
 import invariant from 'invariant';
+import type { RefObject } from 'react';
 import { DeviceEventEmitter } from 'react-native';
 import type { ReactTestInstance } from 'react-test-renderer';
 
+import { ActionType } from '../ActionType';
 import type { FlingGestureHandler } from '../handlers/FlingGestureHandler';
 import { flingHandlerName } from '../handlers/FlingGestureHandler';
 import type { ForceTouchGestureHandler } from '../handlers/ForceTouchGestureHandler';
@@ -44,10 +46,27 @@ import type { RotationGestureHandler } from '../handlers/RotationGestureHandler'
 import { rotationHandlerName } from '../handlers/RotationGestureHandler';
 import type { TapGestureHandler } from '../handlers/TapGestureHandler';
 import { tapHandlerName } from '../handlers/TapGestureHandler';
+import { PointerType } from '../PointerType';
 import { State } from '../State';
 import { hasProperty, withPrevAndCurrent } from '../utils';
-import { maybeUnpackValue } from '../v3/hooks/utils';
-import type { DetectorCallbacks, SingleGesture } from '../v3/types';
+import { configureRelations } from '../v3/detectors/utils';
+import {
+  maybeUnpackValue,
+  prepareConfigForNativeSide,
+} from '../v3/hooks/utils';
+import type { DetectorCallbacks, Gesture, SingleGesture } from '../v3/types';
+import { Gestures } from '../web/Gestures';
+import type IGestureHandler from '../web/handlers/IGestureHandler';
+import type {
+  AdaptedEvent,
+  Config,
+  PropsRef,
+  ResultEvent,
+} from '../web/interfaces';
+import { EventTypes } from '../web/interfaces';
+import type { GestureHandlerDelegate } from '../web/tools/GestureHandlerDelegate';
+import GestureHandlerOrchestrator from '../web/tools/GestureHandlerOrchestrator';
+import InteractionManager from '../web/tools/InteractionManager';
 
 // Load fireEvent conditionally, so RNGH may be used in setups without testing-library
 let fireEvent = (
@@ -697,6 +716,505 @@ export function createGestureController(
   );
 
   return new GestureControllerImpl(handlerData);
+}
+
+export type PointerPoint = {
+  x: number;
+  y: number;
+};
+
+export type PointerPath = {
+  id?: number | undefined;
+  start: PointerPoint;
+  moves: readonly PointerPoint[];
+};
+
+type PointerEventStep = {
+  type: 'down' | 'add' | 'move' | 'remove' | 'up';
+  pointerId: number;
+  at: PointerPoint;
+};
+
+type PointerWaitStep = {
+  type: 'wait';
+  duration: number;
+};
+
+export type PointerGesture = {
+  steps: readonly (PointerEventStep | PointerWaitStep)[];
+  timeStepMs: number;
+};
+
+export type PointerSequenceOptions = PointerPath & {
+  timeStepMs?: number | undefined;
+  holdForMs?: number | undefined;
+};
+
+export type MultiPointerSequenceOptions = {
+  pointers: readonly [PointerPath, PointerPath, ...PointerPath[]];
+  timeStepMs?: number | undefined;
+};
+
+export type SwipeOptions = {
+  from: PointerPoint;
+  to: PointerPoint;
+  /** Number of MOVE samples between the initial DOWN and final UP. */
+  steps?: number | undefined;
+  timeStepMs?: number | undefined;
+};
+
+export type TapOptions = {
+  at: PointerPoint;
+  timeStepMs?: number | undefined;
+};
+
+export type LongPressOptions = TapOptions & {
+  duration: number;
+};
+
+export type DoubleTapOptions = TapOptions & {
+  delay?: number | undefined;
+};
+
+export type PinchOptions = {
+  from: readonly [PointerPoint, PointerPoint];
+  to: readonly [PointerPoint, PointerPoint];
+  steps?: number | undefined;
+  timeStepMs?: number | undefined;
+};
+
+export type RotationOptions = {
+  center: PointerPoint;
+  radius: number;
+  fromAngle: number;
+  toAngle: number;
+  steps?: number | undefined;
+  timeStepMs?: number | undefined;
+};
+
+export type FireGestureOptions = {
+  /** Required by helpers that include a wait, such as longPress and doubleTap. */
+  advanceTimers?: ((duration: number) => void) | undefined;
+};
+
+function validateTiming(timeStepMs: number): void {
+  invariant(timeStepMs >= 0, 'timeStepMs must not be negative');
+}
+
+function interpolate(
+  from: PointerPoint,
+  to: PointerPoint,
+  steps: number
+): PointerPoint[] {
+  invariant(
+    Number.isInteger(steps) && steps > 0,
+    'steps must be a positive integer'
+  );
+
+  return Array.from({ length: steps }, (_, index) => {
+    const progress = (index + 1) / steps;
+
+    return {
+      x: from.x + (to.x - from.x) * progress,
+      y: from.y + (to.y - from.y) * progress,
+    };
+  });
+}
+
+/** Creates a single-pointer DOWN / MOVE* / UP sequence. */
+export function pointerSequence({
+  id = 1,
+  start,
+  moves,
+  timeStepMs = 16,
+  holdForMs = 0,
+}: PointerSequenceOptions): PointerGesture {
+  validateTiming(timeStepMs);
+  invariant(holdForMs >= 0, 'holdForMs must not be negative');
+
+  return {
+    steps: [
+      { type: 'down', pointerId: id, at: start },
+      ...moves.map((at) => ({ type: 'move' as const, pointerId: id, at })),
+      ...(holdForMs > 0
+        ? [{ type: 'wait' as const, duration: holdForMs }]
+        : []),
+      { type: 'up', pointerId: id, at: moves[moves.length - 1] ?? start },
+    ],
+    timeStepMs,
+  };
+}
+
+/**
+ * Creates one shared pointer stream. Every pointer moves once per frame and
+ * pointers are lifted in reverse order, matching browser touch semantics.
+ */
+export function multiPointerSequence({
+  pointers,
+  timeStepMs = 16,
+}: MultiPointerSequenceOptions): PointerGesture {
+  validateTiming(timeStepMs);
+
+  const movesCount = pointers[0].moves.length;
+  invariant(
+    pointers.every((pointer) => pointer.moves.length === movesCount),
+    'All multiPointerSequence paths must contain the same number of moves.'
+  );
+
+  const paths = pointers.map((pointer, index) => ({
+    ...pointer,
+    id: pointer.id ?? index + 1,
+  }));
+  const steps: (PointerEventStep | PointerWaitStep)[] = [
+    { type: 'down', pointerId: paths[0].id, at: paths[0].start },
+    ...paths.slice(1).map((pointer) => ({
+      type: 'add' as const,
+      pointerId: pointer.id,
+      at: pointer.start,
+    })),
+  ];
+
+  for (let index = 0; index < movesCount; index++) {
+    paths.forEach((pointer) => {
+      steps.push({
+        type: 'move',
+        pointerId: pointer.id,
+        at: pointer.moves[index],
+      });
+    });
+  }
+
+  paths
+    .slice(1)
+    .reverse()
+    .forEach((pointer) => {
+      steps.push({
+        type: 'remove',
+        pointerId: pointer.id,
+        at: pointer.moves[movesCount - 1] ?? pointer.start,
+      });
+    });
+  steps.push({
+    type: 'up',
+    pointerId: paths[0].id,
+    at: paths[0].moves[movesCount - 1] ?? paths[0].start,
+  });
+
+  return { steps, timeStepMs };
+}
+
+/**
+ * Creates deterministic pointer input. Recognition is intentionally left to
+ * the participating gesture handlers.
+ */
+export function swipe({
+  from,
+  to,
+  steps = 1,
+  timeStepMs = 16,
+}: SwipeOptions): PointerGesture {
+  return pointerSequence({
+    start: from,
+    moves: interpolate(from, to, steps),
+    timeStepMs,
+  });
+}
+
+export function tap({ at, timeStepMs }: TapOptions): PointerGesture {
+  return pointerSequence({ start: at, moves: [], timeStepMs });
+}
+
+export function longPress({
+  at,
+  duration,
+  timeStepMs,
+}: LongPressOptions): PointerGesture {
+  return pointerSequence({
+    start: at,
+    moves: [],
+    holdForMs: duration,
+    timeStepMs,
+  });
+}
+
+export function doubleTap({
+  at,
+  delay = 50,
+  timeStepMs = 16,
+}: DoubleTapOptions): PointerGesture {
+  validateTiming(timeStepMs);
+  invariant(delay >= 0, 'doubleTap delay must not be negative');
+
+  return {
+    steps: [
+      { type: 'down', pointerId: 1, at },
+      { type: 'up', pointerId: 1, at },
+      { type: 'wait', duration: delay },
+      { type: 'down', pointerId: 1, at },
+      { type: 'up', pointerId: 1, at },
+    ],
+    timeStepMs,
+  };
+}
+
+export function pinch({
+  from,
+  to,
+  steps = 2,
+  timeStepMs,
+}: PinchOptions): PointerGesture {
+  return multiPointerSequence({
+    pointers: [
+      { start: from[0], moves: interpolate(from[0], to[0], steps) },
+      { start: from[1], moves: interpolate(from[1], to[1], steps) },
+    ],
+    timeStepMs,
+  });
+}
+
+export function rotate({
+  center,
+  radius,
+  fromAngle,
+  toAngle,
+  steps = 2,
+  timeStepMs,
+}: RotationOptions): PointerGesture {
+  invariant(radius > 0, 'rotate radius must be greater than zero');
+
+  const pointAt = (angle: number): PointerPoint => ({
+    x: center.x + radius * Math.cos(angle),
+    y: center.y + radius * Math.sin(angle),
+  });
+  const angles = interpolate(
+    { x: fromAngle, y: 0 },
+    { x: toAngle, y: 0 },
+    steps
+  ).map((point) => point.x);
+
+  return multiPointerSequence({
+    pointers: [
+      { start: pointAt(fromAngle), moves: angles.map(pointAt) },
+      {
+        start: pointAt(fromAngle + Math.PI),
+        moves: angles.map((angle) => pointAt(angle + Math.PI)),
+      },
+    ],
+    timeStepMs,
+  });
+}
+
+type PointerGestureTarget = Gesture<any, any, any> | string;
+
+const NOOP = () => undefined;
+
+class JestGestureHandlerDelegate
+  implements GestureHandlerDelegate<object, IGestureHandler>
+{
+  public view: object | null;
+
+  public constructor(view: object | null) {
+    this.view = view;
+  }
+
+  public init = NOOP;
+  public detach = NOOP;
+  public updateDOM = NOOP;
+  public reset = NOOP;
+  public onBegin = NOOP;
+  public onActivate = NOOP;
+  public onEnd = NOOP;
+  public onCancel = NOOP;
+  public onFail = NOOP;
+  public onEnabledChange = NOOP;
+  public destroy = NOOP;
+
+  public isPointerInBounds(): boolean {
+    return true;
+  }
+
+  public measureView() {
+    return { pageX: 0, pageY: 0, width: 100, height: 100 };
+  }
+
+  public absoluteToLocal(absoluteX: number, absoluteY: number) {
+    return { x: absoluteX, y: absoluteY };
+  }
+}
+
+type PointerEventHandler = IGestureHandler & {
+  onPointerDown: (event: AdaptedEvent) => void;
+  onPointerAdd: (event: AdaptedEvent) => void;
+  onPointerMove: (event: AdaptedEvent) => void;
+  onPointerRemove: (event: AdaptedEvent) => void;
+  onPointerUp: (event: AdaptedEvent) => void;
+};
+
+function flattenGesture(
+  gesture: Gesture<any, any, any>
+): SingleGesture<any, any, any>[] {
+  if ('gestures' in gesture) {
+    return gesture.gestures.flatMap(flattenGesture);
+  }
+
+  return [gesture];
+}
+
+function resolvePointerGestureTarget(
+  target: PointerGestureTarget
+): Gesture<any, any, any> {
+  const gesture =
+    typeof target === 'string' ? getByGestureTestId(target) : target;
+
+  invariant(
+    typeof gesture === 'object' &&
+      gesture !== null &&
+      (hasProperty(gesture, 'detectorCallbacks') ||
+        hasProperty(gesture, 'gestures')),
+    'fireGesture accepts v3 hook gestures, composed gestures, or a v3 gesture test ID.'
+  );
+
+  return gesture as Gesture<any, any, any>;
+}
+
+function createAdaptedEvent(
+  point: PointerPoint,
+  eventType: EventTypes,
+  pointerId: number,
+  time: number
+): AdaptedEvent {
+  return {
+    x: point.x,
+    y: point.y,
+    offsetX: point.x,
+    offsetY: point.y,
+    pointerId,
+    pointerType: PointerType.TOUCH,
+    eventType,
+    time,
+  };
+}
+
+function createPointerHandler(
+  gesture: SingleGesture<any, any, any>,
+  orchestrator: GestureHandlerOrchestrator,
+  interactionManager: InteractionManager,
+  view: object
+): PointerEventHandler {
+  const GestureHandler = Gestures[gesture.type as keyof typeof Gestures];
+  invariant(
+    GestureHandler !== undefined,
+    `fireGesture does not support ${gesture.type} pointer recognition.`
+  );
+
+  const handler = new GestureHandler(
+    new JestGestureHandlerDelegate(view)
+  ) as unknown as PointerEventHandler;
+  const onGestureEvent = (event: ResultEvent) => {
+    gesture.detectorCallbacks.jsEventHandler?.(event.nativeEvent as never);
+  };
+  const propsRef = {
+    current: {
+      onGestureHandlerEvent: onGestureEvent,
+      onGestureHandlerStateChange: onGestureEvent,
+      onGestureHandlerTouchEvent: NOOP,
+    },
+  } as RefObject<PropsRef>;
+
+  handler.handlerTag = gesture.handlerTag;
+  handler.setGestureHandlerOrchestrator(orchestrator);
+  handler.setInteractionManager(interactionManager);
+  handler.setGestureConfig(
+    prepareConfigForNativeSide(
+      gesture.type,
+      gesture.config
+    ) as unknown as Config
+  );
+  handler.init(gesture.handlerTag, propsRef, ActionType.NATIVE_DETECTOR);
+
+  return handler;
+}
+
+/**
+ * Sends one pointer stream to all handlers in a v3 gesture or composition.
+ * The web recognizers request transitions; GestureArbitrator determines which
+ * of those transitions are observable after applying gesture relations.
+ */
+export function fireGesture(
+  target: PointerGestureTarget,
+  pointerGesture: PointerGesture,
+  { advanceTimers }: FireGestureOptions = {}
+): void {
+  const gesture = resolvePointerGestureTarget(target);
+  const gestures = flattenGesture(gesture);
+  const orchestrator = new GestureHandlerOrchestrator();
+  const interactionManager = new InteractionManager();
+  const view = {};
+  const relations = configureRelations(gesture);
+  const handlers = gestures.map((singleGesture) => {
+    const handler = createPointerHandler(
+      singleGesture,
+      orchestrator,
+      interactionManager,
+      view
+    );
+    interactionManager.configureInteractions(
+      handler,
+      relations.get(singleGesture.handlerTag) ?? singleGesture.gestureRelations
+    );
+
+    return handler;
+  });
+
+  invariant(
+    pointerGesture.steps.length > 0,
+    'fireGesture requires pointer input. Use tap(), swipe(), or pointerSequence().'
+  );
+
+  let time = 0;
+  const pointerActions: Record<
+    PointerEventStep['type'],
+    {
+      eventType: EventTypes;
+      method: keyof Pick<
+        PointerEventHandler,
+        | 'onPointerDown'
+        | 'onPointerAdd'
+        | 'onPointerMove'
+        | 'onPointerRemove'
+        | 'onPointerUp'
+      >;
+    }
+  > = {
+    down: { eventType: EventTypes.DOWN, method: 'onPointerDown' },
+    add: {
+      eventType: EventTypes.ADDITIONAL_POINTER_DOWN,
+      method: 'onPointerAdd',
+    },
+    move: { eventType: EventTypes.MOVE, method: 'onPointerMove' },
+    remove: {
+      eventType: EventTypes.ADDITIONAL_POINTER_UP,
+      method: 'onPointerRemove',
+    },
+    up: { eventType: EventTypes.UP, method: 'onPointerUp' },
+  };
+
+  pointerGesture.steps.forEach((step) => {
+    if (step.type === 'wait') {
+      invariant(
+        advanceTimers !== undefined,
+        'fireGesture needs advanceTimers to process waits. Pass jest.advanceTimersByTime as the third argument.'
+      );
+      advanceTimers(step.duration);
+      time += step.duration;
+      return;
+    }
+
+    const { eventType, method } = pointerActions[step.type];
+    const event = createAdaptedEvent(step.at, eventType, step.pointerId, time);
+    handlers.forEach((handler) => handler[method](event));
+    time += pointerGesture.timeStepMs;
+  });
 }
 
 export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
