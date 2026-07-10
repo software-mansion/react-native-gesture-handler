@@ -30,13 +30,15 @@ export type NativeGestureNativeProperties = {
   yieldsToContinuousGestures?: boolean;
 
   /**
-   * When `false`, the wrapped scrollable container doesn't delay the pressed
-   * state of its children, making them display press feedback immediately.
+   * When `true`, the wrapped scrollable container delays displaying the
+   * pressed state of its children until it's clear that the gesture is not a
+   * scroll. Set it to `false` to display the pressed state immediately.
    *
    * On iOS this controls `delaysContentTouches` on the underlying
    * `UIScrollView`. On Android it controls whether the container delays the
    * pressed state of its children (see
-   * `ViewGroup.shouldDelayChildPressedState`); requires React Native 0.87+.
+   * `ViewGroup.shouldDelayChildPressedState`) — this requires React Native
+   * 0.87 or newer and is a no-op on older versions.
    *
    * Defaults to `true`.
    */
