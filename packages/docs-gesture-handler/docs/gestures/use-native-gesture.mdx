@@ -131,9 +131,9 @@ Composes with [`disallowInterruption`](#disallowinterruption). When both are `tr
 delaysChildPressedState: boolean | SharedValue<boolean>;
 ```
 
-When `false`, the wrapped scrollable container displays the pressed state of its children immediately, instead of delaying it until it's clear that the gesture is not a scroll. Defaults to `true`.
+When `true`, the wrapped scrollable container delays displaying the pressed state of its children until it's clear that the gesture is not a scroll. Set it to `false` to display the pressed state immediately. Defaults to `true`.
 
-On iOS this controls [`delaysContentTouches`](https://developer.apple.com/documentation/uikit/uiscrollview/delayscontenttouches) on the underlying `UIScrollView`. On Android it controls whether the container delays the pressed state of its children (see [`shouldDelayChildPressedState`](https://developer.android.com/reference/android/view/ViewGroup#shouldDelayChildPressedState%28%29)) — this requires React Native 0.87 or newer and is a no-op on older versions.
+On iOS this controls [`delaysContentTouches`](https://developer.apple.com/documentation/uikit/uiscrollview/delayscontenttouches) on the underlying `UIScrollView`. On Android it controls whether the container delays the pressed state of its children (see [`shouldDelayChildPressedState`](https://developer.android.com/reference/android/view/ViewGroup#shouldDelayChildPressedState%28%29)) — on Android, this requires React Native 0.87 or newer and is a no-op on older versions.
 
 <BaseGestureConfig />
 
