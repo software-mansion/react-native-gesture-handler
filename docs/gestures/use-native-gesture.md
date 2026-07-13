@@ -42,6 +42,16 @@ yieldsToContinuousGestures: boolean | SharedValue<boolean>;
 
 Composes with [`disallowInterruption`](#disallowinterruption). When both are `true`, this handler still cancels discrete gestures (`Tap`, `LongPress`, `Fling`) on activation but allows continuous gestures (`Pan`, `Pinch`, `Rotation`, `Native`, `Manual`, `Hover`) to interrupt it. No-op when `disallowInterruption` is `false`. Defaults to `false`.
 
+### delaysChildPressedState
+
+```ts
+delaysChildPressedState: boolean | SharedValue<boolean>;
+```
+
+When `true`, the wrapped scrollable container delays displaying the pressed state of its children until it's clear that the gesture is not a scroll. Set it to `false` to display the pressed state immediately. Defaults to `true`.
+
+On iOS this controls [`delaysContentTouches`](https://developer.apple.com/documentation/uikit/uiscrollview/delayscontenttouches) on the underlying `UIScrollView`. On Android it controls whether the container delays the pressed state of its children (see [`shouldDelayChildPressedState`](https://developer.android.com/reference/android/view/ViewGroup#shouldDelayChildPressedState%28%29)) — on Android, this requires React Native 0.87 or newer and is a no-op on older versions.
+
 ## Callbacks
 
 ## Event data
