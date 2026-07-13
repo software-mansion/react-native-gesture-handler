@@ -23,7 +23,7 @@ import {
 } from 'react-native-safe-area-context';
 
 import { COLORS } from './src/common';
-import { ConsoleLogSheet, useConsoleSheetCollapsedHeight } from './src/console';
+import { ConsoleHeaderButton, ConsoleModalProvider } from './src/console';
 import { OLD_EXAMPLES } from './src/legacy';
 import { TouchableExample } from './src/legacy/release_tests/touchables';
 import { ListWithHeader } from './src/ListWithHeader';
@@ -51,25 +51,19 @@ export default function App() {
 
 function AppContent() {
   const [showLegacyVersion, setShowLegacyVersion] = useState(false);
-  const consoleSheetCollapsedHeight = useConsoleSheetCollapsedHeight();
   return (
     <GestureHandlerRootView style={styles.root}>
-      <View style={styles.root}>
-        <View
-          style={[
-            styles.navigationContainer,
-            { paddingBottom: consoleSheetCollapsedHeight },
-          ]}>
+      <ConsoleModalProvider>
+        <View style={styles.root}>
           <NavigationContainer>
             <Stack.Navigator
               screenOptions={{
                 cardStyle: {
                   // It's important to set height for the screen, without it scroll doesn't work on web platform.
-                  height:
-                    Dimensions.get('window').height -
-                    consoleSheetCollapsedHeight,
+                  height: Dimensions.get('window').height,
                   backgroundColor: COLORS.offWhite,
                 },
+                headerRight: () => <ConsoleHeaderButton />,
                 headerStyle: {
                   backgroundColor: COLORS.offWhite,
                   borderBottomColor: COLORS.headerSeparator,
@@ -98,8 +92,7 @@ function AppContent() {
             </Stack.Navigator>
           </NavigationContainer>
         </View>
-        <ConsoleLogSheet />
-      </View>
+      </ConsoleModalProvider>
     </GestureHandlerRootView>
   );
 
@@ -264,10 +257,6 @@ function AppContent() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  navigationContainer: {
-    flex: 1,
-    overflow: 'hidden',
   },
   container: {
     flex: 1,
