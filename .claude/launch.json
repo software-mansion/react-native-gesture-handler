@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web-poc",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["workspace", "web-poc", "dev"],
+      "port": 5199
+    }
+  ]
+}

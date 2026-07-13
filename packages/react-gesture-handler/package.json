@@ -1,0 +1,23 @@
+{
+  "name": "react-gesture-handler",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Plain React DOM binding of gesture-handler core (PoC)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "ts-check": "yarn tsc --noEmit"
+  },
+  "dependencies": {
+    "@swmansion/gesture-handler-core": "workspace:*",
+    "@swmansion/gesture-handler-dom-engine": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3"
+  },
+  "sideEffects": false
+}

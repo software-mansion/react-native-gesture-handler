@@ -5,11 +5,13 @@
   "workspaces": [
     "packages/gesture-handler-core",
     "packages/gesture-handler-dom-engine",
+    "packages/react-gesture-handler",
     "packages/react-native-gesture-handler",
     "apps/basic-example",
     "apps/expo-example",
     "apps/macos-example",
-    "apps/common-app"
+    "apps/common-app",
+    "apps/web-poc"
   ],
   "scripts": {
     "postinstall": "yarn build",
