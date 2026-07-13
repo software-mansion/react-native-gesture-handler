@@ -62,7 +62,94 @@ In order to load mocks provided by RNGH, add the following to your jest config:
 
 ## Testing Gestures' and Gesture handlers' callbacks
 
-RNGH provides APIs, specifically [`fireGestureHandler`](#firegesturehandler) and [`getByGestureTestId`](#getbygesturetestid), to trigger selected handlers.
+RNGH provides the following APIs for triggering selected handlers:
+
+- [`createGestureController`](#creategesturecontroller) to imperatively control a gesture lifecycle one step at a time.
+- [`fireGestureHandler`](#firegesturehandler) to dispatch a complete event stream.
+- [`getByGestureTestId`](#getbygesturetestid) to find a gesture by its test ID.
+
+### createGestureController
+
+```ts
+import { createGestureController } from 'react-native-gesture-handler/jest-utils';
+
+createGestureController: (componentOrGesture) => GestureController;
+```
+
+Creates an imperative controller that dispatches gesture lifecycle events one step
+at a time. This allows the test to assert application state between lifecycle steps
+without manually supplying `state`, `oldState`, or `handlerTag`.
+
+`componentOrGesture` can be:
+
+- A Gesture Handler component found using a Jest query such as `getByTestId`.
+- A gesture object.
+- A gesture test ID string.
+
+When a gesture object is passed directly, the event payload type is inferred from
+the gesture. Every lifecycle method accepts an optional partial event payload and
+fills omitted handler-specific properties with defaults.
+
+The controller exposes these methods:
+
+| Method       | Behavior                                                                                                         |
+| ------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `begin()`    | Starts a stream and calls `onBegin`. If the previous stream finished, the controller resets it before beginning. |
+| `activate()` | Activates a begun stream and calls `onActivate`.                                                                 |
+| `update()`   | Dispatches an update for an active stream and calls `onUpdate`. It can be called multiple times.                 |
+| `end()`      | Ends a begun or active stream. Calls `onDeactivate` if active, then `onFinalize` with `canceled: false`.         |
+| `fail()`     | Fails a begun or active stream. Calls `onDeactivate` if active, then `onFinalize` with `canceled: true`.         |
+| `cancel()`   | Cancels a begun or active stream. Calls `onDeactivate` if active, then `onFinalize` with `canceled: true`.       |
+| `getState()` | Returns the controller's current state without dispatching an event.                                             |
+
+After `end()`, `fail()`, or `cancel()`, the terminal state remains available through
+`getState()`. Calling `begin()` again starts another stream with the same controller.
+Calling methods in an invalid order throws an error. State-machine fields such as
+`state`, `oldState`, `handlerTag`, and `nativeEvent` cannot be supplied in event
+payloads because the controller manages them internally.
+
+```tsx
+test('updates application state after each gesture step', () => {
+  const onBegin = jest.fn();
+  const onActivate = jest.fn();
+  const onUpdate = jest.fn();
+  const onFinalize = jest.fn();
+
+  const panGesture = renderHook(() =>
+    usePanGesture({
+      disableReanimated: true,
+      onBegin,
+      onActivate,
+      onUpdate,
+      onFinalize,
+    })
+  ).result.current;
+
+  const controller = createGestureController(panGesture);
+
+  controller.begin();
+  expect(onBegin).toHaveBeenCalledTimes(1);
+
+  controller.activate();
+  expect(onActivate).toHaveBeenCalledTimes(1);
+
+  controller.update({ translationX: 50 });
+  expect(onUpdate).toHaveBeenCalledWith(
+    expect.objectContaining({ translationX: 50 })
+  );
+
+  controller.end();
+  expect(onFinalize).toHaveBeenCalledWith(
+    expect.objectContaining({ canceled: false })
+  );
+});
+```
+
+:::note
+`createGestureController` controls lifecycle events directly. It does not generate
+pointer input, run platform gesture recognizers, or evaluate relations between
+gestures.
+:::
 
 ### fireGestureHandler
 
@@ -133,7 +220,7 @@ components.
 `testID` must be unique among components rendered in test.
 :::
 
-## Example
+## fireGestureHandler example
 
 Extracted from RNGH tests, check [`api_v3.test.tsx`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/__tests__/api_v3.test.tsx) for full implementation.
 
