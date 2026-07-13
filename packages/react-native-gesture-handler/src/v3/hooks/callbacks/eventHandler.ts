@@ -1,5 +1,5 @@
+import { CALLBACK_TYPE } from '../../../CallbackType';
 import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';

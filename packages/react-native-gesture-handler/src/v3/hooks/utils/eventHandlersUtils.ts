@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
+import { CALLBACK_TYPE } from '../../../CallbackType';
 import { TouchEventType } from '../../../TouchEventType';
 import type {
   GestureCallbacks,
