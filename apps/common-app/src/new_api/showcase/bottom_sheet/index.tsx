@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import type { PanGestureActiveEvent } from 'react-native-gesture-handler';
 import {
   GestureDetector,
@@ -19,17 +19,26 @@ import Animated, {
 import { COLORS, commonStyles, LoremIpsum } from '../../../common';
 
 const HEADER_HEIGTH = 50;
-const windowHeight = Dimensions.get('window').height;
-const SNAP_POINTS_FROM_TOP = [50, windowHeight * 0.4, windowHeight * 0.8];
-
-const FULLY_OPEN_SNAP_POINT = SNAP_POINTS_FROM_TOP[0];
-const CLOSED_SNAP_POINT = SNAP_POINTS_FROM_TOP[SNAP_POINTS_FROM_TOP.length - 1];
+const CLOSED_SNAP_POINT_INDEX = 2;
 
 function Example() {
-  const [snapPoint, setSnapPoint] = useState(CLOSED_SNAP_POINT);
+  const { height: windowHeight } = useWindowDimensions();
+  const [containerHeight, setContainerHeight] = useState(windowHeight);
+  const snapPointsFromTop = useMemo(
+    () => [50, containerHeight * 0.4, containerHeight * 0.8],
+    [containerHeight]
+  );
+  const fullyOpenSnapPoint = snapPointsFromTop[0];
+  const closedSnapPoint = snapPointsFromTop[CLOSED_SNAP_POINT_INDEX];
+  const [snapPointIndex, setSnapPointIndex] = useState(CLOSED_SNAP_POINT_INDEX);
   const translationY = useSharedValue(0);
   const scrollOffset = useSharedValue(0);
-  const bottomSheetTranslateY = useSharedValue(CLOSED_SNAP_POINT);
+  const bottomSheetTranslateY = useSharedValue(closedSnapPoint);
+  const snapPointIndexValue = useSharedValue(CLOSED_SNAP_POINT_INDEX);
+
+  useEffect(() => {
+    bottomSheetTranslateY.value = snapPointsFromTop[snapPointIndexValue.value];
+  }, [bottomSheetTranslateY, snapPointIndexValue, snapPointsFromTop]);
 
   const onHandlerDeactivate = (e: PanGestureActiveEvent) => {
     const dragToss = 0.01;
@@ -37,18 +46,18 @@ function Example() {
       bottomSheetTranslateY.value + translationY.value + e.velocityY * dragToss;
 
     // calculate nearest snap point
-    let destSnapPoint = FULLY_OPEN_SNAP_POINT;
+    let destSnapPointIndex = 0;
 
-    if (
-      snapPoint === FULLY_OPEN_SNAP_POINT &&
-      endOffsetY < FULLY_OPEN_SNAP_POINT
-    ) {
+    if (snapPointIndex === 0 && endOffsetY < fullyOpenSnapPoint) {
       return;
     }
-    for (const snapPoint of SNAP_POINTS_FROM_TOP) {
+    for (const [index, snapPoint] of snapPointsFromTop.entries()) {
       const distFromSnap = Math.abs(snapPoint - endOffsetY);
-      if (distFromSnap < Math.abs(destSnapPoint - endOffsetY)) {
-        destSnapPoint = snapPoint;
+      if (
+        distFromSnap <
+        Math.abs(snapPointsFromTop[destSnapPointIndex] - endOffsetY)
+      ) {
+        destSnapPointIndex = index;
       }
     }
 
@@ -57,17 +66,21 @@ function Example() {
       bottomSheetTranslateY.value + translationY.value;
     translationY.value = 0;
 
-    bottomSheetTranslateY.value = withSpring(destSnapPoint, {
-      mass: 0.5,
-    });
-    runOnJS(setSnapPoint)(destSnapPoint);
+    snapPointIndexValue.value = destSnapPointIndex;
+    bottomSheetTranslateY.value = withSpring(
+      snapPointsFromTop[destSnapPointIndex],
+      {
+        mass: 0.5,
+      }
+    );
+    runOnJS(setSnapPointIndex)(destSnapPointIndex);
   };
   const panGesture = usePanGesture({
     onUpdate: (e) => {
       // when bottom sheet is not fully opened scroll offset should not influence
       // its position (prevents random snapping when opening bottom sheet when
       // the content is already scrolled)
-      if (snapPoint === FULLY_OPEN_SNAP_POINT) {
+      if (snapPointIndex === 0) {
         translationY.value = e.translationY - scrollOffset.value;
       } else {
         translationY.value = e.translationY;
@@ -77,7 +90,7 @@ function Example() {
   });
 
   const blockScrollUntilAtTheTop = useTapGesture({
-    maxDeltaY: snapPoint - FULLY_OPEN_SNAP_POINT,
+    maxDeltaY: snapPointsFromTop[snapPointIndex] - fullyOpenSnapPoint,
     maxDuration: 100000,
     simultaneousWith: panGesture,
   });
@@ -96,8 +109,8 @@ function Example() {
   const bottomSheetAnimatedStyle = useAnimatedStyle(() => {
     const translateY = bottomSheetTranslateY.value + translationY.value;
 
-    const minTranslateY = Math.max(FULLY_OPEN_SNAP_POINT, translateY);
-    const clampedTranslateY = Math.min(CLOSED_SNAP_POINT, minTranslateY);
+    const minTranslateY = Math.max(fullyOpenSnapPoint, translateY);
+    const clampedTranslateY = Math.min(closedSnapPoint, minTranslateY);
     return {
       transform: [{ translateY: clampedTranslateY }],
     };
@@ -109,7 +122,11 @@ function Example() {
   );
 
   return (
-    <View style={commonStyles.centerView}>
+    <View
+      style={[commonStyles.centerView, styles.container]}
+      onLayout={({ nativeEvent }) => {
+        setContainerHeight(nativeEvent.layout.height);
+      }}>
       <LoremIpsum words={200} />
       <GestureDetector gesture={blockScrollUntilAtTheTop}>
         <Animated.View style={[styles.bottomSheet, bottomSheetAnimatedStyle]}>
@@ -137,6 +154,9 @@ function Example() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    overflow: 'hidden',
+  },
   header: {
     height: HEADER_HEIGTH,
     backgroundColor: COLORS.NAVY,
