@@ -1,5 +1,1 @@
-let handlerTag = 1;
-
-export function getNextHandlerTag(): number {
-  return handlerTag++;
-}
+export * from '@swmansion/gesture-handler-core/src/handlers/getNextHandlerTag';

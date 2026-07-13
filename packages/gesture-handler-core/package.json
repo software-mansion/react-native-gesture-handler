@@ -1,0 +1,21 @@
+{
+  "name": "@swmansion/gesture-handler-core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Platform-agnostic core of gesture-handler: v3 hooks, detector orchestration, types and the platform port (PoC)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "react-native": "src/index.ts",
+  "scripts": {
+    "ts-check": "yarn tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.12",
+    "react": "19.2.3",
+    "typescript": "~5.8.3"
+  },
+  "sideEffects": false
+}

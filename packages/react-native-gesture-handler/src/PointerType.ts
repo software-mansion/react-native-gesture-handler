@@ -1,7 +1,1 @@
-export enum PointerType {
-  TOUCH,
-  STYLUS,
-  MOUSE,
-  KEY,
-  OTHER,
-}
+export * from '@swmansion/gesture-handler-core/src/PointerType';

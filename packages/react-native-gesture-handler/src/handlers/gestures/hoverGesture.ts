@@ -1,18 +1,16 @@
+import { HoverEffect } from '@swmansion/gesture-handler-core/src/HoverEffect';
+
 import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { HoverGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 import type { BaseGestureConfig } from './gesture';
 import { ContinousBaseGesture } from './gesture';
 
+export { HoverEffect };
+
 export type HoverGestureChangeEventPayload = {
   changeX: number;
   changeY: number;
 };
-
-export enum HoverEffect {
-  NONE = 0,
-  LIFT = 1,
-  HIGHLIGHT = 2,
-}
 
 export interface HoverGestureConfig {
   hoverEffect?: HoverEffect;

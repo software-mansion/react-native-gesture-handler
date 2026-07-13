@@ -4417,6 +4417,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swmansion/gesture-handler-core@workspace:*, @swmansion/gesture-handler-core@workspace:packages/gesture-handler-core":
+  version: 0.0.0-use.local
+  resolution: "@swmansion/gesture-handler-core@workspace:packages/gesture-handler-core"
+  dependencies:
+    "@types/react": "npm:^19.0.12"
+    react: "npm:19.1.0"
+    typescript: "npm:~5.8.3"
+  peerDependencies:
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@swmansion/icons@npm:^0.0.1":
   version: 0.0.1
   resolution: "@swmansion/icons@npm:0.0.1"
@@ -13280,6 +13292,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.12.7"
     "@react-native/babel-preset": "npm:0.86.0"
     "@react-native/jest-preset": "npm:0.86.0"
+    "@swmansion/gesture-handler-core": "workspace:*"
     "@testing-library/react-native": "npm:^12.5.1"
     "@types/invariant": "npm:^2.2.37"
     "@types/jest": "npm:^29.5.12"
@@ -13720,6 +13733,13 @@ __metadata:
   peerDependencies:
     react: ^19.2.3
   checksum: 10c0/842b82239dbddbc536083a6260c3e1b0507c02a3400bd05879fc19160468fd0f8ab79fec5dceffa6113b131835cc7621212f8415b46ea5156ab66bbfd7e24297
+  languageName: node
+  linkType: hard
+
+"react@npm:19.1.0":
+  version: 19.1.0
+  resolution: "react@npm:19.1.0"
+  checksum: 10c0/530fb9a62237d54137a13d2cfb67a7db6a2156faed43eecc423f4713d9b20c6f2728b026b45e28fcd72e8eadb9e9ed4b089e99f5e295d2f0ad3134251bdd3698
   languageName: node
   linkType: hard
 

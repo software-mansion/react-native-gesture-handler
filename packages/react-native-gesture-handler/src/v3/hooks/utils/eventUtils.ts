@@ -1,5 +1,3 @@
-import type { NativeSyntheticEvent } from 'react-native';
-
 import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../../utils';
 import type {
@@ -11,16 +9,19 @@ import type {
   GestureHandlerEventWithHandlerData,
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
+  NativeSyntheticEventLike,
 } from '../../types';
 
 function isNativeEvent<THandlerData, TExtendedHandlerData extends THandlerData>(
   event: GestureHandlerEventWithHandlerData<THandlerData, TExtendedHandlerData>
 ): event is
-  | NativeSyntheticEvent<
+  | NativeSyntheticEventLike<
       GestureUpdateEventWithHandlerData<TExtendedHandlerData>
     >
-  | NativeSyntheticEvent<GestureStateChangeEventWithHandlerData<THandlerData>>
-  | NativeSyntheticEvent<GestureTouchEvent> {
+  | NativeSyntheticEventLike<
+      GestureStateChangeEventWithHandlerData<THandlerData>
+    >
+  | NativeSyntheticEventLike<GestureTouchEvent> {
   'worklet';
 
   return 'nativeEvent' in event;
