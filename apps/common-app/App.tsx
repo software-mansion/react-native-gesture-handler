@@ -16,9 +16,14 @@ import {
   Switch,
   Touchable,
 } from 'react-native-gesture-handler';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  initialWindowMetrics,
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 
 import { COLORS } from './src/common';
+import { ConsoleLogSheet, useConsoleSheetCollapsedHeight } from './src/console';
 import { OLD_EXAMPLES } from './src/legacy';
 import { TouchableExample } from './src/legacy/release_tests/touchables';
 import { ListWithHeader } from './src/ListWithHeader';
@@ -37,41 +42,64 @@ type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 export default function App() {
-  const [showLegacyVersion, setShowLegacyVersion] = useState(false);
   return (
-    <GestureHandlerRootView>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            cardStyle: {
-              // It's important to set height for the screen, without it scroll doesn't work on web platform.
-              height: Dimensions.get('window').height,
-              backgroundColor: COLORS.offWhite,
-            },
-            headerStyle: {
-              backgroundColor: COLORS.offWhite,
-              borderBottomColor: COLORS.headerSeparator,
-              borderBottomWidth: 1,
-            },
-          }}>
-          <Stack.Screen
-            name="Home"
-            options={{ headerShown: false }}
-            component={MainScreen}
-          />
-          {(showLegacyVersion ? OLD_EXAMPLES : NEW_EXAMPLES)
-            .flatMap(({ data }) => data)
-            .flatMap(({ name, component }) => (
+    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+      <AppContent />
+    </SafeAreaProvider>
+  );
+}
+
+function AppContent() {
+  const [showLegacyVersion, setShowLegacyVersion] = useState(false);
+  const consoleSheetCollapsedHeight = useConsoleSheetCollapsedHeight();
+  return (
+    <GestureHandlerRootView style={styles.root}>
+      <View style={styles.root}>
+        <View
+          style={[
+            styles.navigationContainer,
+            { paddingBottom: consoleSheetCollapsedHeight },
+          ]}>
+          <NavigationContainer>
+            <Stack.Navigator
+              screenOptions={{
+                cardStyle: {
+                  // It's important to set height for the screen, without it scroll doesn't work on web platform.
+                  height:
+                    Dimensions.get('window').height -
+                    consoleSheetCollapsedHeight,
+                  backgroundColor: COLORS.offWhite,
+                },
+                headerStyle: {
+                  backgroundColor: COLORS.offWhite,
+                  borderBottomColor: COLORS.headerSeparator,
+                  borderBottomWidth: 1,
+                },
+              }}>
               <Stack.Screen
-                key={name}
-                name={name}
-                getComponent={() => component}
-                options={{ title: name }}
+                name="Home"
+                options={{ headerShown: false }}
+                component={MainScreen}
               />
-            ))}
-          <Stack.Screen name="TouchableExample" component={TouchableExample} />
-        </Stack.Navigator>
-      </NavigationContainer>
+              {(showLegacyVersion ? OLD_EXAMPLES : NEW_EXAMPLES)
+                .flatMap(({ data }) => data)
+                .flatMap(({ name, component }) => (
+                  <Stack.Screen
+                    key={name}
+                    name={name}
+                    getComponent={() => component}
+                    options={{ title: name }}
+                  />
+                ))}
+              <Stack.Screen
+                name="TouchableExample"
+                component={TouchableExample}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </View>
+        <ConsoleLogSheet />
+      </View>
     </GestureHandlerRootView>
   );
 
@@ -234,6 +262,13 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  navigationContainer: {
+    flex: 1,
+    overflow: 'hidden',
+  },
   container: {
     flex: 1,
     backgroundColor: COLORS.offWhite,
