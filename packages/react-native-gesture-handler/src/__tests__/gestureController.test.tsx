@@ -171,6 +171,53 @@ describe('createGestureController', () => {
     expect(() => gesture.begin({ state: State.BEGAN } as never)).toThrow(
       "createGestureController manages 'state' internally."
     );
+    expect(gesture.getState()).toBe(State.UNDETERMINED);
+
+    gesture.begin();
+
+    expect(gesture.getState()).toBe(State.BEGAN);
+  });
+
+  test('uses the latest callbacks after rerender', () => {
+    const calls: string[] = [];
+    const hook = renderHook(
+      ({ value }: { value: number }) =>
+        usePanGesture({
+          disableReanimated: true,
+          onBegin: () => calls.push(`begin-${value}`),
+          onActivate: () => calls.push(`activate-${value}`),
+        }),
+      { initialProps: { value: 1 } }
+    );
+    const gesture = createGestureController(hook.result.current);
+
+    gesture.begin();
+    hook.rerender({ value: 2 });
+    gesture.activate();
+
+    expect(calls).toEqual(['begin-1', 'activate-2']);
+  });
+
+  test('uses the latest enabled value after rerender', () => {
+    const onBegin = jest.fn();
+    const hook = renderHook(
+      ({ enabled }: { enabled: boolean }) =>
+        usePanGesture({ disableReanimated: true, enabled, onBegin }),
+      { initialProps: { enabled: true } }
+    );
+    const gesture = createGestureController(hook.result.current);
+
+    hook.rerender({ enabled: false });
+    gesture.begin();
+
+    expect(gesture.getState()).toBe(State.UNDETERMINED);
+    expect(onBegin).not.toHaveBeenCalled();
+
+    hook.rerender({ enabled: true });
+    gesture.begin();
+
+    expect(gesture.getState()).toBe(State.BEGAN);
+    expect(onBegin).toHaveBeenCalledTimes(1);
   });
 
   test('disabled gestures are no-ops', () => {

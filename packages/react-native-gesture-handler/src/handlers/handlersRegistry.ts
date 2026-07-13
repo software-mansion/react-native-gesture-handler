@@ -24,19 +24,29 @@ export function registerGesture<
   handlerTag: number,
   gesture: SingleGesture<TConfig, THandlerData, TExtendedHandlerData>
 ) {
-  if (isTestEnv() && gesture.config.testID) {
-    hookGestures.set(handlerTag, gesture);
+  if (!isTestEnv()) {
+    return;
+  }
+
+  hookGestures.set(handlerTag, gesture);
+
+  if (gesture.config.testID) {
     testIDs.set(gesture.config.testID, handlerTag);
   }
 }
 
 export function unregisterGesture(handlerTag: number) {
+  if (!isTestEnv()) {
+    return;
+  }
+
   const gesture = hookGestures.get(handlerTag);
 
-  if (gesture && isTestEnv() && gesture.config.testID) {
+  if (gesture?.config.testID) {
     testIDs.delete(gesture.config.testID);
-    hookGestures.delete(handlerTag);
   }
+
+  hookGestures.delete(handlerTag);
 }
 
 export function registerHandler(

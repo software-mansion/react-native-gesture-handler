@@ -31,7 +31,7 @@ import type { PanGesture } from '../handlers/gestures/panGesture';
 import type { PinchGesture } from '../handlers/gestures/pinchGesture';
 import type { RotationGesture } from '../handlers/gestures/rotationGesture';
 import type { TapGesture } from '../handlers/gestures/tapGesture';
-import { findHandlerByTestID } from '../handlers/handlersRegistry';
+import { findGesture, findHandlerByTestID } from '../handlers/handlersRegistry';
 import type { LongPressGestureHandler } from '../handlers/LongPressGestureHandler';
 import { longPressHandlerName } from '../handlers/LongPressGestureHandler';
 import type { NativeViewGestureHandler } from '../handlers/NativeViewGestureHandler';
@@ -555,7 +555,19 @@ function validateControllerEvent(event: Record<string, unknown>) {
 }
 
 function resolveGestureControllerTarget(target: GestureControllerTarget) {
-  return typeof target === 'string' ? getByGestureTestId(target) : target;
+  if (typeof target === 'string') {
+    return getByGestureTestId(target);
+  }
+
+  if (isGesture(target)) {
+    return target;
+  }
+
+  if (isHookGesture(target)) {
+    return findGesture(target.handlerTag) ?? target;
+  }
+
+  return target;
 }
 
 class GestureControllerImpl<
@@ -565,60 +577,96 @@ class GestureControllerImpl<
   private state: State = State.UNDETERMINED;
 
   // eslint-disable-next-line no-useless-constructor
-  constructor(private handlerData: HandlerData) {}
+  constructor(private resolveHandlerData: () => HandlerData) {}
 
   public getState() {
     return this.state;
   }
 
   public begin(event: GestureControllerEvent<TEventPayload> = {}) {
-    if (!this.isEnabled()) {
+    const handlerData = this.resolveHandlerData();
+
+    if (!this.isEnabled(handlerData)) {
       return;
     }
 
-    this.transition('begin', State.BEGAN, [State.UNDETERMINED], event);
+    this.transition(
+      'begin',
+      State.BEGAN,
+      [State.UNDETERMINED],
+      event,
+      handlerData
+    );
   }
 
   public activate(event: GestureControllerEvent<TEventPayload> = {}) {
-    if (!this.isEnabled()) {
+    const handlerData = this.resolveHandlerData();
+
+    if (!this.isEnabled(handlerData)) {
       return;
     }
 
-    this.transition('activate', State.ACTIVE, [State.BEGAN], event);
+    this.transition(
+      'activate',
+      State.ACTIVE,
+      [State.BEGAN],
+      event,
+      handlerData
+    );
   }
 
   public update(event: GestureControllerEvent<TEventPayload> = {}) {
-    if (!this.isEnabled()) {
+    const handlerData = this.resolveHandlerData();
+
+    if (!this.isEnabled(handlerData)) {
       return;
     }
 
     this.assertCurrentState('update', [State.ACTIVE]);
 
-    const nativeEvent = this.buildEvent(State.ACTIVE, event);
-    this.handlerData.emitEvent(
+    const nativeEvent = this.buildEvent(State.ACTIVE, event, handlerData);
+    handlerData.emitEvent(
       'onGestureHandlerEvent',
       wrapWithNativeEvent(nativeEvent as GestureHandlerTestEvent)
     );
   }
 
   public end(event: GestureControllerEvent<TEventPayload> = {}) {
-    if (!this.isEnabled()) {
+    const handlerData = this.resolveHandlerData();
+
+    if (!this.isEnabled(handlerData)) {
       return;
     }
 
-    this.transition('end', State.END, [State.BEGAN, State.ACTIVE], event);
+    this.transition(
+      'end',
+      State.END,
+      [State.BEGAN, State.ACTIVE],
+      event,
+      handlerData
+    );
   }
 
   public fail(event: GestureControllerEvent<TEventPayload> = {}) {
-    if (!this.isEnabled()) {
+    const handlerData = this.resolveHandlerData();
+
+    if (!this.isEnabled(handlerData)) {
       return;
     }
 
-    this.transition('fail', State.FAILED, [State.BEGAN, State.ACTIVE], event);
+    this.transition(
+      'fail',
+      State.FAILED,
+      [State.BEGAN, State.ACTIVE],
+      event,
+      handlerData
+    );
   }
 
   public cancel(event: GestureControllerEvent<TEventPayload> = {}) {
-    if (!this.isEnabled()) {
+    const handlerData = this.resolveHandlerData();
+
+    if (!this.isEnabled(handlerData)) {
       return;
     }
 
@@ -626,7 +674,8 @@ class GestureControllerImpl<
       'cancel',
       State.CANCELLED,
       [State.BEGAN, State.ACTIVE],
-      event
+      event,
+      handlerData
     );
   }
 
@@ -634,26 +683,27 @@ class GestureControllerImpl<
     action: string,
     nextState: State,
     allowedStates: State[],
-    event: GestureControllerEvent<TEventPayload>
+    event: GestureControllerEvent<TEventPayload>,
+    handlerData: HandlerData
   ) {
     this.assertCurrentState(action, allowedStates);
 
     const oldState = this.state;
-    this.state = nextState;
-
     const nativeEvent = {
       oldState,
-      ...this.buildEvent(nextState, event),
+      ...this.buildEvent(nextState, event, handlerData),
     } as GestureHandlerTestEvent;
 
-    this.handlerData.emitEvent(
+    this.state = nextState;
+
+    handlerData.emitEvent(
       'onGestureHandlerStateChange',
       wrapWithNativeEvent(nativeEvent)
     );
   }
 
-  private isEnabled() {
-    return this.handlerData.enabled !== false;
+  private isEnabled(handlerData: HandlerData) {
+    return handlerData.enabled !== false;
   }
 
   private assertCurrentState(action: string, allowedStates: State[]) {
@@ -665,11 +715,12 @@ class GestureControllerImpl<
 
   private buildEvent(
     state: State,
-    event: GestureControllerEvent<TEventPayload>
+    event: GestureControllerEvent<TEventPayload>,
+    handlerData: HandlerData
   ): Omit<GestureHandlerTestEvent, 'oldState'> {
     validateControllerEvent(event);
 
-    return fillMissingDefaultsFor(this.handlerData)({
+    return fillMissingDefaultsFor(handlerData)({
       ...event,
       state,
     } as Partial<GestureHandlerTestEvent>) as Omit<
@@ -692,11 +743,9 @@ export function createGestureController<
 export function createGestureController(
   componentOrGesture: GestureControllerTarget
 ): GestureController<Record<string, unknown>> {
-  const handlerData = getHandlerData(
-    resolveGestureControllerTarget(componentOrGesture)
+  return new GestureControllerImpl(() =>
+    getHandlerData(resolveGestureControllerTarget(componentOrGesture))
   );
-
-  return new GestureControllerImpl(handlerData);
 }
 
 export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
