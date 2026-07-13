@@ -1,22 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform } from 'react-native';
 
 import type {
   TouchAction,
   UserSelect,
 } from '../../../handlers/gestureHandlerCommon';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../../utils';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
+import type { CoreRuntime } from '../../platform/Port';
 import type {
   DetectorCallbacks,
   GestureHandlerEventWithHandlerData,
   VirtualChild,
 } from '../../types';
 import type { InterceptingGestureDetectorProps } from '../common';
-import { AnimatedNativeDetector, nativeDetectorStyles } from '../common';
-import HostGestureDetector from '../HostGestureDetector';
-import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
 import { useDetectorAttachmentGuard } from '../useDetectorAttachmentGuard';
 import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
 import { useGestureRelationsUpdater } from '../useGestureRelationsUpdater';
@@ -40,25 +36,24 @@ export function InterceptingGestureDetector<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
->({
-  gesture,
-  children,
-  touchAction,
-  userSelect,
-  enableContextMenu,
-}: InterceptingGestureDetectorProps<
-  TConfig,
-  THandlerData,
-  TExtendedHandlerData
->) {
-  useEnsureGestureHandlerRootView();
+>(
+  runtime: CoreRuntime,
+  props: InterceptingGestureDetectorProps<
+    TConfig,
+    THandlerData,
+    TExtendedHandlerData
+  >
+) {
+  const { gesture, children, touchAction, userSelect, enableContextMenu } =
+    props;
+  useEnsureGestureHandlerRootView(runtime);
 
   const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
     () => new Set()
   );
   const strippedVirtualChildren: StrippedVirtualChildren[] = useMemo(
     () =>
-      Platform.OS === 'web'
+      runtime.port.capabilities.virtualChildrenCarryViewRefs
         ? Array.from(virtualChildren).map((child) => ({
             viewTag: child.viewTag,
             handlerTags: child.handlerTags,
@@ -71,6 +66,7 @@ export function InterceptingGestureDetector<
             viewTag: child.viewTag,
             handlerTags: child.handlerTags,
           })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [virtualChildren]
   );
   const [mode, setMode] = useState<InterceptingDetectorMode>(
@@ -86,10 +82,10 @@ export function InterceptingGestureDetector<
   const dispatchesAnimatedEvents = mode === InterceptingDetectorMode.ANIMATED;
 
   const NativeDetectorComponent = dispatchesAnimatedEvents
-    ? AnimatedNativeDetector
+    ? runtime.port.detector.AnimatedHostGestureDetector
     : shouldUseReanimatedDetector
-      ? ReanimatedNativeDetector
-      : HostGestureDetector;
+      ? runtime.port.detector.ReanimatedHostGestureDetector
+      : runtime.port.detector.HostGestureDetector;
 
   const register = useCallback((child: VirtualChild) => {
     setVirtualChildren((prev) => {
@@ -219,11 +215,11 @@ export function InterceptingGestureDetector<
     [getHandlers]
   );
   const reanimatedEventHandler =
-    Reanimated?.useComposedEventHandler(reanimatedEvents);
+    runtime.port.reanimated?.useComposedEventHandler(reanimatedEvents);
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
 
-  useGestureRelationsUpdater(gesture);
+  useGestureRelationsUpdater(runtime, gesture);
 
   const handlerTags = useMemo(() => {
     if (gesture) {
@@ -242,16 +238,15 @@ export function InterceptingGestureDetector<
   // On native, Reanimated handles routing internally based on the event names
   // passed to the useEvent hook. We only need to pass it once, so that Reanimated
   // can setup its internal listeners.
-  const reanimatedHandlers =
-    Platform.OS === 'web'
-      ? {
-          onGestureHandlerReanimatedEvent: reanimatedEventHandler,
-          onGestureHandlerReanimatedStateChange: reanimatedEventHandler,
-          onGestureHandlerReanimatedTouchEvent: reanimatedEventHandler,
-        }
-      : {
-          onGestureHandlerReanimatedEvent: reanimatedEventHandler,
-        };
+  const reanimatedHandlers = runtime.port.capabilities.fansOutReanimatedHandlers
+    ? {
+        onGestureHandlerReanimatedEvent: reanimatedEventHandler,
+        onGestureHandlerReanimatedStateChange: reanimatedEventHandler,
+        onGestureHandlerReanimatedTouchEvent: reanimatedEventHandler,
+      }
+    : {
+        onGestureHandlerReanimatedEvent: reanimatedEventHandler,
+      };
 
   const jsEventHandler = useMemo(
     () => createGestureEventHandler('jsEventHandler'),
@@ -294,7 +289,7 @@ export function InterceptingGestureDetector<
             : undefined
         }
         handlerTags={handlerTags}
-        style={nativeDetectorStyles.detector}
+        style={runtime.port.detector.detectorStyle}
         virtualChildren={strippedVirtualChildren}
         moduleId={globalThis._RNGH_MODULE_ID}>
         {children}

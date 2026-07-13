@@ -1,90 +1,22 @@
-import type { ComponentClass } from 'react';
+import type {
+  NativeEventsManager,
+  ReanimatedIntegration,
+} from '@swmansion/gesture-handler-core';
 
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 import { tagMessage } from '../../utils';
 import { NativeProxy } from '../../v3/NativeProxy';
-import type {
-  GestureCallbacks,
-  GestureUpdateEventWithHandlerData,
-  SharedValue,
-} from '../../v3/types';
 
-export type ReanimatedContext<THandlerData> = {
-  lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
-};
+// The type surface now lives in the core package (platform/ReanimatedIntegration
+// + types/ReanimatedTypes); re-exported here for backwards compatibility with
+// deep importers.
+export type {
+  ReanimatedContext,
+  ReanimatedHandler,
+} from '@swmansion/gesture-handler-core/src/v3/types';
+export type { NativeEventsManager };
 
-interface WorkletProps {
-  __closure: unknown;
-  __workletHash: number;
-  __initData?: unknown;
-  __init?: () => unknown;
-  __stackDetails?: unknown;
-  __pluginVersion?: string;
-}
-
-type WorkletFunction<
-  TArgs extends unknown[] = unknown[],
-  TReturn = unknown,
-> = ((...args: TArgs) => TReturn) & WorkletProps;
-
-export type ReanimatedHandler<THandlerData> = {
-  doDependenciesDiffer: boolean;
-  context: ReanimatedContext<THandlerData>;
-};
-
-export type NativeEventsManager = new (component: {
-  props: Record<string, unknown>;
-  _componentRef: React.Ref<unknown>;
-  // Removed in https://github.com/software-mansion/react-native-reanimated/pull/6736
-  // but we likely want to keep it for compatibility with older Reanimated versions
-  _componentViewTag: number;
-  getComponentViewTag: () => number;
-}) => {
-  attachEvents: () => void;
-  detachEvents: () => void;
-  updateEvents: (prevProps: Record<string, unknown>) => void;
-};
-
-let Reanimated:
-  | {
-      default: {
-        // Slightly modified definition copied from 'react-native-reanimated'
-        createAnimatedComponent<P extends object>(
-          component: ComponentClass<P>,
-          options?: unknown
-        ): ComponentClass<P>;
-      };
-      NativeEventsManager: NativeEventsManager;
-      useHandler: <THandlerData, TExtendedHandlerData extends THandlerData>(
-        handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
-      ) => ReanimatedHandler<TExtendedHandlerData>;
-      useEvent: <T>(
-        callback: (event: T) => void,
-        events: string[],
-        rebuild: boolean
-      ) => (event: unknown) => void;
-      useSharedValue: <T>(value: T) => SharedValue<T>;
-      setGestureState: (handlerTag: number, newState: number) => void;
-      isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
-      isWorkletFunction<
-        Args extends unknown[] = unknown[],
-        ReturnValue = unknown,
-      >(
-        value: unknown
-      ): value is WorkletFunction<Args, ReturnValue>;
-      useComposedEventHandler<T>(
-        handlers: (((event: T) => void) | null)[]
-      ): (event: T) => void;
-      // TODO: runOnJS and runOnUI are deprecated. These should be removed in near future.
-      runOnJS<A extends unknown[], R>(
-        fn: (...args: A) => R
-      ): (...args: Parameters<typeof fn>) => void;
-      runOnUI<A extends any[], R>(
-        fn: (...args: A) => R
-      ): (...args: Parameters<typeof fn>) => void;
-      makeMutable<T>(value: T): { value: T };
-    }
-  | undefined;
+let Reanimated: ReanimatedIntegration | undefined;
 
 try {
   Reanimated = require('react-native-reanimated');

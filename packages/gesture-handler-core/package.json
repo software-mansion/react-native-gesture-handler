@@ -13,8 +13,6 @@
     "react": "*"
   },
   "devDependencies": {
-    "@types/react": "^19.0.12",
-    "react": "19.2.3",
     "typescript": "~5.8.3"
   },
   "sideEffects": false

@@ -38,6 +38,8 @@ export type {
 } from './GestureTypes';
 export { ComposedGestureName, SingleGestureName } from './GestureTypes';
 export type {
+  ReanimatedContext,
+  ReanimatedHandler,
   SharedValue,
   SharedValueOrT,
   WithSharedValue,

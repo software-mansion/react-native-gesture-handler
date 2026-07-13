@@ -1,12 +1,9 @@
 import React, { useMemo } from 'react';
-import { Platform } from 'react-native';
 
 import { useJSResponderHandler } from '../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
+import type { CoreRuntime } from '../platform/Port';
 import type { NativeDetectorProps } from './common';
-import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
-import HostGestureDetector from './HostGestureDetector';
-import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
 import { useDetectorAttachmentGuard } from './useDetectorAttachmentGuard';
 import { useGestureRelationsUpdater } from './useGestureRelationsUpdater';
 import { ensureNativeDetectorComponent } from './utils';
@@ -15,23 +12,25 @@ export function NativeDetector<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
->({
-  gesture,
-  children,
-  touchAction,
-  userSelect,
-  enableContextMenu,
-}: NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
-  const { handleStartShouldSetResponder } = useJSResponderHandler(gesture);
+>(
+  runtime: CoreRuntime,
+  props: NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>
+) {
+  const { gesture, children, touchAction, userSelect, enableContextMenu } =
+    props;
+  const { handleStartShouldSetResponder } = useJSResponderHandler(
+    runtime,
+    gesture
+  );
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
-    ? AnimatedNativeDetector
+    ? runtime.port.detector.AnimatedHostGestureDetector
     : gesture.config.shouldUseReanimatedDetector
-      ? ReanimatedNativeDetector
-      : HostGestureDetector;
+      ? runtime.port.detector.ReanimatedHostGestureDetector
+      : runtime.port.detector.HostGestureDetector;
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
-  useGestureRelationsUpdater(gesture);
+  useGestureRelationsUpdater(runtime, gesture);
 
   const handlerTags = useMemo(() => {
     return isComposedGesture(gesture)
@@ -47,20 +46,19 @@ export function NativeDetector<
   // On native, Reanimated handles routing internally based on the event names
   // passed to the useEvent hook. We only need to pass it once, so that Reanimated
   // can setup its internal listeners.
-  const reanimatedHandlers =
-    Platform.OS === 'web'
-      ? {
-          onGestureHandlerReanimatedEvent:
-            gesture.detectorCallbacks.reanimatedEventHandler,
-          onGestureHandlerReanimatedStateChange:
-            gesture.detectorCallbacks.reanimatedEventHandler,
-          onGestureHandlerReanimatedTouchEvent:
-            gesture.detectorCallbacks.reanimatedEventHandler,
-        }
-      : {
-          onGestureHandlerReanimatedEvent:
-            gesture.detectorCallbacks.reanimatedEventHandler,
-        };
+  const reanimatedHandlers = runtime.port.capabilities.fansOutReanimatedHandlers
+    ? {
+        onGestureHandlerReanimatedEvent:
+          gesture.detectorCallbacks.reanimatedEventHandler,
+        onGestureHandlerReanimatedStateChange:
+          gesture.detectorCallbacks.reanimatedEventHandler,
+        onGestureHandlerReanimatedTouchEvent:
+          gesture.detectorCallbacks.reanimatedEventHandler,
+      }
+    : {
+        onGestureHandlerReanimatedEvent:
+          gesture.detectorCallbacks.reanimatedEventHandler,
+      };
 
   return (
     <NativeDetectorComponent
@@ -93,7 +91,7 @@ export function NativeDetector<
       }
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={handlerTags}
-      style={nativeDetectorStyles.detector}>
+      style={runtime.port.detector.detectorStyle}>
       {children}
     </NativeDetectorComponent>
   );

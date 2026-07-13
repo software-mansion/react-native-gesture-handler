@@ -1,3 +1,5 @@
+import type { GestureUpdateEventWithHandlerData } from './EventTypes';
+
 export type SharedValue<Value = unknown> = {
   value: Value;
   get(): Value;
@@ -57,3 +59,14 @@ type Simplify<T> =
           // For a generic object, retain the original structure while forcing an object type
           [K in keyof T]: T[K];
         } & NonNullable<unknown>;
+
+// Context carried between gesture event dispatches (relocated from the
+// legacy reanimatedWrapper; used by the core event handler chain).
+export type ReanimatedContext<THandlerData> = {
+  lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
+};
+
+export type ReanimatedHandler<THandlerData> = {
+  doDependenciesDiffer: boolean;
+  context: ReanimatedContext<THandlerData>;
+};

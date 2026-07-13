@@ -1,0 +1,51 @@
+import { useMemo } from 'react';
+
+import type {
+  BaseGestureConfig,
+  GestureCallbacks,
+  GestureHandlerEventWithHandlerData,
+  ReanimatedContext,
+} from '../../types';
+import { eventHandler } from './eventHandler';
+
+export function useGestureEventHandler<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  handlerTag: number,
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
+) {
+  const jsContext: ReanimatedContext<TExtendedHandlerData> = useMemo(() => {
+    return {
+      lastUpdateEvent: undefined,
+    };
+  }, []);
+
+  return useMemo(() => {
+    return (
+      event: GestureHandlerEventWithHandlerData<
+        THandlerData,
+        TExtendedHandlerData
+      >
+    ) => {
+      eventHandler(
+        handlerTag,
+        event,
+        handlers,
+        config.changeEventCalculator,
+        jsContext,
+        !!config.dispatchesAnimatedEvents,
+        config.fillInDefaultValues
+      );
+    };
+  }, [
+    handlerTag,
+    handlers,
+    config.changeEventCalculator,
+    config.dispatchesAnimatedEvents,
+    config.fillInDefaultValues,
+    jsContext,
+  ]);
+}

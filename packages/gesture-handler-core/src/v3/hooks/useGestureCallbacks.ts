@@ -1,0 +1,90 @@
+import { tagMessage } from '../../utils';
+import type { CoreRuntime } from '../platform/Port';
+import type {
+  AnimatedEvent,
+  BaseGestureConfig,
+  GestureUpdateEventWithHandlerData,
+} from '../types';
+import { useGestureEventHandler } from './callbacks/useGestureEventHandler';
+import { useReanimatedEventHandler } from './callbacks/useReanimatedEventHandler';
+import {
+  checkMappingForChangeProperties,
+  isNativeAnimatedEvent,
+  useMemoizedGestureCallbacks,
+} from './utils';
+
+function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
+  return (...args: unknown[]) => {
+    try {
+      handler(...args);
+    } catch (e) {
+      if (
+        e instanceof Error &&
+        e.message.includes('Bad event of type undefined for key')
+      ) {
+        throw new Error(
+          tagMessage(
+            'The event mapping inside an Animated.event is invalid. ' +
+              'Please make sure you are using the correct structure for the gesture event:\n\n' +
+              '{ nativeEvent: { handlerData: { /* your mappings here */ } } }'
+          )
+        );
+      }
+
+      throw e;
+    }
+  };
+}
+
+export function useGestureCallbacks<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  runtime: CoreRuntime,
+  handlerTag: number,
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
+) {
+  const callbacks = useMemoizedGestureCallbacks(config);
+
+  const jsEventHandler = useGestureEventHandler(handlerTag, callbacks, config);
+
+  let reanimatedEventHandler;
+
+  if (!config.disableReanimated) {
+    const reanimatedHandler = runtime.port.reanimated?.useHandler(callbacks);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    reanimatedEventHandler = useReanimatedEventHandler(
+      runtime,
+      handlerTag,
+      callbacks,
+      reanimatedHandler,
+      config.changeEventCalculator,
+      config.fillInDefaultValues
+    );
+  }
+
+  let animatedEventHandler:
+    | ((event: GestureUpdateEventWithHandlerData<TExtendedHandlerData>) => void)
+    | AnimatedEvent
+    | undefined;
+  if (config.dispatchesAnimatedEvents) {
+    if (__DEV__ && isNativeAnimatedEvent(config.onUpdate)) {
+      checkMappingForChangeProperties(config.onUpdate);
+    }
+
+    if (__DEV__ && !isNativeAnimatedEvent(config.onUpdate)) {
+      // @ts-expect-error At this point we know it's not a native animated event, so it's callable
+      animatedEventHandler = guardJSAnimatedEvent(config.onUpdate);
+    } else {
+      // @ts-expect-error The structure of an AnimatedEvent differs from other event types
+      animatedEventHandler = config.onUpdate;
+    }
+  }
+
+  return {
+    jsEventHandler,
+    reanimatedEventHandler,
+    animatedEventHandler,
+  };
+}
