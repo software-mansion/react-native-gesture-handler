@@ -1,0 +1,19 @@
+{
+  "name": "@swmansion/gesture-handler-dom-engine",
+  "version": "0.0.0",
+  "private": true,
+  "description": "DOM gesture recognition engine shared by react-native-gesture-handler (RNW web / Windows compat) and react-gesture-handler (PoC)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "react-native": "src/index.ts",
+  "scripts": {
+    "ts-check": "yarn tsc --noEmit"
+  },
+  "dependencies": {
+    "@swmansion/gesture-handler-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3"
+  },
+  "sideEffects": false
+}

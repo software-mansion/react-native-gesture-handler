@@ -1,4 +1,8 @@
-import { DiagonalDirections, Directions } from '../../Directions';
+import {
+  DiagonalDirections,
+  Directions,
+} from '@swmansion/gesture-handler-core/src/Directions';
+
 import { MINIMAL_RECOGNIZABLE_MAGNITUDE } from '../constants';
 import type PointerTracker from './PointerTracker';
 

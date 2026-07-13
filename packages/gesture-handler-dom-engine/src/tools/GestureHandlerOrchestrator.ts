@@ -1,5 +1,6 @@
-import { PointerType } from '../../PointerType';
-import { State } from '../../State';
+import { PointerType } from '@swmansion/gesture-handler-core/src/PointerType';
+import { State } from '@swmansion/gesture-handler-core/src/State';
+
 import type IGestureHandler from '../handlers/IGestureHandler';
 import PointerTracker from './PointerTracker';
 

@@ -1,30 +1,20 @@
+import type { SingleGestureName } from '@swmansion/gesture-handler-core';
+import type { Config } from '@swmansion/gesture-handler-dom-engine/src/interfaces';
 import type React from 'react';
 
 import type { ActionType } from './ActionType';
-import FlingGestureHandler from './web/handlers/FlingGestureHandler';
-import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
-import ManualGestureHandler from './web/handlers/ManualGestureHandler';
-import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
-import PanGestureHandler from './web/handlers/PanGestureHandler';
-import PinchGestureHandler from './web/handlers/PinchGestureHandler';
-import RotationGestureHandler from './web/handlers/RotationGestureHandler';
-import TapGestureHandler from './web/handlers/TapGestureHandler';
-import type { Config } from './web/interfaces';
 
-export const Gestures = {
-  NativeViewGestureHandler,
-  PanGestureHandler,
-  TapGestureHandler,
-  LongPressGestureHandler,
-  PinchGestureHandler,
-  RotationGestureHandler,
-  FlingGestureHandler,
-  ManualGestureHandler,
-};
+// This module exists solely so react-native-windows apps compile and run
+// (all methods are graceful no-ops; there is no Windows gesture support).
+// The former engine-class re-export was vestigial (zero consumers); the
+// symbol is kept as an empty frozen object so deep importers keep compiling,
+// and the module no longer loads the DOM engine at runtime.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const Gestures: Readonly<Record<string, any>> = Object.freeze({});
 
 export default {
   createGestureHandler<T>(
-    _handlerName: keyof typeof Gestures,
+    _handlerName: SingleGestureName,
     _handlerTag: number,
     _config: T
   ) {

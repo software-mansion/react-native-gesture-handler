@@ -1,9 +1,8 @@
+import { NativeGestureRole } from '@swmansion/gesture-handler-dom-engine/src/interfaces';
+import { GestureLifecycleEvent } from '@swmansion/gesture-handler-dom-engine/src/tools/GestureLifecycleEvents';
 import * as React from 'react';
 import type { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 import { View } from 'react-native';
-
-import { NativeGestureRole } from '../web/interfaces';
-import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
 
 const prefersReducedMotion = (): boolean =>
   typeof window !== 'undefined' &&

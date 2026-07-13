@@ -1,4 +1,5 @@
-import { SingleGestureName } from '../../v3/types';
+import { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+
 import type { AdaptedEvent } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandler from './GestureHandler';

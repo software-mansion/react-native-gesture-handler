@@ -1,5 +1,6 @@
+import NodeManager from '@swmansion/gesture-handler-dom-engine/src/tools/NodeManager';
+
 import { State } from '../../State';
-import NodeManager from '../../web/tools/NodeManager';
 import type { GestureStateManagerType } from './gestureStateManager';
 
 export const GestureStateManager = {

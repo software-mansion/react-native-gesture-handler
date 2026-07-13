@@ -1,5 +1,6 @@
-import { State } from '../../State';
-import { SingleGestureName } from '../../v3/types';
+import { State } from '@swmansion/gesture-handler-core/src/State';
+import { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+
 import type { AdaptedEvent, Config } from '../interfaces';
 import { EventTypes } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';

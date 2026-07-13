@@ -1,6 +1,10 @@
-import { DiagonalDirections, Directions } from '../../Directions';
-import { State } from '../../State';
-import { SingleGestureName } from '../../v3/types';
+import {
+  DiagonalDirections,
+  Directions,
+} from '@swmansion/gesture-handler-core/src/Directions';
+import { State } from '@swmansion/gesture-handler-core/src/State';
+import { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+
 import type { AdaptedEvent, Config } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import Vector from '../tools/Vector';

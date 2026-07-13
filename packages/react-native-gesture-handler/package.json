@@ -67,6 +67,7 @@
   "homepage": "https://docs.swmansion.com/react-native-gesture-handler/",
   "dependencies": {
     "@swmansion/gesture-handler-core": "workspace:*",
+    "@swmansion/gesture-handler-dom-engine": "workspace:*",
     "@types/react-test-renderer": "^19.1.0",
     "invariant": "^2.2.4"
   },

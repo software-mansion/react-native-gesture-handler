@@ -1,8 +1,8 @@
+import type { PropsRef } from '@swmansion/gesture-handler-dom-engine/src/interfaces';
 import type React from 'react';
 import { useCallback } from 'react';
 
 import findNodeHandle from '../../../findNodeHandle';
-import type { PropsRef } from '../../../web/interfaces';
 import type { GestureType } from '../gesture';
 import type { ComposedGesture } from '../gestureComposition';
 import { attachHandlers } from './attachHandlers';

@@ -1,8 +1,9 @@
-import findNodeHandle from '../../findNodeHandle';
-import { MouseButton } from '../../handlers/gestureHandlerCommon';
-import { State } from '../../State';
-import { tagMessage } from '../../utils';
-import { SingleGestureName } from '../../v3/types';
+import { MouseButton } from '@swmansion/gesture-handler-core/src/handlers/gestureHandlerCommon';
+import { State } from '@swmansion/gesture-handler-core/src/State';
+import { tagMessage } from '@swmansion/gesture-handler-core/src/utils';
+import { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+
+import findNodeHandle from '../findNodeHandle';
 import type IGestureHandler from '../handlers/IGestureHandler';
 import type { SVGRef } from '../interfaces';
 import {

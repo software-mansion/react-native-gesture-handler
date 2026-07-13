@@ -1,3 +1,5 @@
+import { type PropsRef } from '@swmansion/gesture-handler-dom-engine/src/interfaces';
+import NodeManager from '@swmansion/gesture-handler-dom-engine/src/tools/NodeManager';
 import type { Ref, RefObject } from 'react';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
@@ -9,8 +11,6 @@ import type {
 } from '../../handlers/gestureHandlerCommon';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
 import { tagMessage } from '../../utils';
-import { type PropsRef } from '../../web/interfaces';
-import NodeManager from '../../web/tools/NodeManager';
 import { useNativeGestureRole } from './useNativeGestureRole';
 
 export interface GestureHandlerDetectorProps extends PropsRef {

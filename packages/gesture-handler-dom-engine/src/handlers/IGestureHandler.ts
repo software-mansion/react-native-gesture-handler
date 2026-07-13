@@ -1,15 +1,15 @@
-import type { RefObject } from 'react';
-
-import type { ActionType } from '../../ActionType';
+import type { ActionType } from '@swmansion/gesture-handler-core/src/ActionType';
 import type {
   ActiveCursor,
   MouseButton,
   TouchAction,
   UserSelect,
-} from '../../handlers/gestureHandlerCommon';
-import type { PointerType } from '../../PointerType';
-import type { State } from '../../State';
-import type { SingleGestureName } from '../../v3/types';
+} from '@swmansion/gesture-handler-core/src/handlers/gestureHandlerCommon';
+import type { PointerType } from '@swmansion/gesture-handler-core/src/PointerType';
+import type { State } from '@swmansion/gesture-handler-core/src/State';
+import type { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+import type { RefObject } from 'react';
+
 import type { Config, HostDetector, PropsRef } from '../interfaces';
 import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';

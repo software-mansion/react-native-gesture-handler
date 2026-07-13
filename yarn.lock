@@ -4427,6 +4427,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@swmansion/gesture-handler-dom-engine@workspace:*, @swmansion/gesture-handler-dom-engine@workspace:packages/gesture-handler-dom-engine":
+  version: 0.0.0-use.local
+  resolution: "@swmansion/gesture-handler-dom-engine@workspace:packages/gesture-handler-dom-engine"
+  dependencies:
+    "@swmansion/gesture-handler-core": "workspace:*"
+    typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
+
 "@swmansion/icons@npm:^0.0.1":
   version: 0.0.1
   resolution: "@swmansion/icons@npm:0.0.1"
@@ -13291,6 +13300,7 @@ __metadata:
     "@react-native/babel-preset": "npm:0.86.0"
     "@react-native/jest-preset": "npm:0.86.0"
     "@swmansion/gesture-handler-core": "workspace:*"
+    "@swmansion/gesture-handler-dom-engine": "workspace:*"
     "@testing-library/react-native": "npm:^12.5.1"
     "@types/invariant": "npm:^2.2.37"
     "@types/jest": "npm:^29.5.12"

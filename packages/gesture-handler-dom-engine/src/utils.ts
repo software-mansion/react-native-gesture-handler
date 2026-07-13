@@ -1,5 +1,6 @@
-import type { StylusData } from '../handlers/gestureHandlerCommon';
-import { PointerType } from '../PointerType';
+import type { StylusData } from '@swmansion/gesture-handler-core/src/handlers/gestureHandlerCommon';
+import { PointerType } from '@swmansion/gesture-handler-core/src/PointerType';
+
 import type { GestureHandlerRef, Point, SVGRef } from './interfaces';
 
 export function hasDisplayContents(view: HTMLElement): boolean {

@@ -1,7 +1,8 @@
+import type IGestureHandler from '@swmansion/gesture-handler-dom-engine/src/handlers/IGestureHandler';
+import GestureHandlerOrchestrator from '@swmansion/gesture-handler-dom-engine/src/tools/GestureHandlerOrchestrator';
+import NodeManager from '@swmansion/gesture-handler-dom-engine/src/tools/NodeManager';
+
 import { tagMessage } from '../utils';
-import type IGestureHandler from '../web/handlers/IGestureHandler';
-import GestureHandlerOrchestrator from '../web/tools/GestureHandlerOrchestrator';
-import NodeManager from '../web/tools/NodeManager';
 import type { GestureStateManagerType } from './gestureStateManager';
 
 function ensureHandlerAttached(handler: IGestureHandler) {

@@ -1,22 +1,23 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { ActionType } from '../../ActionType';
+import { ActionType } from '@swmansion/gesture-handler-core/src/ActionType';
 import type {
   ActiveCursor,
   GestureTouchEvent,
   TouchAction,
   UserSelect,
-} from '../../handlers/gestureHandlerCommon';
-import { MouseButton } from '../../handlers/gestureHandlerCommon';
-import { PointerType } from '../../PointerType';
-import { State } from '../../State';
-import { TouchEventType } from '../../TouchEventType';
-import { tagMessage } from '../../utils';
+} from '@swmansion/gesture-handler-core/src/handlers/gestureHandlerCommon';
+import { MouseButton } from '@swmansion/gesture-handler-core/src/handlers/gestureHandlerCommon';
+import { PointerType } from '@swmansion/gesture-handler-core/src/PointerType';
+import { State } from '@swmansion/gesture-handler-core/src/State';
+import { TouchEventType } from '@swmansion/gesture-handler-core/src/TouchEventType';
+import { tagMessage } from '@swmansion/gesture-handler-core/src/utils';
 import type {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
   HandlerData,
   SingleGestureName,
-} from '../../v3/types';
+} from '@swmansion/gesture-handler-core/src/v3/types';
+
 import type {
   AdaptedEvent,
   Config,

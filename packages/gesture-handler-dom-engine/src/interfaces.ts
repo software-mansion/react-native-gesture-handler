@@ -1,6 +1,4 @@
-import type { RefObject } from 'react';
-
-import type { Directions } from '../Directions';
+import type { Directions } from '@swmansion/gesture-handler-core/src/Directions';
 import type {
   ActiveCursor,
   GestureTouchEvent,
@@ -8,13 +6,14 @@ import type {
   StylusData,
   TouchAction,
   UserSelect,
-} from '../handlers/gestureHandlerCommon';
-import type { PointerType } from '../PointerType';
-import type { State } from '../State';
+} from '@swmansion/gesture-handler-core/src/handlers/gestureHandlerCommon';
+import type { PointerType } from '@swmansion/gesture-handler-core/src/PointerType';
+import type { State } from '@swmansion/gesture-handler-core/src/State';
 import type {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
-} from '../v3/types';
+} from '@swmansion/gesture-handler-core/src/v3/types';
+import type { RefObject } from 'react';
 
 export interface HitSlop {
   left?: number | undefined;

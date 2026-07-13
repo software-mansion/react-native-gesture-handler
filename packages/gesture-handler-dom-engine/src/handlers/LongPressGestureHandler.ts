@@ -1,6 +1,7 @@
-import type { ActionType } from '../../ActionType';
-import { State } from '../../State';
-import { SingleGestureName } from '../../v3/types';
+import type { ActionType } from '@swmansion/gesture-handler-core/src/ActionType';
+import { State } from '@swmansion/gesture-handler-core/src/State';
+import { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+
 import type {
   AdaptedEvent,
   Config,

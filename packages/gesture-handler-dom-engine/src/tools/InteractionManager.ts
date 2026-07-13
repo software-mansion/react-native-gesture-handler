@@ -1,5 +1,6 @@
-import type { GestureRelations } from '../../v3/types';
-import { SingleGestureName } from '../../v3/types';
+import type { GestureRelations } from '@swmansion/gesture-handler-core/src/v3/types';
+import { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+
 import type IGestureHandler from '../handlers/IGestureHandler';
 import type { Config, Handler } from '../interfaces';
 

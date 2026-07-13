@@ -1,10 +1,9 @@
-import { Platform } from 'react-native';
+import { type ActionType } from '@swmansion/gesture-handler-core/src/ActionType';
+import { State } from '@swmansion/gesture-handler-core/src/State';
+import type { NativeHandlerData } from '@swmansion/gesture-handler-core/src/v3/hooks/gestures/native/NativeTypes';
+import type { HandlerData } from '@swmansion/gesture-handler-core/src/v3/types';
+import { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
 
-import { type ActionType } from '../../ActionType';
-import { State } from '../../State';
-import type { NativeHandlerData } from '../../v3/hooks/gestures/native/NativeTypes';
-import type { HandlerData } from '../../v3/types';
-import { SingleGestureName } from '../../v3/types';
 import {
   DEFAULT_TOUCH_SLOP,
   NATIVE_GESTURE_ROLE_ATTRIBUTE,
@@ -56,7 +55,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.shouldCancelWhenOutside = true;
 
-    if (Platform.OS !== 'web') {
+    // Environment guard replacing the former Platform.OS check: init() must be a
+    // no-op when there is no DOM (e.g. the module is loaded in a windows/node
+    // runtime that only wants the handler classes).
+    if (typeof window === 'undefined') {
       return;
     }
 

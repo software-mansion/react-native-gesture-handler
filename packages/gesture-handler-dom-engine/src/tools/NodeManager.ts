@@ -1,4 +1,5 @@
-import type { ValueOf } from '../../typeUtils';
+import type { ValueOf } from '@swmansion/gesture-handler-core/src/typeUtils';
+
 import type { Gestures } from '../Gestures';
 import type IGestureHandler from '../handlers/IGestureHandler';
 import type { HostDetector } from '../interfaces';

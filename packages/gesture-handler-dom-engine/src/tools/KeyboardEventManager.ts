@@ -1,4 +1,5 @@
-import { PointerType } from '../../PointerType';
+import { PointerType } from '@swmansion/gesture-handler-core/src/PointerType';
+
 import type { AdaptedEvent } from '../interfaces';
 import { EventTypes } from '../interfaces';
 import EventManager from './EventManager';

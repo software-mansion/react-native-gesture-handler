@@ -1,6 +1,7 @@
-import type { StylusData } from '../../handlers/gestureHandlerCommon';
-import { State } from '../../State';
-import { SingleGestureName } from '../../v3/types';
+import type { StylusData } from '@swmansion/gesture-handler-core/src/handlers/gestureHandlerCommon';
+import { State } from '@swmansion/gesture-handler-core/src/State';
+import { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+
 import type { AdaptedEvent } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';

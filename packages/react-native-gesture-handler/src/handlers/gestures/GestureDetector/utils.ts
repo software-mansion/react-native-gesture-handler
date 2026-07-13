@@ -1,11 +1,11 @@
-import { useCallback, useRef, useState } from 'react';
-
-import { isTestEnv, tagMessage } from '../../../utils';
 import type {
   GestureHandlerNativeEvent,
   PropsRef,
   ResultEvent,
-} from '../../../web/interfaces';
+} from '@swmansion/gesture-handler-dom-engine/src/interfaces';
+import { useCallback, useRef, useState } from 'react';
+
+import { isTestEnv, tagMessage } from '../../../utils';
 import { flingGestureHandlerProps } from '../../FlingGestureHandler';
 import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
 import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
