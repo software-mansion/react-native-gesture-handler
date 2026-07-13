@@ -163,6 +163,37 @@ describe('createGestureController', () => {
     );
   });
 
+  test.each([
+    ['end', State.END],
+    ['fail', State.FAILED],
+    ['cancel', State.CANCELLED],
+  ] as const)(
+    'reuses the controller for streams ending with %s',
+    (terminalAction, terminalState) => {
+      const onBegin = jest.fn();
+      const onFinalize = jest.fn();
+      const tap = renderHook(() =>
+        useTapGesture({ disableReanimated: true, onBegin, onFinalize })
+      ).result.current;
+      const gesture = createGestureController(tap);
+
+      gesture.begin();
+      gesture[terminalAction]();
+
+      expect(gesture.getState()).toBe(terminalState);
+
+      gesture.begin();
+
+      expect(gesture.getState()).toBe(State.BEGAN);
+
+      gesture[terminalAction]();
+
+      expect(gesture.getState()).toBe(terminalState);
+      expect(onBegin).toHaveBeenCalledTimes(2);
+      expect(onFinalize).toHaveBeenCalledTimes(2);
+    }
+  );
+
   test('rejects raw state-machine fields in event payloads', () => {
     const tap = renderHook(() => useTapGesture({ disableReanimated: true }))
       .result.current;

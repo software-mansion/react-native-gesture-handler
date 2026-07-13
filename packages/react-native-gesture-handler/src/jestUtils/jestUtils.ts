@@ -538,6 +538,12 @@ const FORBIDDEN_CONTROLLER_EVENT_FIELDS = [
   'state',
 ];
 
+const FINISHED_CONTROLLER_STATES: State[] = [
+  State.END,
+  State.FAILED,
+  State.CANCELLED,
+];
+
 function getStateName(state: State): string {
   return (
     Object.entries(State).find(([, value]) => value === state)?.[0] ??
@@ -589,6 +595,8 @@ class GestureControllerImpl<
     if (!this.isEnabled(handlerData)) {
       return;
     }
+
+    this.resetIfFinished();
 
     this.transition(
       'begin',
@@ -704,6 +712,12 @@ class GestureControllerImpl<
 
   private isEnabled(handlerData: HandlerData) {
     return handlerData.enabled !== false;
+  }
+
+  private resetIfFinished() {
+    if (FINISHED_CONTROLLER_STATES.includes(this.state)) {
+      this.state = State.UNDETERMINED;
+    }
   }
 
   private assertCurrentState(action: string, allowedStates: State[]) {
