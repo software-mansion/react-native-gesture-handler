@@ -107,6 +107,10 @@ def shouldUseCommonInterfaceFromRNSVG() {
             major > 15
 }
 
+def shouldUseRuntimeFromWorklets() {
+    return rootProject.subprojects.find { it.name == 'react-native-worklets' } != null
+}
+
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -152,6 +156,7 @@ android {
                 cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
                 arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                         "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
+                        "-DRNGH_USE_WORKLETS=${shouldUseRuntimeFromWorklets()}",
                         "-DANDROID_STL=c++_shared",
                         "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
                 abiFilters(*reactNativeArchitectures())
@@ -221,6 +226,13 @@ dependencies {
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
         implementation(rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
+            // resolves "Duplicate class com.facebook.jni.CppException"
+            exclude group: 'com.facebook.fbjni'
+        }
+    }
+
+    if (shouldUseRuntimeFromWorklets()) {
+        implementation(rootProject.subprojects.find { it.name == 'react-native-worklets' }) {
             // resolves "Duplicate class com.facebook.jni.CppException"
             exclude group: 'com.facebook.fbjni'
         }

@@ -27,6 +27,10 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s);
 
+  if GestureHandlerUtils.react_native_worklets_podspec_exists()
+    s.dependency "RNWorklets"
+  end
+
   if ENV['USE_FRAMEWORKS'] != nil
     add_dependency(s, "React-FabricComponents", :additional_framework_paths => [
       "react/renderer/textlayoutmanager/platform/ios",
