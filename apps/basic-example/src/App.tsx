@@ -6,9 +6,14 @@ import ContentsButton from './ContentsButton';
 import NativeDetector from './NativeDetector';
 import Navigator from './Navigator';
 import RuntimeDecoration from './RuntimeDecoration';
+import SharedValueProof from './SharedValueProof';
 import Text from './Text';
 
 const EXAMPLES = [
+  {
+    name: 'SharedValue Proof',
+    component: SharedValueProof,
+  },
   {
     name: 'Text',
     component: Text,
