@@ -19,12 +19,16 @@ export function observeReactNativeLogBox(
     return () => undefined;
   }
 
-  const logBoxData =
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('react-native/Libraries/LogBox/Data/LogBoxData') as ReactNativeLogBoxData;
-  const subscription = logBoxData.observe(({ selectedLogIndex }) => {
-    observer(selectedLogIndex >= 0);
-  });
+  try {
+    const logBoxData =
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require('react-native/Libraries/LogBox/Data/LogBoxData') as ReactNativeLogBoxData;
+    const subscription = logBoxData.observe(({ selectedLogIndex }) => {
+      observer(selectedLogIndex >= 0);
+    });
 
-  return () => subscription.unsubscribe();
+    return () => subscription.unsubscribe();
+  } catch {
+    return () => undefined;
+  }
 }
