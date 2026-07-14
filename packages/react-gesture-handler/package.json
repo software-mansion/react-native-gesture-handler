@@ -19,5 +19,8 @@
   "devDependencies": {
     "typescript": "~5.8.3"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "files": [
+    "src"
+  ]
 }

@@ -77,3 +77,6 @@ dist/
 .cache
 CompilationDatabase
 compile_commands.json
+
+# vendor-for-pack staging output (2-package publishing PoC)
+dist-pack/
