@@ -16,6 +16,7 @@ import com.facebook.react.views.textinput.ReactEditText
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.events.eventbuilders.NativeGestureHandlerEventDataBuilder
+import java.lang.reflect.Method
 
 class NativeViewGestureHandler : GestureHandler() {
   override val isContinuous = true
@@ -37,6 +38,17 @@ class NativeViewGestureHandler : GestureHandler() {
   var yieldsToContinuousGestures = false
     private set
 
+  /**
+   * When set, overrides whether the connected scrollable container delays the pressed state of
+   * its children (see [android.view.ViewGroup.shouldDelayChildPressedState]). Only applies to
+   * views implementing `HasChildPressedStateDelay` (React Native 0.87+), no-op otherwise. The
+   * override is applied for the duration of a gesture.
+   */
+  var delaysChildPressedState: Boolean? = null
+    private set
+
+  private var pressedStateDelayOverriddenView: View? = null
+
   private var hook: NativeViewGestureHandlerHook = defaultHook
 
   private data class ActiveUpdateSnapshot(val pointerInside: Boolean, val numberOfPointers: Int, val pointerType: Int)
@@ -53,6 +65,7 @@ class NativeViewGestureHandler : GestureHandler() {
     disallowInterruption = DEFAULT_DISALLOW_INTERRUPTION
     yieldsToContinuousGestures = DEFAULT_YIELDS_TO_CONTINUOUS_GESTURES
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
+    delaysChildPressedState = DEFAULT_DELAYS_CHILD_PRESSED_STATE
   }
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler): Boolean {
@@ -114,6 +127,14 @@ class NativeViewGestureHandler : GestureHandler() {
       is ReactHorizontalScrollView -> this.hook = ScrollViewHook()
       is ReactTextView -> this.hook = TextViewHook()
       is ReactViewGroup -> this.hook = ReactViewGroupHook()
+    }
+
+    delaysChildPressedState?.let { delays ->
+      this.view?.let {
+        if (trySetChildPressedStateDelay(it, delays)) {
+          pressedStateDelayOverriddenView = it
+        }
+      }
     }
   }
 
@@ -179,6 +200,9 @@ class NativeViewGestureHandler : GestureHandler() {
   override fun onReset() {
     this.hook = defaultHook
     lastActiveUpdate = null
+    // `null` restores the view's default pressed state delay behavior.
+    pressedStateDelayOverriddenView?.let { trySetChildPressedStateDelay(it, null) }
+    pressedStateDelayOverriddenView = null
   }
 
   override fun dispatchHandlerUpdate(event: MotionEvent) {
@@ -214,6 +238,9 @@ class NativeViewGestureHandler : GestureHandler() {
       if (config.hasKey(KEY_YIELDS_TO_CONTINUOUS_GESTURES)) {
         handler.yieldsToContinuousGestures = config.getBoolean(KEY_YIELDS_TO_CONTINUOUS_GESTURES)
       }
+      if (config.hasKey(KEY_DELAYS_CHILD_PRESSED_STATE)) {
+        handler.delaysChildPressedState = config.getBoolean(KEY_DELAYS_CHILD_PRESSED_STATE)
+      }
     }
 
     override fun createEventBuilder(handler: NativeViewGestureHandler) = NativeGestureHandlerEventDataBuilder(handler)
@@ -222,6 +249,7 @@ class NativeViewGestureHandler : GestureHandler() {
       private const val KEY_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart"
       private const val KEY_DISALLOW_INTERRUPTION = "disallowInterruption"
       private const val KEY_YIELDS_TO_CONTINUOUS_GESTURES = "yieldsToContinuousGestures"
+      private const val KEY_DELAYS_CHILD_PRESSED_STATE = "delaysChildPressedState"
     }
   }
 
@@ -230,6 +258,33 @@ class NativeViewGestureHandler : GestureHandler() {
     private const val DEFAULT_SHOULD_ACTIVATE_ON_START = false
     private const val DEFAULT_DISALLOW_INTERRUPTION = false
     private const val DEFAULT_YIELDS_TO_CONTINUOUS_GESTURES = false
+    private val DEFAULT_DELAYS_CHILD_PRESSED_STATE: Boolean = true
+
+    // `HasChildPressedStateDelay` was introduced in React Native 0.87 — it's accessed via
+    // reflection so that the library compiles and runs on older versions.
+    private val childPressedStateDelaySetter: Method? by lazy {
+      try {
+        Class
+          .forName("com.facebook.react.uimanager.HasChildPressedStateDelay")
+          .getMethod("setHasChildPressedStateDelay", Boolean::class.javaObjectType)
+      } catch (e: ReflectiveOperationException) {
+        null
+      }
+    }
+
+    private fun trySetChildPressedStateDelay(view: View, value: Boolean?): Boolean {
+      val setter = childPressedStateDelaySetter ?: return false
+      if (!setter.declaringClass.isInstance(view)) {
+        return false
+      }
+
+      return try {
+        setter.invoke(view, value)
+        true
+      } catch (e: ReflectiveOperationException) {
+        false
+      }
+    }
 
     private fun tryIntercept(view: View, event: MotionEvent) = view is ViewGroup && view.onInterceptTouchEvent(event)
 
