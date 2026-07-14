@@ -95,14 +95,14 @@ export default function App() {
     const insets = useSafeAreaInsets();
     const [searchQuery, setSearchQuery] = useState('');
 
-    const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase();
+    const normalizedSearchQuery = searchQuery.trim().toLowerCase();
     const sections = showLegacyVersion ? OLD_EXAMPLES : NEW_EXAMPLES;
     const filteredSections = normalizedSearchQuery
       ? sections
           .map((section) => ({
             ...section,
             data: section.data.filter(({ name }) =>
-              name.toLocaleLowerCase().includes(normalizedSearchQuery)
+              name.toLowerCase().includes(normalizedSearchQuery)
             ),
           }))
           .filter(({ data }) => data.length > 0)
