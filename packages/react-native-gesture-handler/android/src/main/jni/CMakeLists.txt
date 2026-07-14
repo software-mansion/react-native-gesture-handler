@@ -52,7 +52,7 @@ target_link_libraries(
   fbjni::fbjni
 )
 
-if(${RNGH_USE_WORKLETS})
+if(RNGH_USE_WORKLETS)
   find_package(react-native-worklets REQUIRED CONFIG)
   target_compile_definitions(${PACKAGE_NAME} PRIVATE RNGH_USE_WORKLETS=1)
   target_link_libraries(${PACKAGE_NAME} react-native-worklets::worklets)
