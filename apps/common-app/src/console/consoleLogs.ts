@@ -105,7 +105,7 @@ function formatArguments(args: unknown[]) {
   if (message.length <= MAX_MESSAGE_LENGTH) {
     return message;
   }
-  return `${message.slice(0, MAX_MESSAGE_LENGTH)}…`;
+  return `${message.slice(0, MAX_MESSAGE_LENGTH)}...`;
 }
 
 function appendConsoleLog(level: ConsoleLogLevel, args: unknown[]) {
