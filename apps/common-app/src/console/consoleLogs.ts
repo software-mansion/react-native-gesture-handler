@@ -168,5 +168,3 @@ export function subscribeToConsoleLogs(listener: Listener) {
 export function getConsoleLogsSnapshot() {
   return store.entries;
 }
-
-installConsoleInterceptor();
