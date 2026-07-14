@@ -85,28 +85,12 @@ let Reanimated:
     }
   | undefined;
 
+let uiRuntimeHolder: object | undefined;
+
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const Worklets = require('react-native-worklets') as WorkletsModule;
-  const uiRuntimeHolder = Worklets?.getUIRuntimeHolder?.();
-
-  ghQueueMicrotask(() => {
-    globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = uiRuntimeHolder;
-
-    try {
-      const decorated = NativeProxy.installUIRuntimeBindings();
-
-      if (!decorated) {
-        console.warn(
-          tagMessage(
-            'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
-          )
-        );
-      }
-    } finally {
-      globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = undefined;
-    }
-  });
+  uiRuntimeHolder = Worklets?.getUIRuntimeHolder?.();
 } catch (e) {
   // When 'react-native-worklets' is not available we want to quietly continue
 }
@@ -123,6 +107,27 @@ if (!Reanimated?.useSharedValue) {
   // @ts-ignore Make sure the loaded module is actually Reanimated, if it's not
   // reset the module to undefined so we can fallback to the default implementation
   Reanimated = undefined;
+}
+
+if (uiRuntimeHolder !== undefined || Reanimated !== undefined) {
+  ghQueueMicrotask(() => {
+    globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = uiRuntimeHolder;
+
+    try {
+      const decorated = NativeProxy.installUIRuntimeBindings();
+
+      if (!decorated) {
+        console.warn(
+          tagMessage(
+            'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
+          )
+        );
+      }
+    } finally {
+      globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = undefined;
+      uiRuntimeHolder = undefined;
+    }
+  });
 }
 
 if (Reanimated !== undefined && !Reanimated.setGestureState) {
