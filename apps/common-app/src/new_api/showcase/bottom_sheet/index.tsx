@@ -48,7 +48,7 @@ function Example() {
     // calculate nearest snap point
     let destSnapPointIndex = 0;
 
-    if (snapPointIndex === 0 && endOffsetY < fullyOpenSnapPoint) {
+    if (snapPointIndexValue.value === 0 && endOffsetY < fullyOpenSnapPoint) {
       return;
     }
     for (const [index, snapPoint] of snapPointsFromTop.entries()) {
