@@ -1,5 +1,9 @@
+require 'rubygems'
+
 module GestureHandlerUtils
     module_function
+
+    MIN_REACT_NATIVE_WORKLETS_VERSION = Gem::Version.new('0.8.0')
 
     def try_to_parse_react_native_package_json(react_native_dir)
         react_native_package_json_path = File.join(react_native_dir, 'package.json')
@@ -43,13 +47,22 @@ module GestureHandlerUtils
         return node_package_dir('react-native-worklets')
     end
 
-    def react_native_worklets_podspec_exists()
+    def react_native_worklets_supports_stable_api()
         package_dir = react_native_worklets_package_dir()
 
-        if package_dir == nil
+        if package_dir == nil || !File.exist?(File.join(package_dir, 'RNWorklets.podspec'))
             return false
         end
 
-        return File.exist?(File.join(package_dir, 'RNWorklets.podspec'))
+        package_json = JSON.parse(File.read(File.join(package_dir, 'package.json')))
+        version_string = package_json['version']
+
+        return false if version_string.include?('-')
+
+        version = Gem::Version.new(version_string)
+
+        return version >= MIN_REACT_NATIVE_WORKLETS_VERSION
+    rescue JSON::ParserError, ArgumentError, TypeError, Errno::ENOENT
+        return false
     end
 end

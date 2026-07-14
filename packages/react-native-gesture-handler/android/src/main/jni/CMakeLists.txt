@@ -44,15 +44,6 @@ endif()
 
 find_package(ReactAndroid REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
-if(${RNGH_USE_WORKLETS})
-  find_package(react-native-worklets REQUIRED CONFIG)
-  target_compile_definitions(${PACKAGE_NAME} PRIVATE RNGH_USE_WORKLETS=1)
-  target_include_directories(
-    ${PACKAGE_NAME}
-    PRIVATE
-    "${REACT_NATIVE_DIR}/ReactCommon/jsiexecutor"
-  )
-endif()
 
 target_link_libraries(
   ${PACKAGE_NAME}
@@ -62,5 +53,7 @@ target_link_libraries(
 )
 
 if(${RNGH_USE_WORKLETS})
+  find_package(react-native-worklets REQUIRED CONFIG)
+  target_compile_definitions(${PACKAGE_NAME} PRIVATE RNGH_USE_WORKLETS=1)
   target_link_libraries(${PACKAGE_NAME} react-native-worklets::worklets)
 endif()

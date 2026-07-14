@@ -4,7 +4,7 @@
 #include "RNGestureHandlerModule.h"
 
 #ifdef RNGH_USE_WORKLETS
-#include <worklets/android/WorkletsModule.h>
+#include <worklets/Compat/StableApi.h>
 #endif
 
 namespace gesturehandler {
@@ -24,10 +24,8 @@ void RNGestureHandlerModule::registerNatives() {
            "getBindingsInstallerCxx",
            RNGestureHandlerModule::getBindingsInstallerCxx),
        makeNativeMethod(
-           "decorateUIRuntime", RNGestureHandlerModule::decorateUIRuntime),
-       makeNativeMethod(
-           "decorateUIRuntimeWithWorklets",
-           RNGestureHandlerModule::decorateUIRuntimeWithWorklets),
+           "installUIRuntimeBindingsNative",
+           RNGestureHandlerModule::installUIRuntimeBindings),
        makeNativeMethod(
            "invalidateNative", RNGestureHandlerModule::invalidateNative)});
 }
@@ -58,44 +56,38 @@ void RNGestureHandlerModule::setGestureState(
   method(this->javaPart_, handlerTag, state);
 }
 
-bool RNGestureHandlerModule::decorateUIRuntime() {
-  return RNGHRuntimeDecorator::installUIRuntimeBindings(
-      *rnRuntime_, getModuleId(), [&](int handlerTag, int state) {
-        this->setGestureState(handlerTag, state);
-      });
-}
+bool RNGestureHandlerModule::installUIRuntimeBindings() {
+  jsi::Runtime *uiRuntime = nullptr;
 
-bool RNGestureHandlerModule::decorateUIRuntimeWithWorklets(
-    jni::alias_ref<jobject> workletsModule) {
 #ifdef RNGH_USE_WORKLETS
-  if (!workletsModule) {
+  std::shared_ptr<worklets::WorkletRuntime> uiWorkletRuntime;
+  const auto runtimeHolder = rnRuntime_->global().getProperty(
+      *rnRuntime_, "__RNGH_UI_WORKLET_RUNTIME_HOLDER");
+
+  if (runtimeHolder.isObject()) {
+    uiWorkletRuntime = worklets::getWorkletRuntimeFromHolder(
+        *rnRuntime_, runtimeHolder.asObject(*rnRuntime_));
+
+    if (uiWorkletRuntime) {
+      uiRuntime = &worklets::getJSIRuntimeFromWorkletRuntime(uiWorkletRuntime);
+    }
+  }
+#endif
+
+  if (uiRuntime == nullptr) {
+    uiRuntime = RNGHRuntimeDecorator::tryFindUIRuntime(*rnRuntime_);
+  }
+
+  if (uiRuntime == nullptr) {
     return false;
   }
 
-  const auto jWorkletsModule =
-      jni::static_ref_cast<worklets::WorkletsModule::javaobject>(
-          workletsModule);
-  const auto workletsModuleProxy =
-      jWorkletsModule->cthis()->getWorkletsModuleProxy();
-  if (!workletsModuleProxy) {
-    return false;
-  }
-
-  const auto uiWorkletRuntime = workletsModuleProxy->getUIWorkletRuntime();
-  if (!uiWorkletRuntime) {
-    return false;
-  }
-
-  RNGHRuntimeDecorator::decorateUIRuntime(
-      uiWorkletRuntime->getJSIRuntime(), [&](int handlerTag, int state) {
+  RNGHRuntimeDecorator::installUIRuntimeBindings(
+      *uiRuntime, [&](int handlerTag, int state) {
         this->setGestureState(handlerTag, state);
       });
 
   return true;
-#else
-  (void)workletsModule;
-  return false;
-#endif
 }
 
 void RNGestureHandlerModule::invalidateNative() {

@@ -27,8 +27,8 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s);
 
-  if GestureHandlerUtils.react_native_worklets_podspec_exists()
-    s.dependency "RNWorklets"
+  if GestureHandlerUtils.react_native_worklets_supports_stable_api()
+    s.dependency "RNWorklets", ">= 0.8.0"
   end
 
   if ENV['USE_FRAMEWORKS'] != nil

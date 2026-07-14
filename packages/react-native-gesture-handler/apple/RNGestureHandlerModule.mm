@@ -16,8 +16,8 @@
 
 #import "RNGHRuntimeDecorator.h"
 
-#if __has_include(<worklets/apple/WorkletsModule.h>)
-#import <worklets/apple/WorkletsModule.h>
+#if __has_include(<worklets/Compat/StableApi.h>)
+#include <worklets/Compat/StableApi.h>
 #define RNGH_HAS_WORKLETS 1
 #else
 #define RNGH_HAS_WORKLETS 0
@@ -111,36 +111,40 @@ RCT_EXPORT_MODULE()
   _operations = [NSMutableArray new];
 }
 
-- (bool)decorateUIRuntime
+- (bool)tryInstallUIRuntimeBindings
 {
   __weak RNGestureHandlerModule *weakSelf = self;
+  jsi::Runtime *uiRuntime = nullptr;
 
 #if RNGH_HAS_WORKLETS
-  WorkletsModule *workletsModule = (WorkletsModule *)[self.moduleRegistry moduleForName:"WorkletsModule"];
-  if (workletsModule != nil) {
-    auto workletsModuleProxy = [workletsModule getWorkletsModuleProxy];
-    if (workletsModuleProxy != nullptr) {
-      auto uiWorkletRuntime = workletsModuleProxy->getUIWorkletRuntime();
-      if (uiWorkletRuntime != nullptr) {
-        RNGHRuntimeDecorator::decorateUIRuntime(
-            uiWorkletRuntime->getJSIRuntime(), [weakSelf](int handlerTag, int state) {
-              RNGestureHandlerModule *strongSelf = weakSelf;
-              if (strongSelf != nil) {
-                [strongSelf setGestureState:state forHandler:handlerTag];
-              }
-            });
-        return true;
-      }
+  std::shared_ptr<worklets::WorkletRuntime> uiWorkletRuntime;
+  const auto runtimeHolder = _rnRuntime->global().getProperty(*_rnRuntime, "__RNGH_UI_WORKLET_RUNTIME_HOLDER");
+
+  if (runtimeHolder.isObject()) {
+    uiWorkletRuntime = worklets::getWorkletRuntimeFromHolder(*_rnRuntime, runtimeHolder.asObject(*_rnRuntime));
+
+    if (uiWorkletRuntime != nullptr) {
+      uiRuntime = &worklets::getJSIRuntimeFromWorkletRuntime(uiWorkletRuntime);
     }
   }
 #endif
 
-  return RNGHRuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
+  if (uiRuntime == nullptr) {
+    uiRuntime = RNGHRuntimeDecorator::tryFindUIRuntime(*_rnRuntime);
+  }
+
+  if (uiRuntime == nullptr) {
+    return false;
+  }
+
+  RNGHRuntimeDecorator::installUIRuntimeBindings(*uiRuntime, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
     }
   });
+
+  return true;
 }
 
 - (void)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
@@ -212,7 +216,7 @@ RCT_EXPORT_MODULE()
 - (nonnull NSNumber *)installUIRuntimeBindings
 {
   if (!_uiRuntimeDecorated) {
-    _uiRuntimeDecorated = [self decorateUIRuntime];
+    _uiRuntimeDecorated = [self tryInstallUIRuntimeBindings];
   }
 
   return _uiRuntimeDecorated ? @1 : @0;

@@ -3,7 +3,6 @@ package com.swmansion.gesturehandler.react
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
-import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
@@ -121,7 +120,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun installUIRuntimeBindings(): Boolean {
     if (!uiRuntimeDecorated) {
-      uiRuntimeDecorated = decorateUIRuntimeWithWorklets(getWorkletsModule()) || decorateUIRuntime()
+      uiRuntimeDecorated = installUIRuntimeBindingsNative()
     }
 
     return uiRuntimeDecorated
@@ -161,20 +160,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  private fun getWorkletsModule(): NativeModule? = try {
-    @Suppress("UNCHECKED_CAST")
-    val workletsModuleClass = Class.forName("com.swmansion.worklets.WorkletsModule") as Class<NativeModule>
-    reactApplicationContext.getNativeModule(workletsModuleClass)
-  } catch (_: ClassNotFoundException) {
-    null
-  } catch (_: ClassCastException) {
-    null
-  }
-
   private external fun initHybrid(): HybridData
   private external fun getBindingsInstallerCxx(): BindingsInstallerHolder
-  private external fun decorateUIRuntimeWithWorklets(workletsModule: Any?): Boolean
-  private external fun decorateUIRuntime(): Boolean
+  private external fun installUIRuntimeBindingsNative(): Boolean
   private external fun invalidateNative(): Unit
 
   override fun getBindingsInstaller() = getBindingsInstallerCxx()

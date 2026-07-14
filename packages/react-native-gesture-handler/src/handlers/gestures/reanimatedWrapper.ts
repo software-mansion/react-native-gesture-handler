@@ -33,7 +33,7 @@ export type ReanimatedHandler<THandlerData> = {
 };
 
 type WorkletsModule = {
-  scheduleOnUI?: (worklet: () => void) => void;
+  getUIRuntimeHolder?: () => object;
 };
 
 export type NativeEventsManager = new (component: {
@@ -88,21 +88,23 @@ let Reanimated:
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const Worklets = require('react-native-worklets') as WorkletsModule;
-
-  // Make sure worklets are initialized before attempting to install UI runtime bindings
-  Worklets.scheduleOnUI?.(() => {
-    'worklet';
-  });
+  const uiRuntimeHolder = Worklets?.getUIRuntimeHolder?.();
 
   ghQueueMicrotask(() => {
-    const decorated = NativeProxy.installUIRuntimeBindings();
+    globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = uiRuntimeHolder;
 
-    if (!decorated) {
-      console.warn(
-        tagMessage(
-          'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
-        )
-      );
+    try {
+      const decorated = NativeProxy.installUIRuntimeBindings();
+
+      if (!decorated) {
+        console.warn(
+          tagMessage(
+            'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
+          )
+        );
+      }
+    } finally {
+      globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = undefined;
     }
   });
 } catch (e) {

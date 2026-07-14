@@ -89,7 +89,7 @@ void RNGHRuntimeDecorator::installRNRuntimeBindings(
       rnRuntime, "_RNGH_MODULE_ID", std::move(moduleIdValue));
 }
 
-void RNGHRuntimeDecorator::decorateUIRuntime(
+void RNGHRuntimeDecorator::installUIRuntimeBindings(
     jsi::Runtime &uiRuntime,
     std::function<void(int, int)> &&setGestureState) {
   auto setGestureStateSync = jsi::Function::createFromHostFunction(
@@ -114,15 +114,12 @@ void RNGHRuntimeDecorator::decorateUIRuntime(
       uiRuntime, "_setGestureStateSync", std::move(setGestureStateSync));
 }
 
-bool RNGHRuntimeDecorator::installUIRuntimeBindings(
-    jsi::Runtime &rnRuntime,
-    int moduleId,
-    std::function<void(int, int)> &&setGestureState) {
+jsi::Runtime *RNGHRuntimeDecorator::tryFindUIRuntime(jsi::Runtime &rnRuntime) {
   const auto runtimeHolder =
       rnRuntime.global().getProperty(rnRuntime, "_WORKLET_RUNTIME");
 
   if (runtimeHolder.isUndefined()) {
-    return false;
+    return nullptr;
   }
 
   const auto arrayBufferValue =
@@ -130,16 +127,7 @@ bool RNGHRuntimeDecorator::installUIRuntimeBindings(
           rnRuntime);
   const auto uiRuntimeAddress =
       reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
-  jsi::Runtime &uiRuntime =
-      *reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress);
-
-  decorateUIRuntime(uiRuntime, std::move(setGestureState));
-
-  auto moduleIdValue = jsi::Value(moduleId);
-  rnRuntime.global().setProperty(
-      rnRuntime, "_RNGH_MODULE_ID", std::move(moduleIdValue));
-
-  return true;
+  return reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress);
 }
 
 } // namespace gesturehandler

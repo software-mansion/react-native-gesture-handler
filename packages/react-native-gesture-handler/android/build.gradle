@@ -108,7 +108,22 @@ def shouldUseCommonInterfaceFromRNSVG() {
 }
 
 def shouldUseRuntimeFromWorklets() {
-    return rootProject.subprojects.find { it.name == 'react-native-worklets' } != null
+    def worklets = rootProject.subprojects.find { it.name == 'react-native-worklets' }
+
+    if (worklets == null) {
+        return false
+    }
+
+    def packageJson = new JsonSlurper().parseText(new File(worklets.projectDir, "../package.json").text)
+    def version = packageJson.version as String
+
+    if (version.contains('-')) {
+        return false
+    }
+
+    def (major, minor, patch) = getExternalLibVersion(worklets)
+
+    return major > 0 || (major == 0 && minor >= 8)
 }
 
 def reactNativeArchitectures() {
