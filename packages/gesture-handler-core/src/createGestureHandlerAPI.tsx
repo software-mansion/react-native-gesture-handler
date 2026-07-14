@@ -108,7 +108,13 @@ function validatePort(port: GestureHandlerPlatformPort) {
     );
   }
 
-  if (port.reanimated !== undefined) {
+  if (
+    port.reanimated !== undefined &&
+    !port.capabilities.fansOutReanimatedHandlers
+  ) {
+    // Only meaningful when reanimated routes events internally (a separate UI
+    // runtime exists). Single-threaded reanimated environments (react-native-web)
+    // legitimately pass plain functions.
     // With the reanimated capability present, updateGestureHandlerConfig is
     // captured into the SharedValue listener worklet and invoked on the UI
     // runtime — it must be a workletized function or a host function.

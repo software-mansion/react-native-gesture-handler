@@ -6,12 +6,16 @@ export default function findNodeHandle(
 ): HTMLElement | SVGElement | number {
   // TODO: Remove this once we remove old API.
   // Duck-typed FlatList detection (structural, keeps the engine free of
-  // react-native value imports): FlatList instances expose getNativeScrollRef.
+  // react-native value imports). getNativeScrollRef alone is NOT sufficient —
+  // ScrollView instances expose it too; _listRef (the VirtualizedList ref) is
+  // the FlatList-unique field the branch below actually reads.
   if (
     viewRef !== null &&
     typeof viewRef === 'object' &&
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    typeof (viewRef as any).getNativeScrollRef === 'function'
+    typeof (viewRef as any).getNativeScrollRef === 'function' &&
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (viewRef as any)._listRef != null
   ) {
     // @ts-ignore This is the only way to get the scroll ref from FlatList.
     return viewRef._listRef._scrollRef.firstChild;
