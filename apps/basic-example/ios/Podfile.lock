@@ -1844,7 +1844,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets
+    - RNWorklets (>= 0.8.0)
     - Yoga
   - RNReanimated (4.4.1):
     - hermes-engine
@@ -2308,7 +2308,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 21807c5e7d6d0e334667f755e23063834d581e62
   ReactCommon: d5c1bb4427bf51c443de5926aac332c89ddd9363
   ReactNativeDependencies: fa0a54b3f5319ae0e3b9aff32bfee7a424b88e66
-  RNGestureHandler: 2d8900683c602d861399d08bac02cb91b683d298
+  RNGestureHandler: a2f04fb0e854b5280517dbfd0b77170897a44644
   RNReanimated: d6e6865fa9d5ce60863a9e244de45de4f9890e46
   RNWorklets: 04a35c45bd72d24914cbaf24bdfa4e30e1eab2df
   Yoga: fe50ab299e578f397fef753cf309c6703a4db29b

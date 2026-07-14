@@ -16,11 +16,8 @@
 
 #import "RNGHRuntimeDecorator.h"
 
-#if __has_include(<worklets/Compat/StableApi.h>)
+#ifdef RNGH_USE_WORKLETS
 #include <worklets/Compat/StableApi.h>
-#define RNGH_HAS_WORKLETS 1
-#else
-#define RNGH_HAS_WORKLETS 0
 #endif
 
 #import "RNGestureHandler.h"
@@ -116,7 +113,7 @@ RCT_EXPORT_MODULE()
   __weak RNGestureHandlerModule *weakSelf = self;
   jsi::Runtime *uiRuntime = nullptr;
 
-#if RNGH_HAS_WORKLETS
+#ifdef RNGH_USE_WORKLETS
   std::shared_ptr<worklets::WorkletRuntime> uiWorkletRuntime;
   const auto runtimeHolder = _rnRuntime->global().getProperty(*_rnRuntime, "__RNGH_UI_WORKLET_RUNTIME_HOLDER");
 
