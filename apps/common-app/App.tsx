@@ -10,7 +10,15 @@ import type {
 import { createStackNavigator } from '@react-navigation/stack';
 import { Icon } from '@swmansion/icons';
 import { useEffect, useState } from 'react';
-import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import {
   GestureHandlerRootView,
   Switch,
@@ -85,6 +93,20 @@ export default function App() {
 
   function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
     const insets = useSafeAreaInsets();
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase();
+    const sections = showLegacyVersion ? OLD_EXAMPLES : NEW_EXAMPLES;
+    const filteredSections = normalizedSearchQuery
+      ? sections
+          .map((section) => ({
+            ...section,
+            data: section.data.filter(({ name }) =>
+              name.toLocaleLowerCase().includes(normalizedSearchQuery)
+            ),
+          }))
+          .filter(({ data }) => data.length > 0)
+      : sections;
 
     useEffect(() => {
       void AsyncStorage.multiGet([
@@ -114,9 +136,19 @@ export default function App() {
       <View style={styles.container}>
         <ListWithHeader
           style={styles.list}
-          sections={showLegacyVersion ? OLD_EXAMPLES : NEW_EXAMPLES}
+          sections={filteredSections}
           keyExtractor={(example) => example.name}
-          ListHeaderComponent={Settings}
+          ListHeaderComponent={
+            <Settings
+              searchQuery={searchQuery}
+              onChangeSearchQuery={setSearchQuery}
+            />
+          }
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              No examples match “{searchQuery.trim()}”
+            </Text>
+          }
           contentContainerStyle={{
             paddingBottom: insets.bottom,
             paddingTop: insets.top,
@@ -137,7 +169,12 @@ export default function App() {
     );
   }
 
-  function Settings() {
+  interface SettingsProps {
+    searchQuery: string;
+    onChangeSearchQuery: (query: string) => void;
+  }
+
+  function Settings({ searchQuery, onChangeSearchQuery }: SettingsProps) {
     const [openLastExample, setOpenLastExample] = useState(false);
 
     useEffect(() => {
@@ -157,51 +194,77 @@ export default function App() {
       setShowLegacyVersion(value);
     }
     return (
-      <View style={styles.settings}>
-        <Touchable
-          androidRipple={{}}
-          underlayColor={Platform.OS === 'android' ? 'transparent' : 'black'}
-          style={styles.settingsButton}
-          onPress={() => {
-            updateKeepSetting(!openLastExample);
-          }}>
-          <View
-            style={styles.settingsButtonContent}
-            pointerEvents={Platform.OS === 'web' ? 'box-only' : 'auto'}>
-            <Text style={[styles.text, styles.aligned]}>
-              Open last example on launch
-            </Text>
-            <Switch
-              style={styles.aligned}
-              value={openLastExample}
-              onValueChange={() => {
-                updateKeepSetting(!openLastExample);
-              }}
-            />
-          </View>
-        </Touchable>
-        <Touchable
-          androidRipple={{}}
-          underlayColor={Platform.OS === 'android' ? 'transparent' : 'black'}
-          style={styles.settingsButton}
-          onPress={() => {
-            updateVersionSetting(!showLegacyVersion);
-          }}>
-          <View
-            style={styles.settingsButtonContent}
-            pointerEvents={Platform.OS === 'web' ? 'box-only' : 'auto'}>
-            <Text style={[styles.text, styles.aligned]}>
-              Show legacy version examples
-            </Text>
-            <Switch
-              style={styles.aligned}
-              value={showLegacyVersion}
-              onValueChange={() => {
-                updateVersionSetting(!showLegacyVersion);
-              }}
-            />
-          </View>
-        </Touchable>
+      <View style={styles.headerControls}>
+        <View style={styles.searchBar}>
+          <Icon name="search" size={20} color={COLORS.NAVY} />
+          <TextInput
+            accessibilityLabel="Search examples"
+            autoCapitalize="none"
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+            placeholder="Search examples"
+            placeholderTextColor={COLORS.GRAY}
+            returnKeyType="search"
+            selectionColor={COLORS.DARK_PURPLE}
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={onChangeSearchQuery}
+          />
+          {searchQuery.length > 0 && Platform.OS !== 'ios' && (
+            <Pressable
+              accessibilityLabel="Clear search"
+              hitSlop={8}
+              onPress={() => onChangeSearchQuery('')}>
+              <Icon name="cross-circle" size={20} color={COLORS.GRAY} />
+            </Pressable>
+          )}
+        </View>
+        <View style={styles.settings}>
+          <Touchable
+            androidRipple={{}}
+            underlayColor={Platform.OS === 'android' ? 'transparent' : 'black'}
+            style={styles.settingsButton}
+            onPress={() => {
+              updateKeepSetting(!openLastExample);
+            }}>
+            <View
+              style={styles.settingsButtonContent}
+              pointerEvents={Platform.OS === 'web' ? 'box-only' : 'auto'}>
+              <Text style={[styles.text, styles.aligned]}>
+                Open last example on launch
+              </Text>
+              <Switch
+                style={styles.aligned}
+                value={openLastExample}
+                onValueChange={() => {
+                  updateKeepSetting(!openLastExample);
+                }}
+              />
+            </View>
+          </Touchable>
+          <Touchable
+            androidRipple={{}}
+            underlayColor={Platform.OS === 'android' ? 'transparent' : 'black'}
+            style={styles.settingsButton}
+            onPress={() => {
+              updateVersionSetting(!showLegacyVersion);
+            }}>
+            <View
+              style={styles.settingsButtonContent}
+              pointerEvents={Platform.OS === 'web' ? 'box-only' : 'auto'}>
+              <Text style={[styles.text, styles.aligned]}>
+                Show legacy version examples
+              </Text>
+              <Switch
+                style={styles.aligned}
+                value={showLegacyVersion}
+                onValueChange={() => {
+                  updateVersionSetting(!showLegacyVersion);
+                }}
+              />
+            </View>
+          </Touchable>
+        </View>
       </View>
     );
   }
@@ -264,6 +327,12 @@ const styles = StyleSheet.create({
   separator: {
     height: 2,
   },
+  emptyText: {
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    color: COLORS.GRAY,
+    textAlign: 'center',
+  },
   button: {
     flex: 1,
     height: 48,
@@ -306,6 +375,26 @@ const styles = StyleSheet.create({
   settings: {
     flexDirection: 'row',
     gap: 24,
+  },
+  headerControls: {
+    gap: 16,
     margin: 24,
+  },
+  searchBar: {
+    minHeight: 44,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.headerSeparator,
+    backgroundColor: '#fff',
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: Platform.OS === 'web' ? 10 : 8,
+    color: COLORS.NAVY,
+    fontSize: 16,
   },
 });
