@@ -198,6 +198,7 @@ export default function App() {
         <View style={styles.searchBar}>
           <Icon name="search" size={20} color={COLORS.NAVY} />
           <TextInput
+            testID="search-examples"
             accessibilityLabel="Search examples"
             autoCapitalize="none"
             autoCorrect={false}
