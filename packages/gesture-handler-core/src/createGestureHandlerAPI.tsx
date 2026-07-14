@@ -1,3 +1,4 @@
+import { tagMessage } from './utils';
 import { createNativeWrapperFactory } from './v3/createNativeWrapper';
 import type {
   InterceptingGestureDetectorProps,
@@ -57,7 +58,77 @@ import type {
 // capture, nothing for tree-shaking to drop). Members are NAMED function
 // expressions so eslint-plugin-react-hooks and React Compiler recognize them
 // as hook/component definitions.
+const REQUIRED_PROXY_MEMBERS = [
+  'createGestureHandler',
+  'setGestureHandlerConfig',
+  'updateGestureHandlerConfig',
+  'dropGestureHandler',
+  'configureRelations',
+  'flush',
+] as const;
+
+const REQUIRED_DETECTOR_MEMBERS = [
+  'HostGestureDetector',
+  'AnimatedHostGestureDetector',
+  'detectorStyle',
+  'Wrap',
+  'getViewTag',
+  'useNativeGestureRole',
+] as const;
+
+// Dev-only structural validation: interface drift is a compile error for TS
+// binding authors, but JS consumers and partially-mocked test setups get a
+// loud, early failure instead of a render-time crash. The worklet check
+// covers the one contract property the type system cannot express.
+function validatePort(port: GestureHandlerPlatformPort) {
+  if (!__DEV__) {
+    return;
+  }
+
+  const missing: string[] = [];
+  for (const key of REQUIRED_PROXY_MEMBERS) {
+    if (typeof port.proxy?.[key] !== 'function') {
+      missing.push(`proxy.${key}`);
+    }
+  }
+  for (const key of REQUIRED_DETECTOR_MEMBERS) {
+    if (port.detector?.[key] == null) {
+      missing.push(`detector.${key}`);
+    }
+  }
+  if (port.capabilities == null) {
+    missing.push('capabilities');
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      tagMessage(
+        `createGestureHandlerAPI: the platform port is missing ${missing.join(', ')}.`
+      )
+    );
+  }
+
+  if (port.reanimated !== undefined) {
+    // With the reanimated capability present, updateGestureHandlerConfig is
+    // captured into the SharedValue listener worklet and invoked on the UI
+    // runtime — it must be a workletized function or a host function.
+    const updateConfig = port.proxy.updateGestureHandlerConfig;
+    const isUIRuntimeCallable =
+      '__workletHash' in updateConfig ||
+      String(updateConfig).includes('[native code]');
+    if (!isUIRuntimeCallable) {
+      console.warn(
+        tagMessage(
+          'createGestureHandlerAPI: port.proxy.updateGestureHandlerConfig does not look UI-runtime callable (no __workletHash, not a host function). SharedValue-driven config updates will throw on the UI runtime.'
+        )
+      );
+    }
+  }
+}
+
 export function createGestureHandlerAPI(port: GestureHandlerPlatformPort) {
+  validatePort(port);
+
   const runtime: CoreRuntime = {
     port,
     // Mirrors the previous module-scope `Reanimated?.makeMutable(new Map())`:
