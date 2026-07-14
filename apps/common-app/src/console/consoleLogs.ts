@@ -72,10 +72,7 @@ function formatValue(value: unknown): string {
   try {
     const seen = new WeakSet<object>();
     const serialized = JSON.stringify(value, (_key, nestedValue: unknown) => {
-      if (typeof nestedValue === 'bigint') {
-        return nestedValue.toString();
-      }
-      if (typeof nestedValue === 'symbol') {
+      if (typeof nestedValue === 'bigint' || typeof nestedValue === 'symbol') {
         return nestedValue.toString();
       }
       if (typeof nestedValue === 'function') {
