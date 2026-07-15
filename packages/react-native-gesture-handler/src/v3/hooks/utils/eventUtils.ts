@@ -118,6 +118,15 @@ export function getChangeEventCalculator<TExtendedHandlerData>(
   ) => {
     'worklet';
     const currentEventData = current.handlerData;
+
+    // Events missing `handlerData` cannot have their change payload computed.
+    // This shouldn't happen for well-formed update events, but a malformed
+    // event (e.g. a touch event that lost its payloads in a race on the native
+    // side) must not crash the diff calculator on the UI thread.
+    if (currentEventData === undefined) {
+      return current;
+    }
+
     const previousEventData = previous ? previous.handlerData : null;
 
     const changePayload = diffCalculator(currentEventData, previousEventData);

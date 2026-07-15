@@ -150,6 +150,15 @@ export function eventHandler<
     return;
   }
 
+  // At this point the event should be an update event carrying `handlerData`.
+  // If it isn't, it's a malformed event (e.g. a touch event that lost its
+  // `allTouches` payload in a race on the native side) - drop it instead of
+  // running the change calculator on undefined data, which would crash the UI
+  // thread.
+  if (eventWithData.handlerData === undefined) {
+    return;
+  }
+
   if (!dispatchesAnimatedEvents) {
     handleUpdateEvent(
       eventWithData,
