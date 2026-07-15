@@ -69,13 +69,14 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
       putInt("eventType", handler.touchEventType)
       putInt("pointerType", handler.pointerType)
 
-      handler.consumeChangedTouchesPayload()?.let {
-        putArray("changedTouches", it)
-      }
+      // Both keys have to be present in every touch event, otherwise the JS side may
+      // misclassify it as an update event and crash trying to read gesture-specific data.
+      // The payloads may be null when the tracked pointers were cleared before the event
+      // was serialized (e.g. the gesture was cancelled by a rapid succession of taps) or
+      // when the payload was already consumed - fall back to empty arrays, matching iOS.
+      putArray("changedTouches", handler.consumeChangedTouchesPayload() ?: Arguments.createArray())
 
-      handler.consumeAllTouchesPayload()?.let {
-        putArray("allTouches", it)
-      }
+      putArray("allTouches", handler.consumeAllTouchesPayload() ?: Arguments.createArray())
 
       if (handler.isAwaiting && handler.state == GestureHandler.STATE_ACTIVE) {
         putInt("state", GestureHandler.STATE_BEGAN)
