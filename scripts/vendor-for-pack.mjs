@@ -60,6 +60,38 @@ if (isNative) {
   // Native's program gets __DEV__/setImmediate from react-native's types; the
   // vendored ambient file would redeclare them (const vs var) and clash.
   fs.rmSync(path.join(outSrc, 'vendor/core/global.d.ts'));
+
+  // The runnable install needs the platform code and packaging aux files,
+  // byte-unchanged from the product (npm pack applies the `files` allowlist
+  // on top, e.g. trimming android/ to the published subset). Without these,
+  // autolinking finds nothing to build and the native module doesn't exist
+  // at runtime.
+  const NATIVE_AUX = [
+    'android',
+    'apple',
+    'shared',
+    'scripts',
+    'ReanimatedSwipeable',
+    'ReanimatedDrawerLayout',
+    'jest-utils',
+    'jestSetup.js',
+    'RNGestureHandler.podspec',
+    'react-native.config.js',
+    'README.md',
+  ];
+  for (const entry of NATIVE_AUX) {
+    const from = path.join(product, entry);
+    if (!fs.existsSync(from)) {
+      continue;
+    }
+    if (fs.statSync(from).isDirectory()) {
+      // android/build outputs would bloat the tarball; npm pack excludes
+      // nothing inside allowlisted dirs, so skip build dirs while copying.
+      copyTree(from, path.join(out, entry), (p) => !/\/build(\/|$)/.test(p));
+    } else {
+      fs.copyFileSync(from, path.join(out, entry));
+    }
+  }
 }
 
 // 3. specifier rewrite: workspace package names -> relative vendored paths
