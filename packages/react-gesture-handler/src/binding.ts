@@ -1,3 +1,6 @@
+// Must run before createGestureHandlerAPI below: core reads __DEV__.
+import './ensureDevGlobal';
+
 import type {
   BaseGestureConfig,
   GestureRelations,

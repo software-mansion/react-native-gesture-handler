@@ -20,9 +20,6 @@ export default defineConfig({
   resolve: {
     alias: packedAlias,
   },
-  define: {
-    __DEV__: 'true',
-  },
   server: {
     port: 5199,
   },

@@ -121,6 +121,11 @@ const pkg = JSON.parse(
 );
 delete pkg.dependencies?.[CORE_PKG];
 delete pkg.dependencies?.[ENGINE_PKG];
+// Lifecycle scripts reference repo-relative paths (e.g. native's prepack does
+// `cp ../../README.md`) and must not run again when packing the staged
+// layout; devDependencies are workspace-only tooling.
+delete pkg.scripts;
+delete pkg.devDependencies;
 fs.writeFileSync(
   path.join(out, 'package.json'),
   JSON.stringify(pkg, null, 2) + '\n'
