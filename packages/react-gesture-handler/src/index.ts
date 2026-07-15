@@ -1,4 +1,88 @@
 // Curated v3-only barrel of the plain React DOM gesture-handler binding (PoC).
+import type {
+  BaseGestureConfig,
+  SingleGesture,
+  SingleGestureName,
+} from '@swmansion/gesture-handler-core';
+import type {
+  FlingGesture,
+  FlingGestureConfig as CoreFlingGestureConfig,
+  HoverGesture,
+  HoverGestureConfig as CoreHoverGestureConfig,
+  LongPressGesture,
+  LongPressGestureConfig as CoreLongPressGestureConfig,
+  ManualGesture,
+  ManualGestureConfig as CoreManualGestureConfig,
+  NativeGesture,
+  NativeGestureConfig as CoreNativeGestureConfig,
+  PanGesture,
+  PanGestureConfig as CorePanGestureConfig,
+  PinchGesture,
+  PinchGestureConfig as CorePinchGestureConfig,
+  RotationGesture,
+  RotationGestureConfig as CoreRotationGestureConfig,
+  TapGesture,
+  TapGestureConfig as CoreTapGestureConfig,
+} from '@swmansion/gesture-handler-core/src/v3/hooks/gestures/index';
+import type { WithoutSharedValues } from '@swmansion/gesture-handler-core/src/v3/types/ReanimatedTypes';
+
+import * as binding from './binding';
+
+// This binding has no reanimated (there is no react-native runtime), so the
+// shared config types' `SharedValue` unions are stripped at this boundary —
+// the public API of this package must not advertise reanimated concepts.
+// Same overlay pattern as Touchable: core keeps one config type, each
+// platform re-exports it under its precise public shape.
+export type FlingGestureConfig = WithoutSharedValues<CoreFlingGestureConfig>;
+export type HoverGestureConfig = WithoutSharedValues<CoreHoverGestureConfig>;
+export type LongPressGestureConfig =
+  WithoutSharedValues<CoreLongPressGestureConfig>;
+export type ManualGestureConfig = WithoutSharedValues<CoreManualGestureConfig>;
+export type NativeGestureConfig = WithoutSharedValues<CoreNativeGestureConfig>;
+export type PanGestureConfig = WithoutSharedValues<CorePanGestureConfig>;
+export type PinchGestureConfig = WithoutSharedValues<CorePinchGestureConfig>;
+export type RotationGestureConfig =
+  WithoutSharedValues<CoreRotationGestureConfig>;
+export type TapGestureConfig = WithoutSharedValues<CoreTapGestureConfig>;
+
+export const useFlingGesture = binding.useFlingGesture as (
+  config?: FlingGestureConfig
+) => FlingGesture;
+export const useHoverGesture = binding.useHoverGesture as (
+  config?: HoverGestureConfig
+) => HoverGesture;
+export const useLongPressGesture = binding.useLongPressGesture as (
+  config?: LongPressGestureConfig
+) => LongPressGesture;
+export const useManualGesture = binding.useManualGesture as (
+  config?: ManualGestureConfig
+) => ManualGesture;
+export const useNativeGesture = binding.useNativeGesture as (
+  config?: NativeGestureConfig
+) => NativeGesture;
+export const usePanGesture = binding.usePanGesture as (
+  config?: PanGestureConfig
+) => PanGesture;
+export const usePinchGesture = binding.usePinchGesture as (
+  config?: PinchGestureConfig
+) => PinchGesture;
+export const useRotationGesture = binding.useRotationGesture as (
+  config?: RotationGestureConfig
+) => RotationGesture;
+export const useTapGesture = binding.useTapGesture as (
+  config?: TapGestureConfig
+) => TapGesture;
+export const useGesture = binding.useGesture as <
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+>(
+  type: SingleGestureName,
+  config: WithoutSharedValues<
+    BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
+  >
+) => SingleGesture<TConfig, THandlerData, TExtendedHandlerData>;
+
 export {
   // On the DOM binding there is no legacy API, so GestureDetector IS the
   // core NativeDetector (no instanceof switcher).
@@ -7,17 +91,7 @@ export {
   InterceptingGestureDetector,
   useCompetingGestures,
   useExclusiveGestures,
-  useFlingGesture,
-  useGesture,
-  useHoverGesture,
-  useLongPressGesture,
-  useManualGesture,
-  useNativeGesture,
-  usePanGesture,
-  usePinchGesture,
-  useRotationGesture,
   useSimultaneousGestures,
-  useTapGesture,
   VirtualDetector as VirtualGestureDetector,
 } from './binding';
 export type { TouchableProps } from './Touchable';
@@ -33,24 +107,15 @@ export {
 } from '@swmansion/gesture-handler-core';
 export type {
   FlingGesture,
-  FlingGestureConfig,
   HoverGesture,
-  HoverGestureConfig,
   LongPressGesture,
-  LongPressGestureConfig,
   ManualGesture,
-  ManualGestureConfig,
   NativeGesture,
-  NativeGestureConfig,
   PanGesture,
-  PanGestureConfig,
   PinchGesture,
-  PinchGestureConfig,
   RotationGesture,
-  RotationGestureConfig,
   SingleGesture,
   TapGesture,
-  TapGestureConfig,
 } from '@swmansion/gesture-handler-core/src/v3/hooks/gestures/index';
 export type {
   AnimationDuration,

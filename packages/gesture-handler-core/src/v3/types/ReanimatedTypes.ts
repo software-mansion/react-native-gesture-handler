@@ -60,6 +60,23 @@ type Simplify<T> =
           [K in keyof T]: T[K];
         } & NonNullable<unknown>;
 
+// Inverse of WithSharedValue: removes the SharedValue arms from a config
+// type, recursively. A platform binding without reanimated (the plain-DOM
+// package) overlays this on the shared config types at its re-export
+// boundary, so its public API does not advertise reanimated concepts that
+// cannot exist on the platform. Functions pass through untouched.
+
+export type WithoutSharedValues<T> =
+  T extends SharedValue<any>
+    ? never
+    : T extends (...args: never[]) => unknown
+      ? T
+      : T extends readonly unknown[]
+        ? { [K in keyof T]: WithoutSharedValues<T[K]> }
+        : T extends object
+          ? { [K in keyof T]: WithoutSharedValues<T[K]> }
+          : T;
+
 // Context carried between gesture event dispatches (relocated from the
 // legacy reanimatedWrapper; used by the core event handler chain).
 export type ReanimatedContext<THandlerData> = {
