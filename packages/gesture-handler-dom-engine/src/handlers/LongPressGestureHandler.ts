@@ -28,7 +28,7 @@ export default class LongPressGestureHandler extends GestureHandler {
   private startTime = 0;
   private previousTime = 0;
 
-  private activationTimeout: number | undefined;
+  private activationTimeout: ReturnType<typeof setTimeout> | undefined;
 
   public constructor(
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>

@@ -49,10 +49,16 @@ export default class PanGestureHandler extends GestureHandler {
   private stylusData: StylusData | undefined;
 
   private activateAfterLongPress = 0;
-  private activationTimeout = 0;
+  // `number` stays in the union: 0 is the "no timeout scheduled" sentinel.
+  // The union only collapses in DOM-lib programs; consumer programs with
+  // @types/node see setTimeout returning NodeJS.Timeout.
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
+  private activationTimeout: ReturnType<typeof setTimeout> | number = 0;
 
   private enableTrackpadTwoFingerGesture = false;
-  private endWheelTimeout = 0;
+  // `number` stays in the union: 0 is the "no timeout scheduled" sentinel.
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
+  private endWheelTimeout: ReturnType<typeof setTimeout> | number = 0;
   private wheelDevice = WheelDevice.UNDETERMINED;
 
   private hasCustomActivationCriteria = false;
