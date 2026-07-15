@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:packed": "RGH_PACKED=1 vite",
     "build": "",
     "ts-check": ""
   },

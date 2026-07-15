@@ -20,6 +20,8 @@ export {
   useTapGesture,
   VirtualDetector as VirtualGestureDetector,
 } from './binding';
+export type { TouchableProps } from './Touchable';
+export { Touchable } from './Touchable';
 export {
   ActionType,
   Directions,
@@ -50,3 +52,8 @@ export type {
   TapGesture,
   TapGestureConfig,
 } from '@swmansion/gesture-handler-core/src/v3/hooks/gestures/index';
+export type {
+  AnimationDuration,
+  TouchableBehaviorProps,
+  TouchableButtonProps,
+} from '@swmansion/gesture-handler-core/src/v3/press/TouchableTypes';

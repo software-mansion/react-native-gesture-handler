@@ -6,6 +6,12 @@
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["workspace", "web-poc", "dev"],
       "port": 5199
+    },
+    {
+      "name": "web-poc-packed",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["workspace", "web-poc", "dev:packed"],
+      "port": 5199
     }
   ]
 }

@@ -37,6 +37,9 @@ function createFakePort() {
         // no-op
       },
     },
+    press: {
+      Button: HostGestureDetector,
+    },
     capabilities: {
       requiresRootView: false,
       fansOutReanimatedHandlers: false,

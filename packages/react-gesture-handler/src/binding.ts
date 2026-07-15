@@ -5,6 +5,7 @@ import type {
 } from '@swmansion/gesture-handler-core';
 import { createGestureHandlerAPI } from '@swmansion/gesture-handler-core';
 
+import { ButtonComponent as GestureHandlerButton } from './GestureHandlerButton';
 import { GestureStateManager } from './gestureStateManager';
 import HostGestureDetector from './HostGestureDetector';
 import { useNativeGestureRole } from './useNativeGestureRole';
@@ -73,6 +74,17 @@ const api = createGestureHandlerAPI({
     getViewTag: (node: unknown) => node,
     useNativeGestureRole,
   },
+  press: {
+    Button: GestureHandlerButton,
+    // hitSlop/testID configure the gesture, not the DOM element — drop them
+    // before they reach the div as unknown attributes.
+    mapButtonProps: (rest: Record<string, unknown>) => {
+      const hostProps = { ...rest };
+      delete hostProps.hitSlop;
+      delete hostProps.testID;
+      return hostProps;
+    },
+  },
   capabilities: {
     requiresRootView: false,
     fansOutReanimatedHandlers: true,
@@ -100,6 +112,7 @@ export const {
   VirtualDetector,
   InterceptingGestureDetector,
   useEnsureGestureHandlerRootView,
+  Touchable,
   createNativeWrapper,
 } = api;
 

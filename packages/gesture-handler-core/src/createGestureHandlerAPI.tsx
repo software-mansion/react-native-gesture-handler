@@ -39,6 +39,8 @@ import type {
   CoreRuntime,
   GestureHandlerPlatformPort,
 } from './v3/platform/Port';
+import { Touchable as TouchableImpl } from './v3/press/Touchable';
+import type { CoreTouchableProps } from './v3/press/TouchableTypes';
 import type {
   AnyGesture,
   BaseGestureConfig,
@@ -95,6 +97,9 @@ function validatePort(port: GestureHandlerPlatformPort) {
     if (port.detector?.[key] == null) {
       missing.push(`detector.${key}`);
     }
+  }
+  if (port.press?.Button == null) {
+    missing.push('press.Button');
   }
   if (port.capabilities == null) {
     missing.push('capabilities');
@@ -244,6 +249,11 @@ export function createGestureHandlerAPI(port: GestureHandlerPlatformPort) {
       >
     ) {
       return InterceptingGestureDetectorImpl(runtime, props);
+    },
+
+    // -- components ---------------------------------------------------------
+    Touchable: function Touchable(props: CoreTouchableProps) {
+      return TouchableImpl(runtime, props);
     },
 
     // -- supporting hooks -------------------------------------------------
