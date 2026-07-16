@@ -113,3 +113,10 @@ jobs:
 
       - name: Run tap E2E test
         run: argent flow run simple-tap-test --device $SIMULATOR_UDID
+
+      # The simulator-server's stderr (prefixed `[sim <udid>]`) is written to the
+      # tool-server log — this is where a "simulator-server exited before ready"
+      # crash reason shows up. Always print it so failures are diagnosable.
+      - name: Print Argent tool-server log
+        if: always()
+        run: cat argent-server.log 2>/dev/null || echo "no argent-server.log"
