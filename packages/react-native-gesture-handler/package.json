@@ -100,7 +100,7 @@
     "react-native-reanimated": "~4.4.1",
     "react-native-worklets": "0.9.1",
     "react-test-renderer": "19.2.3",
-    "typescript": "~5.8.3"
+    "typescript": "~6.0.3"
   },
   "peerDependencies": {
     "react": "*",
