@@ -1,0 +1,115 @@
+name: Test iOS e2e
+
+on:
+  pull_request:
+    paths:
+      - .argent/flows/*
+      - .github/workflows/ios-e2e.yml
+      - packages/react-native-gesture-handler/RNGestureHandler.podspec
+      - packages/react-native-gesture-handler/apple/**
+      - apps/expo-example/ios/**
+      - apps/expo-example/package.json
+      - rnrepo.config.json
+      - yarn.lock
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    runs-on: macos-26
+    timeout-minutes: 60
+    concurrency:
+      group: ios-e2e-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.4.1'
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install node dependencies
+        working-directory: apps/expo-example
+        run: yarn install --immutable
+
+      - name: Build app in Release mode
+        working-directory: apps/expo-example/ios
+        run: |
+          xcodebuild \
+            -workspace ExpoExample.xcworkspace \
+            -scheme ExpoExample \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Set up iPhone 17 Pro simulator
+        run: |
+          UDID=$(xcrun simctl list devices available | grep -E "iPhone 17 Pro \(" | head -1 | grep -oE "[0-9A-Fa-f-]{36}" || true)
+          if [ -z "$UDID" ]; then
+            echo "iPhone 17 Pro not found, creating one"
+            RUNTIME=$(xcrun simctl list runtimes ios -j | jq -r '.runtimes | map(select(.isAvailable)) | last | .identifier')
+            UDID=$(xcrun simctl create "iPhone 17 Pro" "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro" "$RUNTIME")
+          fi
+          echo "Using simulator $UDID"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID"
+          echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
+
+      - name: Install app on simulator
+        working-directory: apps/expo-example/ios
+        run: |
+          APP_PATH=$(find build/Build/Products/Release-iphonesimulator -maxdepth 1 -name "*.app" -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "Could not find built .app" >&2
+            exit 1
+          fi
+          echo "Installing $APP_PATH on $SIMULATOR_UDID"
+          xcrun simctl install "$SIMULATOR_UDID" "$APP_PATH"
+
+      - name: Install Argent
+        run: npx @swmansion/argent init --yes
+
+      # Start the tool-server out-of-band and hand `flow run` its URL, so it
+      # reuses this server instead of spawning one in-process and hitting the
+      # hard ~15s startup timeout on cold CI runners (first run downloads the
+      # simulator-server binary).
+      #
+      # `server start --detach` can fail to return on CI (its parent keeps the
+      # child's stdout pipe referenced), so background it with output redirected
+      # to a file — never the runner's pipe — and poll the port for readiness
+      # ourselves.
+      - name: Start Argent tool-server
+        run: |
+          nohup argent server start --detach --no-auth --port 3001 \
+            > argent-server.log 2>&1 &
+          echo "Waiting for Argent tool-server on :3001..."
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3001/tools >/dev/null 2>&1; then
+              echo "tool-server is ready"
+              echo "ARGENT_TOOLS_URL=http://127.0.0.1:3001" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Argent tool-server failed to become ready in time" >&2
+          cat argent-server.log >&2
+          exit 1
+
+      - name: Run tap E2E test
+        run: argent flow run simple-tap-test --device $SIMULATOR_UDID

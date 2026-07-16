@@ -1,0 +1,103 @@
+name: Test Android e2e
+
+on:
+  pull_request:
+    paths:
+      - .argent/flows/*
+      - .github/workflows/android-e2e.yml
+      - packages/react-native-gesture-handler/android/**
+      - apps/expo-example/android/**
+      - apps/expo-example/package.json
+      - rnrepo.config.json
+      - yarn.lock
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    concurrency:
+      group: android-e2e-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: oracle
+          java-version: 17
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install node dependencies
+        working-directory: apps/expo-example
+        run: yarn install --immutable
+
+      - name: Build app in Release mode
+        working-directory: apps/expo-example/android
+        run: ./gradlew :app:assembleRelease --console=plain -PreactNativeArchitectures=x86_64
+
+      - name: Install Argent
+        run: npx @swmansion/argent init --yes
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Start the tool-server out-of-band and hand `flow run` its URL, so it
+      # reuses this server instead of spawning one in-process and hitting the
+      # hard ~15s startup timeout on cold CI runners. The `/tools` endpoint is
+      # ready without a device attached, so we can start it before the emulator
+      # boots; the background process persists across steps and the emulator
+      # step below inherits ARGENT_TOOLS_URL via $GITHUB_ENV.
+      #
+      # `server start --detach` can fail to return on CI (its parent keeps the
+      # child's stdout pipe referenced), so background it with output redirected
+      # to a file — never the runner's pipe — and poll the port for readiness
+      # ourselves.
+      - name: Start Argent tool-server
+        run: |
+          nohup argent server start --detach --no-auth --port 3001 \
+            > argent-server.log 2>&1 &
+          echo "Waiting for Argent tool-server on :3001..."
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3001/tools >/dev/null 2>&1; then
+              echo "tool-server is ready"
+              echo "ARGENT_TOOLS_URL=http://127.0.0.1:3001" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Argent tool-server failed to become ready in time" >&2
+          cat argent-server.log >&2
+          exit 1
+
+      - name: Set up emulator and run tap E2E test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          # android-emulator-runner runs each line of `script` as a separate
+          # `sh -c`, so variables don't persist between lines and multi-line
+          # constructs (if/fi) break. Keep every command self-contained on one line.
+          script: |
+            adb install -r "$(find apps/expo-example/android/app/build/outputs/apk/release -name '*.apk' | head -1)"
+            argent flow run simple-tap-test --device "$(adb devices | awk 'NR>1 && $2=="device"{print $1; exit}')"
