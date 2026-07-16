@@ -79,6 +79,31 @@ jobs:
           mkdir -p "$XDG_RUNTIME_DIR"
           chmod 700 "$XDG_RUNTIME_DIR"
 
+      # Start the tool-server out-of-band and hand `flow run` its URL via
+      # $GITHUB_ENV. The simulator-server it later spawns inherits this step's
+      # env; XDG_RUNTIME_DIR (pinned at job level) keeps its emulator-discovery
+      # dir aligned with the emulator's, and adb is already on PATH from the
+      # preinstalled SDK — so it no longer has to run inside the emulator step.
+      # Backgrounded with our own readiness poll to dodge flow-run's hard ~15s
+      # in-process startup timeout. SIMSERVER_LOG=debug surfaces the backend's
+      # discovery/connect steps in argent-server.log (drop once green).
+      - name: Start Argent tool-server
+        run: |
+          nohup env SIMSERVER_LOG=debug argent server start --detach --no-auth --port 3001 \
+            > argent-server.log 2>&1 &
+          echo "Waiting for Argent tool-server on :3001..."
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3001/tools >/dev/null 2>&1; then
+              echo "tool-server is ready"
+              echo "ARGENT_TOOLS_URL=http://127.0.0.1:3001" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Argent tool-server failed to become ready in time" >&2
+          cat argent-server.log >&2
+          exit 1
+
       - name: Set up emulator and run tap E2E test
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -93,22 +118,11 @@ jobs:
           # android-emulator-runner runs each line of `script` as a separate
           # `sh -c`, so exported vars don't persist between lines and multi-line
           # constructs (if/fi) break. Keep every command self-contained on one
-          # line and pass ARGENT_TOOLS_URL inline.
-          #
-          # Start the tool-server HERE (not in an earlier step) so the
-          # simulator-server it spawns inherits this action's HOME, adb, and SDK
-          # env. That backend discovers the emulator's gRPC endpoint from
-          # $XDG_RUNTIME_DIR/avd/running/*.ini (pinned at job level) and shells
-          # out to adb, so it must share the emulator's exact environment.
-          # Backgrounded with our own readiness poll to dodge flow-run's hard
-          # ~15s in-process startup timeout; the process persists after its
-          # launching `sh -c` exits. SIMSERVER_LOG=debug makes the backend's
-          # discovery/connect steps visible in argent-server.log (drop once green).
+          # line. ARGENT_TOOLS_URL is inherited from the tool-server step above
+          # via $GITHUB_ENV, so `flow run` reuses that server.
           script: |
-            nohup env SIMSERVER_LOG=debug argent server start --detach --no-auth --port 3001 > "$GITHUB_WORKSPACE/argent-server.log" 2>&1 &
-            for i in $(seq 1 60); do curl -fsS http://127.0.0.1:3001/tools >/dev/null 2>&1 && break; sleep 2; done
             adb install -r "$(find "$GITHUB_WORKSPACE/apps/expo-example/android/app/build/outputs/apk/release" -name '*.apk' | head -1)"
-            ARGENT_TOOLS_URL=http://127.0.0.1:3001 argent flow run simple-tap-test --device "$(adb devices | awk 'NR>1 && $2=="device"{print $1; exit}')"
+            argent flow run simple-tap-test --device "$(adb devices | awk 'NR>1 && $2=="device"{print $1; exit}')"
 
       # The simulator-server's stderr (prefixed `[sim <udid>]`) is written to the
       # tool-server log — this is where a "simulator-server exited before ready"
