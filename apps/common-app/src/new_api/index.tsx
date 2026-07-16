@@ -54,13 +54,13 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Simple Gestures',
     data: [
-      { name: 'Fling', component: FlingExample },
-      { name: 'Tap', component: TapExample },
-      { name: 'LongPress', component: LongPressExample },
-      { name: 'Hover', component: HoverExample },
-      { name: 'Pinch', component: PinchExample },
-      { name: 'Rotation', component: RotationExample },
-      { name: 'Pan', component: PanExample },
+      { name: 'Basic Fling', component: FlingExample },
+      { name: 'Basic Tap', component: TapExample },
+      { name: 'Basic LongPress', component: LongPressExample },
+      { name: 'Basic Hover', component: HoverExample },
+      { name: 'Basic Pinch', component: PinchExample },
+      { name: 'Basic Rotation', component: RotationExample },
+      { name: 'Basic Pan', component: PanExample },
     ],
   },
   {
