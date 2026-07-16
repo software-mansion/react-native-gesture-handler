@@ -236,6 +236,7 @@ function ConsoleModalContent({ entries, visible, onClose }: ConsoleModalProps) {
             </View>
             <View style={styles.modalActions}>
               <Touchable
+                testID="clear-console-button"
                 accessibilityRole="button"
                 disabled={entries.length === 0}
                 activeOpacity={0.5}
@@ -250,6 +251,7 @@ function ConsoleModalContent({ entries, visible, onClose }: ConsoleModalProps) {
                 </Text>
               </Touchable>
               <Touchable
+                testID="close-console-button"
                 accessibilityRole="button"
                 accessibilityLabel="Close console"
                 activeOpacity={0.5}
