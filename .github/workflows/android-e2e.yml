@@ -25,6 +25,20 @@ jobs:
       group: android-e2e-${{ github.ref }}
       cancel-in-progress: true
 
+    # Pin the emulator "discovery directory" for BOTH the emulator (launched by
+    # the action) and the simulator-server backend (spawned by the tool-server
+    # inside the action's script). The Android touch/key backend finds the
+    # running emulator's gRPC console by scanning $XDG_RUNTIME_DIR/avd/running/
+    # pid_*.ini for grpc.port/grpc.token. XDG_RUNTIME_DIR is unset on GitHub
+    # runners and /run/user/$UID doesn't exist for the runner user, so the
+    # emulator and the backend can otherwise resolve DIFFERENT fallback dirs —
+    # the backend then logs "Failed to find any running emulator" and exits
+    # before becoming ready. Pinning it (checked first by both) removes that
+    # divergence. Job-level env reaches every step, including the emulator
+    # subprocess the action spawns.
+    env:
+      XDG_RUNTIME_DIR: /tmp/xdg-runtime
+
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -58,6 +72,13 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      # Must exist BEFORE the emulator boots: the emulator falls back to another
+      # dir if XDG_RUNTIME_DIR points at a missing path. 0700 per the XDG spec.
+      - name: Prepare shared XDG_RUNTIME_DIR
+        run: |
+          mkdir -p "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
+
       - name: Set up emulator and run tap E2E test
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -65,7 +86,9 @@ jobs:
           target: google_apis
           arch: x86_64
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # `-grpc 8554` guarantees grpc.port is written to the discovery ini
+          # (token-less is fine — the backend handles a missing grpc.token).
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -grpc 8554 -camera-back none
           disable-animations: true
           # android-emulator-runner runs each line of `script` as a separate
           # `sh -c`, so exported vars don't persist between lines and multi-line
@@ -75,12 +98,14 @@ jobs:
           # Start the tool-server HERE (not in an earlier step) so the
           # simulator-server it spawns inherits this action's HOME, adb, and SDK
           # env. That backend discovers the emulator's gRPC endpoint from
-          # $HOME/.android/avd/running/*.ini and shells out to adb, so it must
-          # share the emulator's exact environment. Backgrounded with our own
-          # readiness poll to dodge flow-run's hard ~15s in-process startup
-          # timeout; the process persists after its launching `sh -c` exits.
+          # $XDG_RUNTIME_DIR/avd/running/*.ini (pinned at job level) and shells
+          # out to adb, so it must share the emulator's exact environment.
+          # Backgrounded with our own readiness poll to dodge flow-run's hard
+          # ~15s in-process startup timeout; the process persists after its
+          # launching `sh -c` exits. SIMSERVER_LOG=debug makes the backend's
+          # discovery/connect steps visible in argent-server.log (drop once green).
           script: |
-            nohup argent server start --detach --no-auth --port 3001 > "$GITHUB_WORKSPACE/argent-server.log" 2>&1 &
+            nohup env SIMSERVER_LOG=debug argent server start --detach --no-auth --port 3001 > "$GITHUB_WORKSPACE/argent-server.log" 2>&1 &
             for i in $(seq 1 60); do curl -fsS http://127.0.0.1:3001/tools >/dev/null 2>&1 && break; sleep 2; done
             adb install -r "$(find "$GITHUB_WORKSPACE/apps/expo-example/android/app/build/outputs/apk/release" -name '*.apk' | head -1)"
             ARGENT_TOOLS_URL=http://127.0.0.1:3001 argent flow run simple-tap-test --device "$(adb devices | awk 'NR>1 && $2=="device"{print $1; exit}')"
