@@ -24,7 +24,7 @@ type Props = {
 
 export class TapOrPan extends Component<Props> {
   private touchX: Animated.Value;
-  private translateX: Animated.AnimatedAddition<number>;
+  private translateX: Animated.AnimatedAddition;
   private onPanGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: Props) {
     super(props);

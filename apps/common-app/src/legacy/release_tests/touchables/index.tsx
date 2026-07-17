@@ -1,6 +1,5 @@
 import type { StackScreenProps } from '@react-navigation/stack';
 import React, { Component } from 'react';
-import type { BackgroundPropType } from 'react-native';
 import {
   FlatList,
   StyleSheet,
@@ -56,7 +55,9 @@ type Touchables = {
   color?: string;
   renderChild: (color?: string) => React.ReactNode;
   text: string;
-  background?: (A: typeof TouchableNativeFeedback) => BackgroundPropType;
+  background?: (
+    A: typeof TouchableNativeFeedback
+  ) => React.ComponentProps<typeof TouchableNativeFeedback>['background'];
 };
 
 const TOUCHABLES: Touchables[] = [

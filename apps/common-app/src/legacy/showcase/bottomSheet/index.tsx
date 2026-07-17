@@ -38,7 +38,7 @@ export class BottomSheet extends Component<
   ) => void;
   private dragY: Animated.Value;
   private onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
-  private reverseLastScrollY: Animated.AnimatedMultiplication<number>;
+  private reverseLastScrollY: Animated.AnimatedMultiplication;
   private translateYOffset: Animated.Value;
   private translateY: Animated.AnimatedInterpolation<number>;
   constructor(props: Record<string, unknown>) {

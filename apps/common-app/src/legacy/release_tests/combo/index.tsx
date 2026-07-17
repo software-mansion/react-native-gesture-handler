@@ -129,13 +129,15 @@ class Combo extends Component<ComboProps> {
     Alert.alert("I'm so touched");
     this.scrollView?.scrollTo({ y: 200, animated: true });
   };
-  private scrollView: RNScroll | GHScroll | null = null;
+  private scrollView: React.ComponentRef<typeof RNScroll> | null = null;
   render() {
     const { ScrollViewComponent } = this.props;
     return (
       <View style={styles.container}>
         <ScrollViewComponent
-          ref={(node: RNScroll | GHScroll) => (this.scrollView = node)}
+          ref={(node: React.ComponentRef<typeof RNScroll> | null) =>
+            (this.scrollView = node)
+          }
           style={styles.scrollView}>
           <TouchableHighlight style={styles.button} onClick={this.onClick}>
             <View style={styles.buttonInner}>
