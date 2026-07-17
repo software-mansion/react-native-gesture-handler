@@ -23,8 +23,11 @@ import { NativeWrapperProps } from '../hooks/utils';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
 import ScrollViewResponderInterceptor from './ScrollViewResponderInterceptor';
 
-export const RefreshControl = createNativeWrapper<
-  RNRefreshControl,
+export const RefreshControl: React.ComponentType<
+  RNRefreshControlProps &
+    NativeWrapperProperties<React.ComponentRef<typeof RNRefreshControl> | null>
+> = createNativeWrapper<
+  React.ComponentRef<typeof RNRefreshControl>,
   RNRefreshControlProps
 >(
   RNRefreshControl,
@@ -39,7 +42,7 @@ export const RefreshControl = createNativeWrapper<
 export type RefreshControl = typeof RefreshControl & RNRefreshControl;
 
 const GHScrollView = createNativeWrapper<
-  RNScrollView,
+  React.ComponentRef<typeof RNScrollView>,
   PropsWithChildren<RNScrollViewProps>
 >(
   RNScrollView,
@@ -51,7 +54,8 @@ const GHScrollView = createNativeWrapper<
 );
 
 export const ScrollView = (
-  props: RNScrollViewProps & NativeWrapperProperties<RNScrollView | null>
+  props: RNScrollViewProps &
+    NativeWrapperProperties<React.ComponentRef<typeof RNScrollView> | null>
 ) => {
   const {
     children,
@@ -101,18 +105,28 @@ export const ScrollView = (
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type ScrollView = typeof ScrollView & RNScrollView;
 
-export const Switch = createNativeWrapper<RNSwitch, RNSwitchProps>(RNSwitch, {
-  shouldCancelWhenOutside: false,
-  shouldActivateOnStart: true,
-  disallowInterruption: true,
-});
+export const Switch: React.ComponentType<
+  RNSwitchProps &
+    NativeWrapperProperties<React.ComponentRef<typeof RNSwitch> | null>
+> = createNativeWrapper<React.ComponentRef<typeof RNSwitch>, RNSwitchProps>(
+  RNSwitch,
+  {
+    shouldCancelWhenOutside: false,
+    shouldActivateOnStart: true,
+    disallowInterruption: true,
+  }
+);
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Switch = typeof Switch & RNSwitch;
 
 export const TextInput: React.ComponentType<
-  RNTextInputProps & Omit<NativeWrapperProperties<RNTextInput | null>, 'ref'>
-> = createNativeWrapper<RNTextInput, RNTextInputProps>(RNTextInput);
+  RNTextInputProps &
+    NativeWrapperProperties<React.ComponentRef<typeof RNTextInput> | null>
+> = createNativeWrapper<
+  React.ComponentRef<typeof RNTextInput>,
+  RNTextInputProps
+>(RNTextInput);
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;

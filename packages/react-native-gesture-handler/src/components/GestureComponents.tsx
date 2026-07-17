@@ -47,15 +47,16 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
 export const LegacyScrollView = (
   props: RNScrollViewProps &
     NativeViewGestureHandlerProps & {
-      ref?: React.Ref<RNScrollView | null>;
+      ref?: React.Ref<React.ComponentRef<typeof RNScrollView> | null>;
     }
 ) => {
   const refreshControlGestureRef = React.useRef<LegacyRefreshControl>(null);
-  const { refreshControl, waitFor, ...rest } = props;
+  const { refreshControl, waitFor, ref, ...rest } = props;
 
   return (
     <GHScrollView
       {...rest}
+      ref={ref as React.Ref<React.ComponentType<any> | null>}
       waitFor={[...toArray(waitFor ?? []), refreshControlGestureRef]}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
@@ -73,7 +74,8 @@ export const LegacyScrollView = (
 // Backward type compatibility with https://github.com/software-mansion/react-native-gesture-handler/blob/db78d3ca7d48e8ba57482d3fe9b0a15aa79d9932/react-native-gesture-handler.d.ts#L440-L457
 // include methods of wrapped components by creating an intersection type with the RN component instead of duplicating them.
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type LegacyScrollView = typeof GHScrollView & RNScrollView;
+export type LegacyScrollView = typeof GHScrollView &
+  React.ComponentRef<typeof RNScrollView>;
 
 /**
  * @deprecated use `Switch` instead
