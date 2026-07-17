@@ -110,9 +110,9 @@ export const Switch = createNativeWrapper<RNSwitch, RNSwitchProps>(RNSwitch, {
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Switch = typeof Switch & RNSwitch;
 
-export const TextInput = createNativeWrapper<RNTextInput, RNTextInputProps>(
-  RNTextInput
-);
+export const TextInput: React.ComponentType<
+  RNTextInputProps & Omit<NativeWrapperProperties<RNTextInput | null>, 'ref'>
+> = createNativeWrapper<RNTextInput, RNTextInputProps>(RNTextInput);
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;

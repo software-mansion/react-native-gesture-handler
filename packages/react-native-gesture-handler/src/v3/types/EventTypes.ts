@@ -71,8 +71,10 @@ export type UnpackedGestureHandlerEvent<THandlerData> =
 // This is not how Animated.event is typed in React Native. We add _argMapping in order to
 // have access to the _argMapping property to check for usage of `change*` callbacks.
 // It's also not typed as a function, which is breaking Gesture Handler type definitions.
+type AnimatedMapping = { [key: string]: AnimatedMapping } | Animated.Value;
+
 export type AnimatedEvent = {
-  _argMapping: (Animated.Mapping | null)[];
+  _argMapping: (AnimatedMapping | null)[];
 };
 
 export type ChangeCalculatorType<TExtendedHandlerData> = (

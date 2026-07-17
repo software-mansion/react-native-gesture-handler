@@ -1,4 +1,4 @@
-import type { ComponentClass } from 'react';
+import type { ComponentClass, ComponentType } from 'react';
 
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 import { tagMessage } from '../../utils';
@@ -50,7 +50,7 @@ let Reanimated:
       default: {
         // Slightly modified definition copied from 'react-native-reanimated'
         createAnimatedComponent<P extends object>(
-          component: ComponentClass<P>,
+          component: ComponentType<P>,
           options?: unknown
         ): ComponentClass<P>;
       };

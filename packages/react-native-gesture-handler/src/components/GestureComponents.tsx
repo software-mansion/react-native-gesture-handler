@@ -97,9 +97,12 @@ export type LegacyTextInput = typeof LegacyTextInput & RNTextInput;
 /**
  * @deprecated use `DrawerLayoutAndroid` instead
  */
-export const LegacyDrawerLayoutAndroid = createNativeWrapper<
-  PropsWithChildren<RNDrawerLayoutAndroidProps>
->(RNDrawerLayoutAndroid, { disallowInterruption: true });
+export const LegacyDrawerLayoutAndroid: React.ComponentType<
+  PropsWithChildren<RNDrawerLayoutAndroidProps> & NativeViewGestureHandlerProps
+> = createNativeWrapper<PropsWithChildren<RNDrawerLayoutAndroidProps>>(
+  RNDrawerLayoutAndroid,
+  { disallowInterruption: true }
+);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type LegacyDrawerLayoutAndroid = typeof LegacyDrawerLayoutAndroid &
   RNDrawerLayoutAndroid;

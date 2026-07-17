@@ -349,7 +349,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, [refs]);
 
   return (
-    <View style={{ display: 'contents' }} ref={viewRef as Ref<View>}>
+    <View
+      style={{ display: 'contents' }}
+      ref={viewRef as Ref<React.ComponentRef<typeof View>>}>
       {children}
     </View>
   );
