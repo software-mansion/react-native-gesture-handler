@@ -39,6 +39,7 @@ export default class TouchableOpacity extends Component<TouchableOpacityProps> {
     Animated.timing(this.opacity, {
       toValue: value,
       duration: duration,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       easing: Easing.inOut(Easing.quad),
       useNativeDriver: this.props.useNativeAnimations ?? true,
     }).start();
