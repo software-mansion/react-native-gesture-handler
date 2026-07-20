@@ -15,7 +15,9 @@ import type {
 } from '../../types';
 import type { InterceptingGestureDetectorProps } from '../common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from '../common';
-import HostGestureDetector from '../HostGestureDetector';
+import HostGestureDetector, {
+  type RNGestureHandlerDetectorNativeComponentProps,
+} from '../HostGestureDetector';
 import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
 import { useDetectorAttachmentGuard } from '../useDetectorAttachmentGuard';
 import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
@@ -85,11 +87,13 @@ export function InterceptingGestureDetector<
     mode === InterceptingDetectorMode.REANIMATED;
   const dispatchesAnimatedEvents = mode === InterceptingDetectorMode.ANIMATED;
 
-  const NativeDetectorComponent = dispatchesAnimatedEvents
-    ? AnimatedNativeDetector
-    : shouldUseReanimatedDetector
-      ? ReanimatedNativeDetector
-      : HostGestureDetector;
+  const NativeDetectorComponent = (
+    dispatchesAnimatedEvents
+      ? AnimatedNativeDetector
+      : shouldUseReanimatedDetector
+        ? ReanimatedNativeDetector
+        : HostGestureDetector
+  ) as React.FunctionComponent<RNGestureHandlerDetectorNativeComponentProps>;
 
   const register = useCallback((child: VirtualChild) => {
     setVirtualChildren((prev) => {

@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import type { ViewStyle } from 'react-native';
 import { Animated, Platform, StyleSheet } from 'react-native';
 
 import GestureHandlerButton from '../../components/GestureHandlerButton';
@@ -23,7 +24,7 @@ type RawButtonInnerProps = RawButtonProps & {
 const RawButtonInner = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
   RawButtonInnerProps
->(GestureHandlerButton, {
+>(GestureHandlerButton as React.ComponentType<RawButtonInnerProps>, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
@@ -46,7 +47,7 @@ export const BaseButton = (props: BaseButtonProps) => {
 
   const delayLongPress = props.delayLongPress ?? 600;
 
-  const { onLongPress, onPress, onActiveStateChange, style, ...rest } = props;
+  const { onLongPress, onPress, onActiveStateChange, ...rest } = props;
 
   const wrappedLongPress = () => {
     longPressDetected.current = true;
@@ -100,7 +101,6 @@ export const BaseButton = (props: BaseButtonProps) => {
 
   return (
     <RawButton
-      style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
       {...rest}
       {...tvProps}
       onBegin={onBegin}
@@ -155,15 +155,15 @@ export const RectButton = (props: RectButtonProps) => {
       <Animated.View
         style={[
           btnStyles.underlay,
+          { opacity },
           {
-            opacity,
             backgroundColor: underlayColor,
-            borderRadius: resolvedStyle.borderRadius,
-            borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
-            borderTopRightRadius: resolvedStyle.borderTopRightRadius,
-            borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
-            borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
-          },
+            borderRadius: resolvedStyle?.borderRadius,
+            borderTopLeftRadius: resolvedStyle?.borderTopLeftRadius,
+            borderTopRightRadius: resolvedStyle?.borderTopRightRadius,
+            borderBottomLeftRadius: resolvedStyle?.borderBottomLeftRadius,
+            borderBottomRightRadius: resolvedStyle?.borderBottomRightRadius,
+          } as ViewStyle,
         ]}
       />
       {children}
