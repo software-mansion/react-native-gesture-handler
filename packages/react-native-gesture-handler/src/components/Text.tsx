@@ -9,7 +9,7 @@ import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 type TextProps = RNTextProps & {
   ref?: Ref<ComponentRef<typeof RNText> | null>;
 };
-type RNGHTextRef = Ref<RNText | null> & { rngh?: boolean };
+type RNGHTextRef = Ref<ComponentRef<typeof RNText> | null> & { rngh?: boolean };
 
 /**
  * @deprecated `LegacyText` is deprecated. Since Gesture Handler 3, you should wrap `Text` with `GestureDetector`, `InterceptingGestureDetector`, or `VirtualGestureDetector`.
@@ -17,11 +17,11 @@ type RNGHTextRef = Ref<RNText | null> & { rngh?: boolean };
 export const LegacyText = (props: TextProps) => {
   const { onPress, onLongPress, ref, ...rest } = props;
 
-  const textRef = useRef<RNText | null>(null);
+  const textRef = useRef<ComponentRef<typeof RNText> | null>(null);
   const native = useMemo(() => Gesture.Native().runOnJS(true), []);
 
   const refHandler = useMemo(() => {
-    const handler: RNGHTextRef = (node: RNText | null) => {
+    const handler: RNGHTextRef = (node: ComponentRef<typeof RNText> | null) => {
       textRef.current = node;
 
       if (!ref) {

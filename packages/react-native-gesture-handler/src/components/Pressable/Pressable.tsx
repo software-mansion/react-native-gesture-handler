@@ -68,6 +68,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
     simultaneousWithExternalGesture,
     requireExternalGestureToFail,
     blocksExternalGesture,
+    ref,
     ...remainingProps
   } = props;
 
@@ -385,6 +386,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
+        ref={ref as React.Ref<React.ComponentRef<typeof NativeButton>>}
         needsOffscreenAlphaCompositing
         onLayout={setDimensions}
         accessible={accessible !== false}

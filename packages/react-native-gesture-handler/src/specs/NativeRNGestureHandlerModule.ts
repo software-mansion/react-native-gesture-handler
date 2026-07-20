@@ -1,27 +1,38 @@
-import type { TurboModule } from 'react-native';
+import type { CodegenTypes, TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
-import type { Double } from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
   createGestureHandler: (
     handlerName: string,
-    handlerTag: Double,
+    handlerTag: CodegenTypes.Double,
     // Record<> is not supported by codegen
     // eslint-disable-next-line @typescript-eslint/ban-types
     config: Object
   ) => void;
   attachGestureHandler: (
-    handlerTag: Double,
-    newView: Double,
-    actionType: Double
+    handlerTag: CodegenTypes.Double,
+    newView: CodegenTypes.Double,
+    actionType: CodegenTypes.Double
   ) => void;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  setGestureHandlerConfig: (handlerTag: Double, newConfig: Object) => void;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  updateGestureHandlerConfig: (handlerTag: Double, newConfig: Object) => void;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  configureRelations: (handlerTag: Double, relations: Object) => void;
-  dropGestureHandler: (handlerTag: Double) => void;
+
+  setGestureHandlerConfig: (
+    handlerTag: CodegenTypes.Double,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    newConfig: Object
+  ) => void;
+
+  updateGestureHandlerConfig: (
+    handlerTag: CodegenTypes.Double,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    newConfig: Object
+  ) => void;
+
+  configureRelations: (
+    handlerTag: CodegenTypes.Double,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    relations: Object
+  ) => void;
+  dropGestureHandler: (handlerTag: CodegenTypes.Double) => void;
   flushOperations: () => void;
   installUIRuntimeBindings: () => boolean;
 }

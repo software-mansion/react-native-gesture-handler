@@ -20,7 +20,7 @@ export interface RawButtonProps
     >,
     Omit<
       NativeWrapperProperties<React.ComponentRef<typeof GestureHandlerButton>>,
-      'hitSlop' | 'enabled'
+      'hitSlop' | 'enabled' | 'testID'
     > {}
 
 /**
