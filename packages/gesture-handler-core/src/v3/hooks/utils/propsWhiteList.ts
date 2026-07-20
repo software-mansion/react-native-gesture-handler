@@ -81,10 +81,22 @@ export const PropsToFilter = new Set<
   'activeOffsetX',
 ]);
 
-// Don't pass testID to the native side in production
-if (!__DEV__) {
-  allowedNativeProps.delete('testID');
-  PropsToFilter.add('testID');
+// Don't pass testID to the native side in production. Applied lazily on
+// first read instead of at module scope: core must not touch __DEV__ during
+// module evaluation — bundlers that skip side-effect-free barrels (webpack
+// under `sideEffects`) can evaluate this module before the binding's
+// environment setup (e.g. the DOM binding's ensureDevGlobal) has provided
+// the global.
+let productionTestIDFilterApplied = false;
+export function applyProductionTestIDFilter() {
+  if (productionTestIDFilterApplied) {
+    return;
+  }
+  productionTestIDFilterApplied = true;
+  if (!__DEV__) {
+    allowedNativeProps.delete('testID');
+    PropsToFilter.add('testID');
+  }
 }
 
 export const PropsWhiteLists = new Map<

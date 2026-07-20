@@ -1,37 +1,38 @@
-// Must run before createGestureHandlerAPI below: core reads __DEV__.
+// Must run before the port is used anywhere: core reads __DEV__.
 import './ensureDevGlobal';
 
 import type {
   BaseGestureConfig,
+  CoreRuntime,
+  GestureHandlerPlatformPort,
   GestureRelations,
   SingleGestureName,
 } from '@swmansion/gesture-handler-core';
-import { createGestureHandlerAPI } from '@swmansion/gesture-handler-core';
+import { validatePort } from '@swmansion/gesture-handler-core';
 
-import { ButtonComponent as GestureHandlerButton } from './GestureHandlerButton';
-import { GestureStateManager } from './gestureStateManager';
 import HostGestureDetector from './HostGestureDetector';
 import { useNativeGestureRole } from './useNativeGestureRole';
 import { WebModule } from './WebModule';
 import { Wrap } from './Wrap';
 
-// This module is the plain-DOM platform binding of the gesture-handler core.
+// The plain-DOM platform runtime, built once in this leaf module. Every
+// public export binds a core impl to this runtime in its OWN module (see
+// src/gestures/*, GestureDetector.ts, Touchable.tsx), so a tree-shaken
+// bundle retains only what it imports — this module is the floor every
+// consumer pays, keep it minimal (note: the press kit deliberately lives in
+// Touchable.tsx, not here).
+//
 // No react-native, no reanimated: the reanimated capability is undefined, so
 // every reanimated branch in core is unreachable and worklet directives are
 // inert strings executed as plain functions.
-const api = createGestureHandlerAPI({
+const port: GestureHandlerPlatformPort = {
   proxy: {
     createGestureHandler: <T extends Record<string, unknown>>(
       handlerName: SingleGestureName,
       handlerTag: number,
       config?: T
     ) => {
-      WebModule.createGestureHandler(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        handlerName as any,
-        handlerTag,
-        config || {}
-      );
+      WebModule.createGestureHandler(handlerName, handlerTag, config || {});
     },
     setGestureHandlerConfig: <
       TConfig,
@@ -77,46 +78,17 @@ const api = createGestureHandlerAPI({
     getViewTag: (node: unknown) => node,
     useNativeGestureRole,
   },
-  press: {
-    Button: GestureHandlerButton,
-    // hitSlop/testID configure the gesture, not the DOM element — drop them
-    // before they reach the div as unknown attributes.
-    mapButtonProps: (rest: Record<string, unknown>) => {
-      const hostProps = { ...rest };
-      delete hostProps.hitSlop;
-      delete hostProps.testID;
-      return hostProps;
-    },
-  },
   capabilities: {
     requiresRootView: false,
     fansOutReanimatedHandlers: true,
     virtualChildrenCarryViewRefs: true,
   },
   reanimated: undefined,
-});
+};
 
-export const {
-  useTapGesture,
-  useFlingGesture,
-  useLongPressGesture,
-  usePinchGesture,
-  useRotationGesture,
-  useHoverGesture,
-  useManualGesture,
-  useNativeGesture,
-  usePanGesture,
-  useGesture,
-  useComposedGesture,
-  useSimultaneousGestures,
-  useCompetingGestures,
-  useExclusiveGestures,
-  NativeDetector,
-  VirtualDetector,
-  InterceptingGestureDetector,
-  useEnsureGestureHandlerRootView,
-  Touchable,
-  createNativeWrapper,
-} = api;
+validatePort(port);
 
-export { GestureStateManager };
+export const runtime: CoreRuntime = {
+  port,
+  lastUpdateEventMap: undefined,
+};

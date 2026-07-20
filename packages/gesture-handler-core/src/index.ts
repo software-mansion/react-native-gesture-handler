@@ -2,10 +2,6 @@ import './globals';
 
 export { ActionType } from './ActionType';
 export { CALLBACK_TYPE } from './CallbackType';
-export {
-  createGestureHandlerAPI,
-  type GestureHandlerAPI,
-} from './createGestureHandlerAPI';
 export * from './Directions';
 export { default as GestureHandlerRootViewContext } from './GestureHandlerRootViewContext';
 export * from './v3/jsResponderContext';
@@ -22,6 +18,7 @@ export type {
   ReanimatedIntegration,
   WorkletFunction,
 } from './v3/platform/ReanimatedIntegration';
+export { validatePort } from './v3/platform/validatePort';
 // NOTE: no `export *` from gestureHandlerCommon — its legacy GestureEvent /
 // CommonGestureConfig names collide with v3/types; explicit list instead.
 export { MouseButton } from './handlers/gestureHandlerCommon';

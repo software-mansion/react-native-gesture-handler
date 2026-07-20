@@ -61,21 +61,6 @@ export interface DetectorKitPort {
   ) => void;
 }
 
-export interface PressKitPort {
-  // The platform's host button rendered by the core Touchable (codegen button
-  // on native, DOM div button on web). Receives TouchableButtonProps plus the
-  // passthrough props (optionally translated by mapButtonProps below).
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Button: React.ComponentType<any>;
-  // Optional platform translation of the passthrough props into host-button
-  // props — the place for platform-only concerns the core component cannot
-  // know about (Android ripple config, TV focusability, stripping props that
-  // are not valid DOM attributes). Identity when omitted.
-  mapButtonProps?:
-    | ((rest: Record<string, unknown>) => Record<string, unknown>)
-    | undefined;
-}
-
 export interface PlatformCapabilities {
   // Whether detectors must be rendered inside a GestureHandlerRootView
   // (__DEV__ check). True on RN native platforms, false on web.
@@ -94,7 +79,6 @@ export interface PlatformCapabilities {
 export interface GestureHandlerPlatformPort {
   proxy: GestureHandlerProxyPort;
   detector: DetectorKitPort;
-  press: PressKitPort;
   capabilities: PlatformCapabilities;
   reanimated: ReanimatedIntegration | undefined;
 }

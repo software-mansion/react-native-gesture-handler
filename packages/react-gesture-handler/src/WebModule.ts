@@ -1,8 +1,9 @@
 import type {
   ActionType,
   GestureRelations,
+  SingleGestureName,
 } from '@swmansion/gesture-handler-core';
-import { Gestures } from '@swmansion/gesture-handler-dom-engine/src/Gestures';
+import { getHandlerClass } from '@swmansion/gesture-handler-dom-engine/src/handlerRegistry';
 import type {
   Config,
   HostDetector,
@@ -25,17 +26,17 @@ let shouldPreventDrop = false;
 
 export const WebModule = {
   createGestureHandler<T>(
-    handlerName: keyof typeof Gestures,
+    handlerName: SingleGestureName,
     handlerTag: number,
     config: T
   ) {
-    if (!(handlerName in Gestures)) {
+    const GestureClass = getHandlerClass(handlerName);
+    if (GestureClass == null) {
       throw new Error(
-        `react-gesture-handler: ${handlerName} is not supported on web.`
+        `react-gesture-handler: no recognizer registered for ${handlerName}. ` +
+          'Import the corresponding gesture hook so its recognizer class is bundled.'
       );
     }
-
-    const GestureClass = Gestures[handlerName];
     NodeManager.createGestureHandler(
       handlerTag,
       new GestureClass(new GestureHandlerWebDelegate())

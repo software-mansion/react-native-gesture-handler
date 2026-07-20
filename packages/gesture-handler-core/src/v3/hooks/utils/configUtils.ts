@@ -12,6 +12,7 @@ import type {
 import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 import {
   allowedNativeProps,
+  applyProductionTestIDFilter,
   EMPTY_WHITE_LIST,
   PropsToFilter,
   PropsWhiteLists,
@@ -101,6 +102,8 @@ export function prepareConfigForNativeSide<
   };
   const handlerPropsWhiteList =
     PropsWhiteLists.get(handlerType) ?? EMPTY_WHITE_LIST;
+
+  applyProductionTestIDFilter();
 
   for (const [key, value] of Object.entries(config)) {
     // @ts-ignore That's the point, we want to see if key exists in the whitelists

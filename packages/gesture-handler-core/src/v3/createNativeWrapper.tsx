@@ -8,7 +8,7 @@ import type {
 } from './types/NativeWrapperType';
 
 // The concrete detector components and useNativeGesture are factory-bound;
-// createGestureHandlerAPI instantiates this with its own bound members.
+// Each binding instantiates this with its own bound detector members.
 export interface NativeWrapperKit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   NativeDetector: React.ComponentType<any>;

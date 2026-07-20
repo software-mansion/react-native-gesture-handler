@@ -13,6 +13,7 @@ import type {
   TouchableButtonProps,
   TouchableCallbackEvent as CallbackEventType,
   TouchableEndCallbackEvent as EndCallbackEventType,
+  TouchablePressKit,
 } from './TouchableTypes';
 
 const DEFAULT_IN_DURATION_MS = 50;
@@ -83,7 +84,11 @@ function TouchableDetector(props: {
   return NativeDetector(runtime, { gesture, children });
 }
 
-export const Touchable = (runtime: CoreRuntime, props: CoreTouchableProps) => {
+export const Touchable = (
+  runtime: CoreRuntime,
+  press: TouchablePressKit,
+  props: CoreTouchableProps
+) => {
   const {
     underlayColor = 'transparent',
     defaultUnderlayOpacity = 0,
@@ -240,9 +245,10 @@ export const Touchable = (runtime: CoreRuntime, props: CoreTouchableProps) => {
   });
 
   // The host button and any platform-specific prop translation (Android
-  // ripple, TV focus) come from the platform port.
-  const GestureHandlerButton = runtime.port.press.Button;
-  const hostProps = runtime.port.press.mapButtonProps?.(rest) ?? rest;
+  // ripple, TV focus) come from the binding's press kit, passed alongside
+  // the runtime by each binding's Touchable module.
+  const GestureHandlerButton = press.Button;
+  const hostProps = press.mapButtonProps?.(rest) ?? rest;
 
   const buttonProps: TouchableButtonProps = {
     ...resolvedDurations,

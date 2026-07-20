@@ -1,16 +1,21 @@
-import type { GestureHandlerPlatformPort } from '@swmansion/gesture-handler-core';
-import { createGestureHandlerAPI } from '@swmansion/gesture-handler-core';
+import type {
+  CoreRuntime,
+  GestureHandlerPlatformPort,
+} from '@swmansion/gesture-handler-core';
+import { validatePort } from '@swmansion/gesture-handler-core';
 import { findGesture } from '@swmansion/gesture-handler-core/src/handlers/handlersRegistry';
+import { usePanGesture } from '@swmansion/gesture-handler-core/src/v3/hooks/gestures/pan/usePanGesture';
+import { useTapGesture } from '@swmansion/gesture-handler-core/src/v3/hooks/gestures/tap/useTapGesture';
 import { renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 
-import type { TapGestureConfig } from '../index';
-
-// Seed of the platform conformance kit: two factory instances with separate
+// Seed of the platform conformance kit: two runtimes built over separate
 // fake ports must (a) route handler operations to their own port only and
-// (b) share core's module-scope singletons (handler-tag counter, registry) so
-// tags stay globally unique — the coexistence guarantee for e.g. an RNW app
-// with both the native and the web binding installed.
+// (b) share core's module-scope singletons (handler-tag counter, registry)
+// so tags stay globally unique — the coexistence guarantee for e.g. an RNW
+// app with both the native and the web binding installed. The impls are
+// exercised the way bindings actually consume them: called directly with a
+// runtime, one bound module per export.
 
 function createFakePort() {
   const HostGestureDetector = (props: { children?: React.ReactNode }) => (
@@ -37,9 +42,6 @@ function createFakePort() {
         // no-op
       },
     },
-    press: {
-      Button: HostGestureDetector,
-    },
     capabilities: {
       requiresRootView: false,
       fansOutReanimatedHandlers: false,
@@ -51,15 +53,20 @@ function createFakePort() {
   return port;
 }
 
-describe('createGestureHandlerAPI with two platform ports', () => {
-  test('routes handler operations to the owning port only', () => {
+function createFakeRuntime(port: GestureHandlerPlatformPort): CoreRuntime {
+  validatePort(port);
+  return { port, lastUpdateEventMap: undefined };
+}
+
+describe('core impls bound to two platform runtimes', () => {
+  test('route handler operations to the owning port only', () => {
     const portA = createFakePort();
     const portB = createFakePort();
-    const apiA = createGestureHandlerAPI(portA);
-    const apiB = createGestureHandlerAPI(portB);
+    const runtimeA = createFakeRuntime(portA);
+    const runtimeB = createFakeRuntime(portB);
 
-    const a = renderHook(() => apiA.useTapGesture({}));
-    const b = renderHook(() => apiB.usePanGesture({}));
+    const a = renderHook(() => useTapGesture(runtimeA, {}));
+    const b = renderHook(() => usePanGesture(runtimeB, {}));
 
     expect(portA.proxy.createGestureHandler).toHaveBeenCalledTimes(1);
     expect(portB.proxy.createGestureHandler).toHaveBeenCalledTimes(1);
@@ -88,20 +95,21 @@ describe('createGestureHandlerAPI with two platform ports', () => {
     expect(portB.proxy.dropGestureHandler).toHaveBeenCalledTimes(1);
   });
 
-  test('shares the handler tag namespace and registry across factories', () => {
-    const apiA = createGestureHandlerAPI(createFakePort());
-    const apiB = createGestureHandlerAPI(createFakePort());
+  test('share the handler tag namespace and registry across runtimes', () => {
+    const runtimeA = createFakeRuntime(createFakePort());
+    const runtimeB = createFakeRuntime(createFakePort());
 
-    const configA: TapGestureConfig = { testID: 'from-port-a' };
-    const configB: TapGestureConfig = { testID: 'from-port-b' };
-
-    const a = renderHook(() => apiA.useTapGesture(configA));
-    const b = renderHook(() => apiB.useTapGesture(configB));
+    const a = renderHook(() =>
+      useTapGesture(runtimeA, { testID: 'from-port-a' })
+    );
+    const b = renderHook(() =>
+      useTapGesture(runtimeB, { testID: 'from-port-b' })
+    );
 
     const tagA = a.result.current.handlerTag;
     const tagB = b.result.current.handlerTag;
 
-    // One counter in core: tags never collide across factory instances.
+    // One counter in core: tags never collide across runtimes.
     expect(tagA).not.toBe(tagB);
 
     // One registry in core: both gestures are findable through the same maps
@@ -113,12 +121,12 @@ describe('createGestureHandlerAPI with two platform ports', () => {
     b.unmount();
   });
 
-  test('rejects a structurally incomplete port in __DEV__', () => {
+  test('validatePort rejects a structurally incomplete port in __DEV__', () => {
     const broken = createFakePort();
     // @ts-expect-error deliberately breaking the contract
     delete broken.proxy.flush;
 
-    expect(() => createGestureHandlerAPI(broken)).toThrow(
+    expect(() => validatePort(broken)).toThrow(
       /platform port is missing proxy\.flush/
     );
   });

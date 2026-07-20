@@ -54,6 +54,20 @@ export interface TouchableButtonProps {
   underlayColor: string;
 }
 
+// The platform pieces the core Touchable renders with: the host button and
+// an optional translation of the passthrough props (Android ripple, TV
+// focus, stripping non-DOM attributes). Each binding's Touchable module
+// supplies this next to the component — deliberately NOT part of the
+// platform port, so the button never rides in bundles that don't import
+// Touchable.
+export interface TouchablePressKit {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Button: React.ComponentType<any>;
+  mapButtonProps?:
+    | ((rest: Record<string, unknown>) => Record<string, unknown>)
+    | undefined;
+}
+
 // The behavioral props of the Touchable — everything the press logic reads.
 // Platform packages build their public prop types on top of this (adding RN
 // view props / DOM attributes and re-typing platform-opaque values like
