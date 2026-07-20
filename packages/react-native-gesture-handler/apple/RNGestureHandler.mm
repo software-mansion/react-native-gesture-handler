@@ -312,6 +312,17 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)unbindFromView
 {
+  // If the gesture is still in flight - e.g. the view is being unmounted mid-gesture - deliver
+  // the final event now, while the recognizer is still attached and the target view is known.
+  // Otherwise the onBegin/onFinalize and onActivate/onDeactivate guarantees would be broken
+  // and `_lastState` would never be cleared by `reset`.
+  if (self.recognizer.view != nil &&
+      (_lastState == RNGestureHandlerStateBegan || _lastState == RNGestureHandlerStateActive)) {
+    [self handleGesture:self.recognizer
+                inState:_lastState == RNGestureHandlerStateActive ? RNGestureHandlerStateCancelled
+                                                                  : RNGestureHandlerStateFailed];
+  }
+
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
 
@@ -401,9 +412,21 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   //
   // While this solution is not great, we decided to check whether sending events was triggered from `reset` method.
   // This way we can detect double Began mapping by checking previous sent state and current state of recognizer.
-  if (fromReset && _lastState == RNGestureHandlerStateBegan &&
-      self.recognizer.state == UIGestureRecognizerStatePossible) {
-    _state = RNGestureHandlerStateFailed;
+  //
+  // The same applies to gestures interrupted mid-flight, e.g. when the view is unmounted during an active
+  // gesture the recognizer may be reset without its cancel action ever firing.
+  // If the last sent state is not final, synthesize the missing final event so that the
+  // `onBegin`/`onFinalize` and `onActivate`/`onDeactivate` guarantees hold.
+  if (fromReset && self.recognizer.state == UIGestureRecognizerStatePossible) {
+    if (_lastState == RNGestureHandlerStateBegan) {
+      _state = RNGestureHandlerStateFailed;
+    } else if (_lastState == RNGestureHandlerStateActive) {
+      _state = RNGestureHandlerStateCancelled;
+    } else {
+      // The final event was already delivered; mapping Possible to Began here would emit a stray
+      // BEGAN event after the gesture has finished.
+      return;
+    }
   }
 
   [self handleGesture:recognizer inState:_state fromManualStateChange:fromManualStateChange];
@@ -786,7 +809,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // might be called after some pointers are down, and after state manipulation by the user.
   // Pointer tracker calls this method when it resets, and in that case it no longer tracks
   // any pointers, thus entering this if
-  if (!_needsPointerData || _pointerTracker.trackedPointersCount == 0) {
+  //
+  // Also do not clear _lastState while the gesture is in flight (BEGAN/ACTIVE) - the final
+  // state-change event hasn't been dispatched yet. When the view is removed mid-gesture,
+  // the pointer tracker resets before the recognizer's cancel action fires; clearing _lastState
+  // here would corrupt the prevState of the outgoing CANCELLED event and break the onActivate/onDeactivate guarantee.
+  if ((!_needsPointerData || _pointerTracker.trackedPointersCount == 0) && _lastState != RNGestureHandlerStateBegan &&
+      _lastState != RNGestureHandlerStateActive) {
     _lastState = RNGestureHandlerStateUndetermined;
     _state = RNGestureHandlerStateBegan;
   }
