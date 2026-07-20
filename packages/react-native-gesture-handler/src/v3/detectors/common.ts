@@ -7,7 +7,9 @@ import type {
 } from '../../handlers/gestureHandlerCommon';
 import type { GestureDetectorProps as LegacyDetectorProps } from '../../handlers/gestures/GestureDetector';
 import type { Gesture } from '../types';
-import HostGestureDetector from './HostGestureDetector';
+import HostGestureDetector, {
+  type RNGestureHandlerDetectorNativeComponentProps,
+} from './HostGestureDetector';
 
 export enum GestureDetectorType {
   Native,
@@ -59,7 +61,7 @@ export type GestureDetectorProps<
     >
   | LegacyDetectorProps;
 
-export const AnimatedNativeDetector =
+export const AnimatedNativeDetector: React.ComponentType<RNGestureHandlerDetectorNativeComponentProps> =
   Animated.createAnimatedComponent(HostGestureDetector);
 
 export const nativeDetectorStyles = StyleSheet.create({

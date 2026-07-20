@@ -109,7 +109,7 @@ interface CommonPressableProps
   /**
    * A reference to the pressable element.
    */
-  ref?: React.Ref<View>;
+  ref?: React.Ref<React.ComponentRef<typeof View>>;
 
   /**
    * Either children or a render prop that receives a boolean reflecting whether

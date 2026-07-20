@@ -1,81 +1,76 @@
-import type { ViewProps } from 'react-native';
-import type {
-  DirectEventHandler,
-  Double,
-  Int32,
-  UnsafeMixed,
-  WithDefault,
-} from 'react-native/Libraries/Types/CodegenTypes';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type { CodegenTypes, HostComponent, ViewProps } from 'react-native';
+import { codegenNativeComponent } from 'react-native';
 
 type GestureHandlerEvent = Readonly<{
-  handlerTag: Int32;
-  state: Int32;
-  handlerData: UnsafeMixed;
+  handlerTag: CodegenTypes.Int32;
+  state: CodegenTypes.Int32;
+  handlerData: CodegenTypes.UnsafeMixed;
 }>;
 
 type GestureHandlerStateChangeEvent = Readonly<{
-  handlerTag: Int32;
-  state: Int32;
-  oldState: Int32;
-  handlerData: UnsafeMixed;
+  handlerTag: CodegenTypes.Int32;
+  state: CodegenTypes.Int32;
+  oldState: CodegenTypes.Int32;
+  handlerData: CodegenTypes.UnsafeMixed;
 }>;
 
 type GestureHandlerTouchEvent = Readonly<{
-  handlerTag: Int32;
-  numberOfTouches: Int32;
-  state: Int32;
-  eventType: Int32;
+  handlerTag: CodegenTypes.Int32;
+  numberOfTouches: CodegenTypes.Int32;
+  state: CodegenTypes.Int32;
+  eventType: CodegenTypes.Int32;
   allTouches: {
-    id: Int32;
-    x: Double;
-    y: Double;
-    absoluteX: Double;
-    absoluteY: Double;
+    id: CodegenTypes.Int32;
+    x: CodegenTypes.Double;
+    y: CodegenTypes.Double;
+    absoluteX: CodegenTypes.Double;
+    absoluteY: CodegenTypes.Double;
   }[];
   changedTouches: {
-    id: Int32;
-    x: Double;
-    y: Double;
-    absoluteX: Double;
-    absoluteY: Double;
+    id: CodegenTypes.Int32;
+    x: CodegenTypes.Double;
+    y: CodegenTypes.Double;
+    absoluteX: CodegenTypes.Double;
+    absoluteY: CodegenTypes.Double;
   }[];
-  pointerType: Int32;
+  pointerType: CodegenTypes.Int32;
 }>;
 
 export interface VirtualChildrenProps {
-  handlerTags: Int32[];
-  viewTag: Int32;
+  handlerTags: CodegenTypes.Int32[];
+  viewTag: CodegenTypes.Int32;
 }
 
 // @ts-expect-error WithDefault adds `| null` to the type, which doesn't align with ViewProps.pointerEvents
 // Using Exclude to remove null from the type makes the error go away, but breaks codegen.
 export interface NativeProps extends ViewProps {
-  onGestureHandlerEvent?: DirectEventHandler<GestureHandlerEvent> | undefined;
+  onGestureHandlerEvent?:
+    | CodegenTypes.DirectEventHandler<GestureHandlerEvent>
+    | undefined;
   onGestureHandlerStateChange?:
-    | DirectEventHandler<GestureHandlerStateChangeEvent>
+    | CodegenTypes.DirectEventHandler<GestureHandlerStateChangeEvent>
     | undefined;
   onGestureHandlerTouchEvent?:
-    | DirectEventHandler<GestureHandlerTouchEvent>
+    | CodegenTypes.DirectEventHandler<GestureHandlerTouchEvent>
     | undefined;
   onGestureHandlerReanimatedEvent?:
-    | DirectEventHandler<GestureHandlerEvent>
+    | CodegenTypes.DirectEventHandler<GestureHandlerEvent>
     | undefined;
   onGestureHandlerReanimatedStateChange?:
-    | DirectEventHandler<GestureHandlerStateChangeEvent>
+    | CodegenTypes.DirectEventHandler<GestureHandlerStateChangeEvent>
     | undefined;
   onGestureHandlerReanimatedTouchEvent?:
-    | DirectEventHandler<GestureHandlerTouchEvent>
+    | CodegenTypes.DirectEventHandler<GestureHandlerTouchEvent>
     | undefined;
   onGestureHandlerAnimatedEvent?:
-    | DirectEventHandler<GestureHandlerEvent>
+    | CodegenTypes.DirectEventHandler<GestureHandlerEvent>
     | undefined;
 
-  handlerTags: Int32[];
-  moduleId: Int32;
+  handlerTags: CodegenTypes.Int32[];
+  moduleId: CodegenTypes.Int32;
   virtualChildren: VirtualChildrenProps[];
 
-  pointerEvents?: WithDefault<
+  pointerEvents?: CodegenTypes.WithDefault<
     'box-none' | 'none' | 'box-only' | 'auto',
     'auto'
   >;
@@ -83,4 +78,4 @@ export interface NativeProps extends ViewProps {
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerDetector', {
   interfaceOnly: true,
-});
+}) as HostComponent<NativeProps>;
