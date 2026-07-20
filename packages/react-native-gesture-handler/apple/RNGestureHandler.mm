@@ -318,9 +318,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // and `_lastState` would never be cleared by `reset`.
   if (self.recognizer.view != nil &&
       (_lastState == RNGestureHandlerStateBegan || _lastState == RNGestureHandlerStateActive)) {
-    [self handleGesture:self.recognizer
-                inState:_lastState == RNGestureHandlerStateActive ? RNGestureHandlerStateCancelled
-                                                                  : RNGestureHandlerStateFailed];
+    if ([self eventTagForRecognizer:self.recognizer] != nil) {
+      [self handleGesture:self.recognizer
+                  inState:_lastState == RNGestureHandlerStateActive ? RNGestureHandlerStateCancelled
+                                                                    : RNGestureHandlerStateFailed];
+    } else {
+      // The event has no tag to be dispatched with, so it cannot be delivered on any path - reset
+      // the bookkeeping so the handler doesn't stay in-flight forever.
+      _lastState = RNGestureHandlerStateUndetermined;
+      _state = RNGestureHandlerStateBegan;
+    }
   }
 
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
@@ -437,6 +444,21 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   [self handleGesture:recognizer inState:state fromManualStateChange:NO];
 }
 
+- (nullable NSNumber *)eventTagForRecognizer:(UIGestureRecognizer *)recognizer
+{
+  NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
+
+  if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
+    tag = @(recognizer.view.tag);
+  }
+
+  if (_virtualViewTag != nil && _actionType == RNGestureHandlerActionTypeVirtualDetector) {
+    tag = _virtualViewTag;
+  }
+
+  return tag;
+}
+
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
                   inState:(RNGestureHandlerState)state
     fromManualStateChange:(BOOL)fromManualStateChange
@@ -449,15 +471,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return;
   }
 
-  NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
-
-  if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
-    tag = @(recognizer.view.tag);
-  }
-
-  if (_virtualViewTag != nil && _actionType == RNGestureHandlerActionTypeVirtualDetector) {
-    tag = _virtualViewTag;
-  }
+  NSNumber *tag = [self eventTagForRecognizer:recognizer];
 
   react_native_assert(tag != nil && "Tag should be defined when dispatching an event");
 
