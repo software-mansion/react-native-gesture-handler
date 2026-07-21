@@ -146,6 +146,7 @@ export type {
 export type { SwipeableProps } from './components/Swipeable';
 export { default as Swipeable } from './components/Swipeable';
 export type {
+  PressableEvent,
   PressableProps,
   PressableStateCallbackType,
 } from './components/Pressable';
