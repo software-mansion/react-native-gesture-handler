@@ -16,21 +16,6 @@ export default function DocSidebarWrapper(props) {
   const deprecatedItems = [
     'components/buttons',
     'components/legacy-touchables',
-    'legacy-gestures/fling-gesture',
-    'legacy-gestures/force-touch-gesture',
-    'legacy-gestures/gesture-composition',
-    'legacy-gestures/gesture-detector',
-    'legacy-gestures/gesture',
-    'legacy-gestures/hover-gesture',
-    'legacy-gestures/long-press-gesture',
-    'legacy-gestures/manual-gesture',
-    'legacy-gestures/native-gesture',
-    'legacy-gestures/pan-gesture',
-    'legacy-gestures/pinch-gesture',
-    'legacy-gestures/rotation-gesture',
-    'legacy-gestures/state-manager',
-    'legacy-gestures/tap-gesture',
-    'legacy-gestures/touch-events',
   ];
 
   return (
