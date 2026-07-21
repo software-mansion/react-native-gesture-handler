@@ -3,10 +3,6 @@
 
 #include "RNGestureHandlerModule.h"
 
-#ifdef RNGH_USE_WORKLETS
-#include <worklets/Compat/StableApi.h>
-#endif
-
 namespace gesturehandler {
 using namespace facebook;
 using namespace facebook::react;
@@ -57,33 +53,14 @@ void RNGestureHandlerModule::setGestureState(
 }
 
 bool RNGestureHandlerModule::installUIRuntimeBindings() {
-  jsi::Runtime *uiRuntime = nullptr;
+  const auto resolved = RNGHRuntimeDecorator::tryFindUIRuntime(*rnRuntime_);
 
-#ifdef RNGH_USE_WORKLETS
-  std::shared_ptr<worklets::WorkletRuntime> uiWorkletRuntime;
-  const auto runtimeHolder = rnRuntime_->global().getProperty(
-      *rnRuntime_, "__RNGH_UI_WORKLET_RUNTIME_HOLDER");
-
-  if (runtimeHolder.isObject()) {
-    uiWorkletRuntime = worklets::getWorkletRuntimeFromHolder(
-        *rnRuntime_, runtimeHolder.asObject(*rnRuntime_));
-
-    if (uiWorkletRuntime) {
-      uiRuntime = &worklets::getJSIRuntimeFromWorkletRuntime(uiWorkletRuntime);
-    }
-  }
-#endif
-
-  if (uiRuntime == nullptr) {
-    uiRuntime = RNGHRuntimeDecorator::tryFindUIRuntime(*rnRuntime_);
-  }
-
-  if (uiRuntime == nullptr) {
+  if (resolved.runtime == nullptr) {
     return false;
   }
 
   RNGHRuntimeDecorator::installUIRuntimeBindings(
-      *uiRuntime, [&](int handlerTag, int state) {
+      *resolved.runtime, [&](int handlerTag, int state) {
         this->setGestureState(handlerTag, state);
       });
 

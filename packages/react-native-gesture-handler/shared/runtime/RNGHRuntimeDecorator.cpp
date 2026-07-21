@@ -7,6 +7,10 @@
 
 #include "RNGHRuntimeDecorator.h"
 
+#ifdef RNGH_USE_WORKLETS
+#include <worklets/Compat/StableApi.h>
+#endif
+
 namespace gesturehandler {
 
 using namespace facebook;
@@ -114,12 +118,29 @@ void RNGHRuntimeDecorator::installUIRuntimeBindings(
       uiRuntime, "_setGestureStateSync", std::move(setGestureStateSync));
 }
 
-jsi::Runtime *RNGHRuntimeDecorator::tryFindUIRuntime(jsi::Runtime &rnRuntime) {
+ResolvedUIRuntime RNGHRuntimeDecorator::tryFindUIRuntime(
+    jsi::Runtime &rnRuntime) {
+#ifdef RNGH_USE_WORKLETS
+  const auto workletsRuntimeHolder = rnRuntime.global().getProperty(
+      rnRuntime, "__RNGH_UI_WORKLET_RUNTIME_HOLDER");
+
+  if (workletsRuntimeHolder.isObject()) {
+    const auto uiWorkletRuntime = worklets::getWorkletRuntimeFromHolder(
+        rnRuntime, workletsRuntimeHolder.asObject(rnRuntime));
+
+    if (uiWorkletRuntime) {
+      return {
+          &worklets::getJSIRuntimeFromWorkletRuntime(uiWorkletRuntime),
+          uiWorkletRuntime};
+    }
+  }
+#endif
+
   const auto runtimeHolder =
       rnRuntime.global().getProperty(rnRuntime, "_WORKLET_RUNTIME");
 
   if (runtimeHolder.isUndefined()) {
-    return nullptr;
+    return {};
   }
 
   const auto arrayBufferValue =
@@ -127,7 +148,7 @@ jsi::Runtime *RNGHRuntimeDecorator::tryFindUIRuntime(jsi::Runtime &rnRuntime) {
           rnRuntime);
   const auto uiRuntimeAddress =
       reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
-  return reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress);
+  return {reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress), nullptr};
 }
 
 } // namespace gesturehandler

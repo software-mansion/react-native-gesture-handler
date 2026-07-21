@@ -16,10 +16,6 @@
 
 #import "RNGHRuntimeDecorator.h"
 
-#ifdef RNGH_USE_WORKLETS
-#include <worklets/Compat/StableApi.h>
-#endif
-
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerState.h"
@@ -111,30 +107,13 @@ RCT_EXPORT_MODULE()
 - (bool)tryInstallUIRuntimeBindings
 {
   __weak RNGestureHandlerModule *weakSelf = self;
-  jsi::Runtime *uiRuntime = nullptr;
+  const auto resolved = RNGHRuntimeDecorator::tryFindUIRuntime(*_rnRuntime);
 
-#ifdef RNGH_USE_WORKLETS
-  std::shared_ptr<worklets::WorkletRuntime> uiWorkletRuntime;
-  const auto runtimeHolder = _rnRuntime->global().getProperty(*_rnRuntime, "__RNGH_UI_WORKLET_RUNTIME_HOLDER");
-
-  if (runtimeHolder.isObject()) {
-    uiWorkletRuntime = worklets::getWorkletRuntimeFromHolder(*_rnRuntime, runtimeHolder.asObject(*_rnRuntime));
-
-    if (uiWorkletRuntime != nullptr) {
-      uiRuntime = &worklets::getJSIRuntimeFromWorkletRuntime(uiWorkletRuntime);
-    }
-  }
-#endif
-
-  if (uiRuntime == nullptr) {
-    uiRuntime = RNGHRuntimeDecorator::tryFindUIRuntime(*_rnRuntime);
-  }
-
-  if (uiRuntime == nullptr) {
+  if (resolved.runtime == nullptr) {
     return false;
   }
 
-  RNGHRuntimeDecorator::installUIRuntimeBindings(*uiRuntime, [weakSelf](int handlerTag, int state) {
+  RNGHRuntimeDecorator::installUIRuntimeBindings(*resolved.runtime, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
