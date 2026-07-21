@@ -100,10 +100,8 @@ The controller exposes the following methods:
 | `end()`      | Ends a begun or active stream. Calls `onDeactivate` if active, then `onFinalize` with `canceled: false`.         |
 | `fail()`     | Fails a begun or active stream. Calls `onDeactivate` if active, then `onFinalize` with `canceled: true`.         |
 | `cancel()`   | Cancels a begun or active stream. Calls `onDeactivate` if active, then `onFinalize` with `canceled: true`.       |
-| `getState()` | Returns the controller's current state without dispatching an event.                                             |
 
-After `end()`, `fail()`, or `cancel()`, the terminal state remains available through
-`getState()`. Calling `begin()` again starts another stream with the same controller.
+Calling `begin()` again after `end()`, `fail()`, or `cancel()` starts another stream with the same controller.
 Calling methods in an invalid order throws an error. State-machine fields such as
 `state`, `oldState`, `handlerTag`, and `nativeEvent` cannot be supplied in event
 payloads because the controller manages them internally.

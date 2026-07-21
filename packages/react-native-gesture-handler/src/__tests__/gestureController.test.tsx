@@ -58,8 +58,12 @@ function assertGestureControllerTypes(pan: PanGesture, tap: TapGesture) {
 
 void assertGestureControllerTypes;
 
+function getControllerState(gesture: object): State {
+  return (gesture as { state: State }).state;
+}
+
 describe('createGestureController', () => {
-  test('allows assertions after each gesture lifecycle step', () => {
+  test('transitions to the expected state after each gesture lifecycle step', () => {
     const { order, callbacks } = mockedContinuousCallbacks();
     const pan = renderHook(() =>
       usePanGesture({ disableReanimated: true, ...callbacks })
@@ -68,31 +72,30 @@ describe('createGestureController', () => {
 
     gesture.begin({ translationX: 0 });
 
-    expect(gesture.getState()).toBe(State.BEGAN);
     expect(order).toEqual(['onBegin']);
+    expect(getControllerState(gesture)).toBe(State.BEGAN);
     expect(callbacks.onBegin).toHaveBeenCalledWith(
       expect.objectContaining({ translationX: 0 })
     );
 
     gesture.activate({ translationX: 10 });
 
-    expect(gesture.getState()).toBe(State.ACTIVE);
     expect(order).toEqual(['onBegin', 'onActivate']);
+    expect(getControllerState(gesture)).toBe(State.ACTIVE);
     expect(callbacks.onActivate).toHaveBeenCalledWith(
       expect.objectContaining({ translationX: 10 })
     );
 
     gesture.update({ translationX: 50 });
 
-    expect(gesture.getState()).toBe(State.ACTIVE);
     expect(order).toEqual(['onBegin', 'onActivate', 'onUpdate']);
+    expect(getControllerState(gesture)).toBe(State.ACTIVE);
     expect(callbacks.onUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ translationX: 50 })
     );
 
     gesture.end({ translationX: 50 });
 
-    expect(gesture.getState()).toBe(State.END);
     expect(order).toEqual([
       'onBegin',
       'onActivate',
@@ -100,6 +103,7 @@ describe('createGestureController', () => {
       'onDeactivate',
       'onFinalize',
     ]);
+    expect(getControllerState(gesture)).toBe(State.END);
     expect(callbacks.onFinalize).toHaveBeenCalledWith(
       expect.objectContaining({ canceled: false, translationX: 50 })
     );
@@ -115,8 +119,8 @@ describe('createGestureController', () => {
     gesture.begin({ x: 10 });
     gesture.fail({ x: 10 });
 
-    expect(gesture.getState()).toBe(State.FAILED);
     expect(order).toEqual(['onBegin', 'onFinalize']);
+    expect(getControllerState(gesture)).toBe(State.FAILED);
     expect(callbacks.onActivate).not.toHaveBeenCalled();
     expect(callbacks.onDeactivate).not.toHaveBeenCalled();
     expect(callbacks.onFinalize).toHaveBeenCalledWith(
@@ -180,33 +184,36 @@ describe('createGestureController', () => {
       gesture.begin();
       gesture[terminalAction]();
 
-      expect(gesture.getState()).toBe(terminalState);
+      expect(getControllerState(gesture)).toBe(terminalState);
 
       gesture.begin();
 
-      expect(gesture.getState()).toBe(State.BEGAN);
+      expect(getControllerState(gesture)).toBe(State.BEGAN);
 
       gesture[terminalAction]();
 
-      expect(gesture.getState()).toBe(terminalState);
+      expect(getControllerState(gesture)).toBe(terminalState);
       expect(onBegin).toHaveBeenCalledTimes(2);
       expect(onFinalize).toHaveBeenCalledTimes(2);
     }
   );
 
   test('rejects raw state-machine fields in event payloads', () => {
-    const tap = renderHook(() => useTapGesture({ disableReanimated: true }))
-      .result.current;
+    const onBegin = jest.fn();
+    const tap = renderHook(() =>
+      useTapGesture({ disableReanimated: true, onBegin })
+    ).result.current;
     const gesture = createGestureController(tap);
 
     expect(() => gesture.begin({ state: State.BEGAN } as never)).toThrow(
       "createGestureController manages 'state' internally."
     );
-    expect(gesture.getState()).toBe(State.UNDETERMINED);
+    expect(getControllerState(gesture)).toBe(State.UNDETERMINED);
+    expect(onBegin).not.toHaveBeenCalled();
 
     gesture.begin();
 
-    expect(gesture.getState()).toBe(State.BEGAN);
+    expect(getControllerState(gesture)).toBe(State.BEGAN);
   });
 
   test('uses the latest callbacks after rerender', () => {
@@ -241,13 +248,13 @@ describe('createGestureController', () => {
     hook.rerender({ enabled: false });
     gesture.begin();
 
-    expect(gesture.getState()).toBe(State.UNDETERMINED);
+    expect(getControllerState(gesture)).toBe(State.UNDETERMINED);
     expect(onBegin).not.toHaveBeenCalled();
 
     hook.rerender({ enabled: true });
     gesture.begin();
 
-    expect(gesture.getState()).toBe(State.BEGAN);
+    expect(getControllerState(gesture)).toBe(State.BEGAN);
     expect(onBegin).toHaveBeenCalledTimes(1);
   });
 
@@ -267,7 +274,7 @@ describe('createGestureController', () => {
     gesture.update({ translationX: 50 });
     gesture.end();
 
-    expect(gesture.getState()).toBe(State.UNDETERMINED);
+    expect(getControllerState(gesture)).toBe(State.UNDETERMINED);
     expect(order).toEqual([]);
   });
 });

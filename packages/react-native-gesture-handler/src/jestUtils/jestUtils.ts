@@ -528,7 +528,6 @@ export interface GestureController<
   end: (event?: GestureControllerEvent<TEventPayload>) => void;
   fail: (event?: GestureControllerEvent<TEventPayload>) => void;
   cancel: (event?: GestureControllerEvent<TEventPayload>) => void;
-  getState: () => State;
 }
 
 const FORBIDDEN_CONTROLLER_EVENT_FIELDS = [
@@ -584,10 +583,6 @@ class GestureControllerImpl<
 
   // eslint-disable-next-line no-useless-constructor
   constructor(private resolveHandlerData: () => HandlerData) {}
-
-  public getState() {
-    return this.state;
-  }
 
   public begin(event: GestureControllerEvent<TEventPayload> = {}) {
     const handlerData = this.resolveHandlerData();
