@@ -555,7 +555,7 @@ function validateControllerEvent(event: Record<string, unknown>) {
   for (const field of FORBIDDEN_CONTROLLER_EVENT_FIELDS) {
     invariant(
       !hasProperty(event, field),
-      `createGestureController manages '${field}' internally. Pass only gesture event payload fields.`
+      `GestureController manages '${field}' internally. Pass only gesture event payload fields.`
     );
   }
 }

@@ -42,7 +42,7 @@ export function unregisterGesture(handlerTag: number) {
 
   const gesture = hookGestures.get(handlerTag);
 
-  if (gesture?.config.testID) {
+  if (gesture?.config?.testID) {
     testIDs.delete(gesture.config.testID);
   }
 
