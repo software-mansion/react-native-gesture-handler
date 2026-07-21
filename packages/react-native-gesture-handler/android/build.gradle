@@ -74,8 +74,9 @@ def getExternalLibVersion(project){
 
     // Handle cases where version is a pre-release one, e.g. "2.3.0-alpha.1"
     def patchVersion = patch.find(/(\d+)/) ? patch.find(/(\d+)/) : "0"
+    def isPrerelease = libVerision.contains('-')
 
-    return [Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patchVersion)]
+    return [Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patchVersion), isPrerelease]
 }
 
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
@@ -114,14 +115,11 @@ def shouldUseRuntimeFromWorklets() {
         return false
     }
 
-    def packageJson = new JsonSlurper().parseText(new File(worklets.projectDir, "../package.json").text)
-    def version = packageJson.version as String
+    def (major, minor, patch, isPrerelease) = getExternalLibVersion(worklets)
 
-    if (version.contains('-')) {
+    if (isPrerelease) {
         return false
     }
-
-    def (major, minor, patch) = getExternalLibVersion(worklets)
 
     return major > 0 || (major == 0 && minor >= 8)
 }
