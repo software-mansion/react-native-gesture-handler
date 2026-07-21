@@ -11,7 +11,7 @@ import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/category/gesture-composition--interactions) with other gestures.
+A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/composition/overview) with other gestures.
 
 When used, the native component should be the direct child of a [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
 
@@ -88,7 +88,7 @@ export default function App() {
 
 ## Remarks
 
-- `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/category/gesture-composition--interactions) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
+- `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/composition/overview) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
 
 - Due to platform API limitations, the `Native` gesture has restricted functionality on `web`. For instance, it cannot be used to block scrolling on a `ScrollView`.
 
