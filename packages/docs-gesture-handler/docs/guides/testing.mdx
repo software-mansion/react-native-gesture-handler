@@ -111,6 +111,7 @@ test('updates application state after each gesture step', () => {
   const onBegin = jest.fn();
   const onActivate = jest.fn();
   const onUpdate = jest.fn();
+  const onDeactivate = jest.fn();
   const onFinalize = jest.fn();
 
   const panGesture = renderHook(() =>
@@ -119,6 +120,7 @@ test('updates application state after each gesture step', () => {
       onBegin,
       onActivate,
       onUpdate,
+      onDeactivate,
       onFinalize,
     })
   ).result.current;
@@ -137,6 +139,7 @@ test('updates application state after each gesture step', () => {
   );
 
   controller.end();
+  expect(onDeactivate).toHaveBeenCalledTimes(1);
   expect(onFinalize).toHaveBeenCalledWith(
     expect.objectContaining({ canceled: false })
   );
