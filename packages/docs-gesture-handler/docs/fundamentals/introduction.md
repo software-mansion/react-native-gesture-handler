@@ -11,7 +11,7 @@ Gesture Handler provides a declarative API exposing the native platform's touch 
 The main benefits of using React Native Gesture Handler are:
 
 - A way to use a platform's native touch handling system for recognizing gestures (like [pinch](/docs/gestures/use-pinch-gesture), [rotation](/docs/gestures/use-rotation-gesture), [pan](/docs/gestures/use-pan-gesture) and a few others).
-- The ability to define [relations between gestures](/docs/fundamentals/gesture-composition) to ensure gestures, and possibly native components, will not conflict with each other.
+- The ability to define [relations between gestures](/docs/category/gesture-composition--interactions) to ensure gestures, and possibly native components, will not conflict with each other.
 - Mechanisms for components that run in native thread and follow platform default behavior, such as delaying the transition to a pressed state within scrollable components to prevent highlighting during a quick scroll or fling.
 - Close integration with [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) to process touch events on the UI thread.
 - Support for different input devices like touch screens, pens and mice.
