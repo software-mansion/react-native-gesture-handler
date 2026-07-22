@@ -75,8 +75,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
 
     if (config.minVelocity !== undefined) {
-      this.minVelocityX = config.minVelocity;
-      this.minVelocityY = config.minVelocity;
+      this.minVelocitySq = config.minVelocity * config.minVelocity;
       this.hasCustomActivationCriteria = true;
     }
 
@@ -432,8 +431,7 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (
       this.minVelocityX !== Number.MAX_SAFE_INTEGER &&
-      ((this.minVelocityX < 0 && vx <= this.minVelocityX) ||
-        (this.minVelocityX >= 0 && this.minVelocityX <= vx))
+      Math.abs(vx) >= Math.abs(this.minVelocityX)
     ) {
       return true;
     }
@@ -441,8 +439,7 @@ export default class PanGestureHandler extends GestureHandler {
     const vy: number = this.velocityY;
     if (
       this.minVelocityY !== Number.MAX_SAFE_INTEGER &&
-      ((this.minVelocityY < 0 && vy <= this.minVelocityY) ||
-        (this.minVelocityY >= 0 && this.minVelocityY <= vy))
+      Math.abs(vy) >= Math.abs(this.minVelocityY)
     ) {
       return true;
     }
