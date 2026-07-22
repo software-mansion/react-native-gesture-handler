@@ -15,6 +15,8 @@
 #define TEST_MIN_IF_NOT_NAN(value, limit) \
   (!isnan(limit) && ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit)))
 
+#define TEST_ABS_MIN_IF_NOT_NAN(value, limit) (!isnan(limit) && fabs(value) >= fabs(limit))
+
 #define TEST_MAX_IF_NOT_NAN(value, max) (!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
 #define APPLY_PROP(recognizer, config, type, prop, propName) \
