@@ -122,7 +122,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     }
     val vy = velocityY
     if (minVelocityY != MIN_VALUE_IGNORE &&
-      (minVelocityY < 0 && vx <= minVelocityY || minVelocityY in 0.0f..vx)
+      (minVelocityY < 0 && vy <= minVelocityY || minVelocityY in 0.0f..vy)
     ) {
       return true
     }
