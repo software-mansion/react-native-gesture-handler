@@ -154,7 +154,8 @@ export class PanGesture extends ContinousBaseGesture<
   }
 
   /**
-   * Minimum velocity the finger has to reach in order to activate handler.
+   * Minimum speed the pointer has to reach in order to activate handler.
+   * Expressed in points per second.
    * @param velocity
    */
   minVelocity(velocity: number) {
@@ -163,7 +164,8 @@ export class PanGesture extends ContinousBaseGesture<
   }
 
   /**
-   * Minimum velocity along X axis the finger has to reach in order to activate handler.
+   * Minimum speed along X axis the pointer has to reach in order to activate handler.
+   * Expressed in points per second.
    * @param velocity
    */
   minVelocityX(velocity: number) {
@@ -172,7 +174,8 @@ export class PanGesture extends ContinousBaseGesture<
   }
 
   /**
-   * Minimum velocity along Y axis the finger has to reach in order to activate handler.
+   * Minimum speed along Y axis the pointer has to reach in order to activate handler.
+   * Expressed in points per second.
    * @param velocity
    */
   minVelocityY(velocity: number) {

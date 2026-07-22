@@ -40,9 +40,24 @@ type CommonPanGestureProperties = {
    */
   maxPointers?: number;
 
+  /**
+   * Minimum speed the pointer has to reach in order to activate the gesture.
+   * Expressed in points per second.
+   */
   minVelocity?: number;
+
+  /**
+   * Minimum speed along X axis the pointer has to reach in order to activate
+   * the gesture. Expressed in points per second.
+   */
   minVelocityX?: number;
+
+  /**
+   * Minimum speed along Y axis the pointer has to reach in order to activate
+   * the gesture. Expressed in points per second.
+   */
   minVelocityY?: number;
+
   activateAfterLongPress?: number;
 };
 
