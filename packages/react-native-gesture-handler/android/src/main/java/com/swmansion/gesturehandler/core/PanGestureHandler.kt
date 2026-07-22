@@ -11,6 +11,7 @@ import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
 import com.swmansion.gesturehandler.react.events.eventbuilders.PanGestureHandlerEventDataBuilder
+import kotlin.math.abs
 
 class PanGestureHandler(context: Context?) : GestureHandler() {
   override val isContinuous = true
@@ -115,15 +116,11 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
       return true
     }
     val vx = velocityX
-    if (minVelocityX != MIN_VALUE_IGNORE &&
-      (minVelocityX < 0 && vx <= minVelocityX || minVelocityX in 0.0f..vx)
-    ) {
+    if (minVelocityX != MIN_VALUE_IGNORE && abs(vx) >= abs(minVelocityX)) {
       return true
     }
     val vy = velocityY
-    if (minVelocityY != MIN_VALUE_IGNORE &&
-      (minVelocityY < 0 && vy <= minVelocityY || minVelocityY in 0.0f..vy)
-    ) {
+    if (minVelocityY != MIN_VALUE_IGNORE && abs(vy) >= abs(minVelocityY)) {
       return true
     }
     val velocitySq = vx * vx + vy * vy
