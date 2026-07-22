@@ -167,7 +167,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     this.offsetX += this.lastX - this.startX;
-    this.offsetY += this.lastY = this.startY;
+    this.offsetY += this.lastY - this.startY;
 
     this.updateLastCoords();
 
