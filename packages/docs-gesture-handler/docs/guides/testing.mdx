@@ -70,11 +70,35 @@ RNGH provides the following APIs for triggering selected handlers:
 
 ### createGestureController
 
-```ts
+<CollapsibleCode
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 3]}
+src={`
 import { createGestureController } from 'react-native-gesture-handler/jest-utils';
 
 createGestureController: (componentOrGesture) => GestureController;
-```
+
+export interface GestureController<
+  TEventPayload extends Record<string, unknown> = Record<string, unknown>,
+> {
+  begin: (event?: GestureControllerEvent<TEventPayload>) => void;
+  activate: (event?: GestureControllerEvent<TEventPayload>) => void;
+  update: (event?: GestureControllerEvent<TEventPayload>) => void;
+  end: (event?: GestureControllerEvent<TEventPayload>) => void;
+  fail: (event?: GestureControllerEvent<TEventPayload>) => void;
+  cancel: (event?: GestureControllerEvent<TEventPayload>) => void;
+}
+
+export type GestureControllerEvent<
+  TEventPayload extends Record<string, unknown> = Record<string, unknown>,
+> = Partial<TEventPayload> & {
+  handlerTag?: never;
+  nativeEvent?: never;
+  oldState?: never;
+  state?: never;
+};
+`}/>
 
 Creates an imperative controller that dispatches gesture lifecycle events one step
 at a time. This allows the test to assert application state between lifecycle steps
