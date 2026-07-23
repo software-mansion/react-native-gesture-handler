@@ -1,4 +1,4 @@
-import React, { use, useCallback, useRef } from 'react';
+import React, { use, useCallback, useRef, useState } from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 import { Platform } from 'react-native';
 
@@ -6,8 +6,7 @@ import GestureHandlerButton, {
   type ButtonEvent,
 } from '../../../components/GestureHandlerButton';
 import { getTVProps } from '../../../components/utils';
-import { NativeDetector } from '../../detectors/NativeDetector';
-import { useNativeGesture } from '../../hooks';
+import { getNextHandlerTag } from '../../../handlers/getNextHandlerTag';
 import {
   isKeyboardDismissingTap,
   JSResponderContext,
@@ -85,6 +84,7 @@ export const Touchable = (props: TouchableProps) => {
     ref,
     ...rest
   } = props;
+  const [handlerTag] = useState(() => getNextHandlerTag());
 
   const resolvedDurations = resolveAnimationDuration(animationDuration);
   const resolvedDelayLongPress = sanitizeDuration(delayLongPress);
@@ -150,17 +150,6 @@ export const Touchable = (props: TouchableProps) => {
     dropKeyboardTapRef.current = null;
   }, []);
 
-  const nativeGesture = useNativeGesture({
-    hitSlop: props.hitSlop,
-    testID: props.testID,
-    enabled: !disabled,
-    shouldCancelWhenOutside: cancelOnLeave,
-    disableReanimated: true,
-    shouldActivateOnStart: false,
-    disallowInterruption: true,
-    yieldsToContinuousGestures: true,
-  });
-
   const rippleProps = shouldUseNativeRipple
     ? {
         rippleColor: androidRipple?.color,
@@ -172,28 +161,40 @@ export const Touchable = (props: TouchableProps) => {
 
   const tvProps = getTVProps(rest);
 
+  const hitSlop =
+    typeof props.hitSlop === 'number'
+      ? {
+          top: props.hitSlop,
+          left: props.hitSlop,
+          bottom: props.hitSlop,
+          right: props.hitSlop,
+        }
+      : (props.hitSlop ?? undefined);
+
   return (
-    <NativeDetector gesture={nativeGesture}>
-      <GestureHandlerButton
-        {...rest}
-        {...tvProps}
-        {...rippleProps}
-        {...resolvedDurations}
-        ref={ref ?? null}
-        enabled={!disabled}
-        defaultOpacity={defaultOpacity}
-        defaultUnderlayOpacity={defaultUnderlayOpacity}
-        activeUnderlayOpacity={activeUnderlayOpacity}
-        underlayColor={underlayColor}
-        longPressDuration={resolvedDelayLongPress}
-        hasLongPressHandler={onLongPress !== undefined}
-        onPress={internalOnPress}
-        onPressIn={internalOnPressIn}
-        onPressOut={internalOnPressOut}
-        onLongPress={internalOnLongPress}
-        onInteractionFinished={internalOnInteractionFinished}>
-        {children}
-      </GestureHandlerButton>
-    </NativeDetector>
+    <GestureHandlerButton
+      {...rest}
+      {...tvProps}
+      {...rippleProps}
+      {...resolvedDurations}
+      ref={ref ?? null}
+      enabled={!disabled}
+      handlerTag={handlerTag}
+      cancelOnLeave={cancelOnLeave}
+      gestureTestID={props.testID}
+      gestureHitSlop={hitSlop}
+      defaultOpacity={defaultOpacity}
+      defaultUnderlayOpacity={defaultUnderlayOpacity}
+      activeUnderlayOpacity={activeUnderlayOpacity}
+      underlayColor={underlayColor}
+      longPressDuration={resolvedDelayLongPress}
+      hasLongPressHandler={onLongPress !== undefined}
+      onPress={internalOnPress}
+      onPressIn={internalOnPressIn}
+      onPressOut={internalOnPressOut}
+      onLongPress={internalOnLongPress}
+      onInteractionFinished={internalOnInteractionFinished}>
+      {children}
+    </GestureHandlerButton>
   );
 };

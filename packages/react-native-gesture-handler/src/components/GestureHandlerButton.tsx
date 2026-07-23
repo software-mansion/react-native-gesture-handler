@@ -22,6 +22,17 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   enabled?: boolean | undefined;
 
   hasLongPressHandler?: boolean | undefined;
+  handlerTag?: number | undefined;
+  cancelOnLeave?: boolean | undefined;
+  gestureTestID?: string | undefined;
+  gestureHitSlop?:
+    | {
+        top?: number | undefined;
+        left?: number | undefined;
+        bottom?: number | undefined;
+        right?: number | undefined;
+      }
+    | undefined;
 
   /**
    * Defines if more than one button could be pressed simultaneously. By default

@@ -27,6 +27,16 @@ interface NativeProps extends ViewProps {
     | undefined;
 
   hasLongPressHandler?: CodegenTypes.WithDefault<boolean, false>;
+  handlerTag?: CodegenTypes.Double | undefined;
+  cancelOnLeave?: CodegenTypes.WithDefault<boolean, true>;
+  gestureTestID?: string;
+  gestureHitSlop?: Readonly<{
+    top?: CodegenTypes.Double | undefined;
+    left?: CodegenTypes.Double | undefined;
+    bottom?: CodegenTypes.Double | undefined;
+    right?: CodegenTypes.Double | undefined;
+  }>;
+
   exclusive?: CodegenTypes.WithDefault<boolean, true>;
   foreground?: boolean;
   borderless?: boolean;
