@@ -12,23 +12,12 @@ import {
   isKeyboardDismissingTap,
   JSResponderContext,
 } from '../ScrollViewResponderInterceptor';
-import type {
-  AnimationDuration,
-  CallbackEventType,
-  EndCallbackEventType,
-  TouchableProps,
-} from './TouchableProps';
+import type { AnimationDuration, TouchableProps } from './TouchableProps';
 
 const isAndroid = Platform.OS === 'android';
 const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 const DEFAULT_IN_DURATION_MS = 50;
 const DEFAULT_OUT_DURATION_MS = 100;
-
-enum PointerState {
-  UNKNOWN,
-  INSIDE,
-  OUTSIDE,
-}
 
 // Clamp user-supplied durations to finite, non-negative milliseconds.
 // Negative, NaN, or Infinity values would produce invalid CSS transitions
@@ -102,8 +91,15 @@ export const Touchable = (props: TouchableProps) => {
 
   const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
+  const jsResponderContext = use(JSResponderContext);
+  const dropKeyboardTapRef = useRef<boolean | null>(null);
+
   const internalOnPress = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
       onPress?.(e.nativeEvent);
     },
     [onPress]
@@ -111,13 +107,27 @@ export const Touchable = (props: TouchableProps) => {
 
   const internalOnPressIn = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
+      // PressIn opens every press sequence; capture the verdict once per
+      // sequence so a re-entry PressIn (with cancelOnLeave={false}) doesn't
+      // overwrite it after the keyboard is already dismissed.
+      dropKeyboardTapRef.current ??=
+        isKeyboardDismissingTap(jsResponderContext);
+
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
       onPressIn?.(e.nativeEvent);
     },
-    [onPressIn]
+    [jsResponderContext, onPressIn]
   );
 
   const internalOnPressOut = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
       onPressOut?.(e.nativeEvent);
     },
     [onPressOut]
@@ -125,10 +135,20 @@ export const Touchable = (props: TouchableProps) => {
 
   const internalOnLongPress = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
       onLongPress?.(e.nativeEvent);
     },
     [onLongPress]
   );
+
+  // InteractionFinished is dispatched after the terminal PressOut/Press
+  // events, so resetting synchronously here is safe.
+  const internalOnInteractionFinished = useCallback(() => {
+    dropKeyboardTapRef.current = null;
+  }, []);
 
   const nativeGesture = useNativeGesture({
     hitSlop: props.hitSlop,
@@ -170,7 +190,8 @@ export const Touchable = (props: TouchableProps) => {
         onPress={internalOnPress}
         onPressIn={internalOnPressIn}
         onPressOut={internalOnPressOut}
-        onLongPress={internalOnLongPress}>
+        onLongPress={internalOnLongPress}
+        onInteractionFinished={internalOnInteractionFinished}>
         {children}
       </GestureHandlerButton>
     </NativeDetector>

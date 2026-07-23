@@ -3,6 +3,7 @@ import type {
   ColorValue,
   HostComponent,
   LayoutChangeEvent,
+  NativeSyntheticEvent,
   StyleProp,
   ViewProps,
   ViewStyle,
@@ -27,6 +28,36 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    * set true.
    */
   exclusive?: boolean | undefined;
+
+  /**
+   * Called when the button gets pressed.
+   */
+  onPress?: ((event: NativeSyntheticEvent<ButtonEvent>) => void) | undefined;
+
+  /**
+   * Called when the pointer touches the button.
+   */
+  onPressIn?: ((event: NativeSyntheticEvent<ButtonEvent>) => void) | undefined;
+
+  /**
+   * Called when the pointer is released or leaves the button.
+   */
+  onPressOut?: ((event: NativeSyntheticEvent<ButtonEvent>) => void) | undefined;
+
+  /**
+   * Called when the button gets pressed and held past `longPressDuration`.
+   */
+  onLongPress?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when the interaction with the button ends, after any terminal
+   * `onPressOut`/`onPress` events, regardless of how it ended.
+   */
+  onInteractionFinished?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
 
   /**
    * Android only.
