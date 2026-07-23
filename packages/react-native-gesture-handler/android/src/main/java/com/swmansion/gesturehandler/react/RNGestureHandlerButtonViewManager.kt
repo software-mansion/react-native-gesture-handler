@@ -27,6 +27,7 @@ import androidx.core.view.children
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.facebook.react.R
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
@@ -35,6 +36,7 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PointerEvents
 import com.facebook.react.uimanager.ReactPointerEventsView
 import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.ViewProps
@@ -48,6 +50,7 @@ import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
+import com.swmansion.gesturehandler.react.events.RNGestureHandlerButtonEvent
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager :
@@ -62,6 +65,11 @@ class RNGestureHandlerButtonViewManager :
   override fun getName() = REACT_CLASS
 
   public override fun createViewInstance(context: ThemedReactContext) = ButtonViewGroup(context)
+
+  @ReactProp(name = "hasLongPressHandler")
+  override fun setHasLongPressHandler(view: ButtonViewGroup, hasLongPressHandler: Boolean) {
+    view.hasLongPressHandler = hasLongPressHandler
+  }
 
   @ReactProp(name = "foreground")
   override fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
@@ -398,6 +406,7 @@ class RNGestureHandlerButtonViewManager :
     var useBorderlessDrawable = false
 
     var exclusive = true
+    var hasLongPressHandler = false
     var tapAnimationInDuration: Int = 50
     var tapAnimationOutDuration: Int = 100
     var longPressDuration: Int = -1
@@ -534,9 +543,9 @@ class RNGestureHandlerButtonViewManager :
       }
 
       if (handler.isWithinBounds) {
-        dispatchJSEvent(EventType.PressIn)
+        dispatchJSEvent(EventType.PressIn, handler)
       } else {
-        dispatchJSEvent(EventType.PressOut)
+        dispatchJSEvent(EventType.PressOut, handler)
 
         pendingLongPress?.let {
           this.handler?.removeCallbacks(it)
@@ -551,16 +560,18 @@ class RNGestureHandlerButtonViewManager :
       val localLastEventWasInside = lastEventWasInside
 
       if (newState == GestureHandler.STATE_BEGAN) {
-        dispatchJSEvent(EventType.PressIn)
-
-        val runnable = Runnable {
-          pendingLongPress = null
-          longPressDetected = true
-          dispatchJSEvent(EventType.LongPress)
-        }
+        dispatchJSEvent(EventType.PressIn, handler)
         longPressDetected = false
-        pendingLongPress = runnable
-        this.handler?.postDelayed(runnable, longPressDuration.toLong())
+
+        if (hasLongPressHandler && longPressDuration >= 0) {
+          val runnable = Runnable {
+            pendingLongPress = null
+            longPressDetected = true
+            dispatchJSEvent(EventType.LongPress, handler)
+          }
+          pendingLongPress = runnable
+          this.handler?.postDelayed(runnable, longPressDuration.toLong())
+        }
       }
 
       if (newState == GestureHandler.STATE_END ||
@@ -568,7 +579,7 @@ class RNGestureHandlerButtonViewManager :
         newState == GestureHandler.STATE_CANCELLED
       ) {
         if (localLastEventWasInside) {
-          dispatchJSEvent(EventType.PressOut)
+          dispatchJSEvent(EventType.PressOut, handler)
         }
 
         pendingLongPress?.let {
@@ -578,33 +589,26 @@ class RNGestureHandlerButtonViewManager :
       }
 
       if (newState == GestureHandler.STATE_END && !longPressDetected && localLastEventWasInside) {
-        dispatchJSEvent(EventType.Press)
+        dispatchJSEvent(EventType.Press, handler)
       }
 
       if (newState == GestureHandler.STATE_END ||
         newState == GestureHandler.STATE_FAILED ||
         newState == GestureHandler.STATE_CANCELLED
       ) {
-        dispatchJSEvent(EventType.InteractionFinished)
+        dispatchJSEvent(EventType.InteractionFinished, handler)
       }
     }
 
-    private fun dispatchJSEvent(type: EventType) {
-      when (type) {
-        EventType.Press -> {
-          Log.w("RNGH", "onPress")
-        }
-        EventType.PressIn -> {
-          lastEventWasInside = true
-          Log.w("RNGH", "onPressIn")
-        }
-        EventType.PressOut -> {
-          lastEventWasInside = false
-          Log.w("RNGH", "onPressOut")
-        }
-        EventType.LongPress -> {
-          Log.w("RNGH", "longPress")
-        }
+    private fun dispatchJSEvent(type: EventType, handler: NativeViewGestureHandler) {
+      val reactContext = context as? ReactContext ?: return
+      val eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext) ?: return
+      eventDispatcher.dispatchEvent(RNGestureHandlerButtonEvent.obtain(this, handler, type))
+
+      if (type == EventType.PressIn) {
+        lastEventWasInside = true
+      } else if (type == EventType.PressOut) {
+        lastEventWasInside = false
       }
     }
 
@@ -1199,7 +1203,8 @@ class RNGestureHandlerButtonViewManager :
       Press,
       PressIn,
       PressOut,
-      LongPress
+      LongPress,
+      InteractionFinished,
     }
   }
 

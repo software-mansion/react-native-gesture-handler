@@ -6,8 +6,27 @@ import type {
 } from 'react-native';
 import { codegenNativeComponent } from 'react-native';
 
+export type ButtonEvent = Readonly<{
+  pointerInside: boolean;
+  x: CodegenTypes.Double;
+  y: CodegenTypes.Double;
+  absoluteX: CodegenTypes.Double;
+  absoluteY: CodegenTypes.Double;
+  numberOfPointers: CodegenTypes.Int32;
+  pointerType: CodegenTypes.Int32;
+}>;
+
 // @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it
 interface NativeProps extends ViewProps {
+  onPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onPressIn?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onPressOut?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onLongPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onInteractionFinished?:
+    | CodegenTypes.DirectEventHandler<ButtonEvent>
+    | undefined;
+
+  hasLongPressHandler?: CodegenTypes.WithDefault<boolean, false>;
   exclusive?: CodegenTypes.WithDefault<boolean, true>;
   foreground?: boolean;
   borderless?: boolean;

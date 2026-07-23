@@ -8,7 +8,9 @@ import type {
   ViewStyle,
 } from 'react-native';
 
-import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
+import RNGestureHandlerButtonNativeComponent, {
+  type ButtonEvent,
+} from '../specs/RNGestureHandlerButtonNativeComponent';
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {
   children?: React.ReactNode;
@@ -17,6 +19,8 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    * Defines if buttons should respond to touches. By default set to true.
    */
   enabled?: boolean | undefined;
+
+  hasLongPressHandler?: boolean | undefined;
 
   /**
    * Defines if more than one button could be pressed simultaneously. By default
@@ -203,3 +207,4 @@ export const ButtonComponent =
   RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
 export default ButtonComponent;
+export type { ButtonEvent };

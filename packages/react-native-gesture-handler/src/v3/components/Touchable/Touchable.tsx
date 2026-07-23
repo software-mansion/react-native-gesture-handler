@@ -1,7 +1,10 @@
 import React, { use, useCallback, useRef } from 'react';
+import type { NativeSyntheticEvent } from 'react-native';
 import { Platform } from 'react-native';
 
-import GestureHandlerButton from '../../../components/GestureHandlerButton';
+import GestureHandlerButton, {
+  type ButtonEvent,
+} from '../../../components/GestureHandlerButton';
 import { getTVProps } from '../../../components/utils';
 import { NativeDetector } from '../../detectors/NativeDetector';
 import { useNativeGesture } from '../../hooks';
@@ -99,130 +102,35 @@ export const Touchable = (props: TouchableProps) => {
 
   const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
-  const pointerState = useRef<PointerState>(PointerState.UNKNOWN);
-  const longPressDetected = useRef(false);
-  const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
+  const internalOnPress = useCallback(
+    (e: NativeSyntheticEvent<ButtonEvent>) => {
+      onPress?.(e.nativeEvent);
+    },
+    [onPress]
   );
 
-  // Swallow the tap that dismisses the keyboard in
-  // keyboardShouldPersistTaps="never", matching RN's touchables.
-  const jsResponderContext = use(JSResponderContext);
-  const dropKeyboardTapRef = useRef<boolean | null>(null);
-
-  const captureKeyboardDismiss = useCallback(() => {
-    dropKeyboardTapRef.current ??= isKeyboardDismissingTap(jsResponderContext);
-  }, [jsResponderContext]);
-
-  const resetKeyboardDismiss = useCallback(() => {
-    dropKeyboardTapRef.current = null;
-  }, []);
-
-  const wrappedLongPress = useCallback(() => {
-    longPressDetected.current = true;
-    onLongPress?.();
-  }, [onLongPress]);
-
-  const startLongPressTimer = useCallback(() => {
-    longPressDetected.current = false;
-
-    if (onLongPress && !longPressTimeout.current) {
-      longPressTimeout.current = setTimeout(
-        wrappedLongPress,
-        resolvedDelayLongPress
-      );
-    }
-  }, [onLongPress, resolvedDelayLongPress, wrappedLongPress]);
-
-  const onBegin = useCallback(
-    (e: CallbackEventType) => {
-      captureKeyboardDismiss();
-
-      if (!e.pointerInside || dropKeyboardTapRef.current) {
-        pointerState.current = PointerState.OUTSIDE;
-        return;
-      }
-
-      onPressIn?.(e);
-      startLongPressTimer();
-
-      pointerState.current = PointerState.INSIDE;
+  const internalOnPressIn = useCallback(
+    (e: NativeSyntheticEvent<ButtonEvent>) => {
+      onPressIn?.(e.nativeEvent);
     },
-    [captureKeyboardDismiss, startLongPressTimer, onPressIn]
+    [onPressIn]
   );
 
-  const onActivate = useCallback((e: CallbackEventType) => {
-    if (!e.pointerInside && longPressTimeout.current !== undefined) {
-      clearTimeout(longPressTimeout.current);
-      longPressTimeout.current = undefined;
-    }
-  }, []);
-
-  const onFinalize = useCallback(
-    (e: EndCallbackEventType) => {
-      if (
-        !dropKeyboardTapRef.current &&
-        pointerState.current === PointerState.INSIDE
-      ) {
-        onPressOut?.(e);
-      }
-
-      if (
-        !dropKeyboardTapRef.current &&
-        !e.canceled &&
-        !longPressDetected.current &&
-        e.pointerInside
-      ) {
-        onPress?.(e);
-      }
-
-      pointerState.current = PointerState.UNKNOWN;
-
-      if (longPressTimeout.current !== undefined) {
-        clearTimeout(longPressTimeout.current);
-        longPressTimeout.current = undefined;
-      }
-
-      resetKeyboardDismiss();
+  const internalOnPressOut = useCallback(
+    (e: NativeSyntheticEvent<ButtonEvent>) => {
+      onPressOut?.(e.nativeEvent);
     },
-    [resetKeyboardDismiss, onPressOut, onPress]
+    [onPressOut]
   );
 
-  const onUpdate = useCallback(
-    (e: CallbackEventType) => {
-      if (dropKeyboardTapRef.current) {
-        return;
-      }
-
-      if (pointerState.current === PointerState.UNKNOWN) {
-        return;
-      }
-
-      if (e.pointerInside) {
-        if (pointerState.current === PointerState.OUTSIDE) {
-          onPressIn?.(e);
-        }
-        pointerState.current = PointerState.INSIDE;
-      } else {
-        if (pointerState.current === PointerState.INSIDE) {
-          onPressOut?.(e);
-
-          if (longPressTimeout.current !== undefined) {
-            clearTimeout(longPressTimeout.current);
-            longPressTimeout.current = undefined;
-          }
-        }
-        pointerState.current = PointerState.OUTSIDE;
-      }
+  const internalOnLongPress = useCallback(
+    (e: NativeSyntheticEvent<ButtonEvent>) => {
+      onLongPress?.(e.nativeEvent);
     },
-    [onPressIn, onPressOut]
+    [onLongPress]
   );
 
   const nativeGesture = useNativeGesture({
-    onBegin,
-    onActivate,
-    onFinalize,
-    onUpdate,
     hitSlop: props.hitSlop,
     testID: props.testID,
     enabled: !disabled,
@@ -257,7 +165,12 @@ export const Touchable = (props: TouchableProps) => {
         defaultUnderlayOpacity={defaultUnderlayOpacity}
         activeUnderlayOpacity={activeUnderlayOpacity}
         underlayColor={underlayColor}
-        longPressDuration={resolvedDelayLongPress}>
+        longPressDuration={resolvedDelayLongPress}
+        hasLongPressHandler={onLongPress !== undefined}
+        onPress={internalOnPress}
+        onPressIn={internalOnPressIn}
+        onPressOut={internalOnPressOut}
+        onLongPress={internalOnLongPress}>
         {children}
       </GestureHandlerButton>
     </NativeDetector>

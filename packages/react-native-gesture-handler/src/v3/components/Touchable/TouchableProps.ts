@@ -1,6 +1,9 @@
 import type { PressableAndroidRippleConfig as RNPressableAndroidRippleConfig } from 'react-native';
 
-import type { ButtonProps } from '../../../components/GestureHandlerButton';
+import type {
+  ButtonEvent,
+  ButtonProps,
+} from '../../../components/GestureHandlerButton';
 import type { NativeHandlerData } from '../../hooks/gestures/native/NativeTypes';
 import type { GestureEndEvent, GestureEvent } from '../../types';
 import type { BaseButtonProps, RawButtonProps } from '../GestureButtonsProps';
@@ -61,7 +64,7 @@ export type TouchableProps = Omit<
 > &
   Omit<
     BaseButtonProps,
-    keyof RawButtonProps | 'onActiveStateChange' | 'onPress'
+    keyof RawButtonProps | 'onActiveStateChange' | 'onPress' | 'onLongPress'
   > & {
     /**
      * Press and hover animation durations, in milliseconds. Pass a single
@@ -78,17 +81,22 @@ export type TouchableProps = Omit<
     /**
      * Called when the component gets pressed.
      */
-    onPress?: ((event: CallbackEventType) => void) | undefined;
+    onPress?: ((event: ButtonEvent) => void) | undefined;
+
+    /**
+     * Called when the component gets long pressed.
+     */
+    onLongPress?: ((event: ButtonEvent) => void) | undefined;
 
     /**
      * Called when pointer touches the component.
      */
-    onPressIn?: ((event: CallbackEventType) => void) | undefined;
+    onPressIn?: ((event: ButtonEvent) => void) | undefined;
 
     /**
      * Called when pointer is released from the component.
      */
-    onPressOut?: ((event: CallbackEventType) => void) | undefined;
+    onPressOut?: ((event: ButtonEvent) => void) | undefined;
 
     /**
      * Whether the component should ignore touches. By default set to false.
