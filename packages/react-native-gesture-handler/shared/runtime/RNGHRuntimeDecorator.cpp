@@ -7,7 +7,7 @@
 
 #include "RNGHRuntimeDecorator.h"
 
-#ifdef RNGH_USE_WORKLETS
+#if RNGH_USE_WORKLETS
 #include <worklets/Compat/StableApi.h>
 #endif
 
@@ -120,7 +120,7 @@ void RNGHRuntimeDecorator::installUIRuntimeBindings(
 
 ResolvedUIRuntime RNGHRuntimeDecorator::tryFindUIRuntime(
     jsi::Runtime &rnRuntime) {
-#ifdef RNGH_USE_WORKLETS
+#if RNGH_USE_WORKLETS
   const auto workletsRuntimeHolder = rnRuntime.global().getProperty(
       rnRuntime, "__RNGH_UI_WORKLET_RUNTIME_HOLDER");
 
