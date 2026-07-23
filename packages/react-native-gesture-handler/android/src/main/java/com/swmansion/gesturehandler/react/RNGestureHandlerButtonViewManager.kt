@@ -436,6 +436,7 @@ class RNGestureHandlerButtonViewManager :
     private var underlayDrawable: PaintDrawable? = null
     private var pressInTimestamp = 0L
     private var pendingPressOut: Runnable? = null
+    private var pendingLongPress: Runnable? = null
     private var pendingHoverOut: Choreographer.FrameCallback? = null
     private var isPointerInsideBounds = false
     private var isHovered = false
@@ -517,6 +518,93 @@ class RNGestureHandlerButtonViewManager :
 
       if (testId is String) {
         info.setViewIdResourceName(testId)
+      }
+    }
+
+    private var longPressDetected = false
+
+    // Cannot rely on isPointerInsideBounds because it's set to false during motion event processing
+    // which happens before the final state change is handled (state change is triggered by the motion
+    // event).
+    private var lastEventWasInside = false
+
+    override fun onHandlerUpdate(handler: NativeViewGestureHandler) {
+      if (handler.isWithinBounds == lastEventWasInside) {
+        return
+      }
+
+      if (handler.isWithinBounds) {
+        dispatchJSEvent(EventType.PressIn)
+      } else {
+        dispatchJSEvent(EventType.PressOut)
+
+        pendingLongPress?.let {
+          this.handler?.removeCallbacks(it)
+          pendingLongPress = null
+        }
+      }
+    }
+
+    override fun onHandlerStateChange(handler: NativeViewGestureHandler, newState: Int, prevState: Int) {
+      // Capture local copy, since lastEventWasInside can change during this method
+      // Specifically PressOut -> Press scenario on STATE_END
+      val localLastEventWasInside = lastEventWasInside
+
+      if (newState == GestureHandler.STATE_BEGAN) {
+        dispatchJSEvent(EventType.PressIn)
+
+        val runnable = Runnable {
+          pendingLongPress = null
+          longPressDetected = true
+          dispatchJSEvent(EventType.LongPress)
+        }
+        longPressDetected = false
+        pendingLongPress = runnable
+        this.handler?.postDelayed(runnable, longPressDuration.toLong())
+      }
+
+      if (newState == GestureHandler.STATE_END ||
+        newState == GestureHandler.STATE_FAILED ||
+        newState == GestureHandler.STATE_CANCELLED
+      ) {
+        if (localLastEventWasInside) {
+          dispatchJSEvent(EventType.PressOut)
+        }
+
+        pendingLongPress?.let {
+          this.handler?.removeCallbacks(it)
+          pendingLongPress = null
+        }
+      }
+
+      if (newState == GestureHandler.STATE_END && !longPressDetected && localLastEventWasInside) {
+        dispatchJSEvent(EventType.Press)
+      }
+
+      if (newState == GestureHandler.STATE_END ||
+        newState == GestureHandler.STATE_FAILED ||
+        newState == GestureHandler.STATE_CANCELLED
+      ) {
+        dispatchJSEvent(EventType.InteractionFinished)
+      }
+    }
+
+    private fun dispatchJSEvent(type: EventType) {
+      when (type) {
+        EventType.Press -> {
+          Log.w("RNGH", "onPress")
+        }
+        EventType.PressIn -> {
+          lastEventWasInside = true
+          Log.w("RNGH", "onPressIn")
+        }
+        EventType.PressOut -> {
+          lastEventWasInside = false
+          Log.w("RNGH", "onPressOut")
+        }
+        EventType.LongPress -> {
+          Log.w("RNGH", "longPress")
+        }
       }
     }
 
@@ -912,6 +1000,8 @@ class RNGestureHandlerButtonViewManager :
     override fun onDetachedFromWindow() {
       pendingPressOut?.let { handler?.removeCallbacks(it) }
       pendingPressOut = null
+      pendingLongPress?.let { handler?.removeCallbacks(it) }
+      pendingLongPress = null
       cancelPendingHoverOut()
       currentAnimator?.cancel()
       currentAnimator = null
@@ -1103,6 +1193,13 @@ class RNGestureHandlerButtonViewManager :
           false
         }
       }
+    }
+
+    enum class EventType {
+      Press,
+      PressIn,
+      PressOut,
+      LongPress
     }
   }
 
