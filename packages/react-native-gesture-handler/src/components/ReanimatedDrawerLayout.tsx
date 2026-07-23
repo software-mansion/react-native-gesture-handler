@@ -281,7 +281,10 @@ const defaultProps = {
 };
 
 // StatusBar.setHidden and Keyboard.dismiss cannot be directly referenced in worklets.
+//
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const setStatusBarHidden = StatusBar.setHidden;
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const dismissKeyboard = Keyboard.dismiss;
 
 const DrawerLayout = function DrawerLayout(

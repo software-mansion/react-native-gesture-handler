@@ -18,7 +18,7 @@ const Item = ({ title }: { title: string }) => (
 export default function ScrollViewExample() {
   const [refreshing, setRefreshing] = useState(false);
 
-  const ref = useRef<ScrollView>(null);
+  const ref = useRef<React.ComponentRef<typeof ScrollView>>(null);
 
   const onRefresh = () => {
     setRefreshing(true);

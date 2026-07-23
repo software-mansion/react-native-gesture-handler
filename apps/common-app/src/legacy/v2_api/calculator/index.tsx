@@ -1,6 +1,10 @@
 import type { Dispatch, SetStateAction } from 'react';
 import React, { useRef, useState } from 'react';
-import type { LayoutChangeEvent, LayoutRectangle } from 'react-native';
+import type {
+  LayoutChangeEvent,
+  LayoutRectangle,
+  ScrollView as RNScrollView,
+} from 'react-native';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import {
   Gesture,
@@ -56,7 +60,7 @@ interface OutputProps {
 
 function Output({ offset, expression, history }: OutputProps) {
   const layout = useRef({});
-  const scrollView = useRef<LegacyScrollView>(null);
+  const scrollView = useRef<React.ComponentRef<typeof RNScrollView>>(null);
   const drag = useSharedValue(0);
   const dragOffset = useSharedValue(0);
   const [opened, setOpened] = useState(false);
@@ -127,7 +131,7 @@ function Output({ offset, expression, history }: OutputProps) {
         style={[styles.output, translationStyle]}
         onLayout={measure}>
         <LegacyScrollView
-          ref={(ref: LegacyScrollView) => {
+          ref={(ref: React.ComponentRef<typeof RNScrollView> | null) => {
             if (!opened) {
               ref?.scrollToEnd({ animated: false });
             }
