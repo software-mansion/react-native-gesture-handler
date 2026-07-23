@@ -10,6 +10,8 @@ import { webContainer } from '@site/src/utils/getGestureStyles';
 import PanGestureBasic from '../examples/PanGestureBasic';
 import PanGestureBasicSrc from '!!raw-loader!../examples/PanGestureBasic';
 
+A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
+
 <div className={webContainer}>
   <InteractiveExample
     component={<PanGestureBasic/>}
@@ -23,8 +25,6 @@ import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousEventConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
-
-A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
 
 The gesture [activates](/docs/2.x/fundamentals/states-events#active) when a finger is placed on the screen and moved some initial distance.
 

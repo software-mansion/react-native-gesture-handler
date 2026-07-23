@@ -11179,10 +11179,10 @@ react-loadable-ssr-addon-v5-slorber@^1.0.1:
   dependencies:
     "@types/react" "*"
 
-react-native-gesture-handler@3.0.0-beta.3:
-  version "3.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-3.0.0-beta.3.tgz#3c6a5f32304fef07af0e62d00104fdde58925fa5"
-  integrity sha512-HasVC2kUggDUsJcVD5SWIngkW/FXfeqL9tVAmXQZ6bgg4yNY6A1hGOO8PxSu99iOEocG0O51xZeKzF06HhMepQ==
+react-native-gesture-handler@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-3.1.0.tgz#679e74b587464bb560ab022eedfbbbbdb17c3b1c"
+  integrity sha512-+kWVyZ6vLdtyFa1/aOc/sZncLAVPUKxhji/ttbiLI7hOaSU44bLjhI7p+Ns+pMl2r3RqPXssl5qHReYet9G77g==
   dependencies:
     "@types/react-test-renderer" "^19.1.0"
     invariant "^2.2.4"
