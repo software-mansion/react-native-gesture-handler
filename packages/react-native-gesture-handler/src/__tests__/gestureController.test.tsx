@@ -206,7 +206,7 @@ describe('createGestureController', () => {
     const gesture = createGestureController(tap);
 
     expect(() => gesture.begin({ state: State.BEGAN } as never)).toThrow(
-      "createGestureController manages 'state' internally."
+      "GestureController manages 'state' internally."
     );
     expect(getControllerState(gesture)).toBe(State.UNDETERMINED);
     expect(onBegin).not.toHaveBeenCalled();
