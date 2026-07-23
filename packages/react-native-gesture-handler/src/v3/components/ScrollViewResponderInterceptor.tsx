@@ -115,6 +115,11 @@ export const ScrollViewResponderProvider = ({
   );
 };
 
+// RNGH tap responders need to let RN components higher in the tree handle the JS
+// responder event first. If no RN component claims it, this logical ScrollView
+// child consumes the marked event before ScrollView's own
+// keyboardShouldPersistTaps='handled' responder logic handles it.
+// For more context: https://github.com/software-mansion/react-native-gesture-handler/pull/4158#issuecomment-4431632964
 const LogicalResponderChild = ({ children }: PropsWithChildren) => {
   const jsResponderContext = use(JSResponderContext);
 
