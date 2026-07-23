@@ -36,4 +36,4 @@ Set it only on activation and leave it untouched until the gesture ends, so the 
 
 ## Full example
 
-Put both ideas together and you have the whole interaction. Each gesture updates its own shared value as the fingers move and folds the result into the stored matrix when it ends; [`useSimultaneousGestures`](/docs/fundamentals/gesture-composition) runs `Pan`, `Pinch`, `Rotation` and a double-tap zoom at the same time.
+Put both ideas together and you have the whole interaction. Each gesture updates its own shared value as the fingers move and folds the result into the stored matrix when it ends; [`useSimultaneousGestures`](/docs/composition/use-simultaneous-gestures) runs `Pan`, `Pinch`, `Rotation` and a double-tap zoom at the same time.

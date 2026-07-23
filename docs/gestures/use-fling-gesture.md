@@ -1,4 +1,5 @@
 The gesture that tracks quick, sufficiently long movement in specified [direction](#direction).
+
 When the gesture gets activated it will end when the finger is released.
 The gesture will fail if the finger is lifted before the gesture could activate.
 

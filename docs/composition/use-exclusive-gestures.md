@@ -1,0 +1,3 @@
+Only one of the provided gestures can become active. Priority is determined by the order of the arguments, where the first gesture has the highest priority, and the last has the lowest. A gesture can activate only after all higher-priority gestures before it have failed.
+
+For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `useExclusiveGestures`:

@@ -81,4 +81,4 @@ Those components also receive an additional prop named `onGestureUpdate_CAN_CAUS
 onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (gesture: NativeGesture) => void;
 ```
 
-This callback is invoked when the wrapped component's underlying `Native` gesture instance or configuration changes, providing access to the underlying gesture. This can be helpful when setting up [relations](/docs/fundamentals/gesture-composition) with other gestures. You can check example usage in our [`ScrollView`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/v3/components/GestureComponents.tsx#L78) component.
+This callback is invoked when the wrapped component's underlying `Native` gesture instance or configuration changes, providing access to the underlying gesture. This can be helpful when setting up [relations](/docs/composition/overview) with other gestures. You can check example usage in our [`ScrollView`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/v3/components/GestureComponents.tsx#L78) component.

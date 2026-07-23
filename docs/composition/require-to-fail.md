@@ -1,0 +1,3 @@
+`requireToFail` allows delaying activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
+
+For example, you may want to have two nested components, both of them can be tapped by the user to trigger different actions: outer view requires one tap, but the inner one requires 2 taps. If you don't want the first tap on the inner view to activate the outer handler, you must make the outer gesture wait until the inner one fails:

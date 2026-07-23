@@ -1,4 +1,5 @@
 Gesture that activates when the corresponding view is pressed for a sufficiently long time.
+
 This gesture will deactivate immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#minduration) or if the finger is moved further than the [allowable distance](#maxdistance).
 

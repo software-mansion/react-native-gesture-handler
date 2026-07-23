@@ -1,4 +1,4 @@
-A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/fundamentals/gesture-composition) with other gestures.
+A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/composition/overview) with other gestures.
 
 When used, the native component should be the direct child of a [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
 
@@ -12,7 +12,7 @@ This example renders a `ScrollView` with multiple colored rectangles, where each
 
 ## Remarks
 
-* `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
+* `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/composition/overview) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
 
 * Due to platform API limitations, the `Native` gesture has restricted functionality on `web`. For instance, it cannot be used to block scrolling on a `ScrollView`.
 

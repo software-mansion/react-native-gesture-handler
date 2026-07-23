@@ -1,6 +1,6 @@
 ## Gesture Detector
 
-The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hook-based API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
+The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hook-based API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/composition/overview). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
 
 When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated). More on that can be found in [Integration with Animated](/docs/fundamentals/animated-interactions) section.
 
@@ -68,7 +68,7 @@ You can use `VirtualGestureDetector` to add gesture handling to specific parts o
 gesture: SingleGesture | ComposedGesture;
 ```
 
-A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/fundamentals/gesture-composition).
+A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/composition/overview).
 
 ### userSelect
 

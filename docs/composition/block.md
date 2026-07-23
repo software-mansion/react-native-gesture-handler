@@ -1,0 +1,1 @@
+`block` works similarly to `requireToFail` but the direction of the relation is reversed - instead of being a one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:

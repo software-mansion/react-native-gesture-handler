@@ -1,4 +1,5 @@
-Gesture that recognizes pinching. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
+Gesture that recognizes pinching. It allows for tracking the distance between two fingers and uses that information to scale or zoom your content.
+
 The gesture activates when fingers are placed on the screen and move away from each other or pull closer together. It provides information about [velocity](#velocity), anchor ([focal](#focalx)) point of gesture and [scale](#scale).
 
 The distance between the fingers is reported as a scale factor. At the beginning of the gesture, the scale factor is `1.0`. As the distance between the two fingers increases, the scale factor increases proportionally.

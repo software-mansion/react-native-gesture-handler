@@ -859,29 +859,29 @@ childrenContainerStyle?: StyleProp<ViewStyle>;
 
 Style object for the children container ([`Animated.View`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#animated-component)).
 
-### simultaneousWithExternalGesture
+### simultaneousWith
 
 ```ts
-simultaneousWithExternalGesture?: AnyGesture | AnyGesture[];
+simultaneousWith?: AnyGesture | AnyGesture[];
 ```
 
-Gestures to be recognized simultaneously with the `Swipeable` (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
+Gestures to be recognized simultaneously with the `Swipeable` (see [`simultaneousWith`](/docs/composition/simultaneous-with)).
 
-### requireExternalGestureToFail
+### requireToFail
 
 ```ts
-requireExternalGestureToFail?: AnyGesture | AnyGesture[];
+requireToFail?: AnyGesture | AnyGesture[];
 ```
 
-Gestures that `Swipeable` has to wait for before activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
+Gestures that `Swipeable` has to wait for before activating (see [`requireToFail`](/docs/composition/require-to-fail)).
 
-### blocksExternalGesture
+### block
 
 ```ts
-blocksExternalGesture?: AnyGesture | AnyGesture[];
+block?: AnyGesture | AnyGesture[];
 ```
 
-Gestures that `Swipeable` will prevent from activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
+Gestures that `Swipeable` will prevent from activating (see [`block`](/docs/composition/block)).
 
 ### enableTrackpadTwoFingerGesture
 
@@ -1420,7 +1420,81 @@ Those components also receive an additional prop named `onGestureUpdate_CAN_CAUS
 onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (gesture: NativeGesture) => void;
 ```
 
-This callback is invoked when the wrapped component's underlying `Native` gesture instance or configuration changes, providing access to the underlying gesture. This can be helpful when setting up [relations](/docs/fundamentals/gesture-composition) with other gestures. You can check example usage in our [`ScrollView`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/v3/components/GestureComponents.tsx#L78) component.
+This callback is invoked when the wrapped component's underlying `Native` gesture instance or configuration changes, providing access to the underlying gesture. This can be helpful when setting up [relations](/docs/composition/overview) with other gestures. You can check example usage in our [`ScrollView`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/v3/components/GestureComponents.tsx#L78) component.
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/composition/block
+# Title: block
+
+`block` works similarly to `requireToFail` but the direction of the relation is reversed - instead of being a one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/composition/overview
+# Title: Gesture composition & interactions
+
+Gesture Handler simplifies gesture interactions through dedicated composition hooks and relation properties. To choose the right approach, simply ask: are all the gestures attached to the same component?
+
+* If **yes** — use [composition hooks](#composition-hooks). These allow you to bundle multiple gestures — including previously composed ones — into a single object for a [`GestureDetector`](/docs/fundamentals/gesture-detectors).
+* If **no** — use [relation properties](#cross-component-interactions) to manually define how gestures interact. Since these properties also support composed gestures, you can mix both methods for more complex layouts.
+
+## Composition hooks
+
+* [`useCompetingGestures`](/docs/composition/use-competing-gestures) — only one of the provided gestures can become active at the same time. The first gesture to activate cancels the rest.
+* [`useSimultaneousGestures`](/docs/composition/use-simultaneous-gestures) — all of the provided gestures can activate at the same time. Activation of one does not cancel the others.
+* [`useExclusiveGestures`](/docs/composition/use-exclusive-gestures) — only one of the provided gestures can become active, with priority determined by the order of the arguments. A gesture activates only after all higher-priority gestures have failed.
+
+## Cross-component interactions
+
+* [`simultaneousWith`](/docs/composition/simultaneous-with) — allows gestures attached to different components to be recognized simultaneously.
+* [`requireToFail`](/docs/composition/require-to-fail) — delays activation of a gesture until all gestures passed as arguments fail (or don't begin at all).
+* [`block`](/docs/composition/block) — works like `requireToFail` with the direction of the relation reversed. Especially useful for lists, where a `ScrollView` needs to wait for every gesture underneath it.
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/composition/require-to-fail
+# Title: requireToFail
+
+`requireToFail` allows delaying activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
+
+For example, you may want to have two nested components, both of them can be tapped by the user to trigger different actions: outer view requires one tap, but the inner one requires 2 taps. If you don't want the first tap on the inner view to activate the outer handler, you must make the outer gesture wait until the inner one fails:
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/composition/simultaneousWith
+# Title: simultaneousWith
+
+`simultaneousWith` allows gestures across different components to be recognized simultaneously. For example, you may want to have two nested views, both with tap gesture attached. Both of them require one tap, but tapping the inner one should also activate the gesture attached to the outer view:
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/composition/use-competing-gestures
+# Title: useCompetingGestures
+
+Only one of the provided gestures can become active at the same time. The first gesture to become active will cancel the rest of the gestures. It accepts a variable number of arguments.
+
+For example, let's say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `useCompetingGestures`:
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/composition/use-exclusive-gestures
+# Title: useExclusiveGestures
+
+Only one of the provided gestures can become active. Priority is determined by the order of the arguments, where the first gesture has the highest priority, and the last has the lowest. A gesture can activate only after all higher-priority gestures before it have failed.
+
+For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `useExclusiveGestures`:
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/composition/use-simultaneous-gestures
+# Title: useSimultaneousGestures
+
+All of the provided gestures can activate at the same time. Activation of one will not cancel the other.
+
+For example, if you want to make a gallery app, you might want the user to be able to zoom, rotate and pan around photos. You can do it with `useSimultaneousGestures`:
+
+> Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
 
 ---
@@ -1599,61 +1673,12 @@ Called when there will be no more information about this pointer. It may be call
 
 
 ---
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-composition
-# Title: Gesture composition & interactions
-
-RNGH3 simplifies gesture interaction through dedicated composition hooks and configuration properties. To choose the right approach, simply ask: Are all the gestures attached to the same component?
-
-* If yes: Use composition hooks. These allow you to bundle multiple gestures—including previously composed ones—into a single object for a GestureDetector.
-
-* If no: Use relation properties to manually define how gestures interact. Since these properties also support composed gestures, you can mix both methods for more complex layouts.
-
-## Composition hooks
-
-### useCompetingGestures
-
-Only one of the provided gestures can become active at the same time. The first gesture to become active will cancel the rest of the gestures. It accepts variable number of arguments.
-
-For example, let's say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `useCompetingGestures`:
-
-### useSimultaneousGestures
-
-All of the provided gestures can activate at the same time. Activation of one will not cancel the other.
-
-For example, if you want to make a gallery app, you might want the user to be able to zoom, rotate and pan around photos. You can do it with `useSimultaneousGestures`:
-
-> Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
-
-### useExclusiveGestures
-
-Only one of the provided gestures can become active. Priority is determined by the order of the arguments, where the first gesture has the highest priority, and the last has the lowest. A gesture can activate only after all higher-priority gestures before it have failed.
-
-For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `useExclusiveGestures`:
-
-## Cross-component interactions
-
-### requireToFail
-
-`requireToFail` allows delaying activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
-
-For example, you may want to have two nested components, both of them can be tapped by the user to trigger different actions: outer view requires one tap, but the inner one requires 2 taps. If you don't want the first tap on the inner view to activate the outer handler, you must make the outer gesture wait until the inner one fails:
-
-### block
-
-`block` works similarly to `requireToFail` but the direction of the relation is reversed - instead of being a one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
-
-### simultaneousWith
-
-`simultaneousWith` allows gestures across different components to be recognized simultaneously. For example, you may want to have two nested views, both with tap gesture attached. Both of them require one tap, but tapping the inner one should also activate the gesture attached to the outer view:
-
-
----
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-detector
 # Title: Gesture Detectors
 
 ## Gesture Detector
 
-The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hook-based API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
+The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hook-based API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/composition/overview). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
 
 When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated). More on that can be found in [Integration with Animated](/docs/fundamentals/animated-interactions) section.
 
@@ -1721,7 +1746,7 @@ You can use `VirtualGestureDetector` to add gesture handling to specific parts o
 gesture: SingleGesture | ComposedGesture;
 ```
 
-A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/fundamentals/gesture-composition).
+A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/composition/overview).
 
 ### userSelect
 
@@ -1796,7 +1821,7 @@ export default function App() {
 }
 ```
 
-Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/fundamentals/gesture-composition). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
+Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/composition/overview). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
 
 Check out [`GestureHandlerRootView`](/docs/fundamentals/root-view) section for more details.
 
@@ -1907,7 +1932,7 @@ Gesture Handler provides a declarative API exposing the native platform's touch 
 The main benefits of using React Native Gesture Handler are:
 
 * A way to use a platform's native touch handling system for recognizing gestures (like [pinch](/docs/gestures/use-pinch-gesture), [rotation](/docs/gestures/use-rotation-gesture), [pan](/docs/gestures/use-pan-gesture) and a few others).
-* The ability to define [relations between gestures](/docs/fundamentals/gesture-composition) to ensure gestures, and possibly native components, will not conflict with each other.
+* The ability to define [relations between gestures](/docs/composition/overview) to ensure gestures, and possibly native components, will not conflict with each other.
 * Mechanisms for components that run in native thread and follow platform default behavior, such as delaying the transition to a pressed state within scrollable components to prevent highlighting during a quick scroll or fling.
 * Close integration with [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) to process touch events on the UI thread.
 * Support for different input devices like touch screens, pens and mice.
@@ -2097,7 +2122,7 @@ export default function App() {
 }
 ```
 
-Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/fundamentals/gesture-composition). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
+Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/composition/overview). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
 
 > **Note**
 >
@@ -2553,7 +2578,7 @@ simultaneousWith: Gesture | Gesture[]
 
 Adds a gesture that should be recognized simultaneously with this one.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### requireToFail
 
@@ -2563,7 +2588,7 @@ requireToFail: Gesture | Gesture[]
 
 Adds a relation requiring another gesture to fail, before this one can activate.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### block
 
@@ -2573,7 +2598,7 @@ block: Gesture | Gesture[]
 
 Adds a relation that makes other gestures wait with activation until this gesture fails (or doesn't start at all).
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### useAnimated
 
@@ -2640,6 +2665,7 @@ Properties supporting `SharedValue` can be updated dynamically via [Reanimated S
 # Title: Fling gesture
 
 The gesture that tracks quick, sufficiently long movement in specified [direction](#direction).
+
 When the gesture gets activated it will end when the finger is released.
 The gesture will fail if the finger is lifted before the gesture could activate.
 
@@ -2710,13 +2736,15 @@ Y coordinate of the current position of the pointer (finger or a leading pointer
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-hover-gesture
 # Title: Hover gesture
 
-Gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
+Gesture that can recognize hovering above the view it's attached to.
+
+The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional [visual effects](#effect-ios-only) may be configured.
 
 > **Note**
 >
-> Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan`](/docs/gestures/use-pan-gesture) gesture.
+> Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/composition/overview) it with [`Pan`](/docs/gestures/use-pan-gesture) gesture.
 
 ## Example
 
@@ -2792,6 +2820,7 @@ Object that contains additional information about `stylus`. It consists of the f
 # Title: Long press gesture
 
 Gesture that activates when the corresponding view is pressed for a sufficiently long time.
+
 This gesture will deactivate immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#minduration) or if the finger is moved further than the [allowable distance](#maxdistance).
 
@@ -3031,7 +3060,7 @@ While manual gestures open great possibilities, we are aware that reimplementing
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-native-gesture
 # Title: Native gesture
 
-A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/fundamentals/gesture-composition) with other gestures.
+A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/composition/overview) with other gestures.
 
 When used, the native component should be the direct child of a [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
 
@@ -3045,7 +3074,7 @@ This example renders a `ScrollView` with multiple colored rectangles, where each
 
 ## Remarks
 
-* `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
+* `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/composition/overview) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
 
 * Due to platform API limitations, the `Native` gesture has restricted functionality on `web`. For instance, it cannot be used to block scrolling on a `ScrollView`.
 
@@ -3325,7 +3354,8 @@ Object that contains additional information about `stylus`. It consists of the f
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-pinch-gesture
 # Title: Pinch gesture
 
-Gesture that recognizes pinching. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
+Gesture that recognizes pinching. It allows for tracking the distance between two fingers and uses that information to scale or zoom your content.
+
 The gesture activates when fingers are placed on the screen and move away from each other or pull closer together. It provides information about [velocity](#velocity), anchor ([focal](#focalx)) point of gesture and [scale](#scale).
 
 The distance between the fingers is reported as a scale factor. At the beginning of the gesture, the scale factor is `1.0`. As the distance between the two fingers increases, the scale factor increases proportionally.
@@ -3972,7 +4002,7 @@ Set it only on activation and leave it untouched until the gesture ends, so the 
 
 ## Full example
 
-Put both ideas together and you have the whole interaction. Each gesture updates its own shared value as the fingers move and folds the result into the stored matrix when it ends; [`useSimultaneousGestures`](/docs/fundamentals/gesture-composition) runs `Pan`, `Pinch`, `Rotation` and a double-tap zoom at the same time.
+Put both ideas together and you have the whole interaction. Each gesture updates its own shared value as the fingers move and folds the result into the stored matrix when it ends; [`useSimultaneousGestures`](/docs/composition/use-simultaneous-gestures) runs `Pan`, `Pinch`, `Rotation` and a double-tap zoom at the same time.
 
 
 ---
@@ -4005,7 +4035,7 @@ This library is maintained by a very small team. Please keep this in mind when r
 * Changing `enabled` prop during a gesture has no effect, only when a gesture starts (that is, a finger touches the screen) the `enabled` prop is taken into consideration to decide whether to extract (or not) the gesture and provide it with stream of events to analyze.
 * `Native` gesture may not conform to the standard state flow due to platform specific workarounds to incorporate native views into RNGH.
 * Keep in mind that [Legacy `Touchables`](/docs/components/legacy-touchables) from RNGH are rendering two additional views that may need to be styled separately to achieve desired effect (`style` and `containerStyle` props).
-* In order for the [gesture composition](/docs/fundamentals/gesture-composition) to work, all composed gestures must be attached to the same [`GestureHandlerRootView`](/docs/fundamentals/root-view).
+* In order for the [gesture composition](/docs/composition/overview) to work, all composed gestures must be attached to the same [`GestureHandlerRootView`](/docs/fundamentals/root-view).
 
 ## Multiple instances of Gesture Handler were detected
 
@@ -4057,6 +4087,10 @@ yarn
 ---
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/guides/upgrading-to-3
 # Title: Upgrading to the new API introduced in Gesture Handler 3
+
+> **Tip**
+>
+> To make the migration process easier, we have prepared a [SKILL](https://github.com/software-mansion-labs/skills/blob/main/skills/react-native-best-practices/references/gestures/v2-to-v3-migration.md) that will help your AI assistant to automatically migrate your codebase to the new API.
 
 ## Migrating gestures
 
@@ -4450,6 +4484,7 @@ function FunctionalComponent(props) {
 # Title: Fling gesture
 
 A discrete gesture that activates when the movement is sufficiently long and fast.
+
 Gesture gets [ACTIVE](/docs/2.x/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
 When gesture gets activated it will turn into [END](/docs/2.x/fundamentals/states-events#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
@@ -5207,7 +5242,9 @@ function App() {
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/hover-gesture
 # Title: Hover gesture
 
-A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
+A continuous gesture that can recognize hovering above the view it's attached to.
+
+The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional visual effects may be configured.
 
@@ -5290,6 +5327,7 @@ Object that contains additional information about `stylus`. It consists of the f
 # Title: Long press gesture
 
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
+
 This gesture's state will turn into [END](/docs/2.x/fundamentals/states-events#end) immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](/docs/2.x/gestures/long-press-gesture#mindurationvalue-number) or if the finger is moved further than the [allowable distance](/docs/2.x/gestures/long-press-gesture#maxdistancevalue-number).
 
@@ -5704,6 +5742,7 @@ Object that contains additional information about `stylus`. It consists of the f
 # Title: Pinch gesture
 
 A continuous gesture that recognizes a pinch gesture. It allows for tracking the distance between two fingers and using that information to scale or zoom your content.
+
 The gesture [activates](/docs/2.x/fundamentals/states-events#active) when fingers are placed on the screen and change their position.
 Gesture callback can be used for continuous tracking of the pinch gesture. It provides information about velocity, anchor (focal) point of gesture and scale.
 

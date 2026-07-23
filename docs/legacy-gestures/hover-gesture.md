@@ -1,4 +1,6 @@
-A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
+A continuous gesture that can recognize hovering above the view it's attached to.
+
+The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional visual effects may be configured.
 

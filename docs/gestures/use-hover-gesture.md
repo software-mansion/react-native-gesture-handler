@@ -1,10 +1,12 @@
-Gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
+Gesture that can recognize hovering above the view it's attached to.
+
+The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional [visual effects](#effect-ios-only) may be configured.
 
 > **Note**
 >
-> Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan`](/docs/gestures/use-pan-gesture) gesture.
+> Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/composition/overview) it with [`Pan`](/docs/gestures/use-pan-gesture) gesture.
 
 ## Example
 

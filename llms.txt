@@ -10,11 +10,20 @@
 - [Legacy Touchables](https://docs.swmansion.com/react-native-gesture-handler/docs/components/touchables)
 - [Wrapped Components](https://docs.swmansion.com/react-native-gesture-handler/docs/components/wrapped-components)
 
+## composition
+
+- [block](https://docs.swmansion.com/react-native-gesture-handler/docs/composition/block)
+- [Gesture composition & interactions](https://docs.swmansion.com/react-native-gesture-handler/docs/composition/overview)
+- [requireToFail](https://docs.swmansion.com/react-native-gesture-handler/docs/composition/require-to-fail)
+- [simultaneousWith](https://docs.swmansion.com/react-native-gesture-handler/docs/composition/simultaneousWith)
+- [useCompetingGestures](https://docs.swmansion.com/react-native-gesture-handler/docs/composition/use-competing-gestures)
+- [useExclusiveGestures](https://docs.swmansion.com/react-native-gesture-handler/docs/composition/use-exclusive-gestures)
+- [useSimultaneousGestures](https://docs.swmansion.com/react-native-gesture-handler/docs/composition/use-simultaneous-gestures)
+
 ## fundamentals
 
 - [Integration with Animated](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/animated-interactions)
 - [Gesture callbacks & events](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/callbacks-events)
-- [Gesture composition & interactions](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-composition)
 - [Gesture Detectors](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-detector)
 - [Installation](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation)
 - [Introduction](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/introduction)

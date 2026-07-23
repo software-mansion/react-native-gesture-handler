@@ -1,0 +1,16 @@
+Gesture Handler simplifies gesture interactions through dedicated composition hooks and relation properties. To choose the right approach, simply ask: are all the gestures attached to the same component?
+
+* If **yes** — use [composition hooks](#composition-hooks). These allow you to bundle multiple gestures — including previously composed ones — into a single object for a [`GestureDetector`](/docs/fundamentals/gesture-detectors).
+* If **no** — use [relation properties](#cross-component-interactions) to manually define how gestures interact. Since these properties also support composed gestures, you can mix both methods for more complex layouts.
+
+## Composition hooks
+
+* [`useCompetingGestures`](/docs/composition/use-competing-gestures) — only one of the provided gestures can become active at the same time. The first gesture to activate cancels the rest.
+* [`useSimultaneousGestures`](/docs/composition/use-simultaneous-gestures) — all of the provided gestures can activate at the same time. Activation of one does not cancel the others.
+* [`useExclusiveGestures`](/docs/composition/use-exclusive-gestures) — only one of the provided gestures can become active, with priority determined by the order of the arguments. A gesture activates only after all higher-priority gestures have failed.
+
+## Cross-component interactions
+
+* [`simultaneousWith`](/docs/composition/simultaneous-with) — allows gestures attached to different components to be recognized simultaneously.
+* [`requireToFail`](/docs/composition/require-to-fail) — delays activation of a gesture until all gestures passed as arguments fail (or don't begin at all).
+* [`block`](/docs/composition/block) — works like `requireToFail` with the direction of the relation reversed. Especially useful for lists, where a `ScrollView` needs to wait for every gesture underneath it.

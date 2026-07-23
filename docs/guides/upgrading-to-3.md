@@ -1,3 +1,7 @@
+> **Tip**
+>
+> To make the migration process easier, we have prepared a [SKILL](https://github.com/software-mansion-labs/skills/blob/main/skills/react-native-best-practices/references/gestures/v2-to-v3-migration.md) that will help your AI assistant to automatically migrate your codebase to the new API.
+
 ## Migrating gestures
 
 The most important change brought by Gesture Handler 3 is the new hook API. Migration is pretty straightforward. Instead of calling builder methods, everything is passed as a configuration object.

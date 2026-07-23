@@ -1,4 +1,5 @@
 A continuous gesture that recognizes a pinch gesture. It allows for tracking the distance between two fingers and using that information to scale or zoom your content.
+
 The gesture [activates](/docs/2.x/fundamentals/states-events#active) when fingers are placed on the screen and change their position.
 Gesture callback can be used for continuous tracking of the pinch gesture. It provides information about velocity, anchor (focal) point of gesture and scale.
 
