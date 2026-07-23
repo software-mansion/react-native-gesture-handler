@@ -120,7 +120,7 @@ export const ScrollViewResponderProvider = ({
 // child consumes the marked event before ScrollView's own
 // keyboardShouldPersistTaps='handled' responder logic handles it.
 // For more context: https://github.com/software-mansion/react-native-gesture-handler/pull/4158#issuecomment-4431632964
-const LogicalResponderChild = ({ children }: PropsWithChildren) => {
+const LogicalResponder = ({ children }: PropsWithChildren) => {
   const jsResponderContext = use(JSResponderContext);
 
   const resetRNGHResponderEvent = useCallback(() => {
@@ -150,12 +150,30 @@ const LogicalResponderChild = ({ children }: PropsWithChildren) => {
   );
 };
 
+// Wraps the whole ScrollView content in a single logical responder
+const ScrollViewResponderInterceptor = ({
+  children,
+  keyboardShouldPersistTaps,
+}: ScrollViewResponderInterceptorProps) => {
+  return (
+    <ScrollViewResponderProvider
+      keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
+      <LogicalResponder>{children}</LogicalResponder>
+    </ScrollViewResponderProvider>
+  );
+};
+
+// Wraps each ScrollView child in its own logical responder, keeping the child
+// count intact. Requires a `ScrollViewResponderProvider` above the ScrollView
 export function interceptScrollViewChildren(children: React.ReactNode) {
+  // Null and boolean children must be passed through untouched — ScrollView
+  // drops them in its own `React.Children.toArray` call, so wrapping them
+  // would shift the indices that `stickyHeaderIndices` refers to.
   return React.Children.map(children, (child) =>
     child == null || typeof child === 'boolean' ? (
       child
     ) : (
-      <LogicalResponderChild>{child}</LogicalResponderChild>
+      <LogicalResponder>{child}</LogicalResponder>
     )
   );
 }
@@ -165,3 +183,5 @@ const styles = StyleSheet.create({
     display: 'contents',
   },
 });
+
+export default ScrollViewResponderInterceptor;

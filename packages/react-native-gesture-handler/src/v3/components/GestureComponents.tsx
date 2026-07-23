@@ -21,7 +21,7 @@ import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from '../hooks/utils';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
-import {
+import ScrollViewResponderInterceptor, {
   interceptScrollViewChildren,
   ScrollViewResponderProvider,
 } from './ScrollViewResponderInterceptor';
@@ -81,27 +81,56 @@ export const ScrollView = (
     });
   };
 
-  return (
+  // ScrollView resolves `stickyHeaderIndices` against its direct children, so
+  // the single responder interceptor would collapse the
+  // content into one child and pin all of it when index 0 is sticky.
+  // ScrollViews using sticky headers move the responder context above the
+  // ScrollView and leave the child count intact — with one logical responder
+  // per child in 'handled' mode.
+  const hasStickyHeaders =
+    Array.isArray(rest.stickyHeaderIndices) &&
+    rest.stickyHeaderIndices.length > 0;
+
+  const scrollView = (
+    <GHScrollView
+      {...rest}
+      ref={props.ref}
+      keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+      onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
+      // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
+      refreshControl={
+        refreshControl
+          ? React.cloneElement(
+              refreshControl,
+              // @ts-ignore block exists (on our RefreshControl)
+              scrollGesture ? { block: scrollGesture } : {}
+            )
+          : undefined
+      }>
+      {!hasStickyHeaders ? (
+        <ScrollViewResponderInterceptor
+          keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
+          {children}
+        </ScrollViewResponderInterceptor>
+      ) : keyboardShouldPersistTaps === 'handled' ? (
+        interceptScrollViewChildren(children)
+      ) : (
+        children
+      )}
+    </GHScrollView>
+  );
+
+  // The provider is required even when no logical responders are rendered —
+  // Pressable and Touchable read its context (and its keyboard-visibility
+  // tracking) to suppress presses on keyboard-dismissing taps in 'never'
+  // mode. Only the responder wrappers are gated on 'handled'.
+  return hasStickyHeaders ? (
     <ScrollViewResponderProvider
       keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
-      <GHScrollView
-        {...rest}
-        ref={props.ref}
-        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
-        // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
-        refreshControl={
-          refreshControl
-            ? React.cloneElement(
-                refreshControl,
-                // @ts-ignore block exists (on our RefreshControl)
-                scrollGesture ? { block: scrollGesture } : {}
-              )
-            : undefined
-        }>
-        {interceptScrollViewChildren(children)}
-      </GHScrollView>
+      {scrollView}
     </ScrollViewResponderProvider>
+  ) : (
+    scrollView
   );
 };
 
