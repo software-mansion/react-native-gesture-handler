@@ -55,10 +55,6 @@ class NativeViewGestureHandler : GestureHandler() {
 
   private var lastActiveUpdate: ActiveUpdateSnapshot? = null
 
-  init {
-    shouldCancelWhenOutside = true
-  }
-
   override fun resetConfig() {
     super.resetConfig()
     shouldActivateOnStart = DEFAULT_SHOULD_ACTIVATE_ON_START
@@ -254,7 +250,7 @@ class NativeViewGestureHandler : GestureHandler() {
   }
 
   companion object {
-    private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = true
+    private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = false
     private const val DEFAULT_SHOULD_ACTIVATE_ON_START = false
     private const val DEFAULT_DISALLOW_INTERRUPTION = false
     private const val DEFAULT_YIELDS_TO_CONTINUOUS_GESTURES = false
