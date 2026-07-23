@@ -21,7 +21,10 @@ import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from '../hooks/utils';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
-import ScrollViewResponderInterceptor from './ScrollViewResponderInterceptor';
+import {
+  interceptScrollViewChildren,
+  ScrollViewResponderProvider,
+} from './ScrollViewResponderInterceptor';
 
 export const RefreshControl: React.ComponentType<
   RNRefreshControlProps &
@@ -79,26 +82,26 @@ export const ScrollView = (
   };
 
   return (
-    <GHScrollView
-      {...rest}
-      ref={props.ref}
-      keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-      onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
-      // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
-      refreshControl={
-        refreshControl
-          ? React.cloneElement(
-              refreshControl,
-              // @ts-ignore block exists (on our RefreshControl)
-              scrollGesture ? { block: scrollGesture } : {}
-            )
-          : undefined
-      }>
-      <ScrollViewResponderInterceptor
-        keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
-        {children}
-      </ScrollViewResponderInterceptor>
-    </GHScrollView>
+    <ScrollViewResponderProvider
+      keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
+      <GHScrollView
+        {...rest}
+        ref={props.ref}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
+        // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
+        refreshControl={
+          refreshControl
+            ? React.cloneElement(
+                refreshControl,
+                // @ts-ignore block exists (on our RefreshControl)
+                scrollGesture ? { block: scrollGesture } : {}
+              )
+            : undefined
+        }>
+        {interceptScrollViewChildren(children)}
+      </GHScrollView>
+    </ScrollViewResponderProvider>
   );
 };
 

@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { use, useCallback, useEffect, useMemo, useRef } from 'react';
 import type {
   EmitterSubscription,
   KeyboardEvent,
@@ -95,7 +95,7 @@ type ScrollViewResponderInterceptorProps = PropsWithChildren<{
   keyboardShouldPersistTaps?: RNScrollViewProps['keyboardShouldPersistTaps'];
 }>;
 
-const ScrollViewResponderInterceptor = ({
+export const ScrollViewResponderProvider = ({
   children,
   keyboardShouldPersistTaps,
 }: ScrollViewResponderInterceptorProps) => {
@@ -110,44 +110,53 @@ const ScrollViewResponderInterceptor = ({
     return () => unsubscribeFromKeyboardVisibility();
   }, []);
 
+  return (
+    <JSResponderContext value={contextValue}>{children}</JSResponderContext>
+  );
+};
+
+const LogicalResponderChild = ({ children }: PropsWithChildren) => {
+  const jsResponderContext = use(JSResponderContext);
+
   const resetRNGHResponderEvent = useCallback(() => {
-    isRNGHResponderEvent.current = false;
+    updateResponderEventValue(jsResponderContext, false);
     return false;
-  }, []);
+  }, [jsResponderContext]);
 
   const handleStartShouldSetResponder = useCallback(() => {
     const shouldHandleRNGHEvent =
-      keyboardShouldPersistTaps === 'handled' && isRNGHResponderEvent.current;
+      jsResponderContext?.keyboardShouldPersistTaps === 'handled' &&
+      jsResponderContext.isRNGHResponderEvent.current;
 
-    isRNGHResponderEvent.current = false;
+    updateResponderEventValue(jsResponderContext, false);
 
     return shouldHandleRNGHEvent;
-  }, [keyboardShouldPersistTaps]);
+  }, [jsResponderContext]);
 
-  // RNGH tap responders need to let RN components higher in the tree handle
-  // the JS responder event first. If no RN component claims it, this logical
-  // ScrollView child consumes the marked event before ScrollView's own
-  // keyboardShouldPersistTaps='handled' responder logic handles it.
-  // For more information check this comment:
-  // https://github.com/software-mansion/react-native-gesture-handler/pull/4158#issuecomment-4431632964
   return (
-    <JSResponderContext value={contextValue}>
-      <View
-        collapsable={false}
-        onStartShouldSetResponderCapture={resetRNGHResponderEvent}
-        onStartShouldSetResponder={handleStartShouldSetResponder}
-        pointerEvents="box-none"
-        style={styles.logicalResponder}>
-        {children}
-      </View>
-    </JSResponderContext>
+    <View
+      collapsable={false}
+      onStartShouldSetResponderCapture={resetRNGHResponderEvent}
+      onStartShouldSetResponder={handleStartShouldSetResponder}
+      pointerEvents="box-none"
+      style={styles.logicalResponder}>
+      {children}
+    </View>
   );
 };
+
+export function interceptScrollViewChildren(children: React.ReactNode) {
+  return React.Children.map(children, (child) =>
+    child == null || typeof child === 'boolean' ? (
+      child
+    ) : (
+      <LogicalResponderChild>{child}</LogicalResponderChild>
+    )
+  );
+}
 
 const styles = StyleSheet.create({
   logicalResponder: {
     display: 'contents',
   },
 });
-
-export default ScrollViewResponderInterceptor;
