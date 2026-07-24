@@ -128,7 +128,7 @@ test('Trigger Touchable press', () => {
 
   // The press state machine runs on the native side — the JS layer receives
   // the resulting press events directly from the button.
-  fireEvent(screen.getByTestId('touchable'), 'press', {
+  fireEvent(screen.getByTestId('touchable'), 'buttonPress', {
     nativeEvent: {
       pointerInside: true,
       x: 0,

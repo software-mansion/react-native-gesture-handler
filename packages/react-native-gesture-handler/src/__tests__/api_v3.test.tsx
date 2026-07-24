@@ -41,10 +41,10 @@ const buttonEvent = (pointerInside = true) => ({
 // Mirrors the event sequence the native side dispatches for a successful tap.
 const fireNativeTap = (testID: string) => {
   const button = screen.getByTestId(testID);
-  fireEvent(button, 'pressIn', buttonEvent());
-  fireEvent(button, 'pressOut', buttonEvent());
-  fireEvent(button, 'press', buttonEvent());
-  fireEvent(button, 'interactionFinished', buttonEvent());
+  fireEvent(button, 'buttonPressIn', buttonEvent());
+  fireEvent(button, 'buttonPressOut', buttonEvent());
+  fireEvent(button, 'buttonPress', buttonEvent());
+  fireEvent(button, 'buttonInteractionFinished', buttonEvent());
 };
 
 describe('[API v3] Hooks', () => {
@@ -479,12 +479,12 @@ describe('[API v3] Components', () => {
       // Includes a re-entry PressIn (finger dragged out and back in) so the
       // capture-once verdict path is exercised too.
       const button = screen.getByTestId('touchable');
-      fireEvent(button, 'pressIn', buttonEvent());
-      fireEvent(button, 'pressOut', buttonEvent(false));
-      fireEvent(button, 'pressIn', buttonEvent());
-      fireEvent(button, 'pressOut', buttonEvent());
-      fireEvent(button, 'press', buttonEvent());
-      fireEvent(button, 'interactionFinished', buttonEvent());
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent(false));
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent());
+      fireEvent(button, 'buttonPress', buttonEvent());
+      fireEvent(button, 'buttonInteractionFinished', buttonEvent());
 
       // The whole interaction is swallowed - not just onPress, but the press-in/
       // out side effects too (incl. the re-entry as the finger moves).
@@ -564,9 +564,9 @@ describe('[API v3] Components', () => {
 
       // A cancelled interaction ends without a Press event on the native side.
       const button = screen.getByTestId('touchable');
-      fireEvent(button, 'pressIn', buttonEvent());
-      fireEvent(button, 'pressOut', buttonEvent(false));
-      fireEvent(button, 'interactionFinished', buttonEvent(false));
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent(false));
+      fireEvent(button, 'buttonInteractionFinished', buttonEvent(false));
 
       expect(pressFn).not.toHaveBeenCalled();
     });
@@ -596,10 +596,10 @@ describe('[API v3] Components', () => {
       expect(button.props.longPressDuration).toBe(DELAY);
 
       // A long press ends without a Press event on the native side.
-      fireEvent(button, 'pressIn', buttonEvent());
-      fireEvent(button, 'longPress', buttonEvent());
-      fireEvent(button, 'pressOut', buttonEvent());
-      fireEvent(button, 'interactionFinished', buttonEvent());
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonLongPress', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent());
+      fireEvent(button, 'buttonInteractionFinished', buttonEvent());
 
       expect(longPressFn).toHaveBeenCalledTimes(1);
       expect(pressFn).not.toHaveBeenCalled();

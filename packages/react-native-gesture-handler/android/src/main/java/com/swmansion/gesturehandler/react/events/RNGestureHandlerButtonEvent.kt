@@ -73,11 +73,11 @@ class RNGestureHandlerButtonEvent private constructor() : Event<RNGestureHandler
   }
 
   companion object {
-    private const val ON_PRESS_EVENT_NAME = "onPress"
-    private const val ON_PRESS_IN_EVENT_NAME = "onPressIn"
-    private const val ON_PRESS_OUT_EVENT_NAME = "onPressOut"
-    private const val ON_LONG_PRESS_EVENT_NAME = "onLongPress"
-    private const val ON_INTERACTION_FINISHED_EVENT_NAME = "onInteractionFinished"
+    private const val ON_PRESS_EVENT_NAME = "onButtonPress"
+    private const val ON_PRESS_IN_EVENT_NAME = "onButtonPressIn"
+    private const val ON_PRESS_OUT_EVENT_NAME = "onButtonPressOut"
+    private const val ON_LONG_PRESS_EVENT_NAME = "onButtonLongPress"
+    private const val ON_INTERACTION_FINISHED_EVENT_NAME = "onButtonInteractionFinished"
 
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerButtonEvent>(TOUCH_EVENTS_POOL_SIZE)

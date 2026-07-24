@@ -18,11 +18,14 @@ export type ButtonEvent = Readonly<{
 
 // @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it
 interface NativeProps extends ViewProps {
-  onPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
-  onPressIn?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
-  onPressOut?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
-  onLongPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
-  onInteractionFinished?:
+  // The events are namespaced with `Button` because the base view config on iOS
+  // already registers `topPress` as a bubbling event — a direct event with the
+  // same top-level name would fail view config validation in dev.
+  onButtonPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonPressIn?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonPressOut?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonLongPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonInteractionFinished?:
     | CodegenTypes.DirectEventHandler<ButtonEvent>
     | undefined;
 

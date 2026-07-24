@@ -13,11 +13,11 @@ export interface RawButtonProps
       // The native press events are omitted — the deprecated buttons drive
       // their press callbacks from the gesture in JS and redeclare them with
       // their own signatures.
-      | 'onPress'
-      | 'onPressIn'
-      | 'onPressOut'
-      | 'onLongPress'
-      | 'onInteractionFinished'
+      | 'onButtonPress'
+      | 'onButtonPressIn'
+      | 'onButtonPressOut'
+      | 'onButtonLongPress'
+      | 'onButtonInteractionFinished'
       | 'defaultOpacity'
       | 'defaultScale'
       | 'defaultUnderlayOpacity'

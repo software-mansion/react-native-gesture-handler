@@ -190,11 +190,11 @@ export const Touchable = (props: TouchableProps) => {
       underlayColor={underlayColor}
       longPressDuration={resolvedDelayLongPress}
       hasLongPressHandler={onLongPress !== undefined}
-      onPress={internalOnPress}
-      onPressIn={internalOnPressIn}
-      onPressOut={internalOnPressOut}
-      onLongPress={internalOnLongPress}
-      onInteractionFinished={internalOnInteractionFinished}>
+      onButtonPress={internalOnPress}
+      onButtonPressIn={internalOnPressIn}
+      onButtonPressOut={internalOnPressOut}
+      onButtonLongPress={internalOnLongPress}
+      onButtonInteractionFinished={internalOnInteractionFinished}>
       {children}
     </GestureHandlerButton>
   );
