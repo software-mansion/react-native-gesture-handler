@@ -1,7 +1,10 @@
-import { renderHook } from '@testing-library/react-native';
+import { render, renderHook } from '@testing-library/react-native';
+import { View } from 'react-native';
 
+import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { createGestureController } from '../jestUtils';
 import { State } from '../State';
+import { GestureDetector } from '../v3/detectors';
 import type { PanGesture, TapGesture } from '../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
 
@@ -65,9 +68,7 @@ function getControllerState(gesture: object): State {
 describe('createGestureController', () => {
   test('transitions to the expected state after each gesture lifecycle step', () => {
     const { order, callbacks } = mockedContinuousCallbacks();
-    const pan = renderHook(() =>
-      usePanGesture({ disableReanimated: true, ...callbacks })
-    ).result.current;
+    const pan = renderHook(() => usePanGesture(callbacks)).result.current;
     const gesture = createGestureController(pan);
 
     gesture.begin({ translationX: 0 });
@@ -111,9 +112,7 @@ describe('createGestureController', () => {
 
   test('can fail a gesture before activation', () => {
     const { order, callbacks } = mockedDiscreteCallbacks();
-    const tap = renderHook(() =>
-      useTapGesture({ disableReanimated: true, ...callbacks })
-    ).result.current;
+    const tap = renderHook(() => useTapGesture(callbacks)).result.current;
     const gesture = createGestureController(tap);
 
     gesture.begin({ x: 10 });
@@ -133,7 +132,6 @@ describe('createGestureController', () => {
     renderHook(() =>
       useTapGesture({
         testID: 'controlled-tap',
-        disableReanimated: true,
         ...callbacks,
       })
     );
@@ -151,9 +149,34 @@ describe('createGestureController', () => {
     ]);
   });
 
+  test('controls a gesture created inside a component', () => {
+    const onBegin = jest.fn();
+
+    function ComponentWithGesture() {
+      const tap = useTapGesture({
+        testID: 'component-tap',
+        onBegin,
+      });
+
+      return (
+        <GestureHandlerRootView>
+          <GestureDetector gesture={tap}>
+            <View />
+          </GestureDetector>
+        </GestureHandlerRootView>
+      );
+    }
+
+    render(<ComponentWithGesture />);
+
+    const gesture = createGestureController('component-tap');
+    gesture.begin();
+
+    expect(onBegin).toHaveBeenCalledTimes(1);
+  });
+
   test('guards against invalid lifecycle order', () => {
-    const tap = renderHook(() => useTapGesture({ disableReanimated: true }))
-      .result.current;
+    const tap = renderHook(() => useTapGesture()).result.current;
     const gesture = createGestureController(tap);
 
     expect(() => gesture.update()).toThrow(
@@ -176,9 +199,8 @@ describe('createGestureController', () => {
     (terminalAction, terminalState) => {
       const onBegin = jest.fn();
       const onFinalize = jest.fn();
-      const tap = renderHook(() =>
-        useTapGesture({ disableReanimated: true, onBegin, onFinalize })
-      ).result.current;
+      const tap = renderHook(() => useTapGesture({ onBegin, onFinalize }))
+        .result.current;
       const gesture = createGestureController(tap);
 
       gesture.begin();
@@ -200,9 +222,7 @@ describe('createGestureController', () => {
 
   test('rejects raw state-machine fields in event payloads', () => {
     const onBegin = jest.fn();
-    const tap = renderHook(() =>
-      useTapGesture({ disableReanimated: true, onBegin })
-    ).result.current;
+    const tap = renderHook(() => useTapGesture({ onBegin })).result.current;
     const gesture = createGestureController(tap);
 
     expect(() => gesture.begin({ state: State.BEGAN } as never)).toThrow(
@@ -221,7 +241,6 @@ describe('createGestureController', () => {
     const hook = renderHook(
       ({ value }: { value: number }) =>
         usePanGesture({
-          disableReanimated: true,
           onBegin: () => calls.push(`begin-${value}`),
           onActivate: () => calls.push(`activate-${value}`),
         }),
@@ -240,7 +259,7 @@ describe('createGestureController', () => {
     const onBegin = jest.fn();
     const hook = renderHook(
       ({ enabled }: { enabled: boolean }) =>
-        usePanGesture({ disableReanimated: true, enabled, onBegin }),
+        usePanGesture({ enabled, onBegin }),
       { initialProps: { enabled: true } }
     );
     const gesture = createGestureController(hook.result.current);
@@ -262,7 +281,6 @@ describe('createGestureController', () => {
     const { order, callbacks } = mockedContinuousCallbacks();
     const pan = renderHook(() =>
       usePanGesture({
-        disableReanimated: true,
         enabled: false,
         ...callbacks,
       })
