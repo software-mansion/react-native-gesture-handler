@@ -29,7 +29,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 }
 
-@interface RNGestureHandlerButtonComponentView () <RCTRNGestureHandlerButtonViewProtocol>
+@interface RNGestureHandlerButtonComponentView () <RCTRNGestureHandlerButtonViewProtocol, RNGHButtonPressEventDelegate>
 @end
 
 @implementation RNGestureHandlerButtonComponentView {
@@ -63,6 +63,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
     _moduleId = -1;
     _buttonView = [[RNGestureHandlerButton alloc] initWithFrame:self.bounds];
     _buttonView.animationTarget = self;
+    _buttonView.pressEventDelegate = self;
 
     self.contentView = _buttonView;
   }
@@ -253,6 +254,49 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
                                          left:borderMetrics.borderWidths.left];
 }
 
+#pragma mark - RNGHButtonPressEventDelegate
+
+- (void)dispatchButtonEvent:(RNGHButtonEventType)type withExtraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  if (_eventEmitter == nullptr) {
+    return;
+  }
+
+  const auto &eventEmitter = static_cast<const RNGestureHandlerButtonEventEmitter &>(*_eventEmitter);
+  NSDictionary *data = extraData.data;
+
+  // The generated event structs are distinct types with identical fields, hence
+  // the generic lambda.
+  auto fillEvent = [&](auto event) {
+    event.pointerInside = [data[@"pointerInside"] boolValue];
+    event.x = [data[@"x"] doubleValue];
+    event.y = [data[@"y"] doubleValue];
+    event.absoluteX = [data[@"absoluteX"] doubleValue];
+    event.absoluteY = [data[@"absoluteY"] doubleValue];
+    event.numberOfPointers = [data[@"numberOfPointers"] intValue];
+    event.pointerType = [data[@"pointerType"] intValue];
+    return event;
+  };
+
+  switch (type) {
+    case RNGHButtonEventTypePress:
+      eventEmitter.onPress(fillEvent(RNGestureHandlerButtonEventEmitter::OnPress{}));
+      break;
+    case RNGHButtonEventTypePressIn:
+      eventEmitter.onPressIn(fillEvent(RNGestureHandlerButtonEventEmitter::OnPressIn{}));
+      break;
+    case RNGHButtonEventTypePressOut:
+      eventEmitter.onPressOut(fillEvent(RNGestureHandlerButtonEventEmitter::OnPressOut{}));
+      break;
+    case RNGHButtonEventTypeLongPress:
+      eventEmitter.onLongPress(fillEvent(RNGestureHandlerButtonEventEmitter::OnLongPress{}));
+      break;
+    case RNGHButtonEventTypeInteractionFinished:
+      eventEmitter.onInteractionFinished(fillEvent(RNGestureHandlerButtonEventEmitter::OnInteractionFinished{}));
+      break;
+  }
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -371,6 +415,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   _moduleId = newProps.moduleId;
   _buttonView.userEnabled = newProps.enabled;
+  _buttonView.hasLongPressHandler = newProps.hasLongPressHandler;
   _buttonView.tapAnimationInDuration = newProps.tapAnimationInDuration > 0 ? newProps.tapAnimationInDuration : 0;
   _buttonView.tapAnimationOutDuration = newProps.tapAnimationOutDuration > 0 ? newProps.tapAnimationOutDuration : 0;
   _buttonView.longPressDuration = newProps.longPressDuration;
