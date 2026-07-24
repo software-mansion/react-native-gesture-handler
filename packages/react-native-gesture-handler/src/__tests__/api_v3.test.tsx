@@ -175,14 +175,10 @@ describe('[API v3] Components', () => {
       const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
       const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
 
-      expect(scrollViewResponder).toBeDefined();
-      expect(
-        scrollViewResponder?.props.onStartShouldSetResponderCapture()
-      ).toBe(false);
+      // Outside of 'handled' mode the logical responder view is not rendered
+      // at all — the responder event can never be claimed on behalf of RNGH.
+      expect(scrollViewResponder).toBeUndefined();
       expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
-      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
-        false
-      );
     });
 
     test('handles responder event passed through NativeDetector for keyboardShouldPersistTaps handled', async () => {

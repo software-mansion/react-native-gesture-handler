@@ -1,11 +1,12 @@
 import type { PropsWithChildren } from 'react';
-import React, { use, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import type {
   EmitterSubscription,
+  GestureResponderEvent,
   KeyboardEvent,
   ScrollViewProps as RNScrollViewProps,
 } from 'react-native';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { Keyboard, Platform, StyleSheet, TextInput, View } from 'react-native';
 
 type KeyboardShouldPersistTaps = RNScrollViewProps['keyboardShouldPersistTaps'];
 
@@ -95,11 +96,38 @@ type ScrollViewResponderInterceptorProps = PropsWithChildren<{
   keyboardShouldPersistTaps?: RNScrollViewProps['keyboardShouldPersistTaps'];
 }>;
 
+// Mirrors ScrollView's `_keyboardIsDismissible` + `_softKeyboardIsDetached`
+// (react-native/Libraries/Components/ScrollView/ScrollView.js) using only
+// public API.
+function keyboardIsDismissible(): boolean {
+  const currentlyFocusedInput = TextInput.State.currentlyFocusedInput();
+  if (currentlyFocusedInput == null) {
+    return false;
+  }
+
+  const metrics = Keyboard.metrics?.();
+
+  const softKeyboardMayBeOpen =
+    metrics != null ||
+    (Platform.OS === 'android' && Number(Platform.Version) < 30);
+
+  const softKeyboardIsDetached = metrics != null && metrics.height === 0;
+
+  return softKeyboardMayBeOpen && !softKeyboardIsDetached;
+}
+
+// In 'handled' mode, consumes RNGH-marked responder events so handled taps
+// don't dismiss the keyboard (see the PR #4158 discussion), and reimplements
+// RN ScrollView's own 'handled' dismissal, which GH ScrollView turns off via
+// `disableScrollViewPanResponder`. The wrapper sits ABOVE the ScrollView so
+// its children stay untouched for `stickyHeaderIndices` (#4328).
+// https://github.com/software-mansion/react-native-gesture-handler/pull/4158#issuecomment-4431632964
 export const ScrollViewResponderProvider = ({
   children,
   keyboardShouldPersistTaps,
 }: ScrollViewResponderInterceptorProps) => {
   const isRNGHResponderEvent = useRef(false);
+  const claimedForKeyboardDismissal = useRef(false);
   const contextValue = useMemo(
     () => ({ isRNGHResponderEvent, keyboardShouldPersistTaps }),
     [isRNGHResponderEvent, keyboardShouldPersistTaps]
@@ -110,78 +138,80 @@ export const ScrollViewResponderProvider = ({
     return () => unsubscribeFromKeyboardVisibility();
   }, []);
 
-  return (
-    <JSResponderContext value={contextValue}>{children}</JSResponderContext>
-  );
-};
-
-// RNGH tap responders need to let RN components higher in the tree handle the JS
-// responder event first. If no RN component claims it, this logical ScrollView
-// child consumes the marked event before ScrollView's own
-// keyboardShouldPersistTaps='handled' responder logic handles it.
-// For more context: https://github.com/software-mansion/react-native-gesture-handler/pull/4158#issuecomment-4431632964
-const LogicalResponder = ({ children }: PropsWithChildren) => {
-  const jsResponderContext = use(JSResponderContext);
-
   const resetRNGHResponderEvent = useCallback(() => {
-    updateResponderEventValue(jsResponderContext, false);
+    isRNGHResponderEvent.current = false;
     return false;
-  }, [jsResponderContext]);
+  }, []);
 
-  const handleStartShouldSetResponder = useCallback(() => {
-    const shouldHandleRNGHEvent =
-      jsResponderContext?.keyboardShouldPersistTaps === 'handled' &&
-      jsResponderContext.isRNGHResponderEvent.current;
+  const handleStartShouldSetResponder = useCallback(
+    (event: GestureResponderEvent) => {
+      if (isRNGHResponderEvent.current) {
+        // Claim marked events so outer keyboard-dismissing responders can't —
+        // release does nothing and the keyboard stays open.
+        isRNGHResponderEvent.current = false;
+        claimedForKeyboardDismissal.current = false;
+        return true;
+      }
 
-    updateResponderEventValue(jsResponderContext, false);
+      // Unhandled tap — claim to dismiss the keyboard on release, like RN
+      // ScrollView's 'handled' claim would.
+      const shouldClaim =
+        keyboardIsDismissible() &&
+        event.target !== TextInput.State.currentlyFocusedInput();
+      claimedForKeyboardDismissal.current = shouldClaim;
+      return shouldClaim;
+    },
+    []
+  );
 
-    return shouldHandleRNGHEvent;
-  }, [jsResponderContext]);
+  const handleResponderRelease = useCallback((event: GestureResponderEvent) => {
+    if (!claimedForKeyboardDismissal.current) {
+      return;
+    }
+    claimedForKeyboardDismissal.current = false;
+
+    const currentlyFocusedInput = TextInput.State.currentlyFocusedInput();
+    if (
+      currentlyFocusedInput != null &&
+      keyboardIsDismissible() &&
+      event.target !== currentlyFocusedInput
+    ) {
+      TextInput.State.blurTextInput(currentlyFocusedInput);
+    }
+  }, []);
+
+  // A native scroll taking over terminates the JS responder — mirror RN's
+  // `_observedScrollSinceBecomingResponder` guard by skipping the dismissal.
+  const handleResponderTerminate = useCallback(() => {
+    claimedForKeyboardDismissal.current = false;
+  }, []);
+
+  const isHandledMode = keyboardShouldPersistTaps === 'handled';
 
   return (
-    <View
-      collapsable={false}
-      onStartShouldSetResponderCapture={resetRNGHResponderEvent}
-      onStartShouldSetResponder={handleStartShouldSetResponder}
-      pointerEvents="box-none"
-      style={styles.logicalResponder}>
-      {children}
-    </View>
+    <JSResponderContext value={contextValue}>
+      <View
+        collapsable={false}
+        pointerEvents="box-none"
+        style={styles.logicalResponder}
+        onStartShouldSetResponderCapture={
+          isHandledMode ? resetRNGHResponderEvent : undefined
+        }
+        onStartShouldSetResponder={
+          isHandledMode ? handleStartShouldSetResponder : undefined
+        }
+        onResponderRelease={isHandledMode ? handleResponderRelease : undefined}
+        onResponderTerminate={
+          isHandledMode ? handleResponderTerminate : undefined
+        }>
+        {children}
+      </View>
+    </JSResponderContext>
   );
 };
-
-// Wraps the whole ScrollView content in a single logical responder
-const ScrollViewResponderInterceptor = ({
-  children,
-  keyboardShouldPersistTaps,
-}: ScrollViewResponderInterceptorProps) => {
-  return (
-    <ScrollViewResponderProvider
-      keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
-      <LogicalResponder>{children}</LogicalResponder>
-    </ScrollViewResponderProvider>
-  );
-};
-
-// Wraps each ScrollView child in its own logical responder, keeping the child
-// count intact. Requires a `ScrollViewResponderProvider` above the ScrollView
-export function interceptScrollViewChildren(children: React.ReactNode) {
-  // Null and boolean children must be passed through untouched — ScrollView
-  // drops them in its own `React.Children.toArray` call, so wrapping them
-  // would shift the indices that `stickyHeaderIndices` refers to.
-  return React.Children.map(children, (child) =>
-    child == null || typeof child === 'boolean' ? (
-      child
-    ) : (
-      <LogicalResponder>{child}</LogicalResponder>
-    )
-  );
-}
 
 const styles = StyleSheet.create({
   logicalResponder: {
     display: 'contents',
   },
 });
-
-export default ScrollViewResponderInterceptor;
