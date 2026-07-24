@@ -2,7 +2,9 @@ import * as React from 'react';
 import type { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 import { View } from 'react-native';
 
+import type { ButtonEvent } from '../specs/RNGestureHandlerButtonNativeComponent';
 import { NativeGestureRole } from '../web/interfaces';
+import { ButtonEventName } from '../web/tools/ButtonEvents';
 import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
 
 const prefersReducedMotion = (): boolean =>
@@ -28,6 +30,21 @@ type ButtonProps = ViewProps & {
   defaultScale?: number;
   defaultUnderlayOpacity?: number;
   underlayColor?: ColorValue;
+  onButtonPress?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+  onButtonPressIn?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+  onButtonPressOut?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+  onButtonLongPress?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+  onButtonInteractionFinished?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
 };
 
 export const ButtonComponent = ({
@@ -49,6 +66,11 @@ export const ButtonComponent = ({
   defaultScale = 1,
   defaultUnderlayOpacity = 0,
   underlayColor,
+  onButtonPress,
+  onButtonPressIn,
+  onButtonPressOut,
+  onButtonLongPress,
+  onButtonInteractionFinished,
   style,
   children,
   ...rest
@@ -119,73 +141,119 @@ export const ButtonComponent = ({
     };
   }, []);
 
-  const pressIn = React.useCallback(
-    (event: NativeSyntheticEvent<unknown>) => {
-      if (!enabled || !gestureEnabledRef.current) {
-        return;
-      }
+  const pressIn = React.useCallback(() => {
+    if (!enabled || !gestureEnabledRef.current) {
+      return;
+    }
 
-      event.stopPropagation();
-      if (pressOutTimer.current != null) {
-        clearTimeout(pressOutTimer.current);
-        pressOutTimer.current = null;
-      }
-      pressInTimestamp.current = performance.now();
-      setCurrentDuration(tapAnimationInDuration);
-      setPressed(true);
-    },
-    [enabled, tapAnimationInDuration]
-  );
+    if (pressOutTimer.current != null) {
+      clearTimeout(pressOutTimer.current);
+      pressOutTimer.current = null;
+    }
+    pressInTimestamp.current = performance.now();
+    setCurrentDuration(tapAnimationInDuration);
+    setPressed(true);
+  }, [enabled, tapAnimationInDuration]);
 
-  const pressOut = React.useCallback(
-    (event: NativeSyntheticEvent<unknown>) => {
-      // Only release if a press-in was actually recorded — guards against
-      // stray pointer events and lets us complete the release cycle even if
-      // `enabled` flipped to false between press-in and press-out.
-      if (pressInTimestamp.current === 0 || !gestureEnabledRef.current) {
-        return;
-      }
+  const pressOut = React.useCallback(() => {
+    // Only release if a press-in was actually recorded — guards against
+    // stray pointer events and lets us complete the release cycle even if
+    // `enabled` flipped to false between press-in and press-out.
+    if (pressInTimestamp.current === 0 || !gestureEnabledRef.current) {
+      return;
+    }
 
-      event.stopPropagation();
-      if (pressOutTimer.current != null) {
-        clearTimeout(pressOutTimer.current);
-        pressOutTimer.current = null;
-      }
-      const elapsed = performance.now() - pressInTimestamp.current;
-      pressInTimestamp.current = 0;
+    if (pressOutTimer.current != null) {
+      clearTimeout(pressOutTimer.current);
+      pressOutTimer.current = null;
+    }
+    const elapsed = performance.now() - pressInTimestamp.current;
+    pressInTimestamp.current = 0;
 
-      if (longPressDuration >= 0 && elapsed >= longPressDuration) {
-        // Long-press release — use the configured long-press out duration.
-        setCurrentDuration(longPressAnimationOutDuration);
-        setPressed(false);
-      } else if (elapsed >= tapAnimationInDuration) {
-        // Press-in animation fully finished - release with the configured out duration.
-        setCurrentDuration(tapAnimationOutDuration);
-        setPressed(false);
-        // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
-      } else if (elapsed * 2 >= tapAnimationOutDuration) {
-        setCurrentDuration(elapsed);
-        setPressed(false);
-      } else {
-        // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time.
-        const remaining = tapAnimationInDuration - elapsed;
-        pressOutTimer.current = setTimeout(
-          () => {
-            pressOutTimer.current = null;
-            setCurrentDuration(tapAnimationOutDuration);
-            setPressed(false);
-          },
-          prefersReducedMotion() ? 0 : remaining
-        );
-      }
-    },
-    [
-      longPressDuration,
-      longPressAnimationOutDuration,
-      tapAnimationInDuration,
-      tapAnimationOutDuration,
-    ]
-  );
+    if (longPressDuration >= 0 && elapsed >= longPressDuration) {
+      // Long-press release — use the configured long-press out duration.
+      setCurrentDuration(longPressAnimationOutDuration);
+      setPressed(false);
+    } else if (elapsed >= tapAnimationInDuration) {
+      // Press-in animation fully finished - release with the configured out duration.
+      setCurrentDuration(tapAnimationOutDuration);
+      setPressed(false);
+      // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
+    } else if (elapsed * 2 >= tapAnimationOutDuration) {
+      setCurrentDuration(elapsed);
+      setPressed(false);
+    } else {
+      // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time.
+      const remaining = tapAnimationInDuration - elapsed;
+      pressOutTimer.current = setTimeout(
+        () => {
+          pressOutTimer.current = null;
+          setCurrentDuration(tapAnimationOutDuration);
+          setPressed(false);
+        },
+        prefersReducedMotion() ? 0 : remaining
+      );
+    }
+  }, [
+    longPressDuration,
+    longPressAnimationOutDuration,
+    tapAnimationInDuration,
+    tapAnimationOutDuration,
+  ]);
+
+  React.useEffect(() => {
+    const node = viewRef.current;
+    const wrapEvent = (event: Event): NativeSyntheticEvent<ButtonEvent> =>
+      ({
+        nativeEvent: (event as CustomEvent<ButtonEvent>).detail,
+      }) as NativeSyntheticEvent<ButtonEvent>;
+
+    const handlePress = (event: Event) => {
+      onButtonPress?.(wrapEvent(event));
+    };
+    const handlePressIn = (event: Event) => {
+      pressIn();
+      onButtonPressIn?.(wrapEvent(event));
+    };
+    const handlePressOut = (event: Event) => {
+      pressOut();
+      onButtonPressOut?.(wrapEvent(event));
+    };
+    const handleLongPress = (event: Event) => {
+      onButtonLongPress?.(wrapEvent(event));
+    };
+    const handleInteractionFinished = (event: Event) => {
+      onButtonInteractionFinished?.(wrapEvent(event));
+    };
+
+    node?.addEventListener(ButtonEventName.Press, handlePress);
+    node?.addEventListener(ButtonEventName.PressIn, handlePressIn);
+    node?.addEventListener(ButtonEventName.PressOut, handlePressOut);
+    node?.addEventListener(ButtonEventName.LongPress, handleLongPress);
+    node?.addEventListener(
+      ButtonEventName.InteractionFinished,
+      handleInteractionFinished
+    );
+
+    return () => {
+      node?.removeEventListener(ButtonEventName.Press, handlePress);
+      node?.removeEventListener(ButtonEventName.PressIn, handlePressIn);
+      node?.removeEventListener(ButtonEventName.PressOut, handlePressOut);
+      node?.removeEventListener(ButtonEventName.LongPress, handleLongPress);
+      node?.removeEventListener(
+        ButtonEventName.InteractionFinished,
+        handleInteractionFinished
+      );
+    };
+  }, [
+    onButtonInteractionFinished,
+    onButtonLongPress,
+    onButtonPress,
+    onButtonPressIn,
+    onButtonPressOut,
+    pressIn,
+    pressOut,
+  ]);
 
   const handlePointerEnter = React.useCallback(
     (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
@@ -203,7 +271,6 @@ export const ButtonComponent = ({
 
   const handlePointerLeave = React.useCallback(
     (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
-      pressOut(event);
       if (event.nativeEvent.pointerType === 'touch') {
         return;
       }
@@ -212,7 +279,7 @@ export const ButtonComponent = ({
       }
       setHovered(false);
     },
-    [pressOut, pressed, hoverAnimationOutDuration]
+    [pressed, hoverAnimationOutDuration]
   );
 
   // Mask hover at render rather than clearing the state. Avoids a state
@@ -268,9 +335,6 @@ export const ButtonComponent = ({
         },
       ]}
       onPointerEnter={handlePointerEnter}
-      onPointerDown={pressIn}
-      onPointerUp={pressOut}
-      onPointerCancel={pressOut}
       onPointerLeave={handlePointerLeave}>
       {hasUnderlay && (
         <View
