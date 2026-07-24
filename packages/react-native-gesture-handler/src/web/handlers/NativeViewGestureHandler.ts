@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { type ActionType } from '../../ActionType';
+import { ActionType } from '../../ActionType';
 import type { ButtonEvent } from '../../specs/RNGestureHandlerButtonNativeComponent';
 import { State } from '../../State';
 import type { NativeHandlerData } from '../../v3/hooks/gestures/native/NativeTypes';
@@ -17,8 +17,12 @@ import type {
   PropsRef,
 } from '../interfaces';
 import { NativeGestureRole } from '../interfaces';
+import {
+  ButtonEventName,
+  type ButtonEventTypeName,
+  dispatchButtonEvent,
+} from '../tools/ButtonEvents';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { ButtonEventName, dispatchButtonEvent } from '../tools/ButtonEvents';
 import {
   dispatchGestureLifecycleEvent,
   GestureLifecycleEvent,
@@ -179,33 +183,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected override onPointerLeave(event: AdaptedEvent): void {
-    this.tracker.track(event);
-
-    if (
-      this.role === NativeGestureRole.Button &&
-      !this.shouldCancelWhenOutside &&
-      this.lastEventWasInside
-    ) {
-      this.dispatchButtonEvent(ButtonEventName.PressOut);
-      this.clearLongPressTimer();
-    }
-
+  protected override onPointerLeave(): void {
     if (this.state === State.BEGAN || this.state === State.ACTIVE) {
-      super.onPointerLeave(event);
-    }
-  }
-
-  protected override onPointerEnter(event: AdaptedEvent): void {
-    this.tracker.track(event);
-    super.onPointerEnter(event);
-
-    if (
-      this.role === NativeGestureRole.Button &&
-      (this.state === State.BEGAN || this.state === State.ACTIVE) &&
-      !this.lastEventWasInside
-    ) {
-      this.dispatchButtonEvent(ButtonEventName.PressIn);
+      this.cancel();
     }
   }
 
@@ -296,6 +276,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
     return this.role === NativeGestureRole.Button;
   }
 
+  private isManagedButton(): boolean {
+    return this.isButton() && this.actionType === ActionType.NONE;
+  }
+
   public override shouldBeginWithRecordedHandlers(
     recorded: IGestureHandler[]
   ): boolean {
@@ -322,7 +306,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected override onStateChange(newState: State): void {
-    if (this.role !== NativeGestureRole.Button) {
+    if (!this.isManagedButton()) {
       return;
     }
 
@@ -367,7 +351,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.longPressDetected = false;
   }
 
-  private dispatchButtonEvent(name: ButtonEventName): void {
+  private dispatchButtonEvent(name: ButtonEventTypeName): void {
     if (name === ButtonEventName.PressIn) {
       this.lastEventWasInside = true;
     } else if (name === ButtonEventName.PressOut) {
