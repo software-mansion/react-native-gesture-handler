@@ -35,6 +35,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 @implementation RNGestureHandlerButtonComponentView {
   RNGestureHandlerButton *_buttonView;
   BOOL _needsAnimationStateReset;
+  int _moduleId;
 }
 
 #if TARGET_OS_OSX
@@ -59,6 +60,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const RNGestureHandlerButtonProps>();
     _props = defaultProps;
+    _moduleId = -1;
     _buttonView = [[RNGestureHandlerButton alloc] initWithFrame:self.bounds];
     _buttonView.animationTarget = self;
 
@@ -367,6 +369,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
         oldButtonProps.defaultUnderlayOpacity != newProps.defaultUnderlayOpacity;
   }
 
+  _moduleId = newProps.moduleId;
   _buttonView.userEnabled = newProps.enabled;
   _buttonView.tapAnimationInDuration = newProps.tapAnimationInDuration > 0 ? newProps.tapAnimationInDuration : 0;
   _buttonView.tapAnimationOutDuration = newProps.tapAnimationOutDuration > 0 ? newProps.tapAnimationOutDuration : 0;

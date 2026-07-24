@@ -179,6 +179,7 @@ export const Touchable = (props: TouchableProps) => {
       {...resolvedDurations}
       ref={ref ?? null}
       enabled={!disabled}
+      moduleId={globalThis._RNGH_MODULE_ID}
       handlerTag={handlerTag}
       cancelOnLeave={cancelOnLeave}
       gestureTestID={props.testID}
