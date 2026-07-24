@@ -14,7 +14,7 @@ const circleRadius = 30;
 
 class NestedFling extends Component {
   private touchX: Animated.Value;
-  private translateX: Animated.AnimatedAddition<number>;
+  private translateX: Animated.AnimatedAddition;
   private translateY: Animated.Value;
   constructor(props: Record<string, unknown>) {
     super(props);

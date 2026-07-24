@@ -23,7 +23,7 @@ export class PinchableBox extends React.Component {
   private pinchRef = React.createRef<PinchGestureHandler>();
   private baseScale: Animated.Value;
   private pinchScale: Animated.Value;
-  private scale: Animated.AnimatedMultiplication<number>;
+  private scale: Animated.AnimatedMultiplication;
   private lastScale: number;
   private onPinchGestureEvent: (event: PinchGestureHandlerGestureEvent) => void;
   private rotate: Animated.Value;
@@ -33,7 +33,7 @@ export class PinchableBox extends React.Component {
     event: RotationGestureHandlerGestureEvent
   ) => void;
   private tilt: Animated.Value;
-  private tiltStr: Animated.AnimatedMultiplication<number>;
+  private tiltStr: Animated.AnimatedMultiplication;
   private lastTilt: number;
   private onTiltGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: Record<string, unknown>) {
