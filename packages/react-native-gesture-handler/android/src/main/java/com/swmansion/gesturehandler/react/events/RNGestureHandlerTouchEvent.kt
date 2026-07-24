@@ -69,13 +69,8 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
       putInt("eventType", handler.touchEventType)
       putInt("pointerType", handler.pointerType)
 
-      handler.consumeChangedTouchesPayload()?.let {
-        putArray("changedTouches", it)
-      }
-
-      handler.consumeAllTouchesPayload()?.let {
-        putArray("allTouches", it)
-      }
+      putArray("changedTouches", handler.consumeChangedTouchesPayload() ?: Arguments.createArray())
+      putArray("allTouches", handler.consumeAllTouchesPayload() ?: Arguments.createArray())
 
       if (handler.isAwaiting && handler.state == GestureHandler.STATE_ACTIVE) {
         putInt("state", GestureHandler.STATE_BEGAN)
