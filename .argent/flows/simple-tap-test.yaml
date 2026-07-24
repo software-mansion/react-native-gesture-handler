@@ -1,0 +1,33 @@
+steps:
+  - echo: Launching Expo Example
+  - launch: com.example.ExpoExample
+  - await: { visible: { text: "Empty Example" }, timeout: 15000 }
+  - echo: "On the Home list, search for tap example"
+  - type: { text: "tap", into: { id: "search-examples" } }
+  - echo: "Tap the example to open it"
+  - tap: "Basic Tap"
+  - echo: "Clear console"
+  - await: { visible: "open-console-button" }
+  - tap: "open-console-button"
+  - await: { visible: "clear-console-button" }
+  - tap: "clear-console-button"
+  - tap: "close-console-button"
+  - wait: 1000 # TODO: investigate why this is needed (closing modal intercepts tap on the box)
+  - echo: "Tap the box and check if tap count is updated"
+  - await: { visible: "Tap count: 0" }
+  - assert: { visible: "tap-box" }
+  - tap: "tap-box"
+  - assert: { visible: "Tap count: 1" }
+  - echo: "Check if console logs are printed in order"
+  - tap: "open-console-button"
+  - await: { visible: "close-console-button" }
+  - assert: { visible: "1. onBegin" }
+  - assert: { visible: "2. onActivate" }
+  - assert: { visible: "3. onDeactivate" }
+  - assert: { visible: "4. onFinalize" }
+  - tap: "close-console-button"
+  - wait: 1000 # TODO: investigate why this is needed (closing modal intercepts tap on the box)
+  - await: { visible: "Tap count: 1" }
+  - echo: "Tap the box again and check if tap count is updated"
+  - tap: "tap-box"
+  - assert: { visible: "Tap count: 2" }
