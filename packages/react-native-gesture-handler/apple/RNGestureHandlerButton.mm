@@ -7,6 +7,7 @@
 //
 
 #import "RNGestureHandlerButton.h"
+#import "Handlers/RNNativeViewHandler.h"
 
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
@@ -17,6 +18,9 @@
 
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
+
+@interface RNGestureHandlerButton () <RNGHNativeViewHandlerStateObserver>
+@end
 
 /**
  * Gesture Handler Button components overrides standard mechanism used by RN
@@ -50,6 +54,14 @@
   BOOL _isHovered;
   BOOL _isPressed;
   dispatch_block_t _pendingHoverOutBlock;
+
+  // Press event state machine, driven by the state of the managed handler.
+  // Cannot rely on the pointerInside flag alone because it may change multiple
+  // times between the dispatched events.
+  BOOL _lastEventWasInside;
+  BOOL _longPressDetected;
+  dispatch_block_t _pendingLongPressBlock;
+  RNGestureHandlerEventExtraData *_lastObservedExtraData;
 #if TARGET_OS_OSX
   NSTrackingArea *_hoverTrackingArea;
 #endif
@@ -87,6 +99,12 @@
   _isHovered = NO;
   _isPressed = NO;
   _pendingHoverOutBlock = nil;
+  _hasLongPressHandler = NO;
+  _managedHandlerTag = nil;
+  _lastEventWasInside = NO;
+  _longPressDetected = NO;
+  _pendingLongPressBlock = nil;
+  _lastObservedExtraData = nil;
 #if TARGET_OS_OSX
   self.wantsLayer = YES; // Crucial for macOS layer-backing
 #endif
@@ -148,6 +166,10 @@
   // when defaults are unchanged between mounts.
   [self cancelPendingPressOutAnimation];
   [self cancelPendingHoverOut];
+  [self cancelPendingLongPress];
+  _lastEventWasInside = NO;
+  _longPressDetected = NO;
+  _lastObservedExtraData = nil;
 
   RNGHUIView *target = self.animationTarget ?: self;
   target.layer.transform = CATransform3DIdentity;
@@ -172,12 +194,16 @@
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
     [self cancelPendingHoverOut];
+    [self cancelPendingLongPress];
     [self applyStartAnimationState];
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
     _pressInTimestamp = 0;
     _isHovered = NO;
     _isPressed = NO;
+    _lastEventWasInside = NO;
+    _longPressDetected = NO;
+    _lastObservedExtraData = nil;
   }
 }
 #else
@@ -187,12 +213,16 @@
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
     [self cancelPendingHoverOut];
+    [self cancelPendingLongPress];
     [self applyStartAnimationState];
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
     _pressInTimestamp = 0;
     _isHovered = NO;
     _isPressed = NO;
+    _lastEventWasInside = NO;
+    _longPressDetected = NO;
+    _lastObservedExtraData = nil;
   }
 }
 #endif
@@ -563,6 +593,110 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         dispatch_time(DISPATCH_TIME_NOW, (int64_t)(scheduledDelay * NSEC_PER_MSEC)),
         dispatch_get_main_queue(),
         _pendingPressOutBlock);
+  }
+}
+
+#pragma mark - Press event state machine
+
+- (void)onHandlerUpdate:(RNGestureHandlerEventExtraData *)extraData
+{
+  if (_managedHandlerTag == nil) {
+    return;
+  }
+
+  _lastObservedExtraData = extraData;
+  BOOL pointerInside = [extraData.data[@"pointerInside"] boolValue];
+
+  if (pointerInside == _lastEventWasInside) {
+    return;
+  }
+
+  if (pointerInside) {
+    [self dispatchButtonEvent:RNGHButtonEventTypePressIn withExtraData:extraData];
+  } else {
+    [self dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:extraData];
+    [self cancelPendingLongPress];
+  }
+}
+
+- (void)onHandlerStateChange:(RNGestureHandlerState)newState
+                   prevState:(RNGestureHandlerState)prevState
+                   extraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  if (_managedHandlerTag == nil) {
+    return;
+  }
+
+  _lastObservedExtraData = extraData;
+
+  // Capture a local copy, since dispatching the events changes the flag.
+  // Specifically the PressOut -> Press scenario on the END state.
+  BOOL localLastEventWasInside = _lastEventWasInside;
+  BOOL isFinished = newState == RNGestureHandlerStateEnd || newState == RNGestureHandlerStateFailed ||
+      newState == RNGestureHandlerStateCancelled;
+
+  if (newState == RNGestureHandlerStateBegan) {
+    [self dispatchButtonEvent:RNGHButtonEventTypePressIn withExtraData:extraData];
+    _longPressDetected = NO;
+
+    // Duration 0 fires the long press immediately; -1 (unset) disables it.
+    if (_hasLongPressHandler && _longPressDuration >= 0) {
+      [self scheduleLongPress];
+    }
+  }
+
+  if (isFinished) {
+    if (localLastEventWasInside) {
+      [self dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:extraData];
+    }
+
+    [self cancelPendingLongPress];
+  }
+
+  if (newState == RNGestureHandlerStateEnd && !_longPressDetected && localLastEventWasInside) {
+    [self dispatchButtonEvent:RNGHButtonEventTypePress withExtraData:extraData];
+  }
+
+  if (isFinished) {
+    [self dispatchButtonEvent:RNGHButtonEventTypeInteractionFinished withExtraData:extraData];
+  }
+}
+
+- (void)dispatchButtonEvent:(RNGHButtonEventType)type withExtraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  [self.pressEventDelegate dispatchButtonEvent:type withExtraData:extraData];
+
+  if (type == RNGHButtonEventTypePressIn) {
+    _lastEventWasInside = YES;
+  } else if (type == RNGHButtonEventTypePressOut) {
+    _lastEventWasInside = NO;
+  }
+}
+
+- (void)scheduleLongPress
+{
+  [self cancelPendingLongPress];
+
+  __weak auto weakSelf = self;
+  _pendingLongPressBlock = dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
+    __strong auto strongSelf = weakSelf;
+    if (strongSelf) {
+      strongSelf->_pendingLongPressBlock = nil;
+      strongSelf->_longPressDetected = YES;
+      [strongSelf dispatchButtonEvent:RNGHButtonEventTypeLongPress withExtraData:strongSelf->_lastObservedExtraData];
+    }
+  });
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_longPressDuration * NSEC_PER_MSEC)),
+      dispatch_get_main_queue(),
+      _pendingLongPressBlock);
+}
+
+- (void)cancelPendingLongPress
+{
+  if (_pendingLongPressBlock) {
+    dispatch_block_cancel(_pendingLongPressBlock);
+    _pendingLongPressBlock = nil;
   }
 }
 

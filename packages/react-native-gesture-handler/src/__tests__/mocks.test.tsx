@@ -1,9 +1,8 @@
-import { render } from '@testing-library/react-native';
-import React, { act } from 'react';
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import React from 'react';
 import { Text } from 'react-native';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
-import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import {
   LegacyBaseButton,
   LegacyBorderlessButton,
@@ -25,7 +24,6 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from '../mocks/Touchables';
-import { State } from '../State';
 import { Touchable } from '../v3/components';
 
 describe('Jest mocks – legacy components render without crashing', () => {
@@ -128,14 +126,18 @@ test('Trigger Touchable press', () => {
     </GestureHandlerRootView>
   );
 
-  const gesture = getByGestureTestId('touchable');
-
-  act(() => {
-    fireGestureHandler(gesture, [
-      { oldState: State.UNDETERMINED, state: State.BEGAN },
-      { oldState: State.BEGAN, state: State.ACTIVE },
-      { oldState: State.ACTIVE, state: State.END },
-    ]);
+  // The press state machine runs on the native side — the JS layer receives
+  // the resulting press events directly from the button.
+  fireEvent(screen.getByTestId('touchable'), 'buttonPress', {
+    nativeEvent: {
+      pointerInside: true,
+      x: 0,
+      y: 0,
+      absoluteX: 0,
+      absoluteY: 0,
+      numberOfPointers: 1,
+      pointerType: 0,
+    },
   });
 
   expect(onPress).toHaveBeenCalled();

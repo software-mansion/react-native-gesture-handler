@@ -1,4 +1,9 @@
-import { render, renderHook } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react-native';
 import { act } from 'react';
 import { Keyboard, View } from 'react-native';
 
@@ -13,12 +18,34 @@ import {
 import { GestureDetector } from '../v3/detectors';
 import { useSimultaneousGestures } from '../v3/hooks';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
-import type { SingleGesture } from '../v3/types';
 
 const flushImmediate = () =>
   new Promise((resolve) => {
     setImmediate(() => resolve(undefined));
   });
+
+// The Touchable press state machine runs on the native side — the JS layer
+// receives the resulting press events directly from the button.
+const buttonEvent = (pointerInside = true) => ({
+  nativeEvent: {
+    pointerInside,
+    x: 0,
+    y: 0,
+    absoluteX: 0,
+    absoluteY: 0,
+    numberOfPointers: 1,
+    pointerType: 0,
+  },
+});
+
+// Mirrors the event sequence the native side dispatches for a successful tap.
+const fireNativeTap = (testID: string) => {
+  const button = screen.getByTestId(testID);
+  fireEvent(button, 'buttonPressIn', buttonEvent());
+  fireEvent(button, 'buttonPressOut', buttonEvent());
+  fireEvent(button, 'buttonPress', buttonEvent());
+  fireEvent(button, 'buttonInteractionFinished', buttonEvent());
+};
 
 describe('[API v3] Hooks', () => {
   test('Pan gesture', () => {
@@ -384,15 +411,6 @@ describe('[API v3] Components', () => {
       keyboardShouldPersistTaps,
     });
 
-    const fireTap = (testID: string) =>
-      act(() => {
-        fireGestureHandler(getByGestureTestId(testID), [
-          { state: State.BEGAN },
-          { state: State.ACTIVE },
-          { state: State.END },
-        ]);
-      });
-
     test('isKeyboardDismissingTap is true only in never mode while the keyboard is visible', async () => {
       const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
 
@@ -458,18 +476,18 @@ describe('[API v3] Components', () => {
       await act(flushImmediate);
       showKeyboard(addListenerSpy);
 
-      // Includes a move (second ACTIVE) so the onUpdate path is exercised too.
-      act(() => {
-        fireGestureHandler(getByGestureTestId('touchable'), [
-          { state: State.BEGAN },
-          { state: State.ACTIVE },
-          { state: State.ACTIVE },
-          { state: State.END },
-        ]);
-      });
+      // Includes a re-entry PressIn (finger dragged out and back in) so the
+      // capture-once verdict path is exercised too.
+      const button = screen.getByTestId('touchable');
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent(false));
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent());
+      fireEvent(button, 'buttonPress', buttonEvent());
+      fireEvent(button, 'buttonInteractionFinished', buttonEvent());
 
       // The whole interaction is swallowed - not just onPress, but the press-in/
-      // out side effects too (incl. via onUpdate as the finger moves).
+      // out side effects too (incl. the re-entry as the finger moves).
       expect(onPress).not.toHaveBeenCalled();
       expect(onPressIn).not.toHaveBeenCalled();
       expect(onPressOut).not.toHaveBeenCalled();
@@ -488,7 +506,7 @@ describe('[API v3] Components', () => {
       );
       await act(flushImmediate);
 
-      fireTap('touchable');
+      fireNativeTap('touchable');
 
       expect(onPress).toHaveBeenCalledTimes(1);
     });
@@ -509,7 +527,7 @@ describe('[API v3] Components', () => {
         await act(flushImmediate);
         showKeyboard(addListenerSpy);
 
-        fireTap('touchable');
+        fireNativeTap('touchable');
 
         expect(onPress).toHaveBeenCalledTimes(1);
         addListenerSpy.mockRestore();
@@ -528,15 +546,7 @@ describe('[API v3] Components', () => {
       );
 
       render(<Example />);
-      const gesture = getByGestureTestId('touchable');
-
-      act(() => {
-        fireGestureHandler(gesture, [
-          { oldState: State.UNDETERMINED, state: State.BEGAN },
-          { oldState: State.BEGAN, state: State.ACTIVE },
-          { oldState: State.ACTIVE, state: State.END },
-        ]);
-      });
+      fireNativeTap('touchable');
 
       expect(pressFn).toHaveBeenCalledTimes(1);
     });
@@ -551,22 +561,17 @@ describe('[API v3] Components', () => {
       );
 
       render(<Example />);
-      const gesture = getByGestureTestId('touchable');
 
-      act(() => {
-        fireGestureHandler(gesture, [
-          { oldState: State.UNDETERMINED, state: State.BEGAN },
-          { oldState: State.BEGAN, state: State.ACTIVE },
-          { oldState: State.ACTIVE, state: State.FAILED },
-        ]);
-      });
+      // A cancelled interaction ends without a Press event on the native side.
+      const button = screen.getByTestId('touchable');
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent(false));
+      fireEvent(button, 'buttonInteractionFinished', buttonEvent(false));
 
       expect(pressFn).not.toHaveBeenCalled();
     });
 
-    test('calls onLongPress after delayLongPress and suppresses onPress', () => {
-      jest.useFakeTimers();
-
+    test('forwards onLongPress and requests the native long-press timer', () => {
       const pressFn = jest.fn();
       const longPressFn = jest.fn();
       const DELAY = 800;
@@ -584,59 +589,20 @@ describe('[API v3] Components', () => {
 
       render(<Example />);
 
-      const gesture = getByGestureTestId('touchable') as SingleGesture<
-        any,
-        any,
-        any
-      >;
-      const { jsEventHandler } = gesture.detectorCallbacks;
+      // The long-press timer runs on the native side; passing a callback flips
+      // the props that arm it.
+      const button = screen.getByTestId('touchable');
+      expect(button.props.hasLongPressHandler).toBe(true);
+      expect(button.props.longPressDuration).toBe(DELAY);
 
-      // Fire BEGAN — long press timer starts here
-      act(() => {
-        jsEventHandler?.({
-          oldState: State.UNDETERMINED,
-          state: State.BEGAN,
-          handlerTag: gesture.handlerTag,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          handlerData: { pointerInside: true, numberOfPointers: 1 } as any,
-        });
-      });
-
-      // Fire ACTIVE
-      act(() => {
-        jsEventHandler?.({
-          oldState: State.BEGAN,
-          state: State.ACTIVE,
-          handlerTag: gesture.handlerTag,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          handlerData: { pointerInside: true, numberOfPointers: 1 } as any,
-        });
-      });
-
-      expect(longPressFn).not.toHaveBeenCalled();
-
-      // Advance fake timers past delayLongPress
-      act(() => {
-        jest.advanceTimersByTime(DELAY);
-      });
+      // A long press ends without a Press event on the native side.
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonLongPress', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent());
+      fireEvent(button, 'buttonInteractionFinished', buttonEvent());
 
       expect(longPressFn).toHaveBeenCalledTimes(1);
       expect(pressFn).not.toHaveBeenCalled();
-
-      // Fire END — onPress should be suppressed because long press was detected
-      act(() => {
-        jsEventHandler?.({
-          oldState: State.ACTIVE,
-          state: State.END,
-          handlerTag: gesture.handlerTag,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          handlerData: { pointerInside: true, numberOfPointers: 1 } as any,
-        });
-      });
-
-      expect(pressFn).not.toHaveBeenCalled();
-
-      jest.useRealTimers();
     });
   });
 });

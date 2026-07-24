@@ -116,6 +116,11 @@
   BOOL _yieldsToContinuousGestures;
   BOOL _delaysChildPressedState;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
+
+  // For UIControl-based views the recognizer is never attached, so
+  // `recognizer.view` cannot be used to retrieve the bound view.
+  __weak RNGHUIView *_boundView;
+  __weak id<RNGHNativeViewHandlerStateObserver> _stateObserver;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -146,9 +151,54 @@
 #endif
 }
 
+- (void)bindToView:(RNGHUIView *)view
+{
+  _boundView = view;
+
+  if ([view conformsToProtocol:@protocol(RNGHNativeViewHandlerStateObserver)]) {
+    _stateObserver = (id<RNGHNativeViewHandlerStateObserver>)view;
+  }
+
+#if !TARGET_OS_OSX
+  [self bindToUIKitView:view];
+#else
+  [super bindToView:view];
+#endif
+}
+
+- (void)unbindFromView
+{
+#if !TARGET_OS_OSX
+  if ([_boundView isKindOfClass:[UIControl class]]) {
+    [(UIControl *)_boundView removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
+  }
+
+  // Restore the React Native's overriden behavor for not delaying content touches
+  UIScrollView *scrollView = [self retrieveScrollView:_boundView];
+  scrollView.delaysContentTouches = NO;
+#endif
+
+  _boundView = nil;
+  _stateObserver = nil;
+
+  [super unbindFromView];
+}
+
+- (void)dispatchStateChange:(RNGestureHandlerState)newState
+                  prevState:(RNGestureHandlerState)prevState
+                  extraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  [_stateObserver onHandlerStateChange:newState prevState:prevState extraData:extraData];
+}
+
+- (void)dispatchHandlerUpdate:(RNGestureHandlerEventExtraData *)extraData
+{
+  [_stateObserver onHandlerUpdate:extraData];
+}
+
 #if !TARGET_OS_OSX
 
-- (void)bindToView:(UIView *)view
+- (void)bindToUIKitView:(UIView *)view
 {
   // For UIControl based views (UIButton, UISwitch) we provide special handling that would allow
   // for properties like `disallowInterruption` to work.
@@ -194,21 +244,6 @@
   // to children immediately.
   UIScrollView *scrollView = [self retrieveScrollView:view];
   scrollView.delaysContentTouches = _delaysChildPressedState;
-}
-
-- (void)unbindFromView
-{
-  UIView *view = self.recognizer.view;
-
-  if ([view isKindOfClass:[UIControl class]]) {
-    [(UIControl *)view removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
-  }
-
-  // Restore the React Native's overriden behavor for not delaying content touches
-  UIScrollView *scrollView = [self retrieveScrollView:view];
-  scrollView.delaysContentTouches = NO;
-
-  [super unbindFromView];
 }
 
 - (RNGestureHandlerEventExtraData *)extraDataForView:(UIView *)sender

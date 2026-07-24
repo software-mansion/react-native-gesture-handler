@@ -534,6 +534,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
         state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !fromManualStateChange &&
         !_manualActivation) {
       // Otherwise send activate state change event to preserve correct gesture flow
+      RNGestureHandlerState prevSynthesizedState = _lastState;
       id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                             handlerTag:_tag
                                                                  state:RNGestureHandlerStateActive
@@ -541,7 +542,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                              extraData:extraData];
       [self sendEvent:event];
       _lastState = RNGestureHandlerStateActive;
+      [self dispatchStateChange:RNGestureHandlerStateActive prevState:prevSynthesizedState extraData:extraData];
     }
+    RNGestureHandlerState prevState = _lastState;
     id stateEvent = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                                handlerTag:_tag
                                                                     state:state
@@ -549,6 +552,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                 extraData:extraData];
     [self sendEvent:stateEvent];
     _lastState = state;
+    [self dispatchStateChange:state prevState:prevState extraData:extraData];
   }
 
   if (state == RNGestureHandlerStateActive) {
@@ -559,7 +563,20 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                      forHandlerType:[self eventHandlerType]
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
+    [self dispatchHandlerUpdate:extraData];
   }
+}
+
+- (void)dispatchStateChange:(RNGestureHandlerState)newState
+                  prevState:(RNGestureHandlerState)prevState
+                  extraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  // no-op
+}
+
+- (void)dispatchHandlerUpdate:(RNGestureHandlerEventExtraData *)extraData
+{
+  // no-op
 }
 
 - (RNGHUIView *)findViewForEvents
