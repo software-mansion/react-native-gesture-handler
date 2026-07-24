@@ -443,6 +443,10 @@ static BOOL RNGHIsScreensTouchHandlerHost(RNGHUIView *view)
     case RNGestureHandlerActionTypeJSFunctionNewAPI:
       [self sendEventForJSFunctionNewAPI:event];
       break;
+
+    case RNGestureHandlerActionTypeNone:
+      // Consumed on the native side (e.g. by the button), no events are sent to JS.
+      break;
   }
 }
 

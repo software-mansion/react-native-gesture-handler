@@ -11,6 +11,7 @@
 #import <react/renderer/components/view/ViewProps.h>
 
 #import "RNGestureHandlerButton.h"
+#import "RNGestureHandlerModule.h"
 
 using namespace facebook::react;
 
@@ -36,6 +37,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   RNGestureHandlerButton *_buttonView;
   BOOL _needsAnimationStateReset;
   int _moduleId;
+  NSNumber *_managedHandlerTag;
 }
 
 #if TARGET_OS_OSX
@@ -122,6 +124,8 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
 - (void)prepareForRecycle
 {
+  [self dropManagedHandler];
+
   [self.layer removeAnimationForKey:@"transform"];
   self.layer.transform = CATransform3DIdentity;
 
@@ -252,6 +256,105 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
                                         right:borderMetrics.borderWidths.right
                                        bottom:borderMetrics.borderWidths.bottom
                                          left:borderMetrics.borderWidths.left];
+}
+
+#pragma mark - Managed gesture handler
+
+- (NSDictionary *)buildManagedHandlerConfig:(const RNGestureHandlerButtonProps &)props
+{
+  NSMutableDictionary *config = [NSMutableDictionary new];
+  config[@"shouldActivateOnStart"] = @NO;
+  config[@"disallowInterruption"] = @YES;
+  config[@"yieldsToContinuousGestures"] = @YES;
+  config[@"enabled"] = @(props.enabled);
+  config[@"shouldCancelWhenOutside"] = @(props.cancelOnLeave);
+
+  if (!props.gestureTestID.empty()) {
+    config[@"testID"] = RCTNSStringFromString(props.gestureTestID);
+  }
+
+  if (props.gestureHitSlop.top != 0 || props.gestureHitSlop.left != 0 || props.gestureHitSlop.bottom != 0 ||
+      props.gestureHitSlop.right != 0) {
+    config[@"hitSlop"] = @{
+      @"top" : @(props.gestureHitSlop.top),
+      @"left" : @(props.gestureHitSlop.left),
+      @"bottom" : @(props.gestureHitSlop.bottom),
+      @"right" : @(props.gestureHitSlop.right),
+    };
+  }
+
+  return config;
+}
+
+- (void)updateManagedHandler:(const RNGestureHandlerButtonProps &)newProps
+                    oldProps:(const RNGestureHandlerButtonProps *)oldProps
+{
+  if (newProps.handlerTag <= 0) {
+    [self dropManagedHandler];
+    return;
+  }
+
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  if (manager == nil) {
+    return;
+  }
+
+  BOOL tagChanged = _managedHandlerTag == nil || [_managedHandlerTag doubleValue] != newProps.handlerTag;
+
+  if (tagChanged) {
+    [self dropManagedHandler];
+
+    NSNumber *handlerTag = @(newProps.handlerTag);
+    [manager createGestureHandler:@"NativeViewGestureHandler"
+                              tag:handlerTag
+                           config:[self buildManagedHandlerConfig:newProps]];
+
+    // Events dispatched by the handler carry the view's reactTag; without it the
+    // dispatch is skipped (see `handleGesture:fromReset:fromManualStateChange:`).
+    _buttonView.reactTag = @(self.tag);
+    // The cast is needed on macOS, where the button is an NSControl and outside
+    // of the RCTUIView hierarchy.
+    [manager attachHandlerForDetectorWithTag:handlerTag
+                                      toView:(RNGHUIView *)_buttonView
+                              withActionType:RNGestureHandlerActionTypeNone
+                            withHostDetector:nil];
+
+    _managedHandlerTag = handlerTag;
+    _buttonView.managedHandlerTag = handlerTag;
+    return;
+  }
+
+  BOOL configChanged = oldProps == nullptr || oldProps->enabled != newProps.enabled ||
+      oldProps->cancelOnLeave != newProps.cancelOnLeave || oldProps->gestureTestID != newProps.gestureTestID ||
+      oldProps->gestureHitSlop.top != newProps.gestureHitSlop.top ||
+      oldProps->gestureHitSlop.left != newProps.gestureHitSlop.left ||
+      oldProps->gestureHitSlop.bottom != newProps.gestureHitSlop.bottom ||
+      oldProps->gestureHitSlop.right != newProps.gestureHitSlop.right;
+
+  if (configChanged) {
+    // `setConfig:` resets to defaults before applying, so keys omitted from the
+    // dictionary (e.g. `hitSlop`, `testID`) get cleared rather than kept.
+    [manager setGestureHandlerConfig:_managedHandlerTag config:[self buildManagedHandlerConfig:newProps]];
+  }
+}
+
+- (void)dropManagedHandler
+{
+  if (_managedHandlerTag == nil) {
+    return;
+  }
+
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  [manager dropGestureHandler:_managedHandlerTag];
+
+  _managedHandlerTag = nil;
+  _buttonView.managedHandlerTag = nil;
+}
+
+- (void)dealloc
+{
+  // On macOS the buttons are not recycled, `prepareForRecycle` may never run.
+  [self dropManagedHandler];
 }
 
 #pragma mark - RNGHButtonPressEventDelegate
@@ -475,6 +578,10 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   if (shouldApplyStartAnimationState) {
     [_buttonView applyStartAnimationState];
   }
+
+  const auto *oldButtonPropsPtr =
+      treatAsFirstMount ? nullptr : std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps).get();
+  [self updateManagedHandler:newProps oldProps:oldButtonPropsPtr];
 }
 
 #if !TARGET_OS_OSX
