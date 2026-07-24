@@ -91,6 +91,8 @@ export interface Config extends Record<string, ConfigArgs> {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
   yieldsToContinuousGestures?: boolean;
+  hasLongPressHandler?: boolean;
+  longPressDuration?: number;
   direction?: Directions;
   enableTrackpadTwoFingerGesture?: boolean;
 }
