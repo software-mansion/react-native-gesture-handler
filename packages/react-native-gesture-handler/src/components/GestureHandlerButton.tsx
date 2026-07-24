@@ -44,30 +44,36 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   /**
    * Called when the button gets pressed.
    */
-  onPress?: ((event: NativeSyntheticEvent<ButtonEvent>) => void) | undefined;
+  onButtonPress?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
 
   /**
    * Called when the pointer touches the button.
    */
-  onPressIn?: ((event: NativeSyntheticEvent<ButtonEvent>) => void) | undefined;
+  onButtonPressIn?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
 
   /**
    * Called when the pointer is released or leaves the button.
    */
-  onPressOut?: ((event: NativeSyntheticEvent<ButtonEvent>) => void) | undefined;
+  onButtonPressOut?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
 
   /**
    * Called when the button gets pressed and held past `longPressDuration`.
    */
-  onLongPress?:
+  onButtonLongPress?:
     | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
     | undefined;
 
   /**
    * Called when the interaction with the button ends, after any terminal
-   * `onPressOut`/`onPress` events, regardless of how it ended.
+   * `onButtonPressOut`/`onButtonPress` events, regardless of how it ended.
    */
-  onInteractionFinished?:
+  onButtonInteractionFinished?:
     | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
     | undefined;
 

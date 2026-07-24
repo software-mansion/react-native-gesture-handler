@@ -383,19 +383,20 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   switch (type) {
     case RNGHButtonEventTypePress:
-      eventEmitter.onPress(fillEvent(RNGestureHandlerButtonEventEmitter::OnPress{}));
+      eventEmitter.onButtonPress(fillEvent(RNGestureHandlerButtonEventEmitter::OnButtonPress{}));
       break;
     case RNGHButtonEventTypePressIn:
-      eventEmitter.onPressIn(fillEvent(RNGestureHandlerButtonEventEmitter::OnPressIn{}));
+      eventEmitter.onButtonPressIn(fillEvent(RNGestureHandlerButtonEventEmitter::OnButtonPressIn{}));
       break;
     case RNGHButtonEventTypePressOut:
-      eventEmitter.onPressOut(fillEvent(RNGestureHandlerButtonEventEmitter::OnPressOut{}));
+      eventEmitter.onButtonPressOut(fillEvent(RNGestureHandlerButtonEventEmitter::OnButtonPressOut{}));
       break;
     case RNGHButtonEventTypeLongPress:
-      eventEmitter.onLongPress(fillEvent(RNGestureHandlerButtonEventEmitter::OnLongPress{}));
+      eventEmitter.onButtonLongPress(fillEvent(RNGestureHandlerButtonEventEmitter::OnButtonLongPress{}));
       break;
     case RNGHButtonEventTypeInteractionFinished:
-      eventEmitter.onInteractionFinished(fillEvent(RNGestureHandlerButtonEventEmitter::OnInteractionFinished{}));
+      eventEmitter.onButtonInteractionFinished(
+          fillEvent(RNGestureHandlerButtonEventEmitter::OnButtonInteractionFinished{}));
       break;
   }
 }
