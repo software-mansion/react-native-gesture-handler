@@ -1,43 +1,44 @@
-import React from 'react';
-import styles from './styles.module.css';
-import GestureExample from '@site/src/components/GestureExamples/GestureExampleItem';
-import PanExample from '@site/src/components/GestureExamples/PanExample';
-import TapExample from '@site/src/components/GestureExamples/TapExample';
 import FlingExample from '@site/src/components/GestureExamples/FlingExample';
+import GestureExample from '@site/src/components/GestureExamples/GestureExampleItem';
 import LongPressExample from '@site/src/components/GestureExamples/LongPressExample';
-import RotationExample from '@site/src/components/GestureExamples/RotationExample';
+import PanExample from '@site/src/components/GestureExamples/PanExample';
 import PinchExample from '@site/src/components/GestureExamples/PinchExample';
+import RotationExample from '@site/src/components/GestureExamples/RotationExample';
+import TapExample from '@site/src/components/GestureExamples/TapExample';
+import React from 'react';
+
+import styles from './styles.module.css';
 
 const examples = [
   {
-    title: 'Gesture.Pan()',
+    title: 'usePanGesture()',
     component: <PanExample />,
-    href: 'docs/gestures/pan-gesture',
+    href: 'docs/gestures/use-pan-gesture',
   },
   {
-    title: 'Gesture.Tap()',
+    title: 'useTapGesture()',
     component: <TapExample />,
-    href: 'docs/gestures/tap-gesture',
+    href: 'docs/gestures/use-tap-gesture',
   },
   {
-    title: 'Gesture.Rotation()',
+    title: 'useRotationGesture()',
     component: <RotationExample />,
-    href: 'docs/gestures/rotation-gesture',
+    href: 'docs/gestures/use-rotation-gesture',
   },
   {
-    title: 'Gesture.Fling()',
+    title: 'useFlingGesture()',
     component: <FlingExample />,
-    href: 'docs/gestures/fling-gesture',
+    href: 'docs/gestures/use-fling-gesture',
   },
   {
-    title: 'Gesture.LongPress()',
+    title: 'useLongPressGesture()',
     component: <LongPressExample />,
-    href: 'docs/gestures/long-press-gesture',
+    href: 'docs/gestures/use-long-press-gesture',
   },
   {
-    title: 'Gesture.Pinch()',
+    title: 'usePinchGesture()',
     component: <PinchExample />,
-    href: 'docs/gestures/pinch-gesture',
+    href: 'docs/gestures/use-pinch-gesture',
   },
 ];
 

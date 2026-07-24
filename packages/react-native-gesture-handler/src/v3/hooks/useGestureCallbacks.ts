@@ -13,6 +13,8 @@ import {
   useMemoizedGestureCallbacks,
 } from './utils';
 
+const EMPTY_UI_CALLBACKS = {};
+
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
     try {
@@ -51,12 +53,22 @@ export function useGestureCallbacks<
   let reanimatedEventHandler;
 
   if (!config.disableReanimated) {
+    // Passing callbacks to UI runtime when `runOnJS` is true would freeze
+    // the closure, so we pass an empty object instead.
+    //
+    // This check is true only when `runOnJS` is a constant or a React state.
+    // When `runOnJS` is a SharedValue, we pass original callbacks.
+    const uiCallbacks =
+      config.runOnJS === true
+        ? (EMPTY_UI_CALLBACKS as typeof callbacks)
+        : callbacks;
+
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const reanimatedHandler = Reanimated?.useHandler(callbacks);
+    const reanimatedHandler = Reanimated?.useHandler(uiCallbacks);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     reanimatedEventHandler = useReanimatedEventHandler(
       handlerTag,
-      callbacks,
+      uiCallbacks,
       reanimatedHandler,
       config.changeEventCalculator,
       config.fillInDefaultValues

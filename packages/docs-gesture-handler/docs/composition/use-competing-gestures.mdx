@@ -1,0 +1,18 @@
+---
+id: use-competing-gestures
+title: useCompetingGestures
+sidebar_label: useCompetingGestures
+sidebar_position: 1
+---
+
+import Competing from '!!raw-loader!.//\_examples/hooks/Competing';
+
+Only one of the provided gestures can become active at the same time. The first gesture to become active will cancel the rest of the gestures. It accepts a variable number of arguments.
+
+For example, let's say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `useCompetingGestures`:
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[9, 32]}
+src={Competing}/>

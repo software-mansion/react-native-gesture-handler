@@ -12,6 +12,8 @@ import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPre
 
 import MouseButtonProp from './\_shared/mouse-button.mdx';
 
+Gesture that activates when the corresponding view is pressed for a sufficiently long time.
+
 <div className={webContainer}>
   <InteractiveExample
     component={<LongPressGestureBasic/>}
@@ -27,7 +29,6 @@ import SharedValueInfo from './\_shared/shared-value-info.md';
 
 import LongPressExample from '!!raw-loader!./_examples/LongPressExample';
 
-Gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture will deactivate immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#minduration) or if the finger is moved further than the [allowable distance](#maxdistance).
 
