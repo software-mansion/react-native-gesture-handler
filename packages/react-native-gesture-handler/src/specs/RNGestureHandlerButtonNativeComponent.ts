@@ -1,59 +1,61 @@
-import type { ColorValue, ViewProps } from 'react-native';
 import type {
-  Float,
-  Int32,
-  UnsafeMixed,
-  WithDefault,
-} from 'react-native/Libraries/Types/CodegenTypes';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+  CodegenTypes,
+  ColorValue,
+  HostComponent,
+  ViewProps,
+} from 'react-native';
+import { codegenNativeComponent } from 'react-native';
 
 // @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it
 interface NativeProps extends ViewProps {
-  exclusive?: WithDefault<boolean, true>;
+  exclusive?: CodegenTypes.WithDefault<boolean, true>;
   foreground?: boolean;
   borderless?: boolean;
-  enabled?: WithDefault<boolean, true>;
+  enabled?: CodegenTypes.WithDefault<boolean, true>;
   rippleColor?: ColorValue;
-  rippleRadius?: Int32;
-  touchSoundDisabled?: WithDefault<boolean, false>;
-  pointerEvents?: WithDefault<
+  rippleRadius?: CodegenTypes.Int32;
+  touchSoundDisabled?: CodegenTypes.WithDefault<boolean, false>;
+  pointerEvents?: CodegenTypes.WithDefault<
     'box-none' | 'none' | 'box-only' | 'auto',
     'auto'
   >;
-  tapAnimationInDuration?: WithDefault<Int32, 50>;
-  tapAnimationOutDuration?: WithDefault<Int32, 100>;
-  longPressDuration?: WithDefault<Int32, -1>;
-  longPressAnimationOutDuration?: WithDefault<Int32, -1>;
-  needsOffscreenAlphaCompositing?: WithDefault<boolean, false>;
-  activeOpacity?: WithDefault<Float, 1>;
-  activeScale?: WithDefault<Float, 1>;
-  activeUnderlayOpacity?: WithDefault<Float, 0>;
+  tapAnimationInDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, 50>;
+  tapAnimationOutDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, 100>;
+  longPressDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, -1>;
+  longPressAnimationOutDuration?: CodegenTypes.WithDefault<
+    CodegenTypes.Int32,
+    -1
+  >;
+  needsOffscreenAlphaCompositing?: CodegenTypes.WithDefault<boolean, false>;
+  activeOpacity?: CodegenTypes.WithDefault<CodegenTypes.Float, 1>;
+  activeScale?: CodegenTypes.WithDefault<CodegenTypes.Float, 1>;
+  activeUnderlayOpacity?: CodegenTypes.WithDefault<CodegenTypes.Float, 0>;
   // Hover values default to -1 as an "unset" sentinel; the native side
   // resolves them to the corresponding default* value (matching web, where
   // an omitted hover value falls back to its default counterpart).
-  hoverOpacity?: WithDefault<Float, -1>;
-  hoverScale?: WithDefault<Float, -1>;
-  hoverUnderlayOpacity?: WithDefault<Float, -1>;
-  hoverAnimationInDuration?: WithDefault<Int32, 50>;
-  hoverAnimationOutDuration?: WithDefault<Int32, 100>;
-  defaultOpacity?: WithDefault<Float, 1>;
-  defaultScale?: WithDefault<Float, 1>;
-  defaultUnderlayOpacity?: WithDefault<Float, 0>;
+  hoverOpacity?: CodegenTypes.WithDefault<CodegenTypes.Float, -1>;
+  hoverScale?: CodegenTypes.WithDefault<CodegenTypes.Float, -1>;
+  hoverUnderlayOpacity?: CodegenTypes.WithDefault<CodegenTypes.Float, -1>;
+  hoverAnimationInDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, 50>;
+  hoverAnimationOutDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, 100>;
+  defaultOpacity?: CodegenTypes.WithDefault<CodegenTypes.Float, 1>;
+  defaultScale?: CodegenTypes.WithDefault<CodegenTypes.Float, 1>;
+  defaultUnderlayOpacity?: CodegenTypes.WithDefault<CodegenTypes.Float, 0>;
   underlayColor?: ColorValue;
 
   // Border style
-  borderWidth?: Float;
+  borderWidth?: CodegenTypes.Float;
   borderColor?: ColorValue;
-  borderStyle?: WithDefault<string, 'solid'>;
-  overflow?: WithDefault<string, 'visible'>;
+  borderStyle?: CodegenTypes.WithDefault<string, 'solid'>;
+  overflow?: CodegenTypes.WithDefault<string, 'visible'>;
 
   // Border width per-edge
-  borderLeftWidth?: Float;
-  borderRightWidth?: Float;
-  borderTopWidth?: Float;
-  borderBottomWidth?: Float;
-  borderStartWidth?: Float;
-  borderEndWidth?: Float;
+  borderLeftWidth?: CodegenTypes.Float;
+  borderRightWidth?: CodegenTypes.Float;
+  borderTopWidth?: CodegenTypes.Float;
+  borderBottomWidth?: CodegenTypes.Float;
+  borderStartWidth?: CodegenTypes.Float;
+  borderEndWidth?: CodegenTypes.Float;
 
   // Border color per-edge
   borderLeftColor?: ColorValue;
@@ -75,19 +77,21 @@ interface NativeProps extends ViewProps {
   // through our delegate instead of falling through to
   // BaseViewManagerDelegate, which casts to Double and would crash on a
   // string value.
-  borderRadius?: UnsafeMixed;
-  borderTopLeftRadius?: UnsafeMixed;
-  borderTopRightRadius?: UnsafeMixed;
-  borderBottomLeftRadius?: UnsafeMixed;
-  borderBottomRightRadius?: UnsafeMixed;
-  borderTopStartRadius?: UnsafeMixed;
-  borderTopEndRadius?: UnsafeMixed;
-  borderBottomStartRadius?: UnsafeMixed;
-  borderBottomEndRadius?: UnsafeMixed;
-  borderEndEndRadius?: UnsafeMixed;
-  borderEndStartRadius?: UnsafeMixed;
-  borderStartEndRadius?: UnsafeMixed;
-  borderStartStartRadius?: UnsafeMixed;
+  borderRadius?: CodegenTypes.UnsafeMixed;
+  borderTopLeftRadius?: CodegenTypes.UnsafeMixed;
+  borderTopRightRadius?: CodegenTypes.UnsafeMixed;
+  borderBottomLeftRadius?: CodegenTypes.UnsafeMixed;
+  borderBottomRightRadius?: CodegenTypes.UnsafeMixed;
+  borderTopStartRadius?: CodegenTypes.UnsafeMixed;
+  borderTopEndRadius?: CodegenTypes.UnsafeMixed;
+  borderBottomStartRadius?: CodegenTypes.UnsafeMixed;
+  borderBottomEndRadius?: CodegenTypes.UnsafeMixed;
+  borderEndEndRadius?: CodegenTypes.UnsafeMixed;
+  borderEndStartRadius?: CodegenTypes.UnsafeMixed;
+  borderStartEndRadius?: CodegenTypes.UnsafeMixed;
+  borderStartStartRadius?: CodegenTypes.UnsafeMixed;
 }
 
-export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');
+export default codegenNativeComponent<NativeProps>(
+  'RNGestureHandlerButton'
+) as HostComponent<NativeProps>;

@@ -1,20 +1,23 @@
+// eslint-disable-next-line import-x/extensions
+import Hand from '@site/static/img/hand-one.svg';
+// eslint-disable-next-line import-x/extensions
+import Arrows from '@site/static/img/two-arrows.svg';
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import stylesWeb from './styles.module.css';
 import {
-  GestureHandlerRootView,
+  Directions,
   GestureDetector,
-  Gesture,
+  GestureHandlerRootView,
+  useFlingGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import Hand from '@site/static/img/hand-one.svg';
-import Arrows from '@site/static/img/two-arrows.svg';
-import { Directions } from 'react-native-gesture-handler';
-import { RADIUS, isInsideCircle, useStylesForExample } from '../utils';
+
+import { isInsideCircle, RADIUS, useStylesForExample } from '../utils';
+import stylesWeb from './styles.module.css';
 
 export default function FlingExample() {
   const colorModeStyles = useStylesForExample();
@@ -28,20 +31,19 @@ export default function FlingExample() {
 
   const config = { duration: 100 };
 
-  const flingGesture = Gesture.Fling()
-    .direction(
-      Directions.UP | Directions.DOWN | Directions.LEFT | Directions.RIGHT
-    )
-    .onBegin((e) => {
+  const flingGesture = useFlingGesture({
+    direction:
+      Directions.UP | Directions.DOWN | Directions.LEFT | Directions.RIGHT,
+    onBegin: (e) => {
       setShowHand(false);
       startPositionX.value = e.x;
       startPositionY.value = e.y;
-    })
-    .onEnd((e) => {
+    },
+    onDeactivate: (e) => {
       endPositionX.value = e.x;
       endPositionY.value = e.y;
-    })
-    .onStart((e) => {
+    },
+    onActivate: (e) => {
       endPositionX.value = e.x;
       endPositionY.value = e.y;
 
@@ -54,20 +56,21 @@ export default function FlingExample() {
             ? withTiming(positionX.value + valueX, config)
             : RADIUS
           : positionX.value - e.x > -RADIUS
-          ? withTiming(positionX.value - valueX, config)
-          : -RADIUS;
+            ? withTiming(positionX.value - valueX, config)
+            : -RADIUS;
       positionY.value =
         startPositionY.value < endPositionY.value
           ? positionY.value + valueY < RADIUS
             ? withTiming(positionY.value + valueY, config)
             : RADIUS
           : positionY.value - valueY > -RADIUS
-          ? withTiming(positionY.value - valueY, config)
-          : -RADIUS;
-    })
-    .onFinalize(() => {
+            ? withTiming(positionY.value - valueY, config)
+            : -RADIUS;
+    },
+    onFinalize: () => {
       setShowHand(true);
-    });
+    },
+  });
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [

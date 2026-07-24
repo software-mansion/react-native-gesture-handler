@@ -3,7 +3,7 @@ import type { BannerZone } from '@swmansion/t-rex-ui';
 export const TOP_BAR_BANNER = {
   rotateIntervalMs: 4000,
   hiddenPaths: [
-    '/react-native-gesture-handler/docs',
+    // '/react-native-gesture-handler/docs',
     '/react-native-gesture-handler/search',
   ] as string[],
   zones: [

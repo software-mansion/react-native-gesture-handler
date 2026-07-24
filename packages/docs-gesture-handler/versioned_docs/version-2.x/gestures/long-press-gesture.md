@@ -10,6 +10,8 @@ import { webContainer } from '@site/src/utils/getGestureStyles';
 import LongPressGestureBasic from '../examples/LongPressGestureBasic';
 import LongPressGestureBasicSrc from '!!raw-loader!../examples/LongPressGestureBasic';
 
+A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
+
 <div className={webContainer}>
   <InteractiveExample
     component={<LongPressGestureBasic/>}
@@ -22,7 +24,6 @@ import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 
-A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture's state will turn into [END](/docs/2.x/fundamentals/states-events#end) immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](/docs/2.x/gestures/long-press-gesture#mindurationvalue-number) or if the finger is moved further than the [allowable distance](/docs/2.x/gestures/long-press-gesture#maxdistancevalue-number).
 

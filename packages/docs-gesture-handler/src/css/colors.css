@@ -256,11 +256,14 @@
   --swm-card-border-hover: var(--swm-blue-light-100);
 
   /* Sidebar label*/
-  --swm-sidebar-label-text-new: var(--swm-off-white);
-  --swm-sidebar-label-background-new: var(--swm-blue-light-100);
+  --swm-sidebar-label-text-new: #0b7a4d;
+  --swm-sidebar-label-background-new: rgba(37, 160, 105, 0.13);
 
   --swm-sidebar-label-text-experimental: var(--swm-navy-light-100);
   --swm-sidebar-label-background-experimental: var(--swm-yellow-light-40);
+
+  --swm-sidebar-label-text-deprecated: #5a6486;
+  --swm-sidebar-label-background-deprecated: rgba(90, 100, 134, 0.12);
 
   /* Mobile sidebar versions */
   --swm-sidebar-elements-version-text: var(--swm-navy-light-100);
@@ -458,11 +461,14 @@
   --swm-card-border-hover: var(--swm-blue-dark-80);
 
   /* Sidebar label*/
-  --swm-sidebar-label-text-new: var(--swm-off-white);
-  --swm-sidebar-label-background-new: var(--swm-blue-dark-120);
+  --swm-sidebar-label-text-new: #6ee7a8;
+  --swm-sidebar-label-background-new: rgba(52, 199, 130, 0.14);
 
   --swm-sidebar-label-text-experimental: var(--swm-off-white);
   --swm-sidebar-label-background-experimental: var(--swm-yellow-dark-120);
+
+  --swm-sidebar-label-text-deprecated: #9aa0bd;
+  --swm-sidebar-label-background-deprecated: rgba(140, 148, 180, 0.13);
 
   /* Mobile sidebar versions */
   --swm-sidebar-elements-version-text: var(--swm-navy-dark-20);

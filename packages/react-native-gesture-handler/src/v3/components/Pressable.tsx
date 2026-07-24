@@ -77,6 +77,7 @@ const Pressable = (props: PressableProps) => {
     simultaneousWith,
     requireToFail,
     block,
+    ref,
     ...remainingProps
   } = props;
 
@@ -426,6 +427,7 @@ const Pressable = (props: PressableProps) => {
     <GestureDetector gesture={gesture}>
       <PureNativeButton
         {...remainingProps}
+        ref={ref as React.Ref<React.ComponentRef<typeof PureNativeButton>>}
         {...tvProps}
         onLayout={setDimensions}
         accessible={accessible !== false}
