@@ -1,4 +1,5 @@
 export const ActionType = {
+  NONE: 0,
   REANIMATED_WORKLET: 1,
   NATIVE_ANIMATED_EVENT: 2,
   JS_FUNCTION_OLD_API: 3,
