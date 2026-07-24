@@ -52,6 +52,18 @@ See [set of properties inherited from base handler class](/docs/2.x/gesture-hand
 
 Minimum distance the finger (or multiple finger) need to travel before the handler [activates](/docs/2.x/under-the-hood/state#active). Expressed in points.
 
+### `minVelocity`
+
+Minimum speed the pointer has to reach in order for the handler to [activate](/docs/2.x/under-the-hood/state#active). Expressed in points per second.
+
+### `minVelocityX`
+
+Minimum speed along X axis the pointer has to reach in order for the handler to [activate](/docs/2.x/under-the-hood/state#active). Expressed in points per second.
+
+### `minVelocityY`
+
+Minimum speed along Y axis the pointer has to reach in order for the handler to [activate](/docs/2.x/under-the-hood/state#active). Expressed in points per second.
+
 ### `minPointers`
 
 A number of fingers that is required to be placed before handler can [activate](/docs/2.x/under-the-hood/state#active). Should be an integer greater than or equal to 0.
