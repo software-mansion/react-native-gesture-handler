@@ -116,18 +116,25 @@
   _eventType = RNGHTouchEventTypePointerDown;
 
   NSDictionary *data[touches.count];
+  int changedCount = 0;
 
   for (int i = 0; i < [touches count]; i++) {
     RNGHUITouch *touch = [[touches allObjects] objectAtIndex:i];
     int index = [self registerTouch:touch];
-    if (index >= 0) {
-      _trackedPointersCount++;
+
+    if (index < 0) {
+      continue;
     }
 
-    data[i] = [self extractPointerData:index forTouch:touch];
+    _trackedPointersCount++;
+    data[changedCount++] = [self extractPointerData:index forTouch:touch];
   }
 
-  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  if (changedCount == 0) {
+    return;
+  }
+
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:changedCount];
   // extract all touches last to include the ones that were just added
   [self extractAllTouches];
   [self sendEvent];
@@ -142,14 +149,24 @@
   _eventType = RNGHTouchEventTypePointerMove;
 
   NSDictionary *data[touches.count];
+  int changedCount = 0;
 
   for (int i = 0; i < [touches count]; i++) {
     RNGHUITouch *touch = [[touches allObjects] objectAtIndex:i];
     int index = [self findTouchIndex:touch];
-    data[i] = [self extractPointerData:index forTouch:touch];
+
+    if (index < 0) {
+      continue;
+    }
+
+    data[changedCount++] = [self extractPointerData:index forTouch:touch];
   }
 
-  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  if (changedCount == 0) {
+    return;
+  }
+
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:changedCount];
   [self extractAllTouches];
   [self sendEvent];
 }
@@ -166,18 +183,25 @@
   _eventType = RNGHTouchEventTypePointerUp;
 
   NSDictionary *data[touches.count];
+  int changedCount = 0;
 
   for (int i = 0; i < [touches count]; i++) {
     RNGHUITouch *touch = [[touches allObjects] objectAtIndex:i];
     int index = [self unregisterTouch:touch];
-    if (index >= 0) {
-      _trackedPointersCount--;
+
+    if (index < 0) {
+      continue;
     }
 
-    data[i] = [self extractPointerData:index forTouch:touch];
+    _trackedPointersCount--;
+    data[changedCount++] = [self extractPointerData:index forTouch:touch];
   }
 
-  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  if (changedCount == 0) {
+    return;
+  }
+
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:changedCount];
   [self sendEvent];
 }
 

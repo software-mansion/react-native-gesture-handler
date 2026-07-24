@@ -477,10 +477,15 @@ open class GestureHandler {
   }
 
   private fun dispatchTouchUpEvent(event: MotionEvent, sourceEvent: MotionEvent) {
+    val pointerId = event.getPointerId(event.actionIndex)
+
+    if (trackedPointers[pointerId] == null) {
+      return
+    }
+
     extractAllPointersData()
     changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_UP
-    val pointerId = event.getPointerId(event.actionIndex)
     val offsetX = sourceEvent.rawX - sourceEvent.x
     val offsetY = sourceEvent.rawY - sourceEvent.y
 
