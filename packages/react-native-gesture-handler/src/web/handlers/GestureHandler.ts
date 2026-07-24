@@ -144,7 +144,12 @@ export default abstract class GestureHandler implements IGestureHandler {
     manager.setOnPointerMoveOut(this.onPointerMoveOut.bind(this));
     manager.setOnWheel(this.onWheel.bind(this));
 
-    manager.registerListeners();
+    // The initial config is applied before the handler is attached. Honor an
+    // initially disabled handler here because the delegate's enabled-change
+    // callback cannot update event managers until attachment has finished.
+    if (this.enabled) {
+      manager.registerListeners();
+    }
   }
 
   //
@@ -445,6 +450,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   public sendEvent = (newState: State, oldState: State): void => {
+    if (this.actionType === ActionType.NONE) {
+      return;
+    }
+
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,

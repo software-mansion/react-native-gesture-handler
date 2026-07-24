@@ -8,12 +8,12 @@ export const ButtonEventName = {
   InteractionFinished: 'gh:buttonInteractionFinished',
 } as const;
 
-export type ButtonEventName =
+export type ButtonEventTypeName =
   (typeof ButtonEventName)[keyof typeof ButtonEventName];
 
 export function dispatchButtonEvent(
   view: HTMLElement | null | undefined,
-  name: ButtonEventName,
+  name: ButtonEventTypeName,
   event: ButtonEvent
 ): void {
   view?.dispatchEvent(new CustomEvent(name, { detail: event }));

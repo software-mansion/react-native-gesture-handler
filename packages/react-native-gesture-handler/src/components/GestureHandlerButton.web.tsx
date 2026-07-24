@@ -2,7 +2,11 @@ import * as React from 'react';
 import type { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 import { View } from 'react-native';
 
+import { ActionType } from '../ActionType';
+import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import type { ButtonEvent } from '../specs/RNGestureHandlerButtonNativeComponent';
+import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
+import type { PropsRef } from '../web/interfaces';
 import { NativeGestureRole } from '../web/interfaces';
 import { ButtonEventName } from '../web/tools/ButtonEvents';
 import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
@@ -10,6 +14,8 @@ import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
 const prefersReducedMotion = (): boolean =>
   typeof window !== 'undefined' &&
   !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+
+const noopGestureEvent = () => undefined;
 
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
@@ -30,6 +36,19 @@ type ButtonProps = ViewProps & {
   defaultScale?: number;
   defaultUnderlayOpacity?: number;
   underlayColor?: ColorValue;
+  hasLongPressHandler?: boolean;
+  moduleId?: number;
+  handlerTag?: number;
+  cancelOnLeave?: boolean;
+  gestureTestID?: string;
+  gestureHitSlop?:
+    | {
+        top?: number;
+        left?: number;
+        bottom?: number;
+        right?: number;
+      }
+    | undefined;
   onButtonPress?:
     | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
     | undefined;
@@ -66,6 +85,12 @@ export const ButtonComponent = ({
   defaultScale = 1,
   defaultUnderlayOpacity = 0,
   underlayColor,
+  hasLongPressHandler = false,
+  moduleId: _moduleId,
+  handlerTag,
+  cancelOnLeave = true,
+  gestureTestID,
+  gestureHitSlop,
   onButtonPress,
   onButtonPressIn,
   onButtonPressOut,
@@ -91,6 +116,37 @@ export const ButtonComponent = ({
   );
   const gestureEnabledRef = React.useRef(true);
   const viewRef = React.useRef<HTMLElement | null>(null);
+  const gesturePropsRef = React.useRef<PropsRef>({
+    // Managed button handlers dispatch their events through DOM CustomEvents,
+    // so ActionType.NONE prevents these callbacks from being used.
+    // They remain present because the web module shares its attachment API
+    // with regular JS-driven gesture handlers.
+    onGestureHandlerEvent: noopGestureEvent,
+    onGestureHandlerStateChange: noopGestureEvent,
+    onGestureHandlerTouchEvent: noopGestureEvent,
+  });
+  const managedGestureConfigRef = React.useRef({
+    enabled,
+    shouldCancelWhenOutside: cancelOnLeave,
+    shouldActivateOnStart: false,
+    disallowInterruption: true,
+    yieldsToContinuousGestures: true,
+    testID: gestureTestID,
+    hitSlop: gestureHitSlop,
+    hasLongPressHandler,
+    longPressDuration,
+  });
+  managedGestureConfigRef.current = {
+    enabled,
+    shouldCancelWhenOutside: cancelOnLeave,
+    shouldActivateOnStart: false,
+    disallowInterruption: true,
+    yieldsToContinuousGestures: true,
+    testID: gestureTestID,
+    hitSlop: gestureHitSlop,
+    hasLongPressHandler,
+    longPressDuration,
+  };
 
   const setRef = React.useCallback(
     (node: React.ComponentRef<typeof View> | null) => {
@@ -104,7 +160,7 @@ export const ButtonComponent = ({
     [externalRef]
   );
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const node = viewRef.current;
 
     const handleGestureBegan = () => {
@@ -141,67 +197,86 @@ export const ButtonComponent = ({
     };
   }, []);
 
-  const pressIn = React.useCallback(() => {
-    if (!enabled || !gestureEnabledRef.current) {
-      return;
-    }
+  const pressIn = React.useCallback(
+    (event?: NativeSyntheticEvent<unknown>) => {
+      const isManagedButtonEvent = event === undefined;
 
-    if (pressOutTimer.current != null) {
-      clearTimeout(pressOutTimer.current);
-      pressOutTimer.current = null;
-    }
-    pressInTimestamp.current = performance.now();
-    setCurrentDuration(tapAnimationInDuration);
-    setPressed(true);
-  }, [enabled, tapAnimationInDuration]);
+      if (!enabled || (!isManagedButtonEvent && !gestureEnabledRef.current)) {
+        return;
+      }
 
-  const pressOut = React.useCallback(() => {
-    // Only release if a press-in was actually recorded — guards against
-    // stray pointer events and lets us complete the release cycle even if
-    // `enabled` flipped to false between press-in and press-out.
-    if (pressInTimestamp.current === 0 || !gestureEnabledRef.current) {
-      return;
-    }
+      // Managed button events are emitted before the Began lifecycle event.
+      // Unmanaged buttons are still driven by their wrapping native gesture,
+      // so they must keep honoring its cancellation state.
+      if (isManagedButtonEvent) {
+        gestureEnabledRef.current = true;
+      }
 
-    if (pressOutTimer.current != null) {
-      clearTimeout(pressOutTimer.current);
-      pressOutTimer.current = null;
-    }
-    const elapsed = performance.now() - pressInTimestamp.current;
-    pressInTimestamp.current = 0;
+      event?.stopPropagation();
 
-    if (longPressDuration >= 0 && elapsed >= longPressDuration) {
-      // Long-press release — use the configured long-press out duration.
-      setCurrentDuration(longPressAnimationOutDuration);
-      setPressed(false);
-    } else if (elapsed >= tapAnimationInDuration) {
-      // Press-in animation fully finished - release with the configured out duration.
-      setCurrentDuration(tapAnimationOutDuration);
-      setPressed(false);
-      // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
-    } else if (elapsed * 2 >= tapAnimationOutDuration) {
-      setCurrentDuration(elapsed);
-      setPressed(false);
-    } else {
-      // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time.
-      const remaining = tapAnimationInDuration - elapsed;
-      pressOutTimer.current = setTimeout(
-        () => {
-          pressOutTimer.current = null;
-          setCurrentDuration(tapAnimationOutDuration);
-          setPressed(false);
-        },
-        prefersReducedMotion() ? 0 : remaining
-      );
-    }
-  }, [
-    longPressDuration,
-    longPressAnimationOutDuration,
-    tapAnimationInDuration,
-    tapAnimationOutDuration,
-  ]);
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+        pressOutTimer.current = null;
+      }
+      pressInTimestamp.current = performance.now();
+      setCurrentDuration(tapAnimationInDuration);
+      setPressed(true);
+    },
+    [enabled, tapAnimationInDuration]
+  );
 
-  React.useEffect(() => {
+  const pressOut = React.useCallback(
+    (event?: NativeSyntheticEvent<unknown>) => {
+      // Only release if a press-in was actually recorded — guards against
+      // stray pointer events and lets us complete the release cycle even if
+      // `enabled` flipped to false between press-in and press-out.
+      if (pressInTimestamp.current === 0 || !gestureEnabledRef.current) {
+        return;
+      }
+
+      event?.stopPropagation();
+
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+        pressOutTimer.current = null;
+      }
+      const elapsed = performance.now() - pressInTimestamp.current;
+      pressInTimestamp.current = 0;
+
+      if (longPressDuration >= 0 && elapsed >= longPressDuration) {
+        // Long-press release — use the configured long-press out duration.
+        setCurrentDuration(longPressAnimationOutDuration);
+        setPressed(false);
+      } else if (elapsed >= tapAnimationInDuration) {
+        // Press-in animation fully finished - release with the configured out duration.
+        setCurrentDuration(tapAnimationOutDuration);
+        setPressed(false);
+        // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
+      } else if (elapsed * 2 >= tapAnimationOutDuration) {
+        setCurrentDuration(elapsed);
+        setPressed(false);
+      } else {
+        // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time.
+        const remaining = tapAnimationInDuration - elapsed;
+        pressOutTimer.current = setTimeout(
+          () => {
+            pressOutTimer.current = null;
+            setCurrentDuration(tapAnimationOutDuration);
+            setPressed(false);
+          },
+          prefersReducedMotion() ? 0 : remaining
+        );
+      }
+    },
+    [
+      longPressDuration,
+      longPressAnimationOutDuration,
+      tapAnimationInDuration,
+      tapAnimationOutDuration,
+    ]
+  );
+
+  useIsomorphicLayoutEffect(() => {
     const node = viewRef.current;
     const wrapEvent = (event: Event): NativeSyntheticEvent<ButtonEvent> =>
       ({
@@ -255,6 +330,49 @@ export const ButtonComponent = ({
     pressOut,
   ]);
 
+  useIsomorphicLayoutEffect(() => {
+    const node = viewRef.current;
+    if (handlerTag === undefined || node === null) {
+      return;
+    }
+
+    RNGestureHandlerModule.createGestureHandler(
+      'NativeViewGestureHandler',
+      handlerTag,
+      managedGestureConfigRef.current
+    );
+    RNGestureHandlerModule.attachGestureHandler(
+      handlerTag,
+      node,
+      ActionType.NONE,
+      gesturePropsRef
+    );
+
+    return () => {
+      RNGestureHandlerModule.detachGestureHandler(handlerTag);
+      RNGestureHandlerModule.dropGestureHandler(handlerTag);
+    };
+  }, [handlerTag]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (handlerTag === undefined) {
+      return;
+    }
+
+    RNGestureHandlerModule.setGestureHandlerConfig(
+      handlerTag,
+      managedGestureConfigRef.current
+    );
+  }, [
+    cancelOnLeave,
+    enabled,
+    gestureHitSlop,
+    gestureTestID,
+    handlerTag,
+    hasLongPressHandler,
+    longPressDuration,
+  ]);
+
   const handlePointerEnter = React.useCallback(
     (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
       if (!enabled || event.nativeEvent.pointerType === 'touch') {
@@ -271,6 +389,9 @@ export const ButtonComponent = ({
 
   const handlePointerLeave = React.useCallback(
     (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
+      if (handlerTag === undefined) {
+        pressOut(event);
+      }
       if (event.nativeEvent.pointerType === 'touch') {
         return;
       }
@@ -279,7 +400,7 @@ export const ButtonComponent = ({
       }
       setHovered(false);
     },
-    [pressed, hoverAnimationOutDuration]
+    [handlerTag, hoverAnimationOutDuration, pressOut, pressed]
   );
 
   // Mask hover at render rather than clearing the state. Avoids a state
@@ -335,6 +456,9 @@ export const ButtonComponent = ({
         },
       ]}
       onPointerEnter={handlePointerEnter}
+      onPointerDown={handlerTag === undefined ? pressIn : undefined}
+      onPointerUp={handlerTag === undefined ? pressOut : undefined}
+      onPointerCancel={handlerTag === undefined ? pressOut : undefined}
       onPointerLeave={handlePointerLeave}>
       {hasUnderlay && (
         <View
