@@ -212,11 +212,15 @@ class NativeViewGestureHandler : GestureHandler() {
     }
     lastActiveUpdate = snapshot
     super.dispatchHandlerUpdate(event)
+
+    hook.onHandlerUpdate(this)
   }
 
   override fun dispatchStateChange(newState: Int, prevState: Int) {
     lastActiveUpdate = null
     super.dispatchStateChange(newState, prevState)
+
+    hook.onHandlerStateChange(this, newState, prevState)
   }
 
   override fun wantsToAttachDirectlyToView() = true
@@ -356,6 +360,16 @@ class NativeViewGestureHandler : GestureHandler() {
      * Passes the event down to the underlying view using the correct method.
      */
     fun sendTouchEvent(view: View?, event: MotionEvent) = view?.onTouchEvent(event)
+
+    /*
+     * Called when the handler processes a new update event.
+     */
+    fun onHandlerUpdate(handler: NativeViewGestureHandler) = Unit
+
+    /*
+     * Called when the handler moves to a new state.
+     */
+    fun onHandlerStateChange(handler: NativeViewGestureHandler, newState: Int, prevState: Int) = Unit
   }
 
   private class TextViewHook : NativeViewGestureHandlerHook {
