@@ -22,6 +22,7 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   enabled?: boolean | undefined;
 
   hasLongPressHandler?: boolean | undefined;
+  moduleId?: number | undefined;
   handlerTag?: number | undefined;
   cancelOnLeave?: boolean | undefined;
   gestureTestID?: string | undefined;

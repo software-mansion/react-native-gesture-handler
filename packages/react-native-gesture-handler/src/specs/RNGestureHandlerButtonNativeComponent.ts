@@ -27,6 +27,10 @@ interface NativeProps extends ViewProps {
     | undefined;
 
   hasLongPressHandler?: CodegenTypes.WithDefault<boolean, false>;
+  // Used on iOS to resolve the gesture handler module instance managing the
+  // handler created for `handlerTag`. Android resolves the module from the
+  // view's context instead.
+  moduleId?: CodegenTypes.WithDefault<CodegenTypes.Int32, -1>;
   handlerTag?: CodegenTypes.Double | undefined;
   cancelOnLeave?: CodegenTypes.WithDefault<boolean, true>;
   gestureTestID?: string;
