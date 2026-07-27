@@ -178,6 +178,6 @@ export default class RotationGestureDetector
   }
 
   public get timeDelta() {
-    return this.currentTime + this.previousTime;
+    return this.currentTime - this.previousTime;
   }
 }

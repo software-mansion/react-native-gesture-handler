@@ -63,16 +63,20 @@ export function useJSResponderHandler<
       return;
     }
 
-    const notifyEnabledChanged = reanimated.runOnJS(() => {
+    const { runOnJS } = reanimated;
+
+    const notifyEnabledChanged = () => {
       setEnabledSharedValueRevision((revision) => revision + 1);
-    });
+    };
 
     const attachListeners = (
       sharedValues: SharedValue<boolean>[],
       id: number,
-      listener: () => void
+      notify: () => void
     ) => {
       'worklet';
+      const listener = runOnJS(notify);
+
       for (const sharedValue of sharedValues) {
         sharedValue.addListener(id, listener);
       }

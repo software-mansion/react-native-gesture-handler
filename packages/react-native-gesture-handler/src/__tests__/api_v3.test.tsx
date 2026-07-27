@@ -43,6 +43,88 @@ describe('[API v3] Hooks', () => {
     expect(onBegin).toHaveBeenCalledTimes(1);
     expect(onStart).toHaveBeenCalledTimes(1);
   });
+
+  test('Pan gesture drops malformed event without crashing', () => {
+    // On Android a touch event may be serialized without the `allTouches` key
+    // when its payload is lost in a race (e.g. rapid taps cancelling the
+    // gesture). Such an event has no `oldState`, no `allTouches` and no
+    // `handlerData`, so it used to be misclassified as an update event and
+    // crash the pan change calculator with
+    // "Cannot read property 'translationX' of undefined".
+    const onUpdate = jest.fn();
+    const onTouchesUp = jest.fn();
+
+    const panGesture = renderHook(() =>
+      usePanGesture({
+        disableReanimated: true,
+        onUpdate: (e) => onUpdate(e),
+        onTouchesUp: (e) => onTouchesUp(e),
+      })
+    ).result.current;
+
+    const { jsEventHandler } = panGesture.detectorCallbacks;
+
+    const malformedTouchEvent = {
+      handlerTag: panGesture.handlerTag,
+      state: State.ACTIVE,
+      eventType: 3, // TouchEventType.TOUCHES_UP
+      numberOfTouches: 0,
+      changedTouches: [{ id: 0, x: 0, y: 0, absoluteX: 0, absoluteY: 0 }],
+      // no `allTouches`, no `oldState`, no `handlerData`
+    };
+
+    expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      jsEventHandler?.(malformedTouchEvent as any);
+    }).not.toThrow();
+
+    expect(onUpdate).not.toHaveBeenCalled();
+    expect(onTouchesUp).not.toHaveBeenCalled();
+  });
+
+  test('Pan gesture handles valid update events after a malformed one', () => {
+    const onUpdate = jest.fn();
+
+    const panGesture = renderHook(() =>
+      usePanGesture({
+        disableReanimated: true,
+        onUpdate: (e) => onUpdate(e),
+      })
+    ).result.current;
+
+    const { jsEventHandler } = panGesture.detectorCallbacks;
+
+    jsEventHandler?.({
+      handlerTag: panGesture.handlerTag,
+      state: State.ACTIVE,
+      eventType: 3,
+      numberOfTouches: 0,
+      changedTouches: [],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+
+    jsEventHandler?.({
+      handlerTag: panGesture.handlerTag,
+      state: State.ACTIVE,
+      handlerData: {
+        translationX: 10,
+        translationY: 5,
+        x: 10,
+        y: 5,
+        absoluteX: 10,
+        absoluteY: 5,
+        velocityX: 0,
+        velocityY: 0,
+        stylusData: undefined,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    });
+
+    expect(onUpdate).toHaveBeenCalledTimes(1);
+    expect(onUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ changeX: 10, changeY: 5 })
+    );
+  });
 });
 
 describe('[API v3] Components', () => {

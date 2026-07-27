@@ -12,7 +12,19 @@ export default function DocSidebarWrapper(props) {
     logo: useBaseUrl('/img/logo-hero.svg'),
     title: useBaseUrl('/img/title.svg'),
   };
+  const newItems = ['components/touchable'];
+  const deprecatedItems = [
+    'components/buttons',
+    'components/legacy-touchables',
+  ];
+
   return (
-    <DocSidebar heroImages={heroImages} titleImages={titleImages} {...props} />
+    <DocSidebar
+      newItems={newItems}
+      deprecatedItems={deprecatedItems}
+      heroImages={heroImages}
+      titleImages={titleImages}
+      {...props}
+    />
   );
 }

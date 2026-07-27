@@ -3,12 +3,15 @@ import type {
   ColorValue,
   HostComponent,
   LayoutChangeEvent,
+  NativeSyntheticEvent,
   StyleProp,
   ViewProps,
   ViewStyle,
 } from 'react-native';
 
-import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
+import RNGestureHandlerButtonNativeComponent, {
+  type ButtonEvent,
+} from '../specs/RNGestureHandlerButtonNativeComponent';
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {
   children?: React.ReactNode;
@@ -18,11 +21,54 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    */
   enabled?: boolean | undefined;
 
+  hasLongPressHandler?: boolean | undefined;
+  handlerTag?: number | undefined;
+  cancelOnLeave?: boolean | undefined;
+  gestureTestID?: string | undefined;
+  gestureHitSlop?:
+    | {
+        top?: number | undefined;
+        left?: number | undefined;
+        bottom?: number | undefined;
+        right?: number | undefined;
+      }
+    | undefined;
+
   /**
    * Defines if more than one button could be pressed simultaneously. By default
    * set true.
    */
   exclusive?: boolean | undefined;
+
+  /**
+   * Called when the button gets pressed.
+   */
+  onPress?: ((event: NativeSyntheticEvent<ButtonEvent>) => void) | undefined;
+
+  /**
+   * Called when the pointer touches the button.
+   */
+  onPressIn?: ((event: NativeSyntheticEvent<ButtonEvent>) => void) | undefined;
+
+  /**
+   * Called when the pointer is released or leaves the button.
+   */
+  onPressOut?: ((event: NativeSyntheticEvent<ButtonEvent>) => void) | undefined;
+
+  /**
+   * Called when the button gets pressed and held past `longPressDuration`.
+   */
+  onLongPress?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when the interaction with the button ends, after any terminal
+   * `onPressOut`/`onPress` events, regardless of how it ended.
+   */
+  onInteractionFinished?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
 
   /**
    * Android only.
@@ -203,3 +249,4 @@ export const ButtonComponent =
   RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
 export default ButtonComponent;
+export type { ButtonEvent };

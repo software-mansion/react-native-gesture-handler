@@ -39,7 +39,7 @@
     "@types/react": "~19.1.10",
     "@types/react-dom": "~19.1.7",
     "@types/react-native-web": "^0",
-    "typescript": "~5.9.2"
+    "typescript": "~6.0.3"
   },
   "private": true,
   "installConfig": {

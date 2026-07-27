@@ -10,6 +10,8 @@ import { webContainer } from '@site/src/utils/getGestureStyles';
 import PanGestureBasic from '../examples/PanGestureBasic';
 import PanGestureBasicSrc from '!!raw-loader!../examples/PanGestureBasic';
 
+A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
+
 <div className={webContainer}>
   <InteractiveExample
     component={<PanGestureBasic/>}
@@ -23,8 +25,6 @@ import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousEventConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
-
-A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
 
 The gesture [activates](/docs/2.x/fundamentals/states-events#active) when a finger is placed on the screen and moved some initial distance.
 
@@ -116,6 +116,18 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 ### `minDistance(value: number)`
 
 Minimum distance the finger (or multiple fingers) need to travel before the gesture [activates](/docs/2.x/fundamentals/states-events#active). Expressed in points.
+
+### `minVelocity(value: number)`
+
+Minimum speed the pointer has to reach in order for the gesture to [activate](/docs/2.x/fundamentals/states-events#active). Expressed in points per second.
+
+### `minVelocityX(value: number)`
+
+Minimum speed along X axis the pointer has to reach in order for the gesture to [activate](/docs/2.x/fundamentals/states-events#active). Expressed in points per second.
+
+### `minVelocityY(value: number)`
+
+Minimum speed along Y axis the pointer has to reach in order for the gesture to [activate](/docs/2.x/fundamentals/states-events#active). Expressed in points per second.
 
 ### `minPointers(value: number)`
 

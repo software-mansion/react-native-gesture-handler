@@ -19,7 +19,7 @@ export default function App() {
 }
 ```
 
-Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/fundamentals/gesture-composition). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
+Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/composition/overview). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
 
 :::note
 When integrating with navigation libraries, wrapping the navigator component with `GestureHandlerRootView` is generally sufficient. However, if you encounter issues with gestures not functioning properly, you might need to wrap each individual screen component with `GestureHandlerRootView` as well.

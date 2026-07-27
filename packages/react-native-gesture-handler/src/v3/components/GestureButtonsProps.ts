@@ -10,6 +10,14 @@ import type { NativeWrapperProperties } from '../types/NativeWrapperType';
 export interface RawButtonProps
   extends Omit<
       ButtonProps,
+      // The native press events are omitted — the deprecated buttons drive
+      // their press callbacks from the gesture in JS and redeclare them with
+      // their own signatures.
+      | 'onPress'
+      | 'onPressIn'
+      | 'onPressOut'
+      | 'onLongPress'
+      | 'onInteractionFinished'
       | 'defaultOpacity'
       | 'defaultScale'
       | 'defaultUnderlayOpacity'
@@ -20,7 +28,7 @@ export interface RawButtonProps
     >,
     Omit<
       NativeWrapperProperties<React.ComponentRef<typeof GestureHandlerButton>>,
-      'hitSlop' | 'enabled'
+      'hitSlop' | 'enabled' | 'testID'
     > {}
 
 /**

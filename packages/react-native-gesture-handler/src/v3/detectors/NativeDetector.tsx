@@ -5,7 +5,9 @@ import { useJSResponderHandler } from '../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 import type { NativeDetectorProps } from './common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
-import HostGestureDetector from './HostGestureDetector';
+import HostGestureDetector, {
+  type RNGestureHandlerDetectorNativeComponentProps,
+} from './HostGestureDetector';
 import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
 import { useDetectorAttachmentGuard } from './useDetectorAttachmentGuard';
 import { useGestureRelationsUpdater } from './useGestureRelationsUpdater';
@@ -24,11 +26,13 @@ export function NativeDetector<
 }: NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
   const { handleStartShouldSetResponder } = useJSResponderHandler(gesture);
 
-  const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
-    ? AnimatedNativeDetector
-    : gesture.config.shouldUseReanimatedDetector
-      ? ReanimatedNativeDetector
-      : HostGestureDetector;
+  const NativeDetectorComponent = (
+    gesture.config.dispatchesAnimatedEvents
+      ? AnimatedNativeDetector
+      : gesture.config.shouldUseReanimatedDetector
+        ? ReanimatedNativeDetector
+        : HostGestureDetector
+  ) as React.FunctionComponent<RNGestureHandlerDetectorNativeComponentProps>;
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
   useGestureRelationsUpdater(gesture);

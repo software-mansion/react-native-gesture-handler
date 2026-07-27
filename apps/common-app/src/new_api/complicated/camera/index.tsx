@@ -48,7 +48,7 @@ export default function Camera() {
   });
 
   function takePhoto() {
-    alert("I didn't bother to implement this :)");
+    console.info("I didn't bother to implement this :)");
   }
 
   function startRecording() {
@@ -56,7 +56,7 @@ export default function Camera() {
   }
 
   function stopRecording() {
-    alert("I didn't bother to implement this either :)");
+    console.info("I didn't bother to implement this either :)");
   }
 
   const takePhotoGesture = useTapGesture({
