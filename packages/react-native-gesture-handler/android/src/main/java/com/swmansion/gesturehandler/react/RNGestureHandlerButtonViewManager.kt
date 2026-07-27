@@ -26,8 +26,11 @@ import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.facebook.react.R
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
@@ -35,6 +38,7 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PointerEvents
 import com.facebook.react.uimanager.ReactPointerEventsView
 import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.ViewProps
@@ -48,6 +52,7 @@ import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
+import com.swmansion.gesturehandler.react.events.RNGestureHandlerButtonEvent
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager :
@@ -62,6 +67,90 @@ class RNGestureHandlerButtonViewManager :
   override fun getName() = REACT_CLASS
 
   public override fun createViewInstance(context: ThemedReactContext) = ButtonViewGroup(context)
+
+  override fun onDropViewInstance(view: ButtonViewGroup) {
+    view.managedHandlerTag?.let { tag ->
+      getGestureHandlerModule(view).dropGestureHandler(tag)
+    }
+
+    super.onDropViewInstance(view)
+  }
+
+  private fun getGestureHandlerModule(view: ButtonViewGroup) =
+    (view.context as ReactContext).getNativeModule(RNGestureHandlerModule::class.java)!!
+
+  private fun updateManagedHandlerConfig(view: ButtonViewGroup, config: ReadableMap) {
+    view.managedHandlerTag?.let { getGestureHandlerModule(view).updateGestureHandlerConfig(it, config) }
+  }
+
+  @ReactProp(name = "handlerTag")
+  override fun setHandlerTag(view: ButtonViewGroup, handlerTag: Double) {
+    if (view.managedHandlerTag == handlerTag) {
+      return
+    }
+
+    view.managedHandlerTag?.let { oldTag ->
+      getGestureHandlerModule(view).dropGestureHandler(oldTag)
+    }
+
+    view.managedHandlerTag = handlerTag
+    val module = getGestureHandlerModule(view)
+
+    module.createGestureHandler(
+      "NativeViewGestureHandler",
+      handlerTag,
+      Arguments.createMap().apply {
+        putBoolean("shouldActivateOnStart", false)
+        putBoolean("disallowInterruption", true)
+        putBoolean("yieldsToContinuousGestures", true)
+        putBoolean("enabled", view.isEnabled)
+        view.managedHandlerCancelOnLeave?.let { putBoolean("shouldCancelWhenOutside", it) }
+        view.managedHandlerTestID?.let { putString("testID", it) }
+        view.managedHandlerHitSlop?.let { putMap("hitSlop", it) }
+      },
+    )
+    module.attachGestureHandler(handlerTag, view.id.toDouble(), GestureHandler.ACTION_TYPE_NONE.toDouble())
+  }
+
+  @ReactProp(name = "cancelOnLeave")
+  override fun setCancelOnLeave(view: ButtonViewGroup, cancelOnLeave: Boolean) {
+    view.managedHandlerCancelOnLeave = cancelOnLeave
+    updateManagedHandlerConfig(
+      view,
+      Arguments.createMap().apply {
+        putBoolean("shouldCancelWhenOutside", cancelOnLeave)
+      },
+    )
+  }
+
+  @ReactProp(name = "gestureTestID")
+  override fun setGestureTestID(view: ButtonViewGroup, gestureTestID: String?) {
+    view.managedHandlerTestID = gestureTestID
+    updateManagedHandlerConfig(
+      view,
+      Arguments.createMap().apply {
+        putString("testID", gestureTestID)
+      },
+    )
+  }
+
+  @ReactProp(name = "gestureHitSlop")
+  override fun setGestureHitSlop(view: ButtonViewGroup, gestureHitSlop: ReadableMap?) {
+    view.managedHandlerHitSlop = gestureHitSlop
+    if (gestureHitSlop != null) {
+      updateManagedHandlerConfig(
+        view,
+        Arguments.createMap().apply {
+          putMap("hitSlop", gestureHitSlop)
+        },
+      )
+    }
+  }
+
+  @ReactProp(name = "hasLongPressHandler")
+  override fun setHasLongPressHandler(view: ButtonViewGroup, hasLongPressHandler: Boolean) {
+    view.hasLongPressHandler = hasLongPressHandler
+  }
 
   @ReactProp(name = "foreground")
   override fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
@@ -81,6 +170,13 @@ class RNGestureHandlerButtonViewManager :
   @ReactProp(name = "enabled")
   override fun setEnabled(view: ButtonViewGroup, enabled: Boolean) {
     view.isEnabled = enabled
+
+    updateManagedHandlerConfig(
+      view,
+      Arguments.createMap().apply {
+        putBoolean("enabled", enabled)
+      },
+    )
   }
 
   @ReactProp(name = "borderWidth")
@@ -397,7 +493,18 @@ class RNGestureHandlerButtonViewManager :
       }
     var useBorderlessDrawable = false
 
+    var managedHandlerTag: Double? = null
+
+    // Config props may be applied before `handlerTag` (prop order is not guaranteed) and
+    // `updateManagedHandlerConfig` no-ops until the handler exists, so the values are cached
+    // here and seeded into the config when `setHandlerTag` creates the handler. This also
+    // re-applies them when the handler is recreated for a new tag.
+    var managedHandlerCancelOnLeave: Boolean? = null
+    var managedHandlerTestID: String? = null
+    var managedHandlerHitSlop: ReadableMap? = null
+
     var exclusive = true
+    var hasLongPressHandler = false
     var tapAnimationInDuration: Int = 50
     var tapAnimationOutDuration: Int = 100
     var longPressDuration: Int = -1
@@ -436,6 +543,7 @@ class RNGestureHandlerButtonViewManager :
     private var underlayDrawable: PaintDrawable? = null
     private var pressInTimestamp = 0L
     private var pendingPressOut: Runnable? = null
+    private var pendingLongPress: Runnable? = null
     private var pendingHoverOut: Choreographer.FrameCallback? = null
     private var isPointerInsideBounds = false
     private var isHovered = false
@@ -517,6 +625,92 @@ class RNGestureHandlerButtonViewManager :
 
       if (testId is String) {
         info.setViewIdResourceName(testId)
+      }
+    }
+
+    private var longPressDetected = false
+
+    // Cannot rely on isPointerInsideBounds because it's set to false during motion event processing
+    // which happens before the final state change is handled (state change is triggered by the motion
+    // event).
+    private var lastEventWasInside = false
+
+    override fun onHandlerUpdate(handler: NativeViewGestureHandler) {
+      if (managedHandlerTag == null || handler.isWithinBounds == lastEventWasInside) {
+        return
+      }
+
+      if (handler.isWithinBounds) {
+        dispatchJSEvent(EventType.PressIn, handler)
+      } else {
+        dispatchJSEvent(EventType.PressOut, handler)
+
+        pendingLongPress?.let {
+          this.handler?.removeCallbacks(it)
+          pendingLongPress = null
+        }
+      }
+    }
+
+    override fun onHandlerStateChange(handler: NativeViewGestureHandler, newState: Int, prevState: Int) {
+      if (managedHandlerTag == null) {
+        return
+      }
+
+      // Capture local copy, since lastEventWasInside can change during this method
+      // Specifically PressOut -> Press scenario on STATE_END
+      val localLastEventWasInside = lastEventWasInside
+
+      if (newState == GestureHandler.STATE_BEGAN) {
+        dispatchJSEvent(EventType.PressIn, handler)
+        longPressDetected = false
+
+        if (hasLongPressHandler && longPressDuration >= 0) {
+          val runnable = Runnable {
+            pendingLongPress = null
+            longPressDetected = true
+            dispatchJSEvent(EventType.LongPress, handler)
+          }
+          pendingLongPress = runnable
+          this.handler?.postDelayed(runnable, longPressDuration.toLong())
+        }
+      }
+
+      if (newState == GestureHandler.STATE_END ||
+        newState == GestureHandler.STATE_FAILED ||
+        newState == GestureHandler.STATE_CANCELLED
+      ) {
+        if (localLastEventWasInside) {
+          dispatchJSEvent(EventType.PressOut, handler)
+        }
+
+        pendingLongPress?.let {
+          this.handler?.removeCallbacks(it)
+          pendingLongPress = null
+        }
+      }
+
+      if (newState == GestureHandler.STATE_END && !longPressDetected && localLastEventWasInside) {
+        dispatchJSEvent(EventType.Press, handler)
+      }
+
+      if (newState == GestureHandler.STATE_END ||
+        newState == GestureHandler.STATE_FAILED ||
+        newState == GestureHandler.STATE_CANCELLED
+      ) {
+        dispatchJSEvent(EventType.InteractionFinished, handler)
+      }
+    }
+
+    private fun dispatchJSEvent(type: EventType, handler: NativeViewGestureHandler) {
+      val reactContext = context as? ReactContext ?: return
+      val eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext) ?: return
+      eventDispatcher.dispatchEvent(RNGestureHandlerButtonEvent.obtain(this, handler, type))
+
+      if (type == EventType.PressIn) {
+        lastEventWasInside = true
+      } else if (type == EventType.PressOut) {
+        lastEventWasInside = false
       }
     }
 
@@ -912,6 +1106,8 @@ class RNGestureHandlerButtonViewManager :
     override fun onDetachedFromWindow() {
       pendingPressOut?.let { handler?.removeCallbacks(it) }
       pendingPressOut = null
+      pendingLongPress?.let { handler?.removeCallbacks(it) }
+      pendingLongPress = null
       cancelPendingHoverOut()
       currentAnimator?.cancel()
       currentAnimator = null
@@ -1103,6 +1299,14 @@ class RNGestureHandlerButtonViewManager :
           false
         }
       }
+    }
+
+    enum class EventType {
+      Press,
+      PressIn,
+      PressOut,
+      LongPress,
+      InteractionFinished,
     }
   }
 
