@@ -1,7 +1,7 @@
-import EventManager from '../tools/EventManager';
-import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import GestureHandler from './GestureHandler';
-import type IGestureHandler from './IGestureHandler';
+import EventManager from '../../tools/EventManager';
+import type { GestureHandlerDelegate } from '../../tools/GestureHandlerDelegate';
+import GestureHandler from '../GestureHandler';
+import type IGestureHandler from '../IGestureHandler';
 
 class TestGestureHandler extends GestureHandler {}
 
