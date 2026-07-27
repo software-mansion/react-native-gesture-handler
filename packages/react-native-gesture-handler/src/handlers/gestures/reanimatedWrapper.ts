@@ -32,6 +32,10 @@ export type ReanimatedHandler<THandlerData> = {
   context: ReanimatedContext<THandlerData>;
 };
 
+type WorkletsModule = {
+  getUIRuntimeHolder?: () => object;
+};
+
 export type NativeEventsManager = new (component: {
   props: Record<string, unknown>;
   _componentRef: React.Ref<unknown>;
@@ -86,27 +90,18 @@ let Reanimated:
     }
   | undefined;
 
+let uiRuntimeHolder: object | undefined;
+
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const Worklets = require('react-native-worklets') as WorkletsModule;
+  uiRuntimeHolder = Worklets?.getUIRuntimeHolder?.();
+} catch (e) {
+  // When 'react-native-worklets' is not available we want to quietly continue
+}
+
 try {
   Reanimated = require('react-native-reanimated');
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-  const Worklets = require('react-native-worklets');
-
-  // Make sure worklets are initialized before attempting to install UI runtime bindings
-  Worklets?.scheduleOnUI(() => {
-    'worklet';
-  });
-
-  ghQueueMicrotask(() => {
-    const decorated = NativeProxy.installUIRuntimeBindings();
-
-    if (!decorated) {
-      console.warn(
-        tagMessage(
-          'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
-        )
-      );
-    }
-  });
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized
@@ -117,6 +112,27 @@ if (!Reanimated?.useSharedValue) {
   // @ts-ignore Make sure the loaded module is actually Reanimated, if it's not
   // reset the module to undefined so we can fallback to the default implementation
   Reanimated = undefined;
+}
+
+if (uiRuntimeHolder !== undefined || Reanimated !== undefined) {
+  ghQueueMicrotask(() => {
+    globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = uiRuntimeHolder;
+
+    try {
+      const decorated = NativeProxy.installUIRuntimeBindings();
+
+      if (!decorated) {
+        console.warn(
+          tagMessage(
+            'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
+          )
+        );
+      }
+    } finally {
+      globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = undefined;
+      uiRuntimeHolder = undefined;
+    }
+  });
 }
 
 if (Reanimated !== undefined && !Reanimated.setGestureState) {

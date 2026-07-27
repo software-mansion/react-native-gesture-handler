@@ -20,7 +20,8 @@ void RNGestureHandlerModule::registerNatives() {
            "getBindingsInstallerCxx",
            RNGestureHandlerModule::getBindingsInstallerCxx),
        makeNativeMethod(
-           "decorateUIRuntime", RNGestureHandlerModule::decorateUIRuntime),
+           "installUIRuntimeBindingsNative",
+           RNGestureHandlerModule::installUIRuntimeBindings),
        makeNativeMethod(
            "invalidateNative", RNGestureHandlerModule::invalidateNative)});
 }
@@ -51,11 +52,19 @@ void RNGestureHandlerModule::setGestureState(
   method(this->javaPart_, handlerTag, state);
 }
 
-bool RNGestureHandlerModule::decorateUIRuntime() {
-  return RNGHRuntimeDecorator::installUIRuntimeBindings(
-      *rnRuntime_, getModuleId(), [&](int handlerTag, int state) {
+bool RNGestureHandlerModule::installUIRuntimeBindings() {
+  const auto resolved = RNGHRuntimeDecorator::tryFindUIRuntime(*rnRuntime_);
+
+  if (resolved.runtime == nullptr) {
+    return false;
+  }
+
+  RNGHRuntimeDecorator::installUIRuntimeBindings(
+      *resolved.runtime, [&](int handlerTag, int state) {
         this->setGestureState(handlerTag, state);
       });
+
+  return true;
 }
 
 void RNGestureHandlerModule::invalidateNative() {

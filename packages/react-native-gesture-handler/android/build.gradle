@@ -74,8 +74,9 @@ def getExternalLibVersion(project){
 
     // Handle cases where version is a pre-release one, e.g. "2.3.0-alpha.1"
     def patchVersion = patch.find(/(\d+)/) ? patch.find(/(\d+)/) : "0"
+    def isPrerelease = libVerision.contains('-')
 
-    return [Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patchVersion)]
+    return [Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patchVersion), isPrerelease]
 }
 
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
@@ -105,6 +106,22 @@ def shouldUseCommonInterfaceFromRNSVG() {
     return (major == 15 && minor == 11 && patch >= 2) ||
             (major == 15 && minor > 11) ||
             major > 15
+}
+
+def shouldUseRuntimeFromWorklets() {
+    def worklets = rootProject.subprojects.find { it.name == 'react-native-worklets' }
+
+    if (worklets == null) {
+        return false
+    }
+
+    def (major, minor, patch, isPrerelease) = getExternalLibVersion(worklets)
+
+    if (isPrerelease) {
+        return false
+    }
+
+    return major > 0 || (major == 0 && minor >= 8)
 }
 
 def reactNativeArchitectures() {
@@ -152,6 +169,7 @@ android {
                 cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
                 arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                         "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
+                        "-DRNGH_USE_WORKLETS=${shouldUseRuntimeFromWorklets()}",
                         "-DANDROID_STL=c++_shared",
                         "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
                 abiFilters(*reactNativeArchitectures())
@@ -221,6 +239,13 @@ dependencies {
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
         implementation(rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
+            // resolves "Duplicate class com.facebook.jni.CppException"
+            exclude group: 'com.facebook.fbjni'
+        }
+    }
+
+    if (shouldUseRuntimeFromWorklets()) {
+        implementation(rootProject.subprojects.find { it.name == 'react-native-worklets' }) {
             // resolves "Duplicate class com.facebook.jni.CppException"
             exclude group: 'com.facebook.fbjni'
         }

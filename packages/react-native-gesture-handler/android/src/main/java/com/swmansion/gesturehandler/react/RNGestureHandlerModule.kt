@@ -120,7 +120,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun installUIRuntimeBindings(): Boolean {
     if (!uiRuntimeDecorated) {
-      uiRuntimeDecorated = decorateUIRuntime()
+      uiRuntimeDecorated = installUIRuntimeBindingsNative()
     }
 
     return uiRuntimeDecorated
@@ -162,7 +162,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   private external fun initHybrid(): HybridData
   private external fun getBindingsInstallerCxx(): BindingsInstallerHolder
-  private external fun decorateUIRuntime(): Boolean
+  private external fun installUIRuntimeBindingsNative(): Boolean
   private external fun invalidateNative(): Unit
 
   override fun getBindingsInstaller() = getBindingsInstallerCxx()

@@ -7,6 +7,10 @@
 
 #include "RNGHRuntimeDecorator.h"
 
+#if RNGH_USE_WORKLETS
+#include <worklets/Compat/StableApi.h>
+#endif
+
 namespace gesturehandler {
 
 using namespace facebook;
@@ -89,25 +93,9 @@ void RNGHRuntimeDecorator::installRNRuntimeBindings(
       rnRuntime, "_RNGH_MODULE_ID", std::move(moduleIdValue));
 }
 
-bool RNGHRuntimeDecorator::installUIRuntimeBindings(
-    jsi::Runtime &rnRuntime,
-    int moduleId,
+void RNGHRuntimeDecorator::installUIRuntimeBindings(
+    jsi::Runtime &uiRuntime,
     std::function<void(int, int)> &&setGestureState) {
-  const auto runtimeHolder =
-      rnRuntime.global().getProperty(rnRuntime, "_WORKLET_RUNTIME");
-
-  if (runtimeHolder.isUndefined()) {
-    return false;
-  }
-
-  const auto arrayBufferValue =
-      runtimeHolder.getObject(rnRuntime).getArrayBuffer(rnRuntime).data(
-          rnRuntime);
-  const auto uiRuntimeAddress =
-      reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
-  jsi::Runtime &uiRuntime =
-      *reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress);
-
   auto setGestureStateSync = jsi::Function::createFromHostFunction(
       uiRuntime,
       jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateSync"),
@@ -128,12 +116,39 @@ bool RNGHRuntimeDecorator::installUIRuntimeBindings(
 
   uiRuntime.global().setProperty(
       uiRuntime, "_setGestureStateSync", std::move(setGestureStateSync));
+}
 
-  auto moduleIdValue = jsi::Value(moduleId);
-  rnRuntime.global().setProperty(
-      rnRuntime, "_RNGH_MODULE_ID", std::move(moduleIdValue));
+ResolvedUIRuntime RNGHRuntimeDecorator::tryFindUIRuntime(
+    jsi::Runtime &rnRuntime) {
+#if RNGH_USE_WORKLETS
+  const auto workletsRuntimeHolder = rnRuntime.global().getProperty(
+      rnRuntime, "__RNGH_UI_WORKLET_RUNTIME_HOLDER");
 
-  return true;
+  if (workletsRuntimeHolder.isObject()) {
+    const auto uiWorkletRuntime = worklets::getWorkletRuntimeFromHolder(
+        rnRuntime, workletsRuntimeHolder.asObject(rnRuntime));
+
+    if (uiWorkletRuntime) {
+      return {
+          &worklets::getJSIRuntimeFromWorkletRuntime(uiWorkletRuntime),
+          uiWorkletRuntime};
+    }
+  }
+#endif
+
+  const auto runtimeHolder =
+      rnRuntime.global().getProperty(rnRuntime, "_WORKLET_RUNTIME");
+
+  if (runtimeHolder.isUndefined()) {
+    return {};
+  }
+
+  const auto arrayBufferValue =
+      runtimeHolder.getObject(rnRuntime).getArrayBuffer(rnRuntime).data(
+          rnRuntime);
+  const auto uiRuntimeAddress =
+      reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
+  return {reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress), nullptr};
 }
 
 } // namespace gesturehandler

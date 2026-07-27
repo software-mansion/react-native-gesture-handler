@@ -6,6 +6,8 @@ is_gh_example_app = ENV["GH_EXAMPLE_APP_NAME"] != nil
 compilation_metadata_dir = "CompilationDatabase"
 compilation_metadata_generation_flag = is_gh_example_app ? '-gen-cdb-fragment-path ' + compilation_metadata_dir : ''
 version_flag = "-DREACT_NATIVE_MINOR_VERSION=#{GestureHandlerUtils.get_react_native_minor_version()}"
+use_worklets = GestureHandlerUtils.react_native_worklets_supports_stable_api()
+worklets_flag = use_worklets ? '-DRNGH_USE_WORKLETS=1' : ''
 
 Pod::Spec.new do |s|
   # NPM package specification
@@ -22,10 +24,14 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.platforms       = { ios: '15.1', tvos: '15.1', osx: '14.0', visionos: '1.0' }
   s.xcconfig = {
-    "OTHER_CFLAGS" => "$(inherited) #{compilation_metadata_generation_flag} #{version_flag}"
+    "OTHER_CFLAGS" => "$(inherited) #{compilation_metadata_generation_flag} #{version_flag} #{worklets_flag}"
   }
 
   install_modules_dependencies(s);
+
+  if use_worklets
+    s.dependency "RNWorklets", ">= 0.8.0"
+  end
 
   if ENV['USE_FRAMEWORKS'] != nil
     add_dependency(s, "React-FabricComponents", :additional_framework_paths => [
