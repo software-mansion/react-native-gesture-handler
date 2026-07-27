@@ -1,17 +1,17 @@
-import {
-  TapGesture,
+import type {
+  FlingGesture,
+  ForceTouchGesture,
+  GestureStateChangeEvent,
+  HoverGesture,
+  LongPressGesture,
+  ManualGesture,
+  NativeGesture,
   PanGesture,
   PinchGesture,
   RotationGesture,
-  FlingGesture,
-  LongPressGesture,
-  ForceTouchGesture,
-  NativeGesture,
-  ManualGesture,
-  HoverGesture,
-  GestureStateChangeEvent,
-  State,
+  TapGesture,
 } from 'react-native-gesture-handler';
+import { State } from 'react-native-gesture-handler';
 
 export const WAVE_DELAY_MS = 150;
 const Colors = {
