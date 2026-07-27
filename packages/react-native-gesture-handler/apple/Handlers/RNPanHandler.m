@@ -337,10 +337,10 @@
   }
 
   CGPoint velocity = [self velocityInView:self.view];
-  if (TEST_MIN_IF_NOT_NAN(velocity.x, _minVelocityX)) {
+  if (TEST_ABS_MIN_IF_NOT_NAN(velocity.x, _minVelocityX)) {
     return YES;
   }
-  if (TEST_MIN_IF_NOT_NAN(velocity.y, _minVelocityY)) {
+  if (TEST_ABS_MIN_IF_NOT_NAN(velocity.y, _minVelocityY)) {
     return YES;
   }
   if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ(velocity), _minVelocitySq)) {

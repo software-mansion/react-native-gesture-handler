@@ -117,6 +117,18 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 
 Minimum distance the finger (or multiple fingers) need to travel before the gesture [activates](/docs/2.x/fundamentals/states-events#active). Expressed in points.
 
+### `minVelocity(value: number)`
+
+Minimum speed the pointer has to reach in order for the gesture to [activate](/docs/2.x/fundamentals/states-events#active). Expressed in points per second.
+
+### `minVelocityX(value: number)`
+
+Minimum speed along X axis the pointer has to reach in order for the gesture to [activate](/docs/2.x/fundamentals/states-events#active). Expressed in points per second.
+
+### `minVelocityY(value: number)`
+
+Minimum speed along Y axis the pointer has to reach in order for the gesture to [activate](/docs/2.x/fundamentals/states-events#active). Expressed in points per second.
+
 ### `minPointers(value: number)`
 
 A number of fingers that is required to be placed before the gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be an integer greater than or equal to 0.
