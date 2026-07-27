@@ -69,80 +69,38 @@ class RNGestureHandlerButtonViewManager :
   public override fun createViewInstance(context: ThemedReactContext) = ButtonViewGroup(context)
 
   override fun onDropViewInstance(view: ButtonViewGroup) {
-    view.managedHandlerTag?.let { tag ->
-      getGestureHandlerModule(view).dropGestureHandler(tag)
-    }
+    dropManagedHandler(view)
+
+    // The view may end up recycled, and props matching their default aren't re-applied on the next
+    // mount — leaving the cached values behind would configure (or even create) a handler for the
+    // next button from the previous one's props.
+    view.pendingHandlerTag = null
+    view.managedHandlerCancelOnLeave = null
+    view.managedHandlerTestID = null
+    view.managedHandlerHitSlop = null
+    view.managedHandlerNeedsUpdate = false
 
     super.onDropViewInstance(view)
   }
 
-  private fun getGestureHandlerModule(view: ButtonViewGroup) =
-    (view.context as ReactContext).getNativeModule(RNGestureHandlerModule::class.java)!!
-
-  private fun updateManagedHandlerConfig(view: ButtonViewGroup, config: ReadableMap) {
-    view.managedHandlerTag?.let { getGestureHandlerModule(view).updateGestureHandlerConfig(it, config) }
-  }
-
   @ReactProp(name = "handlerTag")
   override fun setHandlerTag(view: ButtonViewGroup, handlerTag: Double) {
-    if (view.managedHandlerTag == handlerTag) {
-      return
-    }
-
-    view.managedHandlerTag?.let { oldTag ->
-      getGestureHandlerModule(view).dropGestureHandler(oldTag)
-    }
-
-    view.managedHandlerTag = handlerTag
-    val module = getGestureHandlerModule(view)
-
-    module.createGestureHandler(
-      "NativeViewGestureHandler",
-      handlerTag,
-      Arguments.createMap().apply {
-        putBoolean("shouldActivateOnStart", false)
-        putBoolean("disallowInterruption", true)
-        putBoolean("yieldsToContinuousGestures", true)
-        putBoolean("enabled", view.isEnabled)
-        view.managedHandlerCancelOnLeave?.let { putBoolean("shouldCancelWhenOutside", it) }
-        view.managedHandlerTestID?.let { putString("testID", it) }
-        view.managedHandlerHitSlop?.let { putMap("hitSlop", it) }
-      },
-    )
-    module.attachGestureHandler(handlerTag, view.id.toDouble(), GestureHandler.ACTION_TYPE_NONE.toDouble())
+    view.pendingHandlerTag = handlerTag
   }
 
   @ReactProp(name = "cancelOnLeave")
   override fun setCancelOnLeave(view: ButtonViewGroup, cancelOnLeave: Boolean) {
     view.managedHandlerCancelOnLeave = cancelOnLeave
-    updateManagedHandlerConfig(
-      view,
-      Arguments.createMap().apply {
-        putBoolean("shouldCancelWhenOutside", cancelOnLeave)
-      },
-    )
   }
 
   @ReactProp(name = "gestureTestID")
   override fun setGestureTestID(view: ButtonViewGroup, gestureTestID: String?) {
     view.managedHandlerTestID = gestureTestID
-    updateManagedHandlerConfig(
-      view,
-      Arguments.createMap().apply {
-        putString("testID", gestureTestID)
-      },
-    )
   }
 
   @ReactProp(name = "gestureHitSlop")
   override fun setGestureHitSlop(view: ButtonViewGroup, gestureHitSlop: ReadableMap?) {
     view.managedHandlerHitSlop = gestureHitSlop
-    updateManagedHandlerConfig(
-      view,
-      Arguments.createMap().apply {
-        putMap("hitSlop", gestureHitSlop)
-      },
-    )
   }
 
   @ReactProp(name = "hasLongPressHandler")
@@ -153,7 +111,9 @@ class RNGestureHandlerButtonViewManager :
   // No-op — only iOS needs the module id to resolve the handler manager, Android
   // gets the module from the view's context.
   @ReactProp(name = "moduleId")
-  override fun setModuleId(view: ButtonViewGroup, moduleId: Int) = Unit
+  override fun setModuleId(view: ButtonViewGroup, moduleId: Int) {
+    view.moduleId = moduleId
+  }
 
   @ReactProp(name = "foreground")
   override fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
@@ -173,13 +133,6 @@ class RNGestureHandlerButtonViewManager :
   @ReactProp(name = "enabled")
   override fun setEnabled(view: ButtonViewGroup, enabled: Boolean) {
     view.isEnabled = enabled
-
-    updateManagedHandlerConfig(
-      view,
-      Arguments.createMap().apply {
-        putBoolean("enabled", enabled)
-      },
-    )
   }
 
   @ReactProp(name = "borderWidth")
@@ -467,9 +420,69 @@ class RNGestureHandlerButtonViewManager :
     }
   }
 
+  /**
+   * Creates, reconfigures or drops the [NativeViewGestureHandler] the button manages, based on the
+   * props cached on the view. Runs once per prop transaction rather than from the individual prop
+   * setters: each of those would otherwise repeat the module lookup, build a config map and look
+   * the handler up in the registry, and since prop order isn't guaranteed, `handlerTag` may be
+   * applied after the props that configure the handler.
+   */
+  private fun updateManagedHandler(view: ButtonViewGroup) {
+    val moduleId = view.moduleId ?: return
+    if (!view.managedHandlerNeedsUpdate) {
+      return
+    }
+
+    view.managedHandlerNeedsUpdate = false
+
+    // Handler tags start at 1, so anything below that means the prop was either never set or reset
+    // to its default because it got removed.
+    val handlerTag = view.pendingHandlerTag?.takeIf { it > 0 }
+
+    if (handlerTag == null) {
+      dropManagedHandler(view)
+      return
+    }
+
+    val module = RNGestureHandlerModule.getModule(moduleId) ?: return
+
+    if (handlerTag != view.managedHandlerTag) {
+      dropManagedHandler(view)
+
+      module.createGestureHandler("NativeViewGestureHandler", handlerTag, buildManagedHandlerConfig(view))
+      module.attachGestureHandler(handlerTag, view.id.toDouble(), GestureHandler.ACTION_TYPE_NONE.toDouble())
+
+      view.managedHandlerTag = handlerTag
+      return
+    }
+
+    module.updateGestureHandlerConfig(handlerTag, buildManagedHandlerConfig(view))
+  }
+
+  private fun dropManagedHandler(view: ButtonViewGroup) {
+    val moduleId = view.moduleId ?: return
+    view.managedHandlerTag?.let { tag ->
+      RNGestureHandlerModule.getModule(moduleId)?.dropGestureHandler(tag)
+      view.managedHandlerTag = null
+    }
+  }
+
+  private fun buildManagedHandlerConfig(view: ButtonViewGroup): ReadableMap = Arguments.createMap().apply {
+    putBoolean("shouldActivateOnStart", false)
+    putBoolean("disallowInterruption", true)
+    putBoolean("yieldsToContinuousGestures", true)
+    putBoolean("enabled", view.isEnabled)
+    // Written even when null so that a removed prop clears the one on the handler.
+    putString("testID", view.managedHandlerTestID)
+    putMap("hitSlop", view.managedHandlerHitSlop)
+
+    putBoolean("shouldCancelWhenOutside", view.managedHandlerCancelOnLeave ?: true)
+  }
+
   override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
     super.onAfterUpdateTransaction(view)
 
+    updateManagedHandler(view)
     view.updateBackground()
     view.updateLongPressAccessibility()
   }
@@ -498,13 +511,27 @@ class RNGestureHandlerButtonViewManager :
 
     var managedHandlerTag: Double? = null
 
-    // Config props may be applied before `handlerTag` (prop order is not guaranteed) and
-    // `updateManagedHandlerConfig` no-ops until the handler exists, so the values are cached
-    // here and seeded into the config when `setHandlerTag` creates the handler. This also
-    // re-applies them when the handler is recreated for a new tag.
+    var pendingHandlerTag: Double? = null
+      set(tag) = withManagedHandlerUpdate {
+        field = tag
+      }
     var managedHandlerCancelOnLeave: Boolean? = null
+      set(cancelOnLeave) = withManagedHandlerUpdate {
+        field = cancelOnLeave
+      }
     var managedHandlerTestID: String? = null
+      set(testID) = withManagedHandlerUpdate {
+        field = testID
+      }
     var managedHandlerHitSlop: ReadableMap? = null
+      set(hitSlop) = withManagedHandlerUpdate {
+        field = hitSlop
+      }
+    var moduleId: Int? = null
+      set(moduleId) = withManagedHandlerUpdate {
+        field = moduleId
+      }
+    var managedHandlerNeedsUpdate = false
 
     var exclusive = true
     var hasLongPressHandler = false
@@ -589,6 +616,11 @@ class RNGestureHandlerButtonViewManager :
     private inline fun withBackgroundUpdate(block: () -> Unit) {
       block()
       needBackgroundUpdate = true
+    }
+
+    private inline fun withManagedHandlerUpdate(block: () -> Unit) {
+      block()
+      managedHandlerNeedsUpdate = true
     }
 
     fun setOverflow(overflow: String?) {
@@ -1249,7 +1281,14 @@ class RNGestureHandlerButtonViewManager :
       val changed = enabled != isEnabled
       super.setEnabled(enabled)
 
-      if (changed && isHovered) {
+      if (!changed) {
+        return
+      }
+
+      // The managed handler mirrors the button's enabled state.
+      managedHandlerNeedsUpdate = true
+
+      if (isHovered) {
         animateHoverState()
       }
     }
