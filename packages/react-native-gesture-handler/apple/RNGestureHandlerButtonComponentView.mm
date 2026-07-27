@@ -273,6 +273,10 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
     config[@"testID"] = RCTNSStringFromString(props.gestureTestID);
   }
 
+  // `gestureHitSlop` is optional on the JS side, but the generated props struct cannot carry
+  // null — an unset (or explicitly nulled out) prop arrives zero-initialized, i.e. 0 on every
+  // edge. That is equivalent to no hit slop, so the key is left out of the config entirely
+  // and the handler keeps its unset default instead of hit-testing against an identical frame.
   if (props.gestureHitSlop.top != 0 || props.gestureHitSlop.left != 0 || props.gestureHitSlop.bottom != 0 ||
       props.gestureHitSlop.right != 0) {
     config[@"hitSlop"] = @{

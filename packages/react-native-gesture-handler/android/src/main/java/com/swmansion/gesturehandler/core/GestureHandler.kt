@@ -197,7 +197,13 @@ open class GestureHandler {
     }
   }
 
-  fun setHitSlop(padding: Float) = setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
+  fun setHitSlop(padding: Float?) {
+    if (padding == null) {
+      hitSlop = DEFAULT_HIT_SLOP
+    } else {
+      setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
+    }
+  }
 
   fun setInteractionController(controller: GestureHandlerInteractionController?) {
     interactionController = controller
@@ -989,7 +995,9 @@ open class GestureHandler {
       private const val KEY_CANCELS_JS_RESPONDER = "cancelsJSResponder"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
-        if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
+        if (config.isNull(KEY_HIT_SLOP)) {
+          handler.setHitSlop(null)
+        } else if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
           val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
           handler.setHitSlop(
             hitSlop,

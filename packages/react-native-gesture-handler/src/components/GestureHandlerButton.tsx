@@ -33,6 +33,7 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
         bottom?: number | undefined;
         right?: number | undefined;
       }
+    | null
     | undefined;
 
   /**

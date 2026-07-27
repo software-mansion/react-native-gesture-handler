@@ -162,12 +162,12 @@ export const Touchable = (props: TouchableProps) => {
   const tvProps = getTVProps(rest);
 
   const hitSlop =
-    typeof props.hitSlop === 'number' || props.hitSlop == null
+    typeof props.hitSlop === 'number'
       ? {
-          top: props.hitSlop ?? 0,
-          left: props.hitSlop ?? 0,
-          bottom: props.hitSlop ?? 0,
-          right: props.hitSlop ?? 0,
+          top: props.hitSlop,
+          left: props.hitSlop,
+          bottom: props.hitSlop,
+          right: props.hitSlop,
         }
       : props.hitSlop;
 
