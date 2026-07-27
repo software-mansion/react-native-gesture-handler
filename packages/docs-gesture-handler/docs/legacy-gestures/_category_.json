@@ -1,6 +1,6 @@
 {
-  "label": "Gesture Handler 2",
-  "position": 4,
+  "label": "Legacy Gesture Handler 2",
+  "position": 5,
   "link": {
     "type": "generated-index"
   }

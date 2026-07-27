@@ -328,9 +328,8 @@ class GestureHandlerOrchestrator(
     }
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
-      val isFirstEvent = handler.state == 0
       handler.handle(event, sourceEvent)
-      if (handler.isActive) {
+      if (handler.state == GestureHandler.STATE_ACTIVE && handler.isActive) {
         // After handler is done waiting for other one to fail its progress should be
         // reset, otherwise there may be a visible jump in values sent by the handler.
         // When handler is waiting it's already activated but the `isAwaiting` flag

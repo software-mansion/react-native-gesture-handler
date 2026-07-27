@@ -120,6 +120,7 @@ export const Touchable = (props: TouchableProps) => {
 
   const wrappedLongPress = useCallback(() => {
     longPressDetected.current = true;
+    // @ts-ignore - the detector-based implementation is missing the event argument
     onLongPress?.();
   }, [onLongPress]);
 

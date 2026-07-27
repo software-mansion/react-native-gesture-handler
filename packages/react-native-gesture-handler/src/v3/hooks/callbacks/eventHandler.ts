@@ -150,6 +150,11 @@ export function eventHandler<
     return;
   }
 
+  // Guard against malformed events
+  if (eventWithData.handlerData === undefined) {
+    return;
+  }
+
   if (!dispatchesAnimatedEvents) {
     handleUpdateEvent(
       eventWithData,

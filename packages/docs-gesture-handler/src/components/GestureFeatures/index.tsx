@@ -1,7 +1,8 @@
-import React from 'react';
-import styles from './styles.module.css';
-import HomepageButton from '@site/src/components/HomepageButton';
 import GestureFeatureList from '@site/src/components/GestureFeatures/GestureFeatureList';
+import HomepageButton from '@site/src/components/HomepageButton';
+import React from 'react';
+
+import styles from './styles.module.css';
 
 const GestureFeatures = () => {
   return (
@@ -15,7 +16,7 @@ const GestureFeatures = () => {
         </p>
         <HomepageButton
           target="_blank"
-          href="https://blog.swmansion.com/introducing-gesture-handler-2-0-50515f1c4afc"
+          href="https://swmansion.com/blog/introducing-gesture-handler-3-0-hook-based-api-deeper-reanimated-integration-more-9185b0c8e305/"
           title="See blog post"
           backgroundStyling={styles.featuresButton}
         />

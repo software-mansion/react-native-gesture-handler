@@ -118,6 +118,12 @@ export function getChangeEventCalculator<TExtendedHandlerData>(
   ) => {
     'worklet';
     const currentEventData = current.handlerData;
+
+    // Guard against malformed events
+    if (currentEventData === undefined) {
+      return current;
+    }
+
     const previousEventData = previous ? previous.handlerData : null;
 
     const changePayload = diffCalculator(currentEventData, previousEventData);

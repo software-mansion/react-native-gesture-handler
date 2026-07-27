@@ -10,6 +10,8 @@ import { webContainer } from '@site/src/utils/getGestureStyles';
 import TapGestureBasic from '../examples/TapGestureBasic';
 import TapGestureBasicSrc from '!!raw-loader!../examples/TapGestureBasic';
 
+A discrete gesture that recognizes one or many taps.
+
 <div className={webContainer}>
   <InteractiveExample
     component={<TapGestureBasic/>}
@@ -21,8 +23,6 @@ import TapGestureBasicSrc from '!!raw-loader!../examples/TapGestureBasic';
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
-
-A discrete gesture that recognizes one or many taps.
 
 Tap gestures detect one or more fingers briefly touching the screen.
 The fingers involved in these gestures must not move significantly from their initial touch positions.
