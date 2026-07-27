@@ -1,19 +1,24 @@
+import { useColorMode } from '@docusaurus/theme-common';
+// eslint-disable-next-line import-x/extensions
+import Arrow from '@site/static/img/arrow-circle-left.svg';
+// eslint-disable-next-line import-x/extensions
+import Hand from '@site/static/img/hand-two.svg';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import stylesWeb from './styles.module.css';
 import {
-  GestureHandlerRootView,
   GestureDetector,
-  Gesture,
+  GestureHandlerRootView,
+  usePanGesture,
+  useRotationGesture,
+  useSimultaneousGestures,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import Hand from '@site/static/img/hand-two.svg';
-import Arrow from '@site/static/img/arrow-circle-left.svg';
-import { useColorMode } from '@docusaurus/theme-common';
-import { RADIUS, isInsideCircle } from '../utils';
+
+import { isInsideCircle, RADIUS } from '../utils';
+import stylesWeb from './styles.module.css';
 
 export default function RotationExample() {
   const colorModeStyles =
@@ -54,9 +59,9 @@ export default function RotationExample() {
     };
   }, []);
 
-  const pan = Gesture.Pan()
-    .onStart(() => setShowHand(false))
-    .onChange((e) => {
+  const pan = usePanGesture({
+    onActivate: () => setShowHand(false),
+    onUpdate: (e) => {
       if (isPanEnabled) {
         pointerX.value = e.absoluteX;
         pointerY.value = e.absoluteY;
@@ -80,26 +85,30 @@ export default function RotationExample() {
           setShowGestureCircle(true);
         }
       }
-    })
-    .onEnd(() => {
+    },
+    onDeactivate: () => {
       setShowGestureCircle(false);
       setShowHand(true);
-    });
+    },
+  });
 
-  const rotation = Gesture.Rotation()
-    .onStart(() => {
+  const rotation = useRotationGesture({
+    onActivate: () => {
       setIsPanEnabled(false);
       setShowGestureCircle(false);
       setShowHand(false);
-    })
-    .onUpdate((e) => {
+    },
+    onUpdate: (e) => {
       rotationVal.value = savedRotation.value + e.rotation;
-    })
-    .onEnd(() => {
+    },
+    onDeactivate: () => {
       savedRotation.value = rotationVal.value;
       setIsPanEnabled(true);
       setShowHand(true);
-    });
+    },
+  });
+
+  const composedGesture = useSimultaneousGestures(pan, rotation);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -121,7 +130,7 @@ export default function RotationExample() {
   }));
 
   return (
-    <GestureDetector gesture={Gesture.Simultaneous(pan, rotation)}>
+    <GestureDetector gesture={composedGesture}>
       <GestureHandlerRootView style={styles.container}>
         <div className={stylesWeb.rotationClone} />
         {showHand && <Arrow className={stylesWeb.arrowRotation} />}

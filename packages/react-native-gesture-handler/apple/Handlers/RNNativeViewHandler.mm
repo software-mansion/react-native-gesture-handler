@@ -114,6 +114,7 @@
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
   BOOL _yieldsToContinuousGestures;
+  BOOL _delaysChildPressedState;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
 }
 
@@ -121,6 +122,7 @@
 {
   if ((self = [super initWithTag:tag])) {
     _recognizer = [[RNDummyGestureRecognizer alloc] initWithGestureHandler:self];
+    _delaysChildPressedState = YES;
   }
   return self;
 }
@@ -131,6 +133,17 @@
   _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
   _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
   _yieldsToContinuousGestures = [RCTConvert BOOL:config[@"yieldsToContinuousGestures"]];
+
+  id delaysChildPressedState = config[@"delaysChildPressedState"];
+  _delaysChildPressedState = delaysChildPressedState == nil ? YES : [RCTConvert BOOL:delaysChildPressedState];
+
+#if !TARGET_OS_OSX
+  // Config may be updated after the handler is bound to a view — re-apply to the connected
+  // scroll view if there is one.
+  if (self.recognizer.view != nil) {
+    [self retrieveScrollView:self.recognizer.view].delaysContentTouches = _delaysChildPressedState;
+  }
+#endif
 }
 
 #if !TARGET_OS_OSX
@@ -177,9 +190,10 @@
 
   // We can restore default scrollview behaviour to delay touches to scrollview's children
   // because gesture handler system can handle cancellation of scroll recognizer when JS responder
-  // is set
+  // is set. Setting `delaysChildPressedState` to `false` opts out of this, keeping touches delivered
+  // to children immediately.
   UIScrollView *scrollView = [self retrieveScrollView:view];
-  scrollView.delaysContentTouches = YES;
+  scrollView.delaysContentTouches = _delaysChildPressedState;
 }
 
 - (void)unbindFromView
@@ -197,14 +211,19 @@
   [super unbindFromView];
 }
 
-- (BOOL)shouldSuppressActiveEvent:(RNGestureHandlerEventExtraData *)extraData
+- (RNGestureHandlerEventExtraData *)extraDataForView:(UIView *)sender
+                                               event:(UIEvent *)event
+                                       pointerInside:(BOOL)pointerInside
 {
-  if (_lastActiveExtraData != nil && [_lastActiveExtraData.data isEqualToDictionary:extraData.data]) {
-    return YES;
-  }
+  RNGHUITouch *touch = [[event allTouches] anyObject];
+  CGPoint position = touch ? [touch locationInView:sender] : CGPointZero;
+  CGPoint absolutePosition = touch ? [touch locationInView:nil] : [sender convertPoint:CGPointZero toView:nil];
 
-  _lastActiveExtraData = extraData;
-  return NO;
+  return [RNGestureHandlerEventExtraData forPointerInside:pointerInside
+                                             withPosition:position
+                                     withAbsolutePosition:absolutePosition
+                                      withNumberOfTouches:event.allTouches.count
+                                          withPointerType:_pointerType];
 }
 
 - (void)sendActiveStateEventIfChangedForView:(UIView *)sender extraData:(RNGestureHandlerEventExtraData *)extraData
@@ -218,21 +237,19 @@
 
 - (void)handleSwitch:(UIView *)sender
 {
-  [self sendEventsInState:RNGestureHandlerStateBegan
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
-  [self sendEventsInState:RNGestureHandlerStateActive
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
-  [self sendEventsInState:RNGestureHandlerStateEnd
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
+  CGPoint center = CGPointMake(CGRectGetMidX(sender.bounds), CGRectGetMidY(sender.bounds));
+  CGPoint absoluteCenter = [sender convertPoint:center toView:nil];
+  RNGestureHandlerEventExtraData * (^extraData)(void) = ^{
+    return [RNGestureHandlerEventExtraData forPointerInside:YES
+                                               withPosition:center
+                                       withAbsolutePosition:absoluteCenter
+                                        withNumberOfTouches:1
+                                            withPointerType:self->_pointerType];
+  };
+
+  [self sendEventsInState:RNGestureHandlerStateBegan forViewWithTag:sender.reactTag withExtraData:extraData()];
+  [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:sender.reactTag withExtraData:extraData()];
+  [self sendEventsInState:RNGestureHandlerStateEnd forViewWithTag:sender.reactTag withExtraData:extraData()];
 
   [self reset];
 }
@@ -262,9 +279,7 @@
 
   [self sendEventsInState:RNGestureHandlerStateBegan
            forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:event.allTouches.count
-                                                           withPointerType:_pointerType]];
+            withExtraData:[self extraDataForView:sender event:event pointerInside:YES]];
 }
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
@@ -275,16 +290,12 @@
 
   [self sendEventsInState:RNGestureHandlerStateEnd
            forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                       withNumberOfTouches:event.allTouches.count
-                                                           withPointerType:_pointerType]];
+            withExtraData:[self extraDataForView:sender event:event pointerInside:NO]];
 }
 
 - (void)handleTouchUpInside:(UIView *)sender forEvent:(UIEvent *)event
 {
-  RNGestureHandlerEventExtraData *extraData = [RNGestureHandlerEventExtraData forPointerInside:YES
-                                                                           withNumberOfTouches:event.allTouches.count
-                                                                               withPointerType:_pointerType];
+  RNGestureHandlerEventExtraData *extraData = [self extraDataForView:sender event:event pointerInside:YES];
 
   [self sendActiveStateEventIfChangedForView:sender extraData:extraData];
   [self sendEventsInState:RNGestureHandlerStateEnd forViewWithTag:sender.reactTag withExtraData:extraData];
@@ -298,26 +309,20 @@
     [control cancelTrackingWithEvent:event];
   } else {
     [self sendActiveStateEventIfChangedForView:sender
-                                     extraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                                            withNumberOfTouches:event.allTouches.count
-                                                                                withPointerType:_pointerType]];
+                                     extraData:[self extraDataForView:sender event:event pointerInside:NO]];
   }
 }
 
 - (void)handleDragEnter:(UIView *)sender forEvent:(UIEvent *)event
 {
   [self sendActiveStateEventIfChangedForView:sender
-                                   extraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                                          withNumberOfTouches:event.allTouches.count
-                                                                              withPointerType:_pointerType]];
+                                   extraData:[self extraDataForView:sender event:event pointerInside:YES]];
 }
 
 - (void)handleDragInside:(UIView *)sender forEvent:(UIEvent *)event
 {
   [self sendActiveStateEventIfChangedForView:sender
-                                   extraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                                          withNumberOfTouches:event.allTouches.count
-                                                                              withPointerType:_pointerType]];
+                                   extraData:[self extraDataForView:sender event:event pointerInside:YES]];
 }
 
 - (void)handleDragOutside:(UIView *)sender forEvent:(UIEvent *)event
@@ -327,18 +332,14 @@
   }
 
   [self sendActiveStateEventIfChangedForView:sender
-                                   extraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                                          withNumberOfTouches:event.allTouches.count
-                                                                              withPointerType:_pointerType]];
+                                   extraData:[self extraDataForView:sender event:event pointerInside:NO]];
 }
 
 - (void)handleTouchCancel:(UIView *)sender forEvent:(UIEvent *)event
 {
   [self sendEventsInState:RNGestureHandlerStateCancelled
            forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                       withNumberOfTouches:event.allTouches.count
-                                                           withPointerType:_pointerType]];
+            withExtraData:[self extraDataForView:sender event:event pointerInside:NO]];
 }
 
 - (BOOL)wantsToAttachDirectlyToView
@@ -346,17 +347,46 @@
   return YES;
 }
 
+#endif
+
 - (void)reset
 {
   [super reset];
   _lastActiveExtraData = nil;
 }
 
-#endif
+- (BOOL)shouldSuppressActiveEvent:(RNGestureHandlerEventExtraData *)extraData
+{
+  NSDictionary *last = _lastActiveExtraData.data;
+  NSDictionary *current = extraData.data;
+
+  if (last != nil && [last[@"pointerInside"] isEqual:current[@"pointerInside"]] &&
+      [last[@"numberOfPointers"] isEqual:current[@"numberOfPointers"]] &&
+      [last[@"pointerType"] isEqual:current[@"pointerType"]]) {
+    return YES;
+  }
+
+  _lastActiveExtraData = extraData;
+  return NO;
+}
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNDummyGestureRecognizer *)recognizer
 {
+#if TARGET_OS_OSX
+  // macOS window coordinates are bottom-left origin; flip Y to match RN's
+  // top-left origin, mirroring RNGestureHandlerPointerTracker.
+  CGFloat windowHeight = recognizer.view.window.contentView.frame.size.height;
+  CGPoint yFlippedAbsolute = [recognizer locationInView:nil];
+  CGPoint absolutePosition = CGPointMake(yFlippedAbsolute.x, windowHeight - yFlippedAbsolute.y);
+  CGPoint position = [recognizer.view convertPoint:absolutePosition fromView:recognizer.view.window.contentView];
+#else
+  CGPoint position = [recognizer locationInView:recognizer.view];
+  CGPoint absolutePosition = [recognizer locationInView:nil];
+#endif
+
   return [RNGestureHandlerEventExtraData forPointerInside:[self containsPointInView]
+                                             withPosition:position
+                                     withAbsolutePosition:absolutePosition
                                       withNumberOfTouches:1
                                           withPointerType:RNGestureHandlerMouse];
 }

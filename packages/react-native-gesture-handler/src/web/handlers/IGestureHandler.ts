@@ -1,3 +1,6 @@
+import type { RefObject } from 'react';
+
+import type { ActionType } from '../../ActionType';
 import type {
   ActiveCursor,
   MouseButton,
@@ -7,13 +10,14 @@ import type {
 import type { PointerType } from '../../PointerType';
 import type { State } from '../../State';
 import type { SingleGestureName } from '../../v3/types';
-import type { Config } from '../interfaces';
+import type { Config, HostDetector, PropsRef } from '../interfaces';
 import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import type PointerTracker from '../tools/PointerTracker';
 
 export default interface IGestureHandler {
   attached: boolean;
+  hostDetectorView: HostDetector | null;
   active: boolean;
   activationIndex: number;
   awaiting: boolean;
@@ -49,6 +53,12 @@ export default interface IGestureHandler {
   fail: () => void;
   cancel: () => void;
 
+  init: (
+    viewRef: number,
+    propsRef: RefObject<PropsRef>,
+    actionType: ActionType,
+    hostDetector?: HostDetector | null
+  ) => void;
   reset: () => void;
   detach: () => void;
 

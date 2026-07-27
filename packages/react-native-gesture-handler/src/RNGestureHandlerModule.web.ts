@@ -3,7 +3,7 @@ import React from 'react';
 import type { ActionType } from './ActionType';
 import type { GestureRelations } from './v3/types';
 import { Gestures } from './web/Gestures';
-import type { Config, PropsRef } from './web/interfaces';
+import type { Config, HostDetector, PropsRef } from './web/interfaces';
 import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
@@ -39,7 +39,8 @@ export default {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newView: any,
     actionType: ActionType,
-    propsRef: React.RefObject<PropsRef>
+    propsRef: React.RefObject<PropsRef>,
+    hostDetector?: HostDetector | null
   ) {
     if (!(newView instanceof Element || newView instanceof React.Component)) {
       shouldPreventDrop = true;
@@ -53,16 +54,21 @@ export default {
       );
     }
 
-    // @ts-ignore Types should be HTMLElement or React.Component
-    NodeManager.getHandler(handlerTag).init(newView, propsRef, actionType);
+    NodeManager.getHandler(handlerTag).init(
+      // @ts-expect-error view ref type differs between web and native
+      newView,
+      propsRef,
+      actionType,
+      hostDetector ?? null
+    );
   },
-  detachGestureHandler(handlerTag: number) {
+  detachGestureHandler(handlerTag: number, hostDetector?: HostDetector | null) {
     if (shouldPreventDrop) {
       shouldPreventDrop = false;
       return;
     }
 
-    NodeManager.detachGestureHandler(handlerTag);
+    NodeManager.detachGestureHandler(handlerTag, hostDetector);
   },
   setGestureHandlerConfig(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).setGestureConfig(newConfig);

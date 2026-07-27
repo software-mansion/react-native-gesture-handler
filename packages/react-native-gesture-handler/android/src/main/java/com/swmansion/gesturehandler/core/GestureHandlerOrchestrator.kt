@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler.core
 
 import android.graphics.Matrix
 import android.graphics.PointF
+import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +30,20 @@ class GestureHandlerOrchestrator(
   var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
   private val gestureHandlers = arrayListOf<GestureHandler>()
   private val awaitingHandlers = arrayListOf<GestureHandler>()
-  private val preparedHandlers = arrayListOf<GestureHandler>()
+
+  // Pool of reusable lists for snapshotting `gestureHandlers` during event delivery.
+  private val handlerListPool = ArrayDeque<ArrayList<GestureHandler>>()
+
+  private fun obtainHandlerList() = handlerListPool.pollLast() ?: ArrayList<GestureHandler>()
+
+  private fun recycleHandlerList(list: ArrayList<GestureHandler>) {
+    list.clear()
+    handlerListPool.addLast(list)
+  }
+
+  // Used by `cancelTouchesInInterceptedViews`.
+  private val viewsToCancel = arrayListOf<View>()
+  private val pointerDownPoints = SparseArray<PointF>()
 
   // In `onHandlerStateChange` method we iterate through `awaitingHandlers`, but calling `tryActivate` may modify this list.
   // To avoid `ConcurrentModificationException` we iterate through copy. There is one more problem though - if handler was
@@ -49,6 +63,7 @@ class GestureHandlerOrchestrator(
   fun onTouchEvent(event: MotionEvent): Boolean {
     isHandlingTouch = true
     val action = event.actionMasked
+    trackPointerDownPoints(event)
     if (action == MotionEvent.ACTION_DOWN ||
       action == MotionEvent.ACTION_POINTER_DOWN ||
       action == MotionEvent.ACTION_HOVER_MOVE
@@ -260,20 +275,24 @@ class GestureHandlerOrchestrator(
   }
 
   private fun deliverEventToGestureHandlers(event: MotionEvent) {
-    // Copy handlers to "prepared handlers" array, because the list of active handlers can change
-    // as a result of state updates
-    preparedHandlers.clear()
-    preparedHandlers.addAll(gestureHandlers)
+    // Snapshot handlers into a pooled list, because the list of active handlers can change
+    // as a result of state updates (and delivery can be re-entrant).
+    val handlersToProcess = obtainHandlerList()
+    handlersToProcess.addAll(gestureHandlers)
 
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
     // order in which handlers has been added ("most direct" children goes first). Therefore we rely
     // on Arrays.sort providing a stable sort (as children are registered in order in which they
     // should be tested)
-    preparedHandlers.sortWith(handlersComparator)
+    handlersToProcess.sortWith(handlersComparator)
 
-    for (handler in preparedHandlers) {
-      deliverEventToGestureHandler(handler, event)
+    try {
+      for (handler in handlersToProcess) {
+        deliverEventToGestureHandler(handler, event)
+      }
+    } finally {
+      recycleHandlerList(handlersToProcess)
     }
   }
 
@@ -284,12 +303,9 @@ class GestureHandlerOrchestrator(
       handler.cancel()
     }
 
-    // Copy handlers to "prepared handlers" array, because the list of active handlers can change
+    // Iterate over a copy, because the list of active handlers can change
     // as a result of state updates
-    preparedHandlers.clear()
-    preparedHandlers.addAll(gestureHandlers)
-
-    for (handler in gestureHandlers.asReversed()) {
+    for (handler in gestureHandlers.reversed()) {
       handler.cancel()
     }
   }
@@ -312,9 +328,8 @@ class GestureHandlerOrchestrator(
     }
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
-      val isFirstEvent = handler.state == 0
       handler.handle(event, sourceEvent)
-      if (handler.isActive) {
+      if (handler.state == GestureHandler.STATE_ACTIVE && handler.isActive) {
         // After handler is done waiting for other one to fail its progress should be
         // reset, otherwise there may be a visible jump in values sent by the handler.
         // When handler is waiting it's already activated but the `isAwaiting` flag
@@ -677,6 +692,112 @@ class GestureHandlerOrchestrator(
           return true
         }
       }
+    }
+    return false
+  }
+
+  private fun trackPointerDownPoints(event: MotionEvent) {
+    val index = event.actionIndex
+    when (event.actionMasked) {
+      MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN ->
+        pointerDownPoints.put(event.getPointerId(index), PointF(event.getX(index), event.getY(index)))
+      MotionEvent.ACTION_POINTER_UP ->
+        pointerDownPoints.remove(event.getPointerId(index))
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
+        pointerDownPoints.clear()
+    }
+  }
+
+  fun cancelTouchesInInterceptedViews(event: MotionEvent) {
+    viewsToCancel.clear()
+    for (i in 0 until pointerDownPoints.size()) {
+      val point = pointerDownPoints.valueAt(i)
+      tempCoords[0] = point.x
+      tempCoords[1] = point.y
+      collectViewsAtPoint(wrapperView, tempCoords, viewsToCancel)
+    }
+
+    if (viewsToCancel.isEmpty()) {
+      return
+    }
+
+    val activeHandlers = gestureHandlers.filter { it.isActive }
+    val cancelEvent = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_CANCEL }
+
+    for (view in viewsToCancel) {
+      if (view === wrapperView || isViewDrivenByActiveNativeGesture(view, activeHandlers)) {
+        continue
+      }
+      view.onTouchEvent(cancelEvent)
+    }
+
+    cancelEvent.recycle()
+    viewsToCancel.clear()
+  }
+
+  // Whether the view's touch is still owned by a NativeViewGestureHandler that survived arbitration.
+  // Only those are fed through `onTouchEvent`, so only those break if cancelled. Other handlers are
+  // orchestrator-driven and unaffected.
+  private fun isViewDrivenByActiveNativeGesture(view: View, activeHandlers: List<GestureHandler>) =
+    handlerRegistry.getHandlersForView(view)?.let { handlers ->
+      synchronized(handlers) {
+        handlers.any { nativeGestureSurvivesArbitration(it, activeHandlers) }
+      }
+    } ?: false
+
+  // A native handler survives arbitration if it is active, or it does not conflict with any active handler.
+  private fun nativeGestureSurvivesArbitration(handler: GestureHandler, activeHandlers: List<GestureHandler>) =
+    handler is NativeViewGestureHandler &&
+      (handler.isActive || activeHandlers.none { shouldHandlerBeCancelledBy(handler, it) })
+
+  // Collects the view path under the point (topmost child first, like touch dispatch), leaf to root.
+  private fun collectViewsAtPoint(view: View, coords: FloatArray, out: MutableList<View>): Boolean {
+    if (shouldIgnoreSubtreeIfGestureHandlerRootView(view)) {
+      // A nested active root view manages its own subtree (and its own interception cancellation).
+      return false
+    }
+
+    val pointerEvents = viewConfigHelper.getPointerEventsConfigForView(view)
+    if (pointerEvents == PointerEventsConfig.NONE) {
+      return false
+    }
+
+    var found = false
+    if (view is ViewGroup && pointerEvents != PointerEventsConfig.BOX_ONLY) {
+      for (i in view.childCount - 1 downTo 0) {
+        val child = view.getChildAt(i)
+        if (!canReceiveEvents(child)) {
+          continue
+        }
+        val childPoint = tempPoint
+        transformPointToChildViewCoords(coords[0], coords[1], view, child, childPoint)
+        if (isClipping(child) && !isTransformedTouchPointInView(childPoint.x, childPoint.y, child)) {
+          continue
+        }
+        val restoreX = coords[0]
+        val restoreY = coords[1]
+        coords[0] = childPoint.x
+        coords[1] = childPoint.y
+        found = collectViewsAtPoint(child, coords, out)
+        coords[0] = restoreX
+        coords[1] = restoreY
+
+        if (found) {
+          break
+        }
+      }
+    }
+
+    // BOX_NONE views can't be the target themselves, only their children can
+    val selfIsTarget = pointerEvents != PointerEventsConfig.BOX_NONE &&
+      isTransformedTouchPointInView(coords[0], coords[1], view)
+
+    if (found || selfIsTarget) {
+      // `out` may already contain this view when several pointers share part of their path.
+      if (!out.contains(view)) {
+        out.add(view)
+      }
+      return true
     }
     return false
   }

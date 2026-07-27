@@ -21,9 +21,13 @@ import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from '../hooks/utils';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
+import ScrollViewResponderInterceptor from './ScrollViewResponderInterceptor';
 
-export const RefreshControl = createNativeWrapper<
-  RNRefreshControl,
+export const RefreshControl: React.ComponentType<
+  RNRefreshControlProps &
+    NativeWrapperProperties<React.ComponentRef<typeof RNRefreshControl> | null>
+> = createNativeWrapper<
+  React.ComponentRef<typeof RNRefreshControl>,
   RNRefreshControlProps
 >(
   RNRefreshControl,
@@ -38,7 +42,7 @@ export const RefreshControl = createNativeWrapper<
 export type RefreshControl = typeof RefreshControl & RNRefreshControl;
 
 const GHScrollView = createNativeWrapper<
-  RNScrollView,
+  React.ComponentRef<typeof RNScrollView>,
   PropsWithChildren<RNScrollViewProps>
 >(
   RNScrollView,
@@ -50,11 +54,14 @@ const GHScrollView = createNativeWrapper<
 );
 
 export const ScrollView = (
-  props: RNScrollViewProps & NativeWrapperProperties<RNScrollView | null>
+  props: RNScrollViewProps &
+    NativeWrapperProperties<React.ComponentRef<typeof RNScrollView> | null>
 ) => {
   const {
+    children,
     refreshControl,
     onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER,
+    keyboardShouldPersistTaps,
     ...rest
   } = props;
 
@@ -75,6 +82,7 @@ export const ScrollView = (
     <GHScrollView
       {...rest}
       ref={props.ref}
+      keyboardShouldPersistTaps={keyboardShouldPersistTaps}
       onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
@@ -85,26 +93,40 @@ export const ScrollView = (
               scrollGesture ? { block: scrollGesture } : {}
             )
           : undefined
-      }
-    />
+      }>
+      <ScrollViewResponderInterceptor
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
+        {children}
+      </ScrollViewResponderInterceptor>
+    </GHScrollView>
   );
 };
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type ScrollView = typeof ScrollView & RNScrollView;
 
-export const Switch = createNativeWrapper<RNSwitch, RNSwitchProps>(RNSwitch, {
-  shouldCancelWhenOutside: false,
-  shouldActivateOnStart: true,
-  disallowInterruption: true,
-});
+export const Switch: React.ComponentType<
+  RNSwitchProps &
+    NativeWrapperProperties<React.ComponentRef<typeof RNSwitch> | null>
+> = createNativeWrapper<React.ComponentRef<typeof RNSwitch>, RNSwitchProps>(
+  RNSwitch,
+  {
+    shouldCancelWhenOutside: false,
+    shouldActivateOnStart: true,
+    disallowInterruption: true,
+  }
+);
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Switch = typeof Switch & RNSwitch;
 
-export const TextInput = createNativeWrapper<RNTextInput, RNTextInputProps>(
-  RNTextInput
-);
+export const TextInput: React.ComponentType<
+  RNTextInputProps &
+    NativeWrapperProperties<React.ComponentRef<typeof RNTextInput> | null>
+> = createNativeWrapper<
+  React.ComponentRef<typeof RNTextInput>,
+  RNTextInputProps
+>(RNTextInput);
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;

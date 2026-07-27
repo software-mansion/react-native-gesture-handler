@@ -25,6 +25,7 @@ export {
 export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 export type {
   LegacyPressableProps,
+  PressableEvent,
   PressableProps,
   PressableStateCallbackType,
 } from './components/Pressable';

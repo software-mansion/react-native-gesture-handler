@@ -1,11 +1,15 @@
 import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
 
+import { useJSResponderHandler } from '../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 import type { NativeDetectorProps } from './common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
-import HostGestureDetector from './HostGestureDetector';
+import HostGestureDetector, {
+  type RNGestureHandlerDetectorNativeComponentProps,
+} from './HostGestureDetector';
 import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
+import { useDetectorAttachmentGuard } from './useDetectorAttachmentGuard';
 import { useGestureRelationsUpdater } from './useGestureRelationsUpdater';
 import { ensureNativeDetectorComponent } from './utils';
 
@@ -20,11 +24,15 @@ export function NativeDetector<
   userSelect,
   enableContextMenu,
 }: NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
-  const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
-    ? AnimatedNativeDetector
-    : gesture.config.shouldUseReanimatedDetector
-      ? ReanimatedNativeDetector
-      : HostGestureDetector;
+  const { handleStartShouldSetResponder } = useJSResponderHandler(gesture);
+
+  const NativeDetectorComponent = (
+    gesture.config.dispatchesAnimatedEvents
+      ? AnimatedNativeDetector
+      : gesture.config.shouldUseReanimatedDetector
+        ? ReanimatedNativeDetector
+        : HostGestureDetector
+  ) as React.FunctionComponent<RNGestureHandlerDetectorNativeComponentProps>;
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
   useGestureRelationsUpdater(gesture);
@@ -34,6 +42,8 @@ export function NativeDetector<
       ? gesture.handlerTags
       : [gesture.handlerTag];
   }, [gesture]);
+
+  useDetectorAttachmentGuard(handlerTags);
 
   // On web, we're triggering Reanimated callbacks ourselves, based on the type.
   // To handle this properly, we need to provide all three callbacks, so we set
@@ -58,6 +68,7 @@ export function NativeDetector<
 
   return (
     <NativeDetectorComponent
+      onStartShouldSetResponder={handleStartShouldSetResponder}
       touchAction={touchAction}
       userSelect={userSelect}
       enableContextMenu={enableContextMenu}

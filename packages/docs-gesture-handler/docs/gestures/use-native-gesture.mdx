@@ -11,7 +11,7 @@ import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/fundamentals/gesture-composition) with other gestures.
+A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/composition/overview) with other gestures.
 
 When used, the native component should be the direct child of a [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
 
@@ -88,7 +88,7 @@ export default function App() {
 
 ## Remarks
 
-- `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
+- `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/composition/overview) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
 
 - Due to platform API limitations, the `Native` gesture has restricted functionality on `web`. For instance, it cannot be used to block scrolling on a `ScrollView`.
 
@@ -122,6 +122,18 @@ yieldsToContinuousGestures: boolean | SharedValue<boolean>;
 ```
 
 Composes with [`disallowInterruption`](#disallowinterruption). When both are `true`, this handler still cancels discrete gestures (`Tap`, `LongPress`, `Fling`) on activation but allows continuous gestures (`Pan`, `Pinch`, `Rotation`, `Native`, `Manual`, `Hover`) to interrupt it. No-op when `disallowInterruption` is `false`. Defaults to `false`.
+
+<Badges platforms={['android', 'ios']}>
+### delaysChildPressedState
+</Badges>
+
+```ts
+delaysChildPressedState: boolean | SharedValue<boolean>;
+```
+
+When `true`, the wrapped scrollable container delays displaying the pressed state of its children until it's clear that the gesture is not a scroll. Set it to `false` to display the pressed state immediately. Defaults to `true`.
+
+On iOS this controls [`delaysContentTouches`](https://developer.apple.com/documentation/uikit/uiscrollview/delayscontenttouches) on the underlying `UIScrollView`. On Android it controls whether the container delays the pressed state of its children (see [`shouldDelayChildPressedState`](https://developer.android.com/reference/android/view/ViewGroup#shouldDelayChildPressedState%28%29)) — on Android, this requires React Native 0.87 or newer and is a no-op on older versions.
 
 <BaseGestureConfig />
 

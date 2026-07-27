@@ -4,7 +4,7 @@ import { SingleGestureName } from '../../v3/types';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
 import type { ScaleGestureListener } from '../detectors/ScaleGestureDetector';
 import ScaleGestureDetector from '../detectors/ScaleGestureDetector';
-import type { AdaptedEvent, PropsRef } from '../interfaces';
+import type { AdaptedEvent, HostDetector, PropsRef } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
@@ -62,9 +62,10 @@ export default class PinchGestureHandler extends GestureHandler {
   public override init(
     ref: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType
+    actionType: ActionType,
+    hostDetector: HostDetector | null = null
   ) {
-    super.init(ref, propsRef, actionType);
+    super.init(ref, propsRef, actionType, hostDetector);
 
     this.shouldCancelWhenOutside = false;
   }

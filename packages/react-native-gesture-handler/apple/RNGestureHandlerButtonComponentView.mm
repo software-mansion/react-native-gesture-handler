@@ -104,6 +104,17 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   [_buttonView handleAnimatePressOut];
 }
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context
+       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  if (context.nextFocusedView == self) {
+    [_buttonView onHoverIn];
+  } else if (context.previouslyFocusedView == self) {
+    [_buttonView onHoverOut];
+  }
+  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+}
 #endif // TARGET_OS_TV
 
 - (void)prepareForRecycle
@@ -281,21 +292,17 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   if (!oldProps ||
       oldButtonProps.accessibilityShowsLargeContentViewer != newButtonProps.accessibilityShowsLargeContentViewer) {
-    if (@available(iOS 13.0, *)) {
-      if (newButtonProps.accessibilityShowsLargeContentViewer) {
-        _buttonView.showsLargeContentViewer = YES;
-        UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
-        [_buttonView addInteraction:interaction];
-      } else {
-        _buttonView.showsLargeContentViewer = NO;
-      }
+    if (newButtonProps.accessibilityShowsLargeContentViewer) {
+      _buttonView.showsLargeContentViewer = YES;
+      UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
+      [_buttonView addInteraction:interaction];
+    } else {
+      _buttonView.showsLargeContentViewer = NO;
     }
   }
 
   if (!oldProps || oldButtonProps.accessibilityLargeContentTitle != newButtonProps.accessibilityLargeContentTitle) {
-    if (@available(iOS 13.0, *)) {
-      _buttonView.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newButtonProps.accessibilityLargeContentTitle);
-    }
+    _buttonView.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newButtonProps.accessibilityLargeContentTitle);
   }
 
   if (!oldProps || oldButtonProps.accessibilityTraits != newButtonProps.accessibilityTraits) {
@@ -371,6 +378,12 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   _buttonView.defaultScale = newProps.defaultScale;
   _buttonView.defaultUnderlayOpacity = newProps.defaultUnderlayOpacity;
   _buttonView.activeUnderlayOpacity = newProps.activeUnderlayOpacity;
+  _buttonView.hoverOpacity = newProps.hoverOpacity;
+  _buttonView.hoverScale = newProps.hoverScale;
+  _buttonView.hoverUnderlayOpacity = newProps.hoverUnderlayOpacity;
+  _buttonView.hoverAnimationInDuration = newProps.hoverAnimationInDuration > 0 ? newProps.hoverAnimationInDuration : 0;
+  _buttonView.hoverAnimationOutDuration =
+      newProps.hoverAnimationOutDuration > 0 ? newProps.hoverAnimationOutDuration : 0;
   if (newProps.underlayColor) {
     _buttonView.underlayColor = RCTUIColorFromSharedColor(newProps.underlayColor);
   } else {

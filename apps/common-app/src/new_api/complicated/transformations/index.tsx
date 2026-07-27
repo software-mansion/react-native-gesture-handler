@@ -16,70 +16,41 @@ import Animated, {
 // @ts-ignore it's an image
 import SIGNET from '../../../ListWithHeader/signet.png';
 
-function identity4() {
+function identity3() {
   'worklet';
-  return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+  return [1, 0, 0, 0, 1, 0, 0, 0, 1];
 }
 
-function multiply4(a: number[], b: number[]) {
+function multiply3(a: number[], b: number[]) {
   'worklet';
   return [
-    a[0] * b[0] + a[1] * b[4] + a[2] * b[8] + a[3] * b[12],
-    a[0] * b[1] + a[1] * b[5] + a[2] * b[9] + a[3] * b[13],
-    a[0] * b[2] + a[1] * b[6] + a[2] * b[10] + a[3] * b[14],
-    a[0] * b[3] + a[1] * b[7] + a[2] * b[11] + a[3] * b[15],
-    a[4] * b[0] + a[5] * b[4] + a[6] * b[8] + a[7] * b[12],
-    a[4] * b[1] + a[5] * b[5] + a[6] * b[9] + a[7] * b[13],
-    a[4] * b[2] + a[5] * b[6] + a[6] * b[10] + a[7] * b[14],
-    a[4] * b[3] + a[5] * b[7] + a[6] * b[11] + a[7] * b[15],
-    a[8] * b[0] + a[9] * b[4] + a[10] * b[8] + a[11] * b[12],
-    a[8] * b[1] + a[9] * b[5] + a[10] * b[9] + a[11] * b[13],
-    a[8] * b[2] + a[9] * b[6] + a[10] * b[10] + a[11] * b[14],
-    a[8] * b[3] + a[9] * b[7] + a[10] * b[11] + a[11] * b[15],
-    a[12] * b[0] + a[13] * b[4] + a[14] * b[8] + a[15] * b[12],
-    a[12] * b[1] + a[13] * b[5] + a[14] * b[9] + a[15] * b[13],
-    a[12] * b[2] + a[13] * b[6] + a[14] * b[10] + a[15] * b[14],
-    a[12] * b[3] + a[13] * b[7] + a[14] * b[11] + a[15] * b[15],
+    a[0] * b[0] + a[1] * b[3] + a[2] * b[6],
+    a[0] * b[1] + a[1] * b[4] + a[2] * b[7],
+    a[0] * b[2] + a[1] * b[5] + a[2] * b[8],
+    a[3] * b[0] + a[4] * b[3] + a[5] * b[6],
+    a[3] * b[1] + a[4] * b[4] + a[5] * b[7],
+    a[3] * b[2] + a[4] * b[5] + a[5] * b[8],
+    a[6] * b[0] + a[7] * b[3] + a[8] * b[6],
+    a[6] * b[1] + a[7] * b[4] + a[8] * b[7],
+    a[6] * b[2] + a[7] * b[5] + a[8] * b[8],
   ];
 }
 
-function scale4(sx: number, sy: number, sz: number) {
+function scale3(sx: number, sy: number) {
   'worklet';
-  return [sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1];
+  return [sx, 0, 0, 0, sy, 0, 0, 0, 1];
 }
 
-function translate4(tx: number, ty: number, tz: number) {
+function translate3(tx: number, ty: number) {
   'worklet';
-  return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1];
+  return [1, 0, 0, 0, 1, 0, tx, ty, 1];
 }
 
-function rotate4(rad: number, x: number, y: number, z: number) {
+function rotate3(rad: number) {
   'worklet';
-  const len = Math.hypot(x, y, z);
   const c = Math.cos(rad);
   const s = Math.sin(rad);
-  const t = 1 - c;
-  x /= len;
-  y /= len;
-  z /= len;
-  return [
-    t * x * x + c,
-    t * x * y - s * z,
-    t * x * z + s * y,
-    0,
-    t * x * y + s * z,
-    t * y * y + c,
-    t * y * z - s * x,
-    0,
-    t * x * z - s * y,
-    t * y * z + s * x,
-    t * z * z + c,
-    0,
-    0,
-    0,
-    0,
-    1,
-  ];
+  return [c, -s, 0, s, c, 0, 0, 0, 1];
 }
 
 function invert2(m: number[]) {
@@ -90,6 +61,10 @@ function invert2(m: number[]) {
   const d = m[3];
   const det = a * d - b * c;
 
+  if (Math.abs(det) < 1e-6) {
+    return [1, 0, 0, 1];
+  }
+
   return [d / det, -b / det, -c / det, a / det];
 }
 
@@ -98,7 +73,7 @@ function toTransformedCoords(
   matrix: number[]
 ) {
   'worklet';
-  const m2 = [matrix[0], matrix[1], matrix[4], matrix[5]];
+  const m2 = [matrix[0], matrix[1], matrix[3], matrix[4]];
   const inv = invert2(m2);
   const x = point.x;
   const y = point.y;
@@ -115,21 +90,21 @@ function createMatrix(
   origin: { x: number; y: number }
 ) {
   'worklet';
-  let matrix = identity4();
+  let matrix = identity3();
 
   if (scale !== 1) {
-    matrix = multiply4(matrix, translate4(origin.x, origin.y, 0));
-    matrix = multiply4(matrix, scale4(scale, scale, 1));
-    matrix = multiply4(matrix, translate4(-origin.x, -origin.y, 0));
+    matrix = multiply3(matrix, translate3(origin.x, origin.y));
+    matrix = multiply3(matrix, scale3(scale, scale));
+    matrix = multiply3(matrix, translate3(-origin.x, -origin.y));
   }
   if (rotation !== 0) {
-    matrix = multiply4(matrix, translate4(origin.x, origin.y, 0));
-    matrix = multiply4(matrix, rotate4(-rotation, 0, 0, 1));
-    matrix = multiply4(matrix, translate4(-origin.x, -origin.y, 0));
+    matrix = multiply3(matrix, translate3(origin.x, origin.y));
+    matrix = multiply3(matrix, rotate3(-rotation));
+    matrix = multiply3(matrix, translate3(-origin.x, -origin.y));
   }
 
   if (translation.x !== 0 || translation.y !== 0) {
-    matrix = multiply4(matrix, translate4(translation.x, translation.y, 0));
+    matrix = multiply3(matrix, translate3(translation.x, translation.y));
   }
 
   return matrix;
@@ -150,7 +125,7 @@ function applyTransformations(
     rotation,
     origin
   );
-  return multiply4(transform, matrix);
+  return multiply3(transform, matrix);
 }
 
 function Photo() {
@@ -162,7 +137,7 @@ function Photo() {
   const isRotating = useSharedValue(false);
   const isScaling = useSharedValue(false);
 
-  const transform = useSharedValue(identity4());
+  const transform = useSharedValue(identity3());
 
   const style = useAnimatedStyle(() => {
     const matrix = applyTransformations(
@@ -175,8 +150,8 @@ function Photo() {
 
     return {
       transform: [
-        { translateX: matrix[12] },
-        { translateY: matrix[13] },
+        { translateX: matrix[6] },
+        { translateY: matrix[7] },
         { scale: Math.hypot(matrix[0], matrix[1]) },
         { rotateZ: `${Math.atan2(matrix[1], matrix[0])}rad` },
       ],

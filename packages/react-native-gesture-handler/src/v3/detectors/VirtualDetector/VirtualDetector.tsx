@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { findNodeHandle, Platform } from 'react-native';
 
 import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
@@ -6,6 +6,7 @@ import { tagMessage } from '../../../utils';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import type { DetectorCallbacks, VirtualChild } from '../../types';
 import type { VirtualDetectorProps } from '../common';
+import { useDetectorAttachmentGuard } from '../useDetectorAttachmentGuard';
 import { useGestureRelationsUpdater } from '../useGestureRelationsUpdater';
 import { useNativeGestureRole } from '../useNativeGestureRole';
 import {
@@ -57,14 +58,20 @@ export function VirtualDetector<
 
   useNativeGestureRole(viewRef, props.children);
 
+  const handlerTags = useMemo(
+    () =>
+      isComposedGesture(props.gesture)
+        ? props.gesture.handlerTags
+        : [props.gesture.handlerTag],
+    [props.gesture]
+  );
+
+  useDetectorAttachmentGuard(handlerTags);
+
   useEffect(() => {
     if (viewTag === -1) {
       return;
     }
-
-    const handlerTags = isComposedGesture(props.gesture)
-      ? props.gesture.handlerTags
-      : [props.gesture.handlerTag];
 
     if (props.gesture.config.dispatchesAnimatedEvents) {
       throw new Error(
@@ -96,6 +103,7 @@ export function VirtualDetector<
   }, [
     viewTag,
     props.gesture,
+    handlerTags,
     props.userSelect,
     props.touchAction,
     props.enableContextMenu,

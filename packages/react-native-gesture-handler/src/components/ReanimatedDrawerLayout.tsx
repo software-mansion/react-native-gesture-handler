@@ -596,8 +596,10 @@ const DrawerLayout = function DrawerLayout(
   const reverseContentDirection = I18nManager.isRTL ? isFromLeft : !isFromLeft;
 
   const dynamicDrawerStyles = {
-    backgroundColor: drawerBackgroundColor,
     width: drawerWidth,
+    ...(drawerBackgroundColor !== undefined && {
+      backgroundColor: drawerBackgroundColor,
+    }),
   };
 
   const containerStyles = useAnimatedStyle(() => {

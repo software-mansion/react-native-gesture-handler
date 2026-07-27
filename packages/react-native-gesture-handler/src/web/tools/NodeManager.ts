@@ -1,6 +1,7 @@
 import type { ValueOf } from '../../typeUtils';
 import type { Gestures } from '../Gestures';
 import type IGestureHandler from '../handlers/IGestureHandler';
+import type { HostDetector } from '../interfaces';
 
 type HandlerReadyCallback = (handler: IGestureHandler) => void;
 
@@ -60,12 +61,24 @@ export default abstract class NodeManager {
     delete this.gestures[handlerTag];
   }
 
-  public static detachGestureHandler(handlerTag: number): void {
+  public static detachGestureHandler(
+    handlerTag: number,
+    hostDetector?: HostDetector | null
+  ): void {
     if (!(handlerTag in this.gestures)) {
       return;
     }
 
-    this.gestures[handlerTag].detach();
+    const handler = this.gestures[handlerTag] as IGestureHandler;
+
+    if (
+      !handler.attached ||
+      (hostDetector !== undefined && handler.hostDetectorView !== hostDetector)
+    ) {
+      return;
+    }
+
+    handler.detach();
   }
 
   // Invokes `callback` every time a handler with `tag` is created and, if the handler already exists,

@@ -215,30 +215,30 @@ childrenContainerStyle?: StyleProp<ViewStyle>;
 
 Style object for the children container ([`Animated.View`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#animated-component)).
 
-### simultaneousWithExternalGesture
+### simultaneousWith
 
 ```ts
-simultaneousWithExternalGesture?: AnyGesture | AnyGesture[];
+simultaneousWith?: AnyGesture | AnyGesture[];
 ```
 
-Gestures to be recognized simultaneously with the `Swipeable` (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
+Gestures to be recognized simultaneously with the `Swipeable` (see [`simultaneousWith`](/docs/composition/simultaneous-with)).
 
-### requireExternalGestureToFail
+### requireToFail
 
 ```ts
-requireExternalGestureToFail?: AnyGesture | AnyGesture[];
+requireToFail?: AnyGesture | AnyGesture[];
 ```
 
-Gestures that `Swipeable` has to wait for before activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
+Gestures that `Swipeable` has to wait for before activating (see [`requireToFail`](/docs/composition/require-to-fail)).
 
 
-### blocksExternalGesture
+### block
 
 ```ts
-blocksExternalGesture?: AnyGesture | AnyGesture[];
+block?: AnyGesture | AnyGesture[];
 ```
 
-Gestures that `Swipeable` will prevent from activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
+Gestures that `Swipeable` will prevent from activating (see [`block`](/docs/composition/block)).
 
 <Badges platforms={['ios', 'web']}>
 ### enableTrackpadTwoFingerGesture

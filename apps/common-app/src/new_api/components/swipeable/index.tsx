@@ -21,8 +21,7 @@ type DataRow = {
 const Row = ({ item }: { item: DataRow }) => (
   <Touchable
     style={styles.rectButton}
-    // eslint-disable-next-line no-alert
-    onPress={() => window.alert(item.from)}
+    onPress={() => console.info(item.from)}
     activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
     androidRipple={{}}>
     <Text style={styles.fromText}>{item.from}</Text>

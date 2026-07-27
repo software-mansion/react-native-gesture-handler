@@ -4,8 +4,9 @@ import type {
   ColorValue,
   TouchableHighlightProps as RNTouchableHighlightProps,
   ViewProps,
+  ViewStyle,
 } from 'react-native';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
 import type { GenericTouchableProps } from './GenericTouchableProps';
@@ -88,7 +89,9 @@ export default class TouchableHighlight extends Component<
       this.props.children
     ) as React.ReactElement<ViewProps>; // TODO: not sure if OK but fixes error
     return React.cloneElement(child, {
-      style: StyleSheet.compose(child.props.style, this.state.extraChildStyle),
+      style: this.state.extraChildStyle
+        ? [child.props.style, this.state.extraChildStyle as ViewStyle]
+        : child.props.style,
     });
   }
 
@@ -109,7 +112,7 @@ export default class TouchableHighlight extends Component<
     return (
       <GenericTouchable
         {...rest}
-        style={[style, extraUnderlayStyle]}
+        style={[style, extraUnderlayStyle as ViewStyle]}
         onStateChange={this.onStateChange}>
         {this.renderChildren()}
       </GenericTouchable>

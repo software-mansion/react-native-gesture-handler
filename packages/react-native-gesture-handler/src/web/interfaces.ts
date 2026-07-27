@@ -1,3 +1,5 @@
+import type { RefObject } from 'react';
+
 import type { Directions } from '../Directions';
 import type {
   ActiveCursor,
@@ -178,6 +180,8 @@ export type GestureHandlerRef = {
 export type SVGRef = {
   elementRef: { current: SVGElement };
 };
+
+export type HostDetector = RefObject<Element | null>;
 
 export enum NativeGestureRole {
   Button = 'GestureHandlerButton',

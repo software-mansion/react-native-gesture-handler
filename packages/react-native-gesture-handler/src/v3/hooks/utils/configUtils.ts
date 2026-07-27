@@ -5,6 +5,7 @@ import { tagMessage } from '../../../utils';
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  Gesture,
   SingleGestureName,
 } from '../../types';
 import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
@@ -15,6 +16,20 @@ import {
   PropsWhiteLists,
 } from './propsWhiteList';
 import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
+import { isComposedGesture } from './relationUtils';
+
+export function isGestureEnabled<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>): boolean {
+  if (isComposedGesture(gesture)) {
+    // For composed gestures, we need to check if at least one of the composed gestures is enabled
+    return gesture.gestures.some(isGestureEnabled);
+  }
+
+  return maybeUnpackValue(gesture.config.enabled) !== false;
+}
 
 export function resolveInternalConfigProps<
   TConfig extends object,

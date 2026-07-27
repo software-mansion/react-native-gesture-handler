@@ -1,10 +1,14 @@
-import React, { useCallback, useRef } from 'react';
+import React, { use, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 
 import GestureHandlerButton from '../../../components/GestureHandlerButton';
 import { getTVProps } from '../../../components/utils';
 import { NativeDetector } from '../../detectors/NativeDetector';
 import { useNativeGesture } from '../../hooks';
+import {
+  isKeyboardDismissingTap,
+  JSResponderContext,
+} from '../ScrollViewResponderInterceptor';
 import type {
   AnimationDuration,
   CallbackEventType,
@@ -101,8 +105,22 @@ export const Touchable = (props: TouchableProps) => {
     undefined
   );
 
+  // Swallow the tap that dismisses the keyboard in
+  // keyboardShouldPersistTaps="never", matching RN's touchables.
+  const jsResponderContext = use(JSResponderContext);
+  const dropKeyboardTapRef = useRef<boolean | null>(null);
+
+  const captureKeyboardDismiss = useCallback(() => {
+    dropKeyboardTapRef.current ??= isKeyboardDismissingTap(jsResponderContext);
+  }, [jsResponderContext]);
+
+  const resetKeyboardDismiss = useCallback(() => {
+    dropKeyboardTapRef.current = null;
+  }, []);
+
   const wrappedLongPress = useCallback(() => {
     longPressDetected.current = true;
+    // @ts-ignore - the detector-based implementation is missing the event argument
     onLongPress?.();
   }, [onLongPress]);
 
@@ -119,7 +137,9 @@ export const Touchable = (props: TouchableProps) => {
 
   const onBegin = useCallback(
     (e: CallbackEventType) => {
-      if (!e.pointerInside) {
+      captureKeyboardDismiss();
+
+      if (!e.pointerInside || dropKeyboardTapRef.current) {
         pointerState.current = PointerState.OUTSIDE;
         return;
       }
@@ -129,7 +149,7 @@ export const Touchable = (props: TouchableProps) => {
 
       pointerState.current = PointerState.INSIDE;
     },
-    [startLongPressTimer, onPressIn]
+    [captureKeyboardDismiss, startLongPressTimer, onPressIn]
   );
 
   const onActivate = useCallback((e: CallbackEventType) => {
@@ -141,11 +161,19 @@ export const Touchable = (props: TouchableProps) => {
 
   const onFinalize = useCallback(
     (e: EndCallbackEventType) => {
-      if (pointerState.current === PointerState.INSIDE) {
+      if (
+        !dropKeyboardTapRef.current &&
+        pointerState.current === PointerState.INSIDE
+      ) {
         onPressOut?.(e);
       }
 
-      if (!e.canceled && !longPressDetected.current && e.pointerInside) {
+      if (
+        !dropKeyboardTapRef.current &&
+        !e.canceled &&
+        !longPressDetected.current &&
+        e.pointerInside
+      ) {
         onPress?.(e);
       }
 
@@ -155,12 +183,18 @@ export const Touchable = (props: TouchableProps) => {
         clearTimeout(longPressTimeout.current);
         longPressTimeout.current = undefined;
       }
+
+      resetKeyboardDismiss();
     },
-    [onPressOut, onPress]
+    [resetKeyboardDismiss, onPressOut, onPress]
   );
 
   const onUpdate = useCallback(
     (e: CallbackEventType) => {
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
       if (pointerState.current === PointerState.UNKNOWN) {
         return;
       }

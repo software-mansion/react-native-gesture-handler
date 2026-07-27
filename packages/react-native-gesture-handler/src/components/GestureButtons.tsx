@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { HostComponent } from 'react-native';
+import type { HostComponent, ViewStyle } from 'react-native';
 import { Animated, Platform, StyleSheet } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
@@ -134,13 +134,12 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   };
 
   override render() {
-    const { rippleColor, style, ...rest } = this.props;
+    const { rippleColor, ...rest } = this.props;
 
     return (
       <LegacyRawButton
         ref={this.props.innerRef}
         rippleColor={rippleColor}
-        style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
         {...rest}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}
@@ -216,15 +215,15 @@ class InnerRectButton extends React.Component<RectButtonWithRefProps> {
         <Animated.View
           style={[
             btnStyles.underlay,
+            { opacity: this.opacity },
             {
-              opacity: this.opacity,
               backgroundColor: this.props.underlayColor,
               borderRadius: resolvedStyle.borderRadius,
               borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
               borderTopRightRadius: resolvedStyle.borderTopRightRadius,
               borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
               borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
-            },
+            } as ViewStyle,
           ]}
         />
         {children}
@@ -294,6 +293,13 @@ export const LegacyBorderlessButton = ({
 /**
  * @deprecated use `PureNativeButton` instead
  */
-export const LegacyPureNativeButton = (
-  props: Omit<ButtonProps, 'needsOffscreenAlphaCompositing'>
-) => <GestureHandlerButton {...props} needsOffscreenAlphaCompositing />;
+export const LegacyPureNativeButton = ({
+  ref,
+  ...props
+}: Omit<ButtonProps, 'needsOffscreenAlphaCompositing'>) => (
+  <GestureHandlerButton
+    {...props}
+    ref={ref as React.Ref<React.ComponentRef<typeof GestureHandlerButton>>}
+    needsOffscreenAlphaCompositing
+  />
+);

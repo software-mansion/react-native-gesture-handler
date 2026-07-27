@@ -10,6 +10,8 @@ import { webContainer } from '@site/src/utils/getGestureStyles';
 import RotationGestureBasic from '../examples/RotationGestureBasic';
 import RotationGestureBasicSrc from '!!raw-loader!../examples/RotationGestureBasicSrc';
 
+A continuous gesture that can recognize a rotation gesture and track its movement.
+
 <div className={webContainer}>
   <InteractiveExample
     component={<RotationGestureBasic/>}
@@ -23,8 +25,6 @@ import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousEventConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
-
-A continuous gesture that can recognize a rotation gesture and track its movement.
 
 The gesture [activates](/docs/2.x/fundamentals/states-events#active) when fingers are placed on the screen and change position in a proper way.
 

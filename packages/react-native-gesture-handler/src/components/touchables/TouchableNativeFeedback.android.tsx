@@ -43,7 +43,12 @@ export default class TouchableNativeFeedback extends Component<TouchableNativeFe
     color: ColorValue,
     borderless: boolean,
     rippleRadius?: number
-  ) => ({
+  ): {
+    type: 'RippleAndroid';
+    color: ColorValue;
+    borderless: boolean;
+    rippleRadius: number | undefined;
+  } => ({
     type: 'RippleAndroid',
     color,
     borderless,
@@ -61,7 +66,8 @@ export default class TouchableNativeFeedback extends Component<TouchableNativeFe
       // TODO(TS): check if it works the same as previous implementation - looks like it works the same as RN component, so it should be ok
       if (background.type === 'RippleAndroid') {
         extraProps['borderless'] = background.borderless;
-        extraProps['rippleColor'] = background.color;
+        extraProps['rippleColor'] =
+          background.color as TouchableNativeFeedbackExtraProps['rippleColor'];
       } else if (background.type === 'ThemeAttrAndroid') {
         extraProps['borderless'] =
           background.attribute === 'selectableItemBackgroundBorderless';
