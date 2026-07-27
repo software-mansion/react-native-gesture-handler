@@ -278,6 +278,10 @@ export const ButtonComponent = ({
 
   useIsomorphicLayoutEffect(() => {
     const node = viewRef.current;
+    if (handlerTag === undefined || node == null) {
+      return;
+    }
+
     const wrapEvent = (event: Event): NativeSyntheticEvent<ButtonEvent> =>
       ({
         nativeEvent: (event as CustomEvent<ButtonEvent>).detail,
@@ -301,26 +305,27 @@ export const ButtonComponent = ({
       onButtonInteractionFinished?.(wrapEvent(event));
     };
 
-    node?.addEventListener(ButtonEventName.Press, handlePress);
-    node?.addEventListener(ButtonEventName.PressIn, handlePressIn);
-    node?.addEventListener(ButtonEventName.PressOut, handlePressOut);
-    node?.addEventListener(ButtonEventName.LongPress, handleLongPress);
-    node?.addEventListener(
+    node.addEventListener(ButtonEventName.Press, handlePress);
+    node.addEventListener(ButtonEventName.PressIn, handlePressIn);
+    node.addEventListener(ButtonEventName.PressOut, handlePressOut);
+    node.addEventListener(ButtonEventName.LongPress, handleLongPress);
+    node.addEventListener(
       ButtonEventName.InteractionFinished,
       handleInteractionFinished
     );
 
     return () => {
-      node?.removeEventListener(ButtonEventName.Press, handlePress);
-      node?.removeEventListener(ButtonEventName.PressIn, handlePressIn);
-      node?.removeEventListener(ButtonEventName.PressOut, handlePressOut);
-      node?.removeEventListener(ButtonEventName.LongPress, handleLongPress);
-      node?.removeEventListener(
+      node.removeEventListener(ButtonEventName.Press, handlePress);
+      node.removeEventListener(ButtonEventName.PressIn, handlePressIn);
+      node.removeEventListener(ButtonEventName.PressOut, handlePressOut);
+      node.removeEventListener(ButtonEventName.LongPress, handleLongPress);
+      node.removeEventListener(
         ButtonEventName.InteractionFinished,
         handleInteractionFinished
       );
     };
   }, [
+    handlerTag,
     onButtonInteractionFinished,
     onButtonLongPress,
     onButtonPress,
