@@ -152,6 +152,11 @@ class RNGestureHandlerButtonViewManager :
     view.hasLongPressHandler = hasLongPressHandler
   }
 
+  // No-op — only iOS needs the module id to resolve the handler manager, Android
+  // gets the module from the view's context.
+  @ReactProp(name = "moduleId")
+  override fun setModuleId(view: ButtonViewGroup, moduleId: Int) = Unit
+
   @ReactProp(name = "foreground")
   override fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
     view.useDrawableOnForeground = useDrawableOnForeground

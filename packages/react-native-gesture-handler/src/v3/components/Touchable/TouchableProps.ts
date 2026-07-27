@@ -21,13 +21,14 @@ type PressableAndroidRippleConfig = {
 type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 
 // The press events are redeclared below with the unwrapped `ButtonEvent`
-// signature; `onInteractionFinished` is consumed internally by `Touchable`.
+// signature; `onButtonInteractionFinished` is consumed internally by
+// `Touchable`.
 type PressProps =
-  | 'onPress'
-  | 'onPressIn'
-  | 'onPressOut'
-  | 'onLongPress'
-  | 'onInteractionFinished';
+  | 'onButtonPress'
+  | 'onButtonPressIn'
+  | 'onButtonPressOut'
+  | 'onButtonLongPress'
+  | 'onButtonInteractionFinished';
 
 type DurationProps =
   | 'tapAnimationInDuration'
