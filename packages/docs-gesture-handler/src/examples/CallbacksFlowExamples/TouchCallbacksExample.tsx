@@ -107,7 +107,7 @@ function TouchCallbacksDiagram() {
 
   const panelRef = useRef<HTMLDivElement>(null);
   const [pressed, setPressed] = useState(false);
-  const startPoint = useRef<{ x: number; y: number } | null>(null);
+  const startPoint = useRef<{ id: number; x: number; y: number } | null>(null);
   const hasMoved = useRef(false);
 
   const ballX = useSharedValue(0);
@@ -122,16 +122,34 @@ function TouchCallbacksDiagram() {
 
   const manual = useManualGesture({
     onTouchesDown: (event) => {
-      const touch = event.changedTouches[0];
-      startPoint.current = { x: touch.absoluteX, y: touch.absoluteY };
-      hasMoved.current = false;
       setPressed(true);
       pulse('onTouchesDown');
+
+      // don't rely on the order of `changedTouches`/`allTouches` — remember
+      // the id of the touch we follow and look it up on every event
+      if (!startPoint.current) {
+        const touch = event.changedTouches[0];
+        startPoint.current = {
+          id: touch.id,
+          x: touch.absoluteX,
+          y: touch.absoluteY,
+        };
+        hasMoved.current = false;
+      }
     },
     onTouchesMove: (event) => {
-      const touch = event.allTouches[0];
+      if (hasMoved.current) {
+        fire('move_move', 'onTouchesMove');
+      } else {
+        hasMoved.current = true;
+        fire('down_move', 'onTouchesMove');
+      }
+
       const origin = startPoint.current;
-      if (!origin) {
+      const touch = origin
+        ? event.allTouches.find((t) => t.id === origin.id)
+        : undefined;
+      if (!origin || !touch) {
         return;
       }
 
