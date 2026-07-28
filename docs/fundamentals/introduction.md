@@ -70,6 +70,4 @@ Krzysztof Magiera
 
 We really appreciate our sponsors! Thanks to them we can develop our library and make the react-native world a better place. Special thanks for:
 
-Shopify
-
 Expo
