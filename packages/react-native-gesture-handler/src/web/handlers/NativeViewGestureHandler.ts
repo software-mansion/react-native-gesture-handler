@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 
-import { type ActionType } from '../../ActionType';
+import { ActionType } from '../../ActionType';
+import type { ButtonEvent } from '../../specs/RNGestureHandlerButtonNativeComponent';
 import { State } from '../../State';
 import type { NativeHandlerData } from '../../v3/hooks/gestures/native/NativeTypes';
 import type { HandlerData } from '../../v3/types';
@@ -16,6 +17,11 @@ import type {
   PropsRef,
 } from '../interfaces';
 import { NativeGestureRole } from '../interfaces';
+import {
+  ButtonEventName,
+  type ButtonEventTypeName,
+  dispatchButtonEvent,
+} from '../tools/ButtonEvents';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import {
   dispatchGestureLifecycleEvent,
@@ -38,6 +44,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
   private lastActiveHandlerData: HandlerData<NativeHandlerData> | null = null;
+
+  private hasLongPressHandler = false;
+  private longPressDuration = -1;
+  private longPressDetected = false;
+  private lastEventWasInside = false;
+  private pendingLongPress: ReturnType<typeof setTimeout> | null = null;
 
   public constructor(
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
@@ -89,6 +101,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
     if (config.yieldsToContinuousGestures !== undefined) {
       this.yieldsToContinuousGestures = config.yieldsToContinuousGestures;
+    }
+    if (config.hasLongPressHandler !== undefined) {
+      this.hasLongPressHandler = config.hasLongPressHandler;
+    }
+    if (config.longPressDuration !== undefined) {
+      this.longPressDuration = config.longPressDuration;
     }
 
     const view = this.delegate.view as HTMLElement;
@@ -234,6 +252,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   public override detach(): void {
+    this.clearLongPressTimer();
     super.detach();
     this.role = null;
   }
@@ -255,6 +274,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   public isButton(): boolean {
     return this.role === NativeGestureRole.Button;
+  }
+
+  private isManagedButton(): boolean {
+    return this.isButton() && this.actionType === ActionType.NONE;
   }
 
   public override shouldBeginWithRecordedHandlers(
@@ -280,6 +303,88 @@ export default class NativeViewGestureHandler extends GestureHandler {
       this.delegate.view as HTMLElement | null,
       GestureLifecycleEvent.Canceled
     );
+  }
+
+  protected override onStateChange(newState: State): void {
+    if (!this.isManagedButton()) {
+      return;
+    }
+
+    if (newState === State.BEGAN) {
+      if (!this.getButtonEventData().pointerInside) {
+        return;
+      }
+
+      this.dispatchButtonEvent(ButtonEventName.PressIn);
+      this.longPressDetected = false;
+
+      if (this.hasLongPressHandler && this.longPressDuration >= 0) {
+        this.pendingLongPress = setTimeout(() => {
+          this.pendingLongPress = null;
+          this.longPressDetected = true;
+          this.dispatchButtonEvent(ButtonEventName.LongPress);
+        }, this.longPressDuration);
+      }
+      return;
+    }
+
+    if (
+      newState !== State.END &&
+      newState !== State.FAILED &&
+      newState !== State.CANCELLED
+    ) {
+      return;
+    }
+
+    const endedInside = this.lastEventWasInside;
+
+    if (endedInside) {
+      this.dispatchButtonEvent(ButtonEventName.PressOut);
+    }
+    this.clearLongPressTimer();
+
+    if (newState === State.END && !this.longPressDetected && endedInside) {
+      this.dispatchButtonEvent(ButtonEventName.Press);
+    }
+
+    this.dispatchButtonEvent(ButtonEventName.InteractionFinished);
+    this.longPressDetected = false;
+  }
+
+  private dispatchButtonEvent(name: ButtonEventTypeName): void {
+    if (name === ButtonEventName.PressIn) {
+      this.lastEventWasInside = true;
+    } else if (name === ButtonEventName.PressOut) {
+      this.lastEventWasInside = false;
+    }
+
+    dispatchButtonEvent(
+      this.delegate.view as HTMLElement | null,
+      name,
+      this.getButtonEventData()
+    );
+  }
+
+  private getButtonEventData(): ButtonEvent {
+    const absolute = this.tracker.getAbsoluteCoordsAverage();
+    const relative = this.tracker.getRelativeCoordsAverage();
+
+    return {
+      pointerInside: this.delegate.isPointerInBounds(absolute),
+      x: relative.x,
+      y: relative.y,
+      absoluteX: absolute.x,
+      absoluteY: absolute.y,
+      numberOfPointers: this.tracker.trackedPointersCount,
+      pointerType: this.pointerType,
+    };
+  }
+
+  private clearLongPressTimer(): void {
+    if (this.pendingLongPress !== null) {
+      clearTimeout(this.pendingLongPress);
+      this.pendingLongPress = null;
+    }
   }
 
   protected override transformNativeEvent(): Record<string, unknown> {
@@ -317,7 +422,15 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   public override reset(): void {
+    this.clearLongPressTimer();
     super.reset();
     this.lastActiveHandlerData = null;
+    this.lastEventWasInside = false;
+    this.longPressDetected = false;
+  }
+
+  public override onDestroy(): void {
+    this.clearLongPressTimer();
+    super.onDestroy();
   }
 }
