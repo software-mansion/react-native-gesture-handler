@@ -322,6 +322,8 @@ function StateFlowsDiagram() {
     lpWasActive.current = false;
     setPanState('undetermined');
     setLpState('undetermined');
+    ballX.value = withSpring(0, SPRING_BACK);
+    ballY.value = withSpring(0, SPRING_BACK);
   };
 
   return (
