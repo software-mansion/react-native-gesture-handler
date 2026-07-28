@@ -226,26 +226,6 @@ function StateColumn({
   );
 }
 
-function Legend() {
-  return (
-    <div className={styles.legend}>
-      {(
-        [
-          [COLORS.amber, 'start'],
-          [COLORS.blue, 'began / end'],
-          [COLORS.green, 'active'],
-          [COLORS.red, 'failed / cancelled'],
-        ] as const
-      ).map(([color, label]) => (
-        <div className={styles.legendItem} key={label}>
-          <div className={styles.legendSwatch} style={{ background: color }} />
-          <span className={styles.legendLabel}>{label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function StateFlowsDiagram() {
   const [panState, setPanState] = useState<FlowState>('undetermined');
   const [lpState, setLpState] = useState<FlowState>('undetermined');
@@ -346,8 +326,6 @@ function StateFlowsDiagram() {
 
   return (
     <div className={styles.panel}>
-      <Legend />
-
       <div className={styles.columns}>
         <StateColumn title="usePanGesture" current={panState} />
         <div className={styles.longPressColumn}>

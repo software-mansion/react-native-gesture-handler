@@ -8,32 +8,6 @@
   font-family: 'Inter', sans-serif;
 }
 
-.legend {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
-}
-
-.legendItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-right: 20px;
-}
-
-.legendSwatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-}
-
-.legendLabel {
-  font-size: 13px;
-  color: var(--ifm-color-emphasis-600);
-}
-
 .columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
