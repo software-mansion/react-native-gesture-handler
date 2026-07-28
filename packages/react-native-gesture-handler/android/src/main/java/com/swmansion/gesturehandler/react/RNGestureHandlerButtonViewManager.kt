@@ -580,11 +580,17 @@ class RNGestureHandlerButtonViewManager :
       get() = if (field < 0f) defaultScale else field
     var hoverUnderlayOpacity: Float = -1f
       get() = if (field < 0f) defaultUnderlayOpacity else field
+      set(value) = withBackgroundUpdate {
+        field = value
+      }
     var underlayColor: Int? = null
       set(color) = withBackgroundUpdate {
         field = color
       }
     var activeUnderlayOpacity: Float = 0f
+      set(value) = withBackgroundUpdate {
+        field = value
+      }
     var defaultUnderlayOpacity: Float = 0f
       set(value) = withBackgroundUpdate {
         field = value
@@ -1055,7 +1061,15 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
-    private fun createUnderlayDrawable(): PaintDrawable {
+    private fun createUnderlayDrawable(): PaintDrawable? {
+      val isColorTransparent = underlayColor?.let { Color.alpha(it) == 0 } == true
+      val hasVisibleOpacity = defaultUnderlayOpacity != 0f ||
+        activeUnderlayOpacity != 0f ||
+        hoverUnderlayOpacity != 0f
+      if (isColorTransparent || !hasVisibleOpacity) {
+        return null
+      }
+
       val drawable = PaintDrawable(underlayColor ?: Color.BLACK)
       drawable.alpha = (defaultUnderlayOpacity * 255).toInt()
       return drawable
@@ -1072,7 +1086,7 @@ class RNGestureHandlerButtonViewManager :
       val underlay = createUnderlayDrawable()
       underlayDrawable = underlay
       // Set this view as callback so ObjectAnimator alpha changes trigger redraws.
-      underlay.callback = this
+      underlay?.callback = this
 
       if (useDrawableOnForeground && selectable != null) {
         // Explicit foreground mode — View natively forwards state/hotspot.
