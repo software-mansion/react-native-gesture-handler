@@ -408,9 +408,9 @@
   APPLY_FLOAT_PROP(failOffsetYEnd);
 
 #if !TARGET_OS_OSX && !TARGET_OS_TV
-  bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
-  if (enableTrackpadTwoFingerGesture) {
-    recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
+  id enableTrackpadTwoFingerGesture = config[@"enableTrackpadTwoFingerGesture"];
+  if (enableTrackpadTwoFingerGesture != nil) {
+    recognizer.allowedScrollTypesMask = [RCTConvert BOOL:enableTrackpadTwoFingerGesture] ? UIScrollTypeMaskAll : 0;
   }
 
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
