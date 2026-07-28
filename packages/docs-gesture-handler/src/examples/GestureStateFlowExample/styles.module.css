@@ -48,11 +48,35 @@
   margin-bottom: 20px;
 }
 
+.stateGridWrap {
+  position: relative;
+}
+
 .stateGrid {
   display: grid;
   grid-template-columns: minmax(0, 168px) 40px minmax(0, 168px);
   grid-template-rows: auto 28px auto 28px auto 28px auto;
   align-items: center;
+  position: relative;
+}
+
+.arrowsOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.arrowLine {
+  fill: none;
+  stroke: var(--ifm-color-emphasis-400);
+  stroke-width: 2;
+}
+
+.arrowHead {
+  fill: var(--ifm-color-emphasis-400);
 }
 
 .node {
@@ -74,16 +98,6 @@
   border: 1px solid var(--ifm-color-emphasis-300);
   background: var(--ifm-color-emphasis-100);
   color: var(--ifm-color-emphasis-700);
-}
-
-.arrow {
-  text-align: center;
-  color: var(--ifm-color-emphasis-400);
-  font-size: 18px;
-}
-
-.arrowDiagonal {
-  font-size: 16px;
 }
 
 .ballArea {
