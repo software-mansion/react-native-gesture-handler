@@ -102,15 +102,6 @@ We really appreciate our sponsors! Thanks to them we can develop our library and
 <div className="community-holder-container">
 
   <div className="community-holder-container-item">
-    <a href="https://www.shopify.com/">
-      <div className="community-imageHolder">
-        <img src="https://avatars1.githubusercontent.com/u/8085?v=3&s=100" />
-      </div>
-      <div>Shopify</div>
-    </a>
-  </div>
-
-  <div className="community-holder-container-item">
     <a href="https://expo.dev">
       <div className="community-imageHolder">
         <img className="community-imageHolder" src="https://avatars2.githubusercontent.com/u/12504344?v=3&s=100" />
