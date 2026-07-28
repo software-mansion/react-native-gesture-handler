@@ -21,7 +21,7 @@ import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from '../hooks/utils';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
-import ScrollViewResponderInterceptor from './ScrollViewResponderInterceptor';
+import { ScrollViewResponderProvider } from './ScrollViewResponderInterceptor';
 
 export const RefreshControl: React.ComponentType<
   RNRefreshControlProps &
@@ -79,26 +79,34 @@ export const ScrollView = (
   };
 
   return (
-    <GHScrollView
-      {...rest}
-      ref={props.ref}
-      keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-      onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
-      // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
-      refreshControl={
-        refreshControl
-          ? React.cloneElement(
-              refreshControl,
-              // @ts-ignore block exists (on our RefreshControl)
-              scrollGesture ? { block: scrollGesture } : {}
-            )
-          : undefined
-      }>
-      <ScrollViewResponderInterceptor
-        keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
+    <ScrollViewResponderProvider
+      keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
+      <GHScrollView
+        {...rest}
+        ref={props.ref}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        // In 'handled' mode the provider above owns the keyboard dismissal, so
+        // RN's own responder claim is disabled to let unclaimed taps bubble up
+        // to it. Children stay untouched for `stickyHeaderIndices` (#4328).
+        disableScrollViewPanResponder={
+          keyboardShouldPersistTaps === 'handled'
+            ? true
+            : rest.disableScrollViewPanResponder
+        }
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
+        // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
+        refreshControl={
+          refreshControl
+            ? React.cloneElement(
+                refreshControl,
+                // @ts-ignore block exists (on our RefreshControl)
+                scrollGesture ? { block: scrollGesture } : {}
+              )
+            : undefined
+        }>
         {children}
-      </ScrollViewResponderInterceptor>
-    </GHScrollView>
+      </GHScrollView>
+    </ScrollViewResponderProvider>
   );
 };
 
