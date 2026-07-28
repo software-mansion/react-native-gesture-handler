@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+.panel {
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--ifm-background-color) 96%, black);
+  padding: 44px 40px 40px 40px;
+  font-family: 'Inter', sans-serif;
+}
+
+.gestureChartWrap {
+  position: relative;
+  width: 176px;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.touchChartWrap {
+  position: relative;
+  width: 100%;
+  max-width: 392px;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.gestureGrid {
+  display: grid;
+  grid-template-columns: 176px;
+  grid-template-rows: auto 28px auto 28px auto 28px auto 28px auto;
+  align-items: center;
+  position: relative;
+}
+
+.touchGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 176px) 40px minmax(0, 176px);
+  grid-template-rows: auto 28px auto 28px auto;
+  align-items: center;
+  position: relative;
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-color-emphasis-100);
+  color: var(--ifm-color-emphasis-700);
+}
+
+.arrowsOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.edge {
+  fill: none;
+  stroke: var(--ifm-color-emphasis-400);
+  stroke-width: 2;
+  transition: stroke 0.25s ease;
+}
+
+.arrowHeadIdle {
+  fill: var(--ifm-color-emphasis-400);
+}
+
+.ballArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  gap: 18px;
+}
+
+.ball {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: oklch(68% 0.14 300);
+  box-shadow: 0 0 0 8px oklch(68% 0.14 300 / 0.13);
+  cursor: grab;
+  touch-action: none;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ballPressed {
+  background: oklch(68% 0.15 150);
+  box-shadow: 0 0 0 8px oklch(68% 0.15 150 / 0.13);
+}
+
+.caption {
+  font-size: 14px;
+  color: var(--ifm-color-emphasis-600);
+  letter-spacing: 0.01em;
+}
+
+.resetRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.resetButton {
+  background: none;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  color: var(--ifm-color-emphasis-600);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.resetButton:hover {
+  border-color: var(--ifm-color-emphasis-500);
+  color: var(--ifm-color-emphasis-900);
+}
+
+@media (max-width: 996px) {
+  .panel {
+    padding: 28px 20px 24px 20px;
+  }
+}
