@@ -405,9 +405,9 @@
 
 #if !TARGET_OS_OSX && !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
   if (@available(iOS 13.4, *)) {
-    bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
-    if (enableTrackpadTwoFingerGesture) {
-      recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
+    id enableTrackpadTwoFingerGesture = config[@"enableTrackpadTwoFingerGesture"];
+    if (enableTrackpadTwoFingerGesture != nil) {
+      recognizer.allowedScrollTypesMask = [RCTConvert BOOL:enableTrackpadTwoFingerGesture] ? UIScrollTypeMaskAll : 0;
     }
   }
 
