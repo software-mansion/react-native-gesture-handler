@@ -230,33 +230,52 @@ function StateFlowsDiagram() {
   const [panState, setPanState] = useState<FlowState>('undetermined');
   const [lpState, setLpState] = useState<FlowState>('undetermined');
 
-  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const panResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lpResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panWasActive = useRef(false);
   const lpWasActive = useRef(false);
 
-  const clearResetTimer = useCallback(() => {
-    if (resetTimer.current) {
-      clearTimeout(resetTimer.current);
-      resetTimer.current = null;
+  const clearPanResetTimer = useCallback(() => {
+    if (panResetTimer.current) {
+      clearTimeout(panResetTimer.current);
+      panResetTimer.current = null;
     }
   }, []);
 
-  const scheduleReset = useCallback(() => {
-    clearResetTimer();
-    resetTimer.current = setTimeout(() => {
+  const clearLpResetTimer = useCallback(() => {
+    if (lpResetTimer.current) {
+      clearTimeout(lpResetTimer.current);
+      lpResetTimer.current = null;
+    }
+  }, []);
+
+  const schedulePanReset = useCallback(() => {
+    clearPanResetTimer();
+    panResetTimer.current = setTimeout(() => {
       setPanState('undetermined');
+    }, AUTO_RESET_MS);
+  }, [clearPanResetTimer]);
+
+  const scheduleLpReset = useCallback(() => {
+    clearLpResetTimer();
+    lpResetTimer.current = setTimeout(() => {
       setLpState('undetermined');
     }, AUTO_RESET_MS);
-  }, [clearResetTimer]);
+  }, [clearLpResetTimer]);
 
-  useEffect(() => clearResetTimer, [clearResetTimer]);
+  useEffect(() => {
+    return () => {
+      clearPanResetTimer();
+      clearLpResetTimer();
+    };
+  }, [clearPanResetTimer, clearLpResetTimer]);
 
   const ballX = useSharedValue(0);
   const ballY = useSharedValue(0);
 
   const pan = usePanGesture({
     onBegin: () => {
-      clearResetTimer();
+      clearPanResetTimer();
       setPanState('began');
     },
     onActivate: () => {
@@ -283,13 +302,13 @@ function StateFlowsDiagram() {
       panWasActive.current = false;
       ballX.value = withSpring(0, SPRING_BACK);
       ballY.value = withSpring(0, SPRING_BACK);
-      scheduleReset();
+      schedulePanReset();
     },
   });
 
   const longPress = useLongPressGesture({
     onBegin: () => {
-      clearResetTimer();
+      clearLpResetTimer();
       setLpState('began');
     },
     onActivate: () => {
@@ -306,7 +325,7 @@ function StateFlowsDiagram() {
         setLpState(lpWasActive.current ? 'cancelled' : 'failed');
       }
       lpWasActive.current = false;
-      scheduleReset();
+      scheduleLpReset();
     },
   });
 
@@ -317,7 +336,8 @@ function StateFlowsDiagram() {
   }));
 
   const onReset = () => {
-    clearResetTimer();
+    clearPanResetTimer();
+    clearLpResetTimer();
     panWasActive.current = false;
     lpWasActive.current = false;
     setPanState('undetermined');
