@@ -68,6 +68,22 @@ class NativeViewGestureHandler : GestureHandler() {
     delaysChildPressedState = DEFAULT_DELAYS_CHILD_PRESSED_STATE
   }
 
+  fun updateConfig(config: Config) {
+    isEnabled = config.enabled
+    shouldCancelWhenOutside = config.shouldCancelWhenOutside
+    testID = config.testID
+    val hitSlop = config.hitSlop
+    if (hitSlop != null) {
+      setHitSlop(hitSlop.left, hitSlop.top, hitSlop.right, hitSlop.bottom, HIT_SLOP_NONE, HIT_SLOP_NONE)
+    } else {
+      setHitSlop(null)
+    }
+    shouldActivateOnStart = config.shouldActivateOnStart
+    disallowInterruption = config.disallowInterruption
+    yieldsToContinuousGestures = config.yieldsToContinuousGestures
+    delaysChildPressedState = config.delaysChildPressedState
+  }
+
   override fun shouldRecognizeSimultaneously(handler: GestureHandler): Boolean {
     // if the gesture is marked by user as simultaneous with other or the hook return true
     hook.shouldRecognizeSimultaneously(handler)?.let {
@@ -224,6 +240,24 @@ class NativeViewGestureHandler : GestureHandler() {
   }
 
   override fun wantsToAttachDirectlyToView() = true
+
+  data class HitSlop(
+    val left: Float = HIT_SLOP_NONE,
+    val top: Float = HIT_SLOP_NONE,
+    val right: Float = HIT_SLOP_NONE,
+    val bottom: Float = HIT_SLOP_NONE,
+  )
+
+  data class Config(
+    val enabled: Boolean = true,
+    val shouldCancelWhenOutside: Boolean = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE,
+    val hitSlop: HitSlop? = null,
+    val testID: String? = null,
+    val shouldActivateOnStart: Boolean = DEFAULT_SHOULD_ACTIVATE_ON_START,
+    val disallowInterruption: Boolean = DEFAULT_DISALLOW_INTERRUPTION,
+    val yieldsToContinuousGestures: Boolean = DEFAULT_YIELDS_TO_CONTINUOUS_GESTURES,
+    val delaysChildPressedState: Boolean? = DEFAULT_DELAYS_CHILD_PRESSED_STATE,
+  )
 
   class Factory : GestureHandler.Factory<NativeViewGestureHandler>() {
     override val type = NativeViewGestureHandler::class.java

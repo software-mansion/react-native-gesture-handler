@@ -75,7 +75,7 @@ open class GestureHandler {
   var isWithinBounds = false
     private set
   var isEnabled = true
-    private set(enabled) {
+    protected set(enabled) {
       // Don't cancel handler when not changing the value of the isEnabled, executing it always caused
       // handlers to be cancelled on re-render because that's the moment when the config is updated.
       // If the enabled prop "changed" from true to true the handler would get cancelled.
