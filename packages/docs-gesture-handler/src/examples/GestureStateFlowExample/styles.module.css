@@ -87,7 +87,6 @@
   height: 96px;
   border-radius: 50%;
   background: var(--swm-purple-light-80);
-  box-shadow: 0 0 0 8px var(--swm-purple-light-transparent-80);
   cursor: grab;
   touch-action: none;
 }
