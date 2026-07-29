@@ -1,11 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap');
-
 .panel {
   border: 1px solid var(--ifm-color-emphasis-200);
   border-radius: 16px;
   background: color-mix(in srgb, var(--ifm-background-color) 96%, black);
   padding: 44px 40px 40px 40px;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--swm-body-font), sans-serif;
 }
 
 .gestureChartWrap {
@@ -46,7 +44,7 @@
   text-align: center;
   padding: 14px 16px;
   border-radius: 8px;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--swm-code-font), monospace;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.02em;
@@ -128,7 +126,7 @@
   padding: 6px 12px;
   font-size: 13px;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--swm-body-font), sans-serif;
   transition:
     border-color 0.2s ease,
     color 0.2s ease;
