@@ -87,6 +87,8 @@
   height: 96px;
   border-radius: 50%;
   background: var(--swm-purple-light-80);
+  box-shadow: 0 0 0 8px
+    color-mix(in oklch, var(--swm-purple-light-80) 13%, transparent);
   cursor: grab;
   touch-action: none;
 }
