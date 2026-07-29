@@ -161,13 +161,6 @@ function TouchCallbacksDiagram() {
       ballX.value = dx * scale;
       ballY.value = dy * scale;
 
-      if (hasMoved.current) {
-        fire('move_move', 'onTouchesMove');
-      } else {
-        hasMoved.current = true;
-        fire('down_move', 'onTouchesMove');
-      }
-
       // dragging out of the card fails the gesture, which cancels its
       // touches — so onTouchesCancel below fires with a real event
       const panel = panelRef.current?.getBoundingClientRect();
