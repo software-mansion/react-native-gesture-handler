@@ -150,7 +150,6 @@ function GestureCallbacksDiagram() {
         // let the onDeactivate pulse land first
         later(() => {
           fire('deactivate_finalize', 'onFinalize');
-          pulse('begin_finalize');
         }, 2 * CAUSAL_DELAY_MS);
       } else {
         pulse('onFinalize');
