@@ -92,8 +92,9 @@
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  background: oklch(68% 0.14 300);
-  box-shadow: 0 0 0 8px oklch(68% 0.14 300 / 0.13);
+  background: var(--swm-purple-light-80);
+  box-shadow: 0 0 0 8px
+    color-mix(in oklch, var(--swm-purple-light-80) 13%, transparent);
   cursor: grab;
   touch-action: none;
   transition:
@@ -102,8 +103,9 @@
 }
 
 .ballPressed {
-  background: oklch(68% 0.15 150);
-  box-shadow: 0 0 0 8px oklch(68% 0.15 150 / 0.13);
+  background: var(--swm-green-dark-100);
+  box-shadow: 0 0 0 8px
+    color-mix(in oklch, var(--swm-green-dark-100) 13%, transparent);
 }
 
 .caption {
