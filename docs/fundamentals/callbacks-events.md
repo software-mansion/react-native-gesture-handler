@@ -6,12 +6,16 @@ When Reanimated is installed, all callbacks are automatically workletized. For m
 
 ### GestureEvent callbacks
 
+Drag or hold the circle below to see how the callback chain reacts.
+
 Note that some of these callbacks are complementary:
 
 * if `onBegin` was called, it is guaranteed that `onFinalize` will be called later.
 * if `onActivate` was called, it is guaranteed that `onDeactivate` will be called later.
 
 ### TouchEvent callbacks
+
+Low-level `TouchEvent` callbacks are tied to raw pointer activity. Drag out of the card to cancel, or release inside it to see how the callback chain reacts.
 
 ## Callbacks
 
