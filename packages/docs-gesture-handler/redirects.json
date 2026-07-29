@@ -1,7 +1,7 @@
 {
   "redirects": [
     {
-      "to": "/docs/fundamentals/introduction",
+      "to": "/docs/fundamentals/getting-started",
       "from": "/docs/"
     },
     {
