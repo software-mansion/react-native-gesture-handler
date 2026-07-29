@@ -108,8 +108,8 @@ class RNGestureHandlerButtonViewManager :
     view.hasLongPressHandler = hasLongPressHandler
   }
 
-  // No-op — only iOS needs the module id to resolve the handler manager, Android
-  // gets the module from the view's context.
+  // Cached like the other managed-handler props — prop order isn't guaranteed, so the module is
+  // resolved from the id only once the transaction ends, in `updateManagedHandler`.
   @ReactProp(name = "moduleId")
   override fun setModuleId(view: ButtonViewGroup, moduleId: Int) {
     view.moduleId = moduleId
