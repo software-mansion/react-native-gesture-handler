@@ -1,12 +1,15 @@
 import { Grid } from '@mui/material';
 import { useEffect, useLayoutEffect, useRef } from 'react';
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import ChartManager, { Item, WAVE_DELAY_MS } from './ChartManager';
+import type { StyleProp, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+
+import type { Item } from './ChartManager';
+import ChartManager, { WAVE_DELAY_MS } from './ChartManager';
 
 export type Coordinate = {
   x: number;

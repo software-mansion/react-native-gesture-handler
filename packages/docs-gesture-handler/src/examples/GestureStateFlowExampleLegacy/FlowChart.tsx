@@ -1,9 +1,11 @@
+import { Grid } from '@mui/material';
 import { useCallback, useMemo, useReducer, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import ChartManager from './ChartManager';
-import { Grid } from '@mui/material';
-import ChartItem, { Coordinate } from './ChartItem';
+
 import Arrow from './Arrow';
+import type { Coordinate } from './ChartItem';
+import ChartItem from './ChartItem';
+import type ChartManager from './ChartManager';
 
 type FlowChartProps = {
   chartManager: ChartManager;
