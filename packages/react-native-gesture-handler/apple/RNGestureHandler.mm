@@ -169,6 +169,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   prop = config[@"hitSlop"];
   if ([prop isKindOfClass:[NSNumber class]]) {
     _hitSlop.left = _hitSlop.right = _hitSlop.top = _hitSlop.bottom = [prop doubleValue];
+  } else if ([prop isKindOfClass:[NSNull class]]) {
+    _hitSlop = RNGHHitSlopEmpty;
   } else if (prop != nil) {
     _hitSlop.left = _hitSlop.right = RNGH_HIT_SLOP_GET(@"horizontal");
     _hitSlop.top = _hitSlop.bottom = RNGH_HIT_SLOP_GET(@"vertical");

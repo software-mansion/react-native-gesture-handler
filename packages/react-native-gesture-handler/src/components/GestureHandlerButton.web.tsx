@@ -48,6 +48,7 @@ type ButtonProps = ViewProps & {
         bottom?: number;
         right?: number;
       }
+    | null
     | undefined;
   onButtonPress?:
     | ((event: NativeSyntheticEvent<ButtonEvent>) => void)

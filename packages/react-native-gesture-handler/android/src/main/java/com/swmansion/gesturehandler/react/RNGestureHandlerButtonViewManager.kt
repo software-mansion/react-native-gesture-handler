@@ -137,14 +137,12 @@ class RNGestureHandlerButtonViewManager :
   @ReactProp(name = "gestureHitSlop")
   override fun setGestureHitSlop(view: ButtonViewGroup, gestureHitSlop: ReadableMap?) {
     view.managedHandlerHitSlop = gestureHitSlop
-    if (gestureHitSlop != null) {
-      updateManagedHandlerConfig(
-        view,
-        Arguments.createMap().apply {
-          putMap("hitSlop", gestureHitSlop)
-        },
-      )
-    }
+    updateManagedHandlerConfig(
+      view,
+      Arguments.createMap().apply {
+        putMap("hitSlop", gestureHitSlop)
+      },
+    )
   }
 
   @ReactProp(name = "hasLongPressHandler")

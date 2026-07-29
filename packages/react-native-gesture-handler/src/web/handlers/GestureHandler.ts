@@ -791,8 +791,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   public updateGestureConfig(config: Partial<Config>): void {
     const enabledChanged = this.maybeUpdateEnabled(config.enabled);
 
+    // An explicit `null` clears the hit slop (no expansion on any edge),
+    // `undefined` means the property was not part of this update.
     if (config.hitSlop !== undefined) {
-      this.hitSlop = config.hitSlop;
+      this.hitSlop = config.hitSlop ?? undefined;
       this.validateHitSlops();
     }
 
