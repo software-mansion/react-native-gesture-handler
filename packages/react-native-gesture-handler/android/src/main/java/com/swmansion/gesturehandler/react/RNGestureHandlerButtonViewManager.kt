@@ -78,6 +78,8 @@ class RNGestureHandlerButtonViewManager :
     view.managedHandlerCancelOnLeave = null
     view.managedHandlerTestID = null
     view.managedHandlerHitSlop = null
+    view.moduleId = null
+    // Has to come last — every setter above flags the view as needing a managed handler update.
     view.managedHandlerNeedsUpdate = false
 
     super.onDropViewInstance(view)
@@ -460,11 +462,12 @@ class RNGestureHandlerButtonViewManager :
   }
 
   private fun dropManagedHandler(view: ButtonViewGroup) {
+    val tag = view.managedHandlerTag ?: return
+    // Cleared even if the drop below doesn't go through — the view must not keep a dangling tag.
+    view.managedHandlerTag = null
+
     val moduleId = view.moduleId ?: return
-    view.managedHandlerTag?.let { tag ->
-      RNGestureHandlerModule.getModule(moduleId)?.dropGestureHandler(tag)
-      view.managedHandlerTag = null
-    }
+    RNGestureHandlerModule.getModule(moduleId)?.dropGestureHandler(tag)
   }
 
   private fun buildManagedHandlerConfig(view: ButtonViewGroup): ReadableMap = Arguments.createMap().apply {
