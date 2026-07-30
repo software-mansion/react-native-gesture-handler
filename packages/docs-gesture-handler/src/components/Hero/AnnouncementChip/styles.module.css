@@ -7,10 +7,15 @@
   border: 1px solid var(--swm-purple-light-100);
   background: color-mix(in srgb, var(--swm-purple-light-100) 15%, transparent);
   text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .chip:hover {
   text-decoration: none;
+  background: color-mix(in srgb, var(--swm-purple-light-100) 28%, transparent);
+  transform: scale(1.02);
 }
 
 .label {
