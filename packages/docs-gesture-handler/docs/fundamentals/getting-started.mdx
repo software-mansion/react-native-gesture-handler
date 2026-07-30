@@ -78,7 +78,7 @@ When using an Expo development build, run prebuild to update the native code in 
 npx expo prebuild
 ```
 
-#### Android
+##### Android
 
 Setting up Gesture Handler on Android doesn't require any more steps. Keep in mind that if you want to use gestures in [Modals](https://reactnative.dev/docs/modal) you need to wrap Modal's content with `GestureHandlerRootView`:
 
@@ -95,7 +95,7 @@ export function CustomModal({ children, ...rest }) {
 }
 ```
 
-#### iOS
+##### iOS
 
 While developing for iOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
 
@@ -103,7 +103,7 @@ While developing for iOS, make sure to install [pods](https://cocoapods.org/) fi
 cd ios && bundle install && bundle exec pod install && cd ..
 ```
 
-#### macOS
+##### macOS
 
 While developing for macOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
 
@@ -111,11 +111,11 @@ While developing for macOS, make sure to install [pods](https://cocoapods.org/) 
 cd macos && bundle install && bundle exec pod install && cd ..
 ```
 
-#### Web
+##### Web
 
 There is no additional configuration required for the web.
 
-#### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
+##### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
 
 If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to make sure that every screen is wrapped with `GestureHandlerRootView`. This can be done for example at the stage when you register your screens. Here's an example:
 
