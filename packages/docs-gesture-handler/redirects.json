@@ -57,8 +57,24 @@
       "from": "/docs/guides/upgrading-to-2"
     },
     {
-      "to": "/docs/fundamentals/gesture-detectors",
+      "to": "/docs/core-components/gesture-detectors",
       "from": "/docs/gestures/gesture-detector"
+    },
+    {
+      "to": "/docs/core-components/gesture-detectors",
+      "from": "/docs/fundamentals/gesture-detectors"
+    },
+    {
+      "to": "/docs/core-components/root-view",
+      "from": "/docs/fundamentals/root-view"
+    },
+    {
+      "to": "/docs/fundamentals/firststeps",
+      "from": "/docs/guides/quickstart"
+    },
+    {
+      "to": "/docs/gestures/state-manager",
+      "from": "/docs/fundamentals/state-manager"
     }
   ]
 }

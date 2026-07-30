@@ -2,7 +2,7 @@
 // [from , to]
 const siteMap = [
   ['/installation', '/fundamentals/getting-started'],
-  ['/quickstart', '/fundamentals/quickstart'],
+  ['/quickstart', '/fundamentals/firststeps'],
   ['/gesture-composition', '/fundamentals/gesture-composition'],
   ['/manual-gestures', '/fundamentals/manual-gestures'],
   ['/under-the-hood/states-events', '/fundamentals/states-events'],
