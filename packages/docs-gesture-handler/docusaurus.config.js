@@ -81,7 +81,7 @@ const config = {
         },
       }),
     ],
-    require.resolve('@swmansion/t-rex-ui/preset')
+    require.resolve('@swmansion/t-rex-ui/preset'),
   ],
 
   themeConfig:
@@ -104,7 +104,7 @@ const config = {
         },
         items: [
           {
-            to: 'docs/fundamentals/introduction',
+            to: 'docs/fundamentals/getting-started',
             activeBasePath: 'docs',
             label: 'Docs',
             position: 'right',
