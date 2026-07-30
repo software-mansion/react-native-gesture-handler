@@ -1,0 +1,42 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--swm-purple-light-100);
+  background: color-mix(in srgb, var(--swm-purple-light-100) 15%, transparent);
+  text-decoration: none;
+}
+
+.chip:hover {
+  text-decoration: none;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--swm-landing-heading);
+  white-space: nowrap;
+}
+
+.link {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--swm-purple-light-100);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .chip {
+    padding: 0.6rem 1rem;
+    gap: 0.4rem;
+  }
+
+  .label,
+  .link {
+    font-size: 13px;
+  }
+}
