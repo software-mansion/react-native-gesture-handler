@@ -1,7 +1,7 @@
 ---
-id: first-steps
-title: First steps
-sidebar_label: First steps
+id: gesture-animation
+title: Your first gesture-driven animation
+sidebar_label: Your first gesture-driven animation
 sidebar_position: 2
 ---
 
