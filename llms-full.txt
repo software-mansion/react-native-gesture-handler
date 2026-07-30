@@ -1778,30 +1778,30 @@ Specifies whether the context menu should be enabled after clicking on the under
 
 
 ---
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation
-# Title: Installation
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/getting-started
+# Title: Getting started
 
-## Requirements
+Gesture Handler provides a declarative API exposing the native platform's touch and gesture system to React Native. It's designed to be a replacement of React Native's built in touch system called [Gesture Responder System](http://reactnative.dev/docs/gesture-responder-system). Using native touch handling allows addressing the performance limitations of React Native's Gesture Responder System. It also provides more control over the platform's native components that can handle gestures on their own.
 
-### Compatibility with React Native versions
+## Installation
+
+### Requirements
+
+#### Compatibility with React Native versions
 
 `react-native-gesture-handler` supports the three latest minor releases of `react-native`.
 
-### Running gestures on the UI thread
+#### Running gestures on the UI thread
 
 Using Reanimated is the recommended method of handling gesture-driven interactions on the UI thread. In order to use it, you need to install [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) along with [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/). Another approach is to use React Native's [Animated API](https://reactnative.dev/docs/animated).
 
 For more details on how to implement these, refer to the dedicated sections for [Reanimated](/docs/fundamentals/reanimated-interactions) and [Animated](/docs/fundamentals/animated-interactions).
 
-## Setup
+### Setup
 
 Setting up `react-native-gesture-handler` is pretty straightforward:
 
-### 1. Start with installing the package from npm:
-
-```bash
-npx expo install react-native-gesture-handler
-```
+#### 1. Start with installing the package from npm:
 
 ```bash
 npm install react-native-gesture-handler
@@ -1811,7 +1811,11 @@ npm install react-native-gesture-handler
 yarn add react-native-gesture-handler
 ```
 
-### 2. Wrap your app with GestureHandlerRootView component
+```bash
+npx expo install react-native-gesture-handler
+```
+
+#### 2. Wrap your app with GestureHandlerRootView component
 
 ```jsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -1829,7 +1833,7 @@ Keep `GestureHandlerRootView` as close to the actual root of the app as possible
 
 Check out [`GestureHandlerRootView`](/docs/fundamentals/root-view) section for more details.
 
-### 3. Platform specific setup
+#### 3. Platform specific setup
 
 #### [Expo development build](https://docs.expo.dev/develop/development-builds/introduction/)
 
@@ -1839,7 +1843,7 @@ When using an Expo development build, run prebuild to update the native code in 
 npx expo prebuild
 ```
 
-#### Android
+##### Android
 
 Setting up Gesture Handler on Android doesn't require any more steps. Keep in mind that if you want to use gestures in [Modals](https://reactnative.dev/docs/modal) you need to wrap Modal's content with `GestureHandlerRootView`:
 
@@ -1856,7 +1860,7 @@ export function CustomModal({ children, ...rest }) {
 }
 ```
 
-#### iOS
+##### iOS
 
 While developing for iOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
 
@@ -1864,7 +1868,7 @@ While developing for iOS, make sure to install [pods](https://cocoapods.org/) fi
 cd ios && bundle install && bundle exec pod install && cd ..
 ```
 
-#### macOS
+##### macOS
 
 While developing for macOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
 
@@ -1872,11 +1876,11 @@ While developing for macOS, make sure to install [pods](https://cocoapods.org/) 
 cd macos && bundle install && bundle exec pod install && cd ..
 ```
 
-#### Web
+##### Web
 
 There is no additional configuration required for the web.
 
-#### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
+##### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
 
 If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to make sure that every screen is wrapped with `GestureHandlerRootView`. This can be done for example at the stage when you register your screens. Here's an example:
 
@@ -1886,7 +1890,7 @@ import FirstTabScreen from './FirstTabScreen';
 import SecondTabScreen from './SecondTabScreen';
 import PushedScreen from './PushedScreen';
 
-// register all screens of the app (including internal ones)
+// Register all screens of the app (including internal ones)
 export function registerScreens() {
   Navigation.registerComponent(
     'example.FirstTabScreen',
@@ -1926,84 +1930,11 @@ export function registerScreens() {
 
 You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
 
+## Your first gesture
 
----
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/introduction
-# Title: Introduction
+With the setup done, you're ready to add your first gesture. Create a tap gesture with the [`useTapGesture`](/docs/gestures/use-tap-gesture) hook, attach it to a component with [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Don't forget to wrap your app with [`GestureHandlerRootView`](/docs/fundamentals/root-view), as described in [previous section](/docs/fundamentals/getting-started#2-wrap-your-app-with-gesturehandlerrootview-component).
 
-Gesture Handler provides a declarative API exposing the native platform's touch and gesture system to React Native. It's designed to be a replacement of React Native's built in touch system called [Gesture Responder System](http://reactnative.dev/docs/gesture-responder-system). Using native touch handling allows addressing the performance limitations of React Native's Gesture Responder System. It also provides more control over the platform's native components that can handle gestures on their own. If you want to learn more, we recommend [this talk](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) in which he explains issues with the responder system.
-
-The main benefits of using React Native Gesture Handler are:
-
-* A way to use a platform's native touch handling system for recognizing gestures (like [pinch](/docs/gestures/use-pinch-gesture), [rotation](/docs/gestures/use-rotation-gesture), [pan](/docs/gestures/use-pan-gesture) and a few others).
-* The ability to define [relations between gestures](/docs/composition/overview) to ensure gestures, and possibly native components, will not conflict with each other.
-* Mechanisms for components that run in native thread and follow platform default behavior, such as delaying the transition to a pressed state within scrollable components to prevent highlighting during a quick scroll or fling.
-* Close integration with [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) to process touch events on the UI thread.
-* Support for different input devices like touch screens, pens and mice.
-* Ability to include any native component into the Gesture Handler's touch system, making it work alongside your gestures.
-
-> **Info**
->
-> We recommend using Reanimated to implement gesture-driven animations with Gesture Handler. Its more advanced features rely heavily on worklets and the UI runtime provided by Reanimated.
-
-## Learning resources
-
-### Apps
-
-[Gesture Handler Example App](https://github.com/software-mansion/react-native-gesture-handler/tree/main/apps/expo-example) – official gesture handler "showcase" app.
-
-### Talks and workshops
-
-[Declarative future of gestures and animations in React Native](https://www.youtube.com/watch?v=kdq4z2708VM) by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk that explains the motivation behind creating the gesture handler library. It also presents [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) and how and when it can be used with gesture handler.
-
-[React Native workshop with Expo team @ReactEurope 2018](https://youtu.be/JSIoE_ReeDk?t=41m49s) by [Brent Vatne](https://twitter.com/notbrent) – great workshop explaining gesture handler in detail and presenting a few exercises that will help get you started.
-
-[Living in an async world of React Native](https://www.youtube.com/watch?v=-Izgons3mec) by [Krzysztof Magiera](https://twitter.com/kzzzf) – talk which highlights some issues with the React Native's touch system Gesture Handler aims to address. Also the motivation for building this library is explained.
-
-[React Native Touch & Gesture](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk explaining JS responder system limitations and pointing out some of the core features of Gesture Handler.
-
-## Contributing
-
-If you are interested in the project and want to contribute or support it in other ways, don't hesitate to contact anyone from the team on Twitter or Bluesky (links below)!
-
-All PRs are welcome, but talk to us before you start working on something big.
-
-The easiest way to get started with contributing code is by:
-
-* Reviewing the list of [open issues](https://github.com/software-mansion/react-native-gesture-handler/issues) and trying to solve the one that seem approachable to you.
-* Updating the [documentation](https://github.com/software-mansion/react-native-gesture-handler/tree/main/packages/docs-gesture-handler) whenever you see some information is unclear, missing or out of date.
-
-Code is only one way you can contribute. You may want to consider [replying on issues](https://github.com/software-mansion/react-native-gesture-handler/issues) if you know how to help.
-
-## Community
-
-We are very proud of the community that has been built around this package. We really appreciate all your help regardless of whether it is a pull request, issue report, helping others by commenting on existing issues or posting some demo or video tutorial on social media.
-If you've built something with this library you'd like to share, please contact us as we'd love to help share it with others.
-
-### Gesture Handler Team 🚀
-
-Jakub Piasecki
-@breskin67
-@jpiasecki.com
-
-Michał Bert
-@Michal3870
-
-Andrzej Kwaśniewski
-@aakwasniewski
-
-Ignacy Łątka
-@latekvo
-
-Krzysztof Magiera
-@kzzzf
-@kzzzf.bsky.social
-
-### Sponsors
-
-We really appreciate our sponsors! Thanks to them we can develop our library and make the react-native world a better place. Special thanks for:
-
-Expo
+That's it! The gesture fires `onActivate` whenever a tap is recognized. Check out [Gesture callbacks & events](/docs/fundamentals/callbacks-events) for the full set of callbacks, or browse [all gestures](/docs/category/gestures) to keep exploring.
 
 
 ---
@@ -4043,7 +3974,7 @@ Thanks for giving this library a try! We are sorry that you might have encounter
 2. When sure your problem hasn't been reported or was reported but the proposed solution doesn't work for you please follow [our issue reporting guidelines](#reporting-issues).
 3. You can try seeking help on [Software Mansion Discord](https://discord.com/invite/VemJ4df8Yr).
 4. If you feel like reading the source code we highly recommend it, as this is by far the best resource and gives you the most up to date insights into how the library works and what might be causing the bug.
-5. If you managed to find the solution consider [contributing](/docs/fundamentals/introduction#contributing) a fix or update our documentation to make this information easier to find for others in the future.
+5. If you managed to find the solution consider contributing a fix or update our documentation to make this information easier to find for others in the future.
 
 ## Reporting issues
 

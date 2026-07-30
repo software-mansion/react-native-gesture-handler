@@ -1,24 +1,24 @@
-## Requirements
+Gesture Handler provides a declarative API exposing the native platform's touch and gesture system to React Native. It's designed to be a replacement of React Native's built in touch system called [Gesture Responder System](http://reactnative.dev/docs/gesture-responder-system). Using native touch handling allows addressing the performance limitations of React Native's Gesture Responder System. It also provides more control over the platform's native components that can handle gestures on their own.
 
-### Compatibility with React Native versions
+## Installation
+
+### Requirements
+
+#### Compatibility with React Native versions
 
 `react-native-gesture-handler` supports the three latest minor releases of `react-native`.
 
-### Running gestures on the UI thread
+#### Running gestures on the UI thread
 
 Using Reanimated is the recommended method of handling gesture-driven interactions on the UI thread. In order to use it, you need to install [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) along with [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/). Another approach is to use React Native's [Animated API](https://reactnative.dev/docs/animated).
 
 For more details on how to implement these, refer to the dedicated sections for [Reanimated](/docs/fundamentals/reanimated-interactions) and [Animated](/docs/fundamentals/animated-interactions).
 
-## Setup
+### Setup
 
 Setting up `react-native-gesture-handler` is pretty straightforward:
 
-### 1. Start with installing the package from npm:
-
-```bash
-npx expo install react-native-gesture-handler
-```
+#### 1. Start with installing the package from npm:
 
 ```bash
 npm install react-native-gesture-handler
@@ -28,7 +28,11 @@ npm install react-native-gesture-handler
 yarn add react-native-gesture-handler
 ```
 
-### 2. Wrap your app with GestureHandlerRootView component
+```bash
+npx expo install react-native-gesture-handler
+```
+
+#### 2. Wrap your app with GestureHandlerRootView component
 
 ```jsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -46,7 +50,7 @@ Keep `GestureHandlerRootView` as close to the actual root of the app as possible
 
 Check out [`GestureHandlerRootView`](/docs/fundamentals/root-view) section for more details.
 
-### 3. Platform specific setup
+#### 3. Platform specific setup
 
 #### [Expo development build](https://docs.expo.dev/develop/development-builds/introduction/)
 
@@ -56,7 +60,7 @@ When using an Expo development build, run prebuild to update the native code in 
 npx expo prebuild
 ```
 
-#### Android
+##### Android
 
 Setting up Gesture Handler on Android doesn't require any more steps. Keep in mind that if you want to use gestures in [Modals](https://reactnative.dev/docs/modal) you need to wrap Modal's content with `GestureHandlerRootView`:
 
@@ -73,7 +77,7 @@ export function CustomModal({ children, ...rest }) {
 }
 ```
 
-#### iOS
+##### iOS
 
 While developing for iOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
 
@@ -81,7 +85,7 @@ While developing for iOS, make sure to install [pods](https://cocoapods.org/) fi
 cd ios && bundle install && bundle exec pod install && cd ..
 ```
 
-#### macOS
+##### macOS
 
 While developing for macOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
 
@@ -89,11 +93,11 @@ While developing for macOS, make sure to install [pods](https://cocoapods.org/) 
 cd macos && bundle install && bundle exec pod install && cd ..
 ```
 
-#### Web
+##### Web
 
 There is no additional configuration required for the web.
 
-#### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
+##### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
 
 If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to make sure that every screen is wrapped with `GestureHandlerRootView`. This can be done for example at the stage when you register your screens. Here's an example:
 
@@ -103,7 +107,7 @@ import FirstTabScreen from './FirstTabScreen';
 import SecondTabScreen from './SecondTabScreen';
 import PushedScreen from './PushedScreen';
 
-// register all screens of the app (including internal ones)
+// Register all screens of the app (including internal ones)
 export function registerScreens() {
   Navigation.registerComponent(
     'example.FirstTabScreen',
@@ -142,3 +146,9 @@ export function registerScreens() {
 ```
 
 You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
+
+## Your first gesture
+
+With the setup done, you're ready to add your first gesture. Create a tap gesture with the [`useTapGesture`](/docs/gestures/use-tap-gesture) hook, attach it to a component with [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Don't forget to wrap your app with [`GestureHandlerRootView`](/docs/fundamentals/root-view), as described in [previous section](/docs/fundamentals/getting-started#2-wrap-your-app-with-gesturehandlerrootview-component).
+
+That's it! The gesture fires `onActivate` whenever a tap is recognized. Check out [Gesture callbacks & events](/docs/fundamentals/callbacks-events) for the full set of callbacks, or browse [all gestures](/docs/category/gestures) to keep exploring.
