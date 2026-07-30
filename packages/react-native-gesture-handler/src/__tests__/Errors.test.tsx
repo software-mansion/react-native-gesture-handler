@@ -65,7 +65,10 @@ describe('VirtualDetector', () => {
 
     function InterceptingDetectorMultipleTypes() {
       const tap = useTapGesture({ useAnimated: true });
-      const tap2 = useTapGesture({ onActivate: mockWorklet });
+      const tap2 = useTapGesture({
+        disableReanimated: false,
+        onActivate: mockWorklet,
+      });
       return (
         <GestureHandlerRootView>
           <InterceptingGestureDetector gesture={tap}>

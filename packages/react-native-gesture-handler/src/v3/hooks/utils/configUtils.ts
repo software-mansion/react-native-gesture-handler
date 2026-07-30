@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { tagMessage } from '../../../utils';
+import { isTestEnv, tagMessage } from '../../../utils';
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
@@ -36,6 +36,10 @@ export function resolveInternalConfigProps<
   THandlerData,
   TExtendedHandlerData extends THandlerData,
 >(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
+  if (isTestEnv() && config.disableReanimated === undefined) {
+    config.disableReanimated = true;
+  }
+
   if (
     __DEV__ &&
     isNativeAnimatedEvent(config.onUpdate) &&
