@@ -5,6 +5,14 @@
       "from": "/docs/"
     },
     {
+      "to": "/docs/fundamentals/getting-started",
+      "from": "/docs/fundamentals/introduction"
+    },
+    {
+      "to": "/docs/fundamentals/getting-started",
+      "from": "/docs/fundamentals/installation"
+    },
+    {
       "to": "/docs/legacy-gestures/pan-gesture",
       "from": "/docs/gestures/pan-gesture"
     },

@@ -1,7 +1,7 @@
 // not the most elegant way but the most fool-proof for sure
 // [from , to]
 const siteMap = [
-  ['/installation', '/fundamentals/installation'],
+  ['/installation', '/fundamentals/getting-started'],
   ['/quickstart', '/fundamentals/quickstart'],
   ['/gesture-composition', '/fundamentals/gesture-composition'],
   ['/manual-gestures', '/fundamentals/manual-gestures'],

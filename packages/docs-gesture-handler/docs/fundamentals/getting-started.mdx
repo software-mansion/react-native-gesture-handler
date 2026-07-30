@@ -78,7 +78,7 @@ When using an Expo development build, run prebuild to update the native code in 
 npx expo prebuild
 ```
 
-#### Android
+##### Android
 
 Setting up Gesture Handler on Android doesn't require any more steps. Keep in mind that if you want to use gestures in [Modals](https://reactnative.dev/docs/modal) you need to wrap Modal's content with `GestureHandlerRootView`:
 
@@ -95,7 +95,7 @@ export function CustomModal({ children, ...rest }) {
 }
 ```
 
-#### iOS
+##### iOS
 
 While developing for iOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
 
@@ -103,7 +103,7 @@ While developing for iOS, make sure to install [pods](https://cocoapods.org/) fi
 cd ios && bundle install && bundle exec pod install && cd ..
 ```
 
-#### macOS
+##### macOS
 
 While developing for macOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
 
@@ -111,11 +111,11 @@ While developing for macOS, make sure to install [pods](https://cocoapods.org/) 
 cd macos && bundle install && bundle exec pod install && cd ..
 ```
 
-#### Web
+##### Web
 
 There is no additional configuration required for the web.
 
-#### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
+##### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
 
 If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to make sure that every screen is wrapped with `GestureHandlerRootView`. This can be done for example at the stage when you register your screens. Here's an example:
 
@@ -167,7 +167,7 @@ You can check out [this example project](https://github.com/henrikra/nativeNavig
 
 ## Your first gesture
 
-With the setup done, you're ready to add your first gesture. Create a tap gesture with the [`useTapGesture`](/docs/gestures/use-tap-gesture) hook, attach it to a component with [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector), and make sure it's all wrapped in [`GestureHandlerRootView`](/docs/fundamentals/root-view).
+With the setup done, you're ready to add your first gesture. Create a tap gesture with the [`useTapGesture`](/docs/gestures/use-tap-gesture) hook, attach it to a component with [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Don't forget to wrap your app with [`GestureHandlerRootView`](/docs/fundamentals/root-view), as described in [previous section](/docs/fundamentals/getting-started#2-wrap-your-app-with-gesturehandlerrootview-component).
 
 <CollapsibleCode
 label="Show full example"
@@ -212,4 +212,4 @@ const styles = StyleSheet.create({
 });
 `}/>
 
-That's it! The gesture fires `onActivate` whenever a tap is released. Check out [Gesture callbacks & events](/docs/fundamentals/callbacks-events) for the full set of callbacks, or browse [all gestures](/docs/category/gestures) to keep exploring.
+That's it! The gesture fires `onActivate` whenever a tap is recognized. Check out [Gesture callbacks & events](/docs/fundamentals/callbacks-events) for the full set of callbacks, or browse [all gestures](/docs/category/gestures) to keep exploring.
