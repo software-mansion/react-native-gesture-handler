@@ -46,6 +46,28 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     super.onDetachedFromWindow()
   }
 
+  override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+    super.requestDisallowInterceptTouchEvent(disallowIntercept)
+    if (!disallowIntercept) {
+      return
+    }
+
+    val orchestrator = RNGestureHandlerRootView.findGestureHandlerRootView(this)?.orchestrator ?: return
+
+    if (!orchestrator.isHandlingTouch) {
+      val currentHandlers = attachedHandlers.mapNotNull { tag ->
+        RNGestureHandlerModule.registries[this.moduleId]?.getHandler(tag)
+      }.filter {
+        // The handler has been recorded
+        it.view != null
+      }
+
+      currentHandlers.forEach {
+        it.cancel()
+      }
+    }
+  }
+
   fun setModuleId(id: Int) {
     if (this.moduleId == id) {
       return
