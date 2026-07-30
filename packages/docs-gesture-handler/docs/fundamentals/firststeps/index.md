@@ -1,8 +1,8 @@
 ---
-id: quickstart
-title: Quick start
-sidebar_label: Quick start
-sidebar_position: 1
+id: first-steps
+title: First steps
+sidebar_label: First steps
+sidebar_position: 2
 ---
 
 import Step, { Divider } from '@site/src/theme/Step';
