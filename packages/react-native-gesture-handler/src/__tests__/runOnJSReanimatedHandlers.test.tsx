@@ -55,7 +55,13 @@ describe('[API v3] Reanimated handler registration vs runOnJS', () => {
   test('registers an empty handler set when runOnJS is statically true', () => {
     const onActivate = jest.fn();
 
-    renderHook(() => useTapGesture({ onActivate, runOnJS: true }));
+    renderHook(() =>
+      useTapGesture({
+        disableReanimated: false,
+        onActivate,
+        runOnJS: true,
+      })
+    );
 
     expect(MockedReanimated.useHandler).toHaveBeenCalled();
     for (const call of MockedReanimated.useHandler.mock.calls) {
@@ -66,7 +72,7 @@ describe('[API v3] Reanimated handler registration vs runOnJS', () => {
   test('registers real callbacks when runOnJS is not set', () => {
     const onActivate = jest.fn();
 
-    renderHook(() => useTapGesture({ onActivate }));
+    renderHook(() => useTapGesture({ disableReanimated: false, onActivate }));
 
     expect(lastHandlers().onActivate).toBe(onActivate);
   });
@@ -74,7 +80,13 @@ describe('[API v3] Reanimated handler registration vs runOnJS', () => {
   test('registers real callbacks when runOnJS is false', () => {
     const onActivate = jest.fn();
 
-    renderHook(() => useTapGesture({ onActivate, runOnJS: false }));
+    renderHook(() =>
+      useTapGesture({
+        disableReanimated: false,
+        onActivate,
+        runOnJS: false,
+      })
+    );
 
     expect(lastHandlers().onActivate).toBe(onActivate);
   });
@@ -84,7 +96,7 @@ describe('[API v3] Reanimated handler registration vs runOnJS', () => {
 
     const { rerender } = renderHook(
       ({ runOnJS }: { runOnJS: boolean }) =>
-        useTapGesture({ onActivate, runOnJS }),
+        useTapGesture({ disableReanimated: false, onActivate, runOnJS }),
       { initialProps: { runOnJS: true } }
     );
 
@@ -100,7 +112,7 @@ describe('[API v3] Reanimated handler registration vs runOnJS', () => {
 
     const { rerender } = renderHook(
       ({ runOnJS }: { runOnJS: boolean }) =>
-        useTapGesture({ onActivate, runOnJS }),
+        useTapGesture({ disableReanimated: false, onActivate, runOnJS }),
       { initialProps: { runOnJS: false } }
     );
 
@@ -115,7 +127,11 @@ describe('[API v3] Reanimated handler registration vs runOnJS', () => {
     const onActivate = jest.fn();
 
     renderHook(() =>
-      useTapGesture({ onActivate, runOnJS: makeFakeSharedValue(true) })
+      useTapGesture({
+        disableReanimated: false,
+        onActivate,
+        runOnJS: makeFakeSharedValue(true),
+      })
     );
 
     expect(lastHandlers().onActivate).toBe(onActivate);
