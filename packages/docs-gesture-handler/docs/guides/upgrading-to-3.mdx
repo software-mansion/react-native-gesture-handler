@@ -1,6 +1,7 @@
 ---
 id: upgrading-to-3
 title: Upgrading to the new API introduced in Gesture Handler 3
+sidebar_position: 1
 ---
 
 :::tip
@@ -152,7 +153,7 @@ The types of events have been unified for all callbacks. Each event falls into o
 
 ### StateManager
 
-In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global [`GestureStateManager`](/docs/fundamentals/state-manager).
+In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global [`GestureStateManager`](/docs/gestures/state-manager).
 
 <CodeComparison
 label1={"RNGH 2"}
@@ -236,7 +237,7 @@ Full changes are as follows:
 
 ## Migrating components relying on view hierarchy
 
-Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/fundamentals/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/fundamentals/gesture-detectors#virtualgesturedetector).
+Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/core-components/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector).
 
 :::danger Detectors order
 `VirtualGestureDetector` has to be a descendant of `InterceptingGestureDetector`.
