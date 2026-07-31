@@ -20,15 +20,29 @@
 - [useExclusiveGestures](https://docs.swmansion.com/react-native-gesture-handler/docs/composition/use-exclusive-gestures)
 - [useSimultaneousGestures](https://docs.swmansion.com/react-native-gesture-handler/docs/composition/use-simultaneous-gestures)
 
+## core-components
+
+- [Gesture Detectors](https://docs.swmansion.com/react-native-gesture-handler/docs/core-components/gesture-detector)
+- [GestureHandlerRootView](https://docs.swmansion.com/react-native-gesture-handler/docs/core-components/root-view)
+
 ## fundamentals
 
 - [Integration with Animated](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/animated-interactions)
 - [Gesture callbacks & events](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/callbacks-events)
-- [Gesture Detectors](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-detector)
 - [Getting started](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/getting-started)
 - [Integration with Reanimated](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/reanimated-interactions)
-- [GestureHandlerRootView](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/root-view)
-- [State manager](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/state-manager)
+
+## fundamentals/gesture-animation/_steps
+
+- [step1](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step1)
+- [step2](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step2)
+- [step3](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step3)
+- [step4](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step4)
+- [step5](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step5)
+
+## fundamentals/gesture-animation
+
+- [Your first gesture-driven animation](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/index)
 
 ## gestures/_manual_gesture_steps
 
@@ -52,6 +66,7 @@
 
 ## gestures
 
+- [Gesture state manager](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/state-manager)
 - [Fling gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-fling-gesture)
 - [Hover gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-hover-gesture)
 - [Long press gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-long-press-gesture)
@@ -61,18 +76,6 @@
 - [Pinch gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-pinch-gesture)
 - [Rotation gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-rotation-gesture)
 - [Tap gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-tap-gesture)
-
-## guides/quickstart/_steps
-
-- [step1](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step1)
-- [step2](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step2)
-- [step3](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step3)
-- [step4](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step4)
-- [step5](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step5)
-
-## guides/quickstart
-
-- [Quick start](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/index)
 
 ## guides
 

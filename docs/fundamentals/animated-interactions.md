@@ -3,7 +3,7 @@ Using hook API allows for smooth integration with the [Animated API](https://rea
 When using Animated API, remember to set `useAnimated` property to `true`.
 
 :::danger Mixing Reanimated and Animated
-It is not possible to mix Reanimated and Animated within any of the [gesture detectors](/docs/fundamentals/gesture-detectors).
+It is not possible to mix Reanimated and Animated within any of the [gesture detectors](/docs/core-components/gesture-detectors).
 :::
 
 ## useNativeDriver
@@ -34,4 +34,4 @@ In case of `useNativeDriver` set to `false`, event data is accessed directly:
 
 ## Usage with VirtualGestureDetector
 
-Using `Animated.event` with [`VirtualGestureDetector`](/docs/fundamentals/gesture-detectors#virtualgesturedetector) is possible only when `useNativeDriver` is set to `false`.
+Using `Animated.event` with [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector) is possible only when `useNativeDriver` is set to `false`.

@@ -1,6 +1,6 @@
 Gesture Handler simplifies gesture interactions through dedicated composition hooks and relation properties. To choose the right approach, simply ask: are all the gestures attached to the same component?
 
-* If **yes** — use [composition hooks](#composition-hooks). These allow you to bundle multiple gestures — including previously composed ones — into a single object for a [`GestureDetector`](/docs/fundamentals/gesture-detectors).
+* If **yes** — use [composition hooks](#composition-hooks). These allow you to bundle multiple gestures — including previously composed ones — into a single object for a [`GestureDetector`](/docs/core-components/gesture-detectors).
 * If **no** — use [relation properties](#cross-component-interactions) to manually define how gestures interact. Since these properties also support composed gestures, you can mix both methods for more complex layouts.
 
 ## Composition hooks

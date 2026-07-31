@@ -117,9 +117,9 @@ Called when there will be no more information about this pointer. It may be call
 
 * `id` - A number representing the id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
 
-* `x` - X coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+* `x` - X coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
-* `y` - Y coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+* `y` - Y coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 * `absoluteX` - X coordinate of the current position of the touch relative to the window. The value is expressed in point units. It is recommended to use it instead of `x` in cases when the original view can be transformed as an effect of the gesture.
 

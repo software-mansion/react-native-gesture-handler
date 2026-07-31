@@ -199,7 +199,7 @@ It should be used if you wish to handle non-crucial actions and supportive behav
 
 `Pressable` is a component that can detect various stages of tap, press, and hover interactions on any of its children.
 
-To use `Pressable`, ensure that your app is wrapped in [`GestureHandlerRootView`](/docs/fundamentals/root-view) and import it as follows:
+To use `Pressable`, ensure that your app is wrapped in [`GestureHandlerRootView`](/docs/core-components/root-view) and import it as follows:
 
 ```ts
 import { Pressable } from 'react-native-gesture-handler';
@@ -414,7 +414,7 @@ See the full example in [Gesture Handler repository](https://github.com/software
 >
 > This component acts as a cross-platform replacement for React Native's [`DrawerLayoutAndroid`](http://reactnative.dev/docs/drawerlayoutandroid.html) component, written using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started). For detailed information on standard parameters, please refer to the [React Native documentation](http://reactnative.dev/docs/drawerlayoutandroid.html).
 
-To use `ReanimatedDrawerLayout`, first ensure that Reanimated is installed and that your app is wrapped in [`GestureHandlerRootView`](/docs/fundamentals/root-view). You can then import it as follows:
+To use `ReanimatedDrawerLayout`, first ensure that Reanimated is installed and that your app is wrapped in [`GestureHandlerRootView`](/docs/core-components/root-view). You can then import it as follows:
 
 ```ts
 import ReanimatedDrawerLayout from 'react-native-gesture-handler/ReanimatedDrawerLayout';
@@ -1436,7 +1436,7 @@ This callback is invoked when the wrapped component's underlying `Native` gestur
 
 Gesture Handler simplifies gesture interactions through dedicated composition hooks and relation properties. To choose the right approach, simply ask: are all the gestures attached to the same component?
 
-* If **yes** — use [composition hooks](#composition-hooks). These allow you to bundle multiple gestures — including previously composed ones — into a single object for a [`GestureDetector`](/docs/fundamentals/gesture-detectors).
+* If **yes** — use [composition hooks](#composition-hooks). These allow you to bundle multiple gestures — including previously composed ones — into a single object for a [`GestureDetector`](/docs/core-components/gesture-detectors).
 * If **no** — use [relation properties](#cross-component-interactions) to manually define how gestures interact. Since these properties also support composed gestures, you can mix both methods for more complex layouts.
 
 ## Composition hooks
@@ -1498,6 +1498,154 @@ For example, if you want to make a gallery app, you might want the user to be ab
 
 
 ---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/core-components/gesture-detector
+# Title: Gesture Detectors
+
+## Gesture Detector
+
+The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hook-based API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/composition/overview). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
+
+When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated). More on that can be found in [Integration with Animated](/docs/fundamentals/animated-interactions) section.
+
+> **Danger**
+>
+> #### Nesting Gesture Detectors
+>
+> Because `GestureDetector` supports both the hook API and the builder pattern, it is important to avoid nesting detectors that use different APIs, as this can result in undefined behavior.
+>
+> #### Reusing Gestures
+>
+> Using the same instance of a gesture across multiple Gesture Detectors may result in undefined behavior.
+
+```js
+import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
+
+export default function App() {
+  const tap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tap!');
+    },
+  });
+
+  return (
+    <GestureHandlerRootView>
+      // highlight-next-line
+      <GestureDetector gesture={tap}>
+        <Animated.View />
+        // highlight-next-line
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+```
+
+## Virtual Detectors
+
+Since RNGH3, `GestureDetector` is a standalone host component. Depending on the view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualGestureDetector`.
+
+### InterceptingGestureDetector
+
+`InterceptingGestureDetector` functions similarly to a `GestureDetector`, but it can also act as a proxy for `VirtualGestureDetector` within its component subtree. Because it can be used solely to establish the context for virtual detectors, the [`gesture`](#gesture) property is optional.
+
+### VirtualGestureDetector
+
+`VirtualGestureDetector` is similar to the `GestureDetector` from RNGH2. Because it is not a host component, it does not interfere with the host view hierarchy. This allows you to attach gestures without disrupting functionality that depends on it.
+
+### Known use cases
+
+Here are some of the most common use cases for virtual gesture detectors.
+
+#### SVG
+
+You can combine `VirtualGestureDetector` with [`react-native-svg`](https://github.com/software-mansion/react-native-svg) to add gesture handling to individual `SVG` elements.
+
+#### Text
+
+You can use `VirtualGestureDetector` to add gesture handling to specific parts of a `Text` component.
+
+## Properties
+
+### gesture
+
+```ts
+gesture: SingleGesture | ComposedGesture;
+```
+
+A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/composition/overview).
+
+### userSelect
+
+```ts
+userSelect: 'none' | 'auto' | 'text';
+```
+
+This parameter allows specifying which `userSelect` property should be applied to the underlying view. Default value is set to `"none"`.
+
+### touchAction
+
+```ts
+touchAction: TouchAction;
+```
+
+This parameter allows specifying which `touchAction` property should be applied to the underlying view. Supports all CSS [touch-action](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action) values. Default value is set to `"none"`.
+
+### enableContextMenu
+
+```ts
+enableContextMenu: boolean;
+```
+
+Specifies whether the context menu should be enabled after clicking on the underlying view with the right mouse button. Default value is set to `false`.
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/core-components/root-view
+# Title: GestureHandlerRootView
+
+`GestureHandlerRootView` is a key component that enables Gesture Handler to intercept touch events, allowing for the implementation of gestures in your app. It should wrap your app's main component, and any component that relies on Gesture Handler's gestures has to be a descendant of this view. For more detailed information, you can check out the [under-the-hood section](/docs/under-the-hood/how-does-it-work#android).
+
+```tsx
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+export default function App() {
+  return (
+    <GestureHandlerRootView>
+      <ActualApp />
+    </GestureHandlerRootView>
+  );
+}
+```
+
+Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/composition/overview). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
+
+> **Note**
+>
+> When integrating with navigation libraries, wrapping the navigator component with `GestureHandlerRootView` is generally sufficient. However, if you encounter issues with gestures not functioning properly, you might need to wrap each individual screen component with `GestureHandlerRootView` as well.
+
+> **Tip**
+>
+> If you're using Gesture Handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration for the user.
+
+## Styling
+
+`GestureHandlerRootView` can be thought of as a regular `View` component, therefore it accepts all the same props, including [`style`](https://reactnative.dev/docs/0.81/view-style-props).
+
+If you don't provide anything to the `style` prop, it will default to `{ flex: 1 }`. If you want to customize the styling of the root view, don't forget to also include `flex: 1` in the custom style, otherwise your app won't render anything.
+
+## Nesting root views
+
+In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones. If you're unsure if one of your dependencies already renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway.
+
+## unstable\_forceActive
+
+```ts
+unstable_forceActive?: boolean;
+```
+
+If you're having trouble with gestures not working when inside a component provided by a third-party library, even though you've wrapped the entry point with `<GestureHandlerRootView>`, you can try adding another `<GestureHandlerRootView unstable_forceActive>` closer to the place the gestures are defined. This way, you can prevent Android from canceling relevant gestures when one of the native views tries to grab lock for delivering touch events.
+
+
+---
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/animated-interactions
 # Title: Integration with Animated
 
@@ -1506,7 +1654,7 @@ Using hook API allows for smooth integration with the [Animated API](https://rea
 When using Animated API, remember to set `useAnimated` property to `true`.
 
 :::danger Mixing Reanimated and Animated
-It is not possible to mix Reanimated and Animated within any of the [gesture detectors](/docs/fundamentals/gesture-detectors).
+It is not possible to mix Reanimated and Animated within any of the [gesture detectors](/docs/core-components/gesture-detectors).
 :::
 
 ## useNativeDriver
@@ -1537,7 +1685,7 @@ In case of `useNativeDriver` set to `false`, event data is accessed directly:
 
 ## Usage with VirtualGestureDetector
 
-Using `Animated.event` with [`VirtualGestureDetector`](/docs/fundamentals/gesture-detectors#virtualgesturedetector) is possible only when `useNativeDriver` is set to `false`.
+Using `Animated.event` with [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector) is possible only when `useNativeDriver` is set to `false`.
 
 
 ---
@@ -1663,9 +1811,9 @@ Called when there will be no more information about this pointer. It may be call
 
 * `id` - A number representing the id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
 
-* `x` - X coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+* `x` - X coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
-* `y` - Y coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+* `y` - Y coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 * `absoluteX` - X coordinate of the current position of the touch relative to the window. The value is expressed in point units. It is recommended to use it instead of `x` in cases when the original view can be transformed as an effect of the gesture.
 
@@ -1677,104 +1825,207 @@ Called when there will be no more information about this pointer. It may be call
 
 
 ---
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-detector
-# Title: Gesture Detectors
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step1
+# Title: step1
 
-## Gesture Detector
+```jsx
+import { StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 
-The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hook-based API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/composition/overview). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
+export default function Ball() {
+  return (
+    <GestureHandlerRootView>
+      <Animated.View style={styles.ball} />
+    </GestureHandlerRootView>
+  );
+}
 
-When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated). More on that can be found in [Integration with Animated](/docs/fundamentals/animated-interactions) section.
+const styles = StyleSheet.create({
+  ball: {
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+    backgroundColor: 'blue',
+    alignSelf: 'center',
+  },
+});
+```
 
-> **Danger**
->
-> #### Nesting Gesture Detectors
->
-> Because `GestureDetector` supports both the hook API and the builder pattern, it is important to avoid nesting detectors that use different APIs, as this can result in undefined behavior.
->
-> #### Reusing Gestures
->
-> Using the same instance of a gesture across multiple Gesture Detectors may result in undefined behavior.
 
-```js
-import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step2
+# Title: step2
 
-export default function App() {
-  const tap = useTapGesture({
-    onDeactivate: () => {
-      console.log('Tap!');
+```jsx
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+
+export default function Ball() {
+  const isPressed = useSharedValue(false);
+  const offset = useSharedValue({ x: 0, y: 0 });
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: offset.value.x },
+        { translateY: offset.value.y },
+        { scale: withSpring(isPressed.value ? 1.2 : 1) },
+      ],
+      backgroundColor: isPressed.value ? 'yellow' : 'blue',
+    };
+  });
+
+  // ...
+}
+```
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step3
+# Title: step3
+
+```jsx {4}
+// ...
+return (
+  <GestureHandlerRootView>
+    <Animated.View style={[styles.ball, animatedStyles]} />
+  </GestureHandlerRootView>
+);
+// ...
+```
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step4
+# Title: step4
+
+```jsx
+import { usePanGesture } from 'react-native-gesture-handler';
+
+function Ball() {
+  // ...
+  const gesture = usePanGesture({
+    onBegin: () => {
+      isPressed.value = true;
     },
+    onUpdate: (e) => {
+      offset.value = {
+        x: offset.value.x + e.changeX,
+        y: offset.value.y + e.changeY,
+      };
+    },
+    onFinalize: () => {
+      isPressed.value = false;
+    },
+  });
+  // ...
+}
+```
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/_steps/step5
+# Title: step5
+
+```jsx {4}
+// ...
+return (
+  <GestureHandlerRootView>
+    <GestureDetector gesture={gesture}>
+      <Animated.View style={[styles.ball, animatedStyles]} />
+    </GestureDetector>
+  </GestureHandlerRootView>
+);
+// ...
+```
+
+
+---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-animation/index
+# Title: Your first gesture-driven animation
+
+RNGH3 offers a straightforward way to add gestures to your app. Simply wrap your target view with the [GestureDetector](/docs/core-components/gesture-detectors#gesture-detector) component, define your gesture, and pass it in. That’s it!
+
+To see the new API in action, let's build a simple app where you can drag a ball around the screen. To follow along, you'll need both `react-native-gesture-handler` (to handle gestures) and [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) (to handle the animations).
+
+Start by defining the basic structure of the application:
+
+Next, define the `SharedValues` to track the ball's position and create the animated styles required to position the ball on the screen:
+
+Apply the animated styles to the ball component:
+
+Now, define the Pan gesture logic.
+
+Finally, wrap the component responsible for rendering the ball with a GestureDetector, and attach the Pan gesture to it:
+
+The complete implementation is shown below:
+
+```jsx
+import { StyleSheet } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  usePanGesture,
+} from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+
+export default function Ball() {
+  const isPressed = useSharedValue(false);
+  const offset = useSharedValue({ x: 0, y: 0 });
+
+  const gesture = usePanGesture({
+    onBegin: () => {
+      isPressed.value = true;
+    },
+    onUpdate: (e) => {
+      offset.value = {
+        x: offset.value.x + e.changeX,
+        y: offset.value.y + e.changeY,
+      };
+    },
+    onFinalize: () => {
+      isPressed.value = false;
+    },
+  });
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: offset.value.x },
+        { translateY: offset.value.y },
+        { scale: withSpring(isPressed.value ? 1.2 : 1) },
+      ],
+      backgroundColor: isPressed.value ? 'yellow' : 'blue',
+    };
   });
 
   return (
     <GestureHandlerRootView>
-      // highlight-next-line
-      <GestureDetector gesture={tap}>
-        <Animated.View />
-        // highlight-next-line
+      <GestureDetector gesture={gesture}>
+        <Animated.View style={[styles.ball, animatedStyles]} />
       </GestureDetector>
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  ball: {
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+    backgroundColor: 'blue',
+    alignSelf: 'center',
+  },
+});
 ```
-
-## Virtual Detectors
-
-Since RNGH3, `GestureDetector` is a standalone host component. Depending on the view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualGestureDetector`.
-
-### InterceptingGestureDetector
-
-`InterceptingGestureDetector` functions similarly to a `GestureDetector`, but it can also act as a proxy for `VirtualGestureDetector` within its component subtree. Because it can be used solely to establish the context for virtual detectors, the [`gesture`](#gesture) property is optional.
-
-### VirtualGestureDetector
-
-`VirtualGestureDetector` is similar to the `GestureDetector` from RNGH2. Because it is not a host component, it does not interfere with the host view hierarchy. This allows you to attach gestures without disrupting functionality that depends on it.
-
-### Known use cases
-
-Here are some of the most common use cases for virtual gesture detectors.
-
-#### SVG
-
-You can combine `VirtualGestureDetector` with [`react-native-svg`](https://github.com/software-mansion/react-native-svg) to add gesture handling to individual `SVG` elements.
-
-#### Text
-
-You can use `VirtualGestureDetector` to add gesture handling to specific parts of a `Text` component.
-
-## Properties
-
-### gesture
-
-```ts
-gesture: SingleGesture | ComposedGesture;
-```
-
-A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/composition/overview).
-
-### userSelect
-
-```ts
-userSelect: 'none' | 'auto' | 'text';
-```
-
-This parameter allows specifying which `userSelect` property should be applied to the underlying view. Default value is set to `"none"`.
-
-### touchAction
-
-```ts
-touchAction: TouchAction;
-```
-
-This parameter allows specifying which `touchAction` property should be applied to the underlying view. Supports all CSS [touch-action](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action) values. Default value is set to `"none"`.
-
-### enableContextMenu
-
-```ts
-enableContextMenu: boolean;
-```
-
-Specifies whether the context menu should be enabled after clicking on the underlying view with the right mouse button. Default value is set to `false`.
 
 
 ---
@@ -1831,7 +2082,7 @@ export default function App() {
 
 Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/composition/overview). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
 
-Check out [`GestureHandlerRootView`](/docs/fundamentals/root-view) section for more details.
+Check out [`GestureHandlerRootView`](/docs/core-components/root-view) section for more details.
 
 #### 3. Platform specific setup
 
@@ -1932,16 +2183,16 @@ You can check out [this example project](https://github.com/henrikra/nativeNavig
 
 ## Your first gesture
 
-With the setup done, you're ready to add your first gesture. Create a tap gesture with the [`useTapGesture`](/docs/gestures/use-tap-gesture) hook, attach it to a component with [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Don't forget to wrap your app with [`GestureHandlerRootView`](/docs/fundamentals/root-view), as described in [previous section](/docs/fundamentals/getting-started#2-wrap-your-app-with-gesturehandlerrootview-component).
+With the setup done, you're ready to add your first gesture. Create a tap gesture with the [`useTapGesture`](/docs/gestures/use-tap-gesture) hook, attach it to a component with [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Don't forget to wrap your app with [`GestureHandlerRootView`](/docs/core-components/root-view), as described in [previous section](/docs/fundamentals/getting-started#2-wrap-your-app-with-gesturehandlerrootview-component).
 
-That's it! The gesture fires `onActivate` whenever a tap is recognized. Check out [Gesture callbacks & events](/docs/fundamentals/callbacks-events) for the full set of callbacks, or browse [all gestures](/docs/category/gestures) to keep exploring.
+That's it! The gesture fires `onActivate` whenever a tap is recognized. Check out [Gesture callbacks & events](/docs/fundamentals/callbacks-events) for the full set of callbacks, or browse [all gestures](/docs/category/gestures-api) to keep exploring.
 
 
 ---
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/reanimated-interactions
 # Title: Integration with Reanimated
 
-[`GestureDetector`](/docs/fundamentals/gesture-detectors) will decide whether to use [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to process provided gestures based on their configuration. If any of the callbacks is a [worklet](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#worklet) and Reanimated is not explicitly [turned off](#disabling-reanimated), tools provided by the Reanimated will be utilized, bringing the ability to handle gestures synchronously on the main thread.
+[`GestureDetector`](/docs/core-components/gesture-detectors) will decide whether to use [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to process provided gestures based on their configuration. If any of the callbacks is a [worklet](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#worklet) and Reanimated is not explicitly [turned off](#disabling-reanimated), tools provided by the Reanimated will be utilized, bringing the ability to handle gestures synchronously on the main thread.
 
 ## Automatic [workletization](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#to-workletize) of gesture callbacks
 
@@ -2035,110 +2286,6 @@ const gesture = usePanGesture({
 The `runOnJS` property allows you to dynamically control whether callbacks are executed on the JS thread or the UI thread. When set to `true`, callbacks will run on the JS thread. Setting it to `false` will execute them on the UI thread. Default value for this property is `false`.
 
 This property can be changed dynamically throughout the gesture's lifecycle.
-
-
----
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/root-view
-# Title: GestureHandlerRootView
-
-`GestureHandlerRootView` is a key component that enables Gesture Handler to intercept touch events, allowing for the implementation of gestures in your app. It should wrap your app's main component, and any component that relies on Gesture Handler's gestures has to be a descendant of this view. For more detailed information, you can check out the [under-the-hood section](/docs/under-the-hood/how-does-it-work#android).
-
-```tsx
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-export default function App() {
-  return (
-    <GestureHandlerRootView>
-      <ActualApp />
-    </GestureHandlerRootView>
-  );
-}
-```
-
-Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/composition/overview). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
-
-> **Note**
->
-> When integrating with navigation libraries, wrapping the navigator component with `GestureHandlerRootView` is generally sufficient. However, if you encounter issues with gestures not functioning properly, you might need to wrap each individual screen component with `GestureHandlerRootView` as well.
-
-> **Tip**
->
-> If you're using Gesture Handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration for the user.
-
-## Styling
-
-`GestureHandlerRootView` can be thought of as a regular `View` component, therefore it accepts all the same props, including [`style`](https://reactnative.dev/docs/0.81/view-style-props).
-
-If you don't provide anything to the `style` prop, it will default to `{ flex: 1 }`. If you want to customize the styling of the root view, don't forget to also include `flex: 1` in the custom style, otherwise your app won't render anything.
-
-## Nesting root views
-
-In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones. If you're unsure if one of your dependencies already renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway.
-
-## unstable\_forceActive
-
-```ts
-unstable_forceActive?: boolean;
-```
-
-If you're having trouble with gestures not working when inside a component provided by a third-party library, even though you've wrapped the entry point with `<GestureHandlerRootView>`, you can try adding another `<GestureHandlerRootView unstable_forceActive>` closer to the place the gestures are defined. This way, you can prevent Android from canceling relevant gestures when one of the native views tries to grab lock for delivering touch events.
-
-
----
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/state-manager
-# Title: State manager
-
-RNGH3 allows manually controlling the [gestures' lifecycle](/docs/under-the-hood/state) by using [`GestureStateManager`](#gesturestatemanager).
-
-## State management
-
-Manual state management is based on `handlerTag`. There are two ways of manual state control. Some gestures also support [`manualActivation`](#manualactivation) property, which blocks their automatic activation, even if they meet their activation criteria.
-
-### Inside gesture definition
-
-If you want to manipulate gesture's state in its callbacks, you can get `handlerTag` from event parameter.
-
-### Outside gesture definition
-
-If you want to control gesture lifecycle outside of it, you can use `handlerTag` from created gesture object.
-
-> **Note**
->
-> The gestures can only be activated after they have begun, that is, after they have received touch events.
-
-### manualActivation
-
-When `manualActivation` property is set to `true` on a gesture, it will not activate automatically even if its activation criteria are met. Use [`GestureStateManager`](#gesturestatemanager) to manipulate its state manually.
-
-In the example below, [`Pan`](/docs/gestures/use-pan-gesture) gesture will not activate by simply panning on the blue box - using `GestureStateManager` is necessary.
-
-## GestureStateManager
-
-`GestureStateManager` provides methods to manipulate gesture's state imperatively.
-
-### activate
-
-```tsx
-activate: (handlerTag: number) => void;
-```
-
-Triggers [`onActivate`](/docs/fundamentals/callbacks-events#onactivate) callback on the gesture with the specified `handlerTag`.
-
-### deactivate
-
-```tsx
-deactivate: (handlerTag: number) => void;
-```
-
-If the gesture had activated, it triggers the [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback. It also triggers the [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on the gesture with the specified `handlerTag`.
-
-### fail
-
-```tsx
-fail: (handlerTag: number) => void;
-```
-
-Triggers [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on the gesture with the specified `handlerTag`. If the gesture had activated, it will also trigger [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback.
 
 
 ---
@@ -2370,7 +2517,7 @@ Set the callback that is being called every time the gesture receives an update 
 manualActivation: boolean | SharedValue<boolean>;
 ```
 
-When `true`, the handler will not activate by itself even if its activation criteria are met. Instead, you can manipulate its state using [`GestureStateManager`](/docs/fundamentals/state-manager). Example usage can be found [here](/docs/fundamentals/state-manager#manualactivation).
+When `true`, the handler will not activate by itself even if its activation criteria are met. Instead, you can manipulate its state using [`GestureStateManager`](/docs/gestures/state-manager). Example usage can be found [here](/docs/gestures/state-manager#manualactivation).
 
 
 ---
@@ -2511,7 +2658,7 @@ simultaneousWith: Gesture | Gesture[]
 
 Adds a gesture that should be recognized simultaneously with this one.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### requireToFail
 
@@ -2521,7 +2668,7 @@ requireToFail: Gesture | Gesture[]
 
 Adds a relation requiring another gesture to fail, before this one can activate.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### block
 
@@ -2531,7 +2678,7 @@ block: Gesture | Gesture[]
 
 Adds a relation that makes other gestures wait with activation until this gesture fails (or doesn't start at all).
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### useAnimated
 
@@ -2594,6 +2741,63 @@ Properties supporting `SharedValue` can be updated dynamically via [Reanimated S
 
 
 ---
+# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/state-manager
+# Title: Gesture state manager
+
+RNGH3 allows manually controlling the [gestures' lifecycle](/docs/under-the-hood/state) by using [`GestureStateManager`](#gesturestatemanager).
+
+## State management
+
+Manual state management is based on `handlerTag`. There are two ways of manual state control. Some gestures also support [`manualActivation`](#manualactivation) property, which blocks their automatic activation, even if they meet their activation criteria.
+
+### Inside gesture definition
+
+If you want to manipulate gesture's state in its callbacks, you can get `handlerTag` from event parameter.
+
+### Outside gesture definition
+
+If you want to control gesture lifecycle outside of it, you can use `handlerTag` from created gesture object.
+
+> **Note**
+>
+> The gestures can only be activated after they have begun, that is, after they have received touch events.
+
+### manualActivation
+
+When `manualActivation` property is set to `true` on a gesture, it will not activate automatically even if its activation criteria are met. Use [`GestureStateManager`](#gesturestatemanager) to manipulate its state manually.
+
+In the example below, [`Pan`](/docs/gestures/use-pan-gesture) gesture will not activate by simply panning on the blue box - using `GestureStateManager` is necessary.
+
+## GestureStateManager
+
+`GestureStateManager` provides methods to manipulate gesture's state imperatively.
+
+### activate
+
+```tsx
+activate: (handlerTag: number) => void;
+```
+
+Triggers [`onActivate`](/docs/fundamentals/callbacks-events#onactivate) callback on the gesture with the specified `handlerTag`.
+
+### deactivate
+
+```tsx
+deactivate: (handlerTag: number) => void;
+```
+
+If the gesture had activated, it triggers the [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback. It also triggers the [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on the gesture with the specified `handlerTag`.
+
+### fail
+
+```tsx
+fail: (handlerTag: number) => void;
+```
+
+Triggers [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on the gesture with the specified `handlerTag`. If the gesture had activated, it will also trigger [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback.
+
+
+---
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-fling-gesture
 # Title: Fling gesture
 
@@ -2638,7 +2842,7 @@ Determines the exact number of pointers required to handle the fling gesture.
 x: number;
 ```
 
-X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### y
 
@@ -2646,7 +2850,7 @@ X coordinate of the current position of the pointer (finger or a leading pointer
 y: number;
 ```
 
-Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### absoluteX
 
@@ -2697,7 +2901,7 @@ Visual effect applied to the view while the view is hovered. Defaults to `HoverE
 x: number;
 ```
 
-X coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+X coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### y
 
@@ -2705,7 +2909,7 @@ X coordinate of the current position of the pointer relative to the view attache
 y: number;
 ```
 
-Y coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+Y coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### absoluteX
 
@@ -2787,7 +2991,7 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 x: number;
 ```
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector).
 
 ### y
 
@@ -2795,7 +2999,7 @@ X coordinate, expressed in points, of the current position of the pointer (finge
 y: number;
 ```
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector).
 
 ### absoluteX
 
@@ -2803,7 +3007,7 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 absoluteX: number;
 ```
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
 
 ### absoluteY
 
@@ -2811,7 +3015,7 @@ X coordinate, expressed in points, of the current position of the pointer (finge
 absoluteY: number;
 ```
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
 
 ### duration
 
@@ -2826,11 +3030,11 @@ Duration of the long press (time since the start of the gesture), expressed in m
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-manual-gesture
 # Title: Manual gesture
 
-A plain gesture that has no specific activation criteria nor event data set. Its [state](/docs/under-the-hood/state) has to be controlled manually using a [state manager](/docs/fundamentals/state-manager). It will not fail when all the pointers are lifted from the screen.
+A plain gesture that has no specific activation criteria nor event data set. Its [state](/docs/under-the-hood/state) has to be controlled manually using a [state manager](/docs/gestures/state-manager). It will not fail when all the pointers are lifted from the screen.
 
 > **Tip**
 >
-> If you need to modify the activation criteria of gestures other than `Manual`, check their configuration for relevant properties or use [`manualActivation`](/docs/fundamentals/state-manager#manualactivation) to manage their state directly.
+> If you need to modify the activation criteria of gestures other than `Manual`, check their configuration for relevant properties or use [`manualActivation`](/docs/gestures/state-manager#manualactivation) to manage their state directly.
 
 ## Example
 
@@ -2980,7 +3184,7 @@ const styles = StyleSheet.create({
 
 ## Modifying existing gestures
 
-While manual gestures open great possibilities, we are aware that reimplementing pinch or rotation from scratch just because you need to activate in specific circumstances or require position of the fingers, would be a waste of time as those gestures are already available. Therefore, you can use touch events with every gesture to extract more detailed information about the gesture than what the basic events alone provide. We also added a [`manualActivation`](/docs/fundamentals/state-manager#manualactivation) modifier on all continuous gestures, which prevents the gesture it is applied to from activating automatically, giving you full control over its behavior.
+While manual gestures open great possibilities, we are aware that reimplementing pinch or rotation from scratch just because you need to activate in specific circumstances or require position of the fingers, would be a waste of time as those gestures are already available. Therefore, you can use touch events with every gesture to extract more detailed information about the gesture than what the basic events alone provide. We also added a [`manualActivation`](/docs/gestures/state-manager#manualactivation) modifier on all continuous gestures, which prevents the gesture it is applied to from activating automatically, giving you full control over its behavior.
 
 ## Config
 
@@ -2995,7 +3199,7 @@ While manual gestures open great possibilities, we are aware that reimplementing
 
 A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/composition/overview) with other gestures.
 
-When used, the native component should be the direct child of a [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+When used, the native component should be the direct child of a [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector).
 
 > **Danger**
 >
@@ -3270,7 +3474,7 @@ Velocity of the pan gesture along the Y axis in the current moment. The value is
 x: number;
 ```
 
-X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### y
 
@@ -3278,7 +3482,7 @@ X coordinate of the current position of the pointer (finger or a leading pointer
 y: number;
 ```
 
-Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### absoluteX
 
@@ -3518,7 +3722,7 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 x: number;
 ```
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector).
 
 ### y
 
@@ -3526,7 +3730,7 @@ X coordinate, expressed in points, of the current position of the pointer (finge
 y: number;
 ```
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector).
 
 ### absoluteX
 
@@ -3534,7 +3738,7 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 absoluteX: number;
 ```
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
 
 ### absoluteY
 
@@ -3542,218 +3746,14 @@ X coordinate, expressed in points, of the current position of the pointer (finge
 absoluteY: number;
 ```
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
-
-
----
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step1
-# Title: step1
-
-```jsx
-import { StyleSheet } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
-
-export default function Ball() {
-  return (
-    <GestureHandlerRootView>
-      <Animated.View style={styles.ball} />
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  ball: {
-    width: 100,
-    height: 100,
-    borderRadius: 100,
-    backgroundColor: 'blue',
-    alignSelf: 'center',
-  },
-});
-```
-
-
----
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step2
-# Title: step2
-
-```jsx
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
-
-export default function Ball() {
-  const isPressed = useSharedValue(false);
-  const offset = useSharedValue({ x: 0, y: 0 });
-
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: offset.value.x },
-        { translateY: offset.value.y },
-        { scale: withSpring(isPressed.value ? 1.2 : 1) },
-      ],
-      backgroundColor: isPressed.value ? 'yellow' : 'blue',
-    };
-  });
-
-  // ...
-}
-```
-
-
----
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step3
-# Title: step3
-
-```jsx {4}
-// ...
-return (
-  <GestureHandlerRootView>
-    <Animated.View style={[styles.ball, animatedStyles]} />
-  </GestureHandlerRootView>
-);
-// ...
-```
-
-
----
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step4
-# Title: step4
-
-```jsx
-import { usePanGesture } from 'react-native-gesture-handler';
-
-function Ball() {
-  // ...
-  const gesture = usePanGesture({
-    onBegin: () => {
-      isPressed.value = true;
-    },
-    onUpdate: (e) => {
-      offset.value = {
-        x: offset.value.x + e.changeX,
-        y: offset.value.y + e.changeY,
-      };
-    },
-    onFinalize: () => {
-      isPressed.value = false;
-    },
-  });
-  // ...
-}
-```
-
-
----
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step5
-# Title: step5
-
-```jsx {4}
-// ...
-return (
-  <GestureHandlerRootView>
-    <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.ball, animatedStyles]} />
-    </GestureDetector>
-  </GestureHandlerRootView>
-);
-// ...
-```
-
-
----
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/index
-# Title: Quick start
-
-RNGH3 offers a straightforward way to add gestures to your app. Simply wrap your target view with the [GestureDetector](/docs/fundamentals/gesture-detectors#gesture-detector) component, define your gesture, and pass it in. That’s it!
-
-To see the new API in action, let's build a simple app where you can drag a ball around the screen. To follow along, you'll need both `react-native-gesture-handler` (to handle gestures) and [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) (to handle the animations).
-
-Start by defining the basic structure of the application:
-
-Next, define the `SharedValues` to track the ball's position and create the animated styles required to position the ball on the screen:
-
-Apply the animated styles to the ball component:
-
-Now, define the Pan gesture logic.
-
-Finally, wrap the component responsible for rendering the ball with a GestureDetector, and attach the Pan gesture to it:
-
-The complete implementation is shown below:
-
-```jsx
-import { StyleSheet } from 'react-native';
-import {
-  GestureDetector,
-  GestureHandlerRootView,
-  usePanGesture,
-} from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
-
-export default function Ball() {
-  const isPressed = useSharedValue(false);
-  const offset = useSharedValue({ x: 0, y: 0 });
-
-  const gesture = usePanGesture({
-    onBegin: () => {
-      isPressed.value = true;
-    },
-    onUpdate: (e) => {
-      offset.value = {
-        x: offset.value.x + e.changeX,
-        y: offset.value.y + e.changeY,
-      };
-    },
-    onFinalize: () => {
-      isPressed.value = false;
-    },
-  });
-
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: offset.value.x },
-        { translateY: offset.value.y },
-        { scale: withSpring(isPressed.value ? 1.2 : 1) },
-      ],
-      backgroundColor: isPressed.value ? 'yellow' : 'blue',
-    };
-  });
-
-  return (
-    <GestureHandlerRootView>
-      <GestureDetector gesture={gesture}>
-        <Animated.View style={[styles.ball, animatedStyles]} />
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  ball: {
-    width: 100,
-    height: 100,
-    borderRadius: 100,
-    backgroundColor: 'blue',
-    alignSelf: 'center',
-  },
-});
-```
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
 
 
 ---
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/guides/swipe-and-scroll
 # Title: Custom swipeable components inside ScrollView (web)
 
-While we recommend using our own [`ReanimatedSwipeable`](/docs/components/reanimated_swipeable) component, creating your own version of swipeable gives you more control over its behavior. A common issue here is that after creating your own swipeable component, scroll does not work. In that case, try adding [`touchAction`](/docs/fundamentals/gesture-detectors#touchaction-web-only) set to `"pan-y"`, like this:
+While we recommend using our own [`ReanimatedSwipeable`](/docs/components/reanimated_swipeable) component, creating your own version of swipeable gives you more control over its behavior. A common issue here is that after creating your own swipeable component, scroll does not work. In that case, try adding [`touchAction`](/docs/core-components/gesture-detectors#touchaction) set to `"pan-y"`, like this:
 
 ```jsx
 <GestureDetector gesture={...} ... touchAction="pan-y">
@@ -4074,7 +4074,7 @@ This library is maintained by a very small team. Please keep this in mind when r
 * Changing `enabled` prop during a gesture has no effect, only when a gesture starts (that is, a finger touches the screen) the `enabled` prop is taken into consideration to decide whether to extract (or not) the gesture and provide it with stream of events to analyze.
 * `Native` gesture may not conform to the standard state flow due to platform specific workarounds to incorporate native views into RNGH.
 * Keep in mind that [Legacy `Touchables`](/docs/components/legacy-touchables) from RNGH are rendering two additional views that may need to be styled separately to achieve desired effect (`style` and `containerStyle` props).
-* In order for the [gesture composition](/docs/composition/overview) to work, all composed gestures must be attached to the same [`GestureHandlerRootView`](/docs/fundamentals/root-view).
+* In order for the [gesture composition](/docs/composition/overview) to work, all composed gestures must be attached to the same [`GestureHandlerRootView`](/docs/core-components/root-view).
 
 ## Multiple instances of Gesture Handler were detected
 
@@ -4121,6 +4121,22 @@ After that you need to run your package manager again:
 ```bash
 yarn
 ```
+
+## RNGestureHandlerModule could not be found
+
+If you see an error `TurboModuleRegistry.getEnforcing(...): 'RNGestureHandlerModule' could not be found`, this usually happens when `react-native-gesture-handler` isn't a direct dependency of your app. If it's only pulled in transitively — for example as a `peerDependency` of some other library you use — React Native's codegen won't run for it, so the native module is never generated, even though the package is present in `node_modules`.
+
+The fix is to add `react-native-gesture-handler` directly to your app's own dependencies:
+
+```bash
+npm install react-native-gesture-handler
+```
+
+```bash
+yarn add react-native-gesture-handler
+```
+
+If the issue persists after that, please open a new issue following [our issue reporting guidelines](#reporting-issues) and attach a [minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
 
 
 ---
@@ -4182,7 +4198,7 @@ The types of events have been unified for all callbacks. Each event falls into o
 
 ### StateManager
 
-In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global [`GestureStateManager`](/docs/fundamentals/state-manager).
+In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global [`GestureStateManager`](/docs/gestures/state-manager).
 
 ## Migrating relations
 
@@ -4212,7 +4228,7 @@ Full changes are as follows:
 
 ## Migrating components relying on view hierarchy
 
-Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/fundamentals/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/fundamentals/gesture-detectors#virtualgesturedetector).
+Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/core-components/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector).
 
 :::danger Detectors order
 `VirtualGestureDetector` has to be a descendant of `InterceptingGestureDetector`.
@@ -6174,12 +6190,12 @@ They do not map directly to physical pixels but instead to [iOS's points](https:
 
 ## iOS
 
-All gestures are implemented using [UIGestureRecognizers](https://developer.apple.com/documentation/uikit/uigesturerecognizer?language=objc). Some of them have been slightly modified to allow for more customization and to conform to the [state flow](/docs/fundamentals/callbacks-events) of RNGH. When you assign a gesture configuration to the [`GestureDetector`](/docs/fundamentals/gesture-detectors), it creates all the required recognizers and assigns them to the child view of the detector. From this point, most of the heavy lifting is handled by the [UIKit](https://developer.apple.com/documentation/uikit?language=objc) (with our help to correctly implement interactions between gestures).
+All gestures are implemented using [UIGestureRecognizers](https://developer.apple.com/documentation/uikit/uigesturerecognizer?language=objc). Some of them have been slightly modified to allow for more customization and to conform to the [state flow](/docs/fundamentals/callbacks-events) of RNGH. When you assign a gesture configuration to the [`GestureDetector`](/docs/core-components/gesture-detectors), it creates all the required recognizers and assigns them to the child view of the detector. From this point, most of the heavy lifting is handled by the [UIKit](https://developer.apple.com/documentation/uikit?language=objc) (with our help to correctly implement interactions between gestures).
 
 ## Android
 
 Unfortunately, Android doesn't provide an easy way of handling gestures, hence most of them were implemented from scratch, including a system for managing how the gestures should interact with each other. Here's a quick overview of how it works:
-When you wrap a component with [`GestureHandlerRootView`](/docs/fundamentals/root-view), it allows for the RNGH to intercept all touch events on that component and process them, deciding whether they should be handled by one of the gesture handlers or passed to the underlying view. Gesture handlers are created right at the moment you declare them in order to initialize all of the necessary handlers natively. Every `GestureHandlerRootView` also has a specific handler to decide whether to pass the touch events or to consume them. It can never activate, only begin, end or be cancelled. When this handler is in the `UNDETERMINED` [state](/docs/under-the-hood/state), it means that there is no touch in progress; however, when the touch starts it transitions to the `BEGAN` state. As long as it stays in that state, no touch event is consumed, but as soon as it gets cancelled (meaning that some handler has activated) all incoming touch events get consumed, preventing the underlying view from receiving them.
+When you wrap a component with [`GestureHandlerRootView`](/docs/core-components/root-view), it allows for the RNGH to intercept all touch events on that component and process them, deciding whether they should be handled by one of the gesture handlers or passed to the underlying view. Gesture handlers are created right at the moment you declare them in order to initialize all of the necessary handlers natively. Every `GestureHandlerRootView` also has a specific handler to decide whether to pass the touch events or to consume them. It can never activate, only begin, end or be cancelled. When this handler is in the `UNDETERMINED` [state](/docs/under-the-hood/state), it means that there is no touch in progress; however, when the touch starts it transitions to the `BEGAN` state. As long as it stays in that state, no touch event is consumed, but as soon as it gets cancelled (meaning that some handler has activated) all incoming touch events get consumed, preventing the underlying view from receiving them.
 
 When a pointer touches the screen, the view tree is traversed in order to extract all handlers attached to the views below the finger (including the one attached to the `GestureHandlerRootView`) and all extracted handlers transition to the `BEGAN` state, signalling that the gesture may have begun. The touch events continue to be delivered to all extracted handlers until one of them recognizes the gesture and tries to activate. At this point, the orchestrator checks whether this gesture should wait for any other of the extracted gestures to fail. If it does, it's put to the waiting list, if it doesn't, it gets activated and all other gestures (that are not simultaneous with it) get cancelled. When a gesture handler transitions to a finished state (the gesture recognized by it stops, fails or gets cancelled) the orchestrator checks the waiting handlers. Every one of them that waited for the gesture that just failed tries to activate again (and again the orchestrator checks if it should wait for any of the extracted gestures...).
 

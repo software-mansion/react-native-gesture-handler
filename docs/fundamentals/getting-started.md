@@ -48,7 +48,7 @@ export default function App() {
 
 Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/composition/overview). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
 
-Check out [`GestureHandlerRootView`](/docs/fundamentals/root-view) section for more details.
+Check out [`GestureHandlerRootView`](/docs/core-components/root-view) section for more details.
 
 #### 3. Platform specific setup
 
@@ -149,6 +149,6 @@ You can check out [this example project](https://github.com/henrikra/nativeNavig
 
 ## Your first gesture
 
-With the setup done, you're ready to add your first gesture. Create a tap gesture with the [`useTapGesture`](/docs/gestures/use-tap-gesture) hook, attach it to a component with [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Don't forget to wrap your app with [`GestureHandlerRootView`](/docs/fundamentals/root-view), as described in [previous section](/docs/fundamentals/getting-started#2-wrap-your-app-with-gesturehandlerrootview-component).
+With the setup done, you're ready to add your first gesture. Create a tap gesture with the [`useTapGesture`](/docs/gestures/use-tap-gesture) hook, attach it to a component with [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Don't forget to wrap your app with [`GestureHandlerRootView`](/docs/core-components/root-view), as described in [previous section](/docs/fundamentals/getting-started#2-wrap-your-app-with-gesturehandlerrootview-component).
 
-That's it! The gesture fires `onActivate` whenever a tap is recognized. Check out [Gesture callbacks & events](/docs/fundamentals/callbacks-events) for the full set of callbacks, or browse [all gestures](/docs/category/gestures) to keep exploring.
+That's it! The gesture fires `onActivate` whenever a tap is recognized. Check out [Gesture callbacks & events](/docs/fundamentals/callbacks-events) for the full set of callbacks, or browse [all gestures](/docs/category/gestures-api) to keep exploring.

@@ -1,6 +1,6 @@
 A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/composition/overview) with other gestures.
 
-When used, the native component should be the direct child of a [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+When used, the native component should be the direct child of a [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector).
 
 > **Danger**
 >

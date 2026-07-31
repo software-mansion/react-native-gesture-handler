@@ -4,7 +4,7 @@
 
 `Pressable` is a component that can detect various stages of tap, press, and hover interactions on any of its children.
 
-To use `Pressable`, ensure that your app is wrapped in [`GestureHandlerRootView`](/docs/fundamentals/root-view) and import it as follows:
+To use `Pressable`, ensure that your app is wrapped in [`GestureHandlerRootView`](/docs/core-components/root-view) and import it as follows:
 
 ```ts
 import { Pressable } from 'react-native-gesture-handler';

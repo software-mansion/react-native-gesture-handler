@@ -24,7 +24,7 @@ This library is maintained by a very small team. Please keep this in mind when r
 * Changing `enabled` prop during a gesture has no effect, only when a gesture starts (that is, a finger touches the screen) the `enabled` prop is taken into consideration to decide whether to extract (or not) the gesture and provide it with stream of events to analyze.
 * `Native` gesture may not conform to the standard state flow due to platform specific workarounds to incorporate native views into RNGH.
 * Keep in mind that [Legacy `Touchables`](/docs/components/legacy-touchables) from RNGH are rendering two additional views that may need to be styled separately to achieve desired effect (`style` and `containerStyle` props).
-* In order for the [gesture composition](/docs/composition/overview) to work, all composed gestures must be attached to the same [`GestureHandlerRootView`](/docs/fundamentals/root-view).
+* In order for the [gesture composition](/docs/composition/overview) to work, all composed gestures must be attached to the same [`GestureHandlerRootView`](/docs/core-components/root-view).
 
 ## Multiple instances of Gesture Handler were detected
 
@@ -71,3 +71,19 @@ After that you need to run your package manager again:
 ```bash
 yarn
 ```
+
+## RNGestureHandlerModule could not be found
+
+If you see an error `TurboModuleRegistry.getEnforcing(...): 'RNGestureHandlerModule' could not be found`, this usually happens when `react-native-gesture-handler` isn't a direct dependency of your app. If it's only pulled in transitively — for example as a `peerDependency` of some other library you use — React Native's codegen won't run for it, so the native module is never generated, even though the package is present in `node_modules`.
+
+The fix is to add `react-native-gesture-handler` directly to your app's own dependencies:
+
+```bash
+npm install react-native-gesture-handler
+```
+
+```bash
+yarn add react-native-gesture-handler
+```
+
+If the issue persists after that, please open a new issue following [our issue reporting guidelines](#reporting-issues) and attach a [minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
