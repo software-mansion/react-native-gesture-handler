@@ -27,7 +27,7 @@ exclusive?: boolean;
 
 Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
 
-### rippleColor
+### rippleColor \[A]
 
 ```ts
 rippleColor?: number | ColorValue | null;
@@ -35,7 +35,7 @@ rippleColor?: number | ColorValue | null;
 
 Defines [color](https://reactnative.dev/docs/colors) of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
-### rippleRadius
+### rippleRadius \[A]
 
 ```ts
 rippleRadius?: number | null;
@@ -43,7 +43,7 @@ rippleRadius?: number | null;
 
 Defines radius of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
-### borderless
+### borderless \[A]
 
 ```ts
 borderless?: boolean;
@@ -51,7 +51,7 @@ borderless?: boolean;
 
 If set to `false`, [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation will render only within view bounds.
 
-### foreground
+### foreground \[A]
 
 ```ts
 foreground?: boolean;
@@ -59,7 +59,7 @@ foreground?: boolean;
 
 Defines whether the [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation should be drawn on the foreground of the view.
 
-### touchSoundDisabled
+### touchSoundDisabled \[A]
 
 ```ts
 touchSoundDisabled?: boolean;
@@ -115,7 +115,7 @@ underlayColor?: string;
 
 Background color that will be dimmed when the button is in an active state.
 
-### activeOpacity
+### activeOpacity \[I]
 
 ```ts
 activeOpacity?: number;
@@ -127,7 +127,7 @@ Opacity applied to the underlay when the button is in an active state.
 
 This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](#basebutton), it accepts the following:
 
-### activeOpacity
+### activeOpacity \[I]
 
 ```ts
 activeOpacity?: number;

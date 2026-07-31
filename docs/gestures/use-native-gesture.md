@@ -18,7 +18,7 @@ This example renders a `ScrollView` with multiple colored rectangles, where each
 
 ## Config
 
-### shouldActivateOnStart
+### shouldActivateOnStart \[A]
 
 ```ts
 shouldActivateOnStart: boolean | SharedValue<boolean>;
@@ -42,7 +42,7 @@ yieldsToContinuousGestures: boolean | SharedValue<boolean>;
 
 Composes with [`disallowInterruption`](#disallowinterruption). When both are `true`, this handler still cancels discrete gestures (`Tap`, `LongPress`, `Fling`) on activation but allows continuous gestures (`Pan`, `Pinch`, `Rotation`, `Native`, `Manual`, `Hover`) to interrupt it. No-op when `disallowInterruption` is `false`. Defaults to `false`.
 
-### delaysChildPressedState
+### delaysChildPressedState \[A]\[I]
 
 ```ts
 delaysChildPressedState: boolean | SharedValue<boolean>;

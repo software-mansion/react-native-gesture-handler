@@ -12,7 +12,7 @@ On iOS additional [visual effects](#effect-ios-only) may be configured.
 
 ## Config
 
-### effect
+### effect \[I]
 
 Visual effect applied to the view while the view is hovered. Defaults to `HoverEffect.None`.
 

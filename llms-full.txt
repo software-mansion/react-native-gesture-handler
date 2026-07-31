@@ -34,7 +34,7 @@ exclusive?: boolean;
 
 Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
 
-### rippleColor
+### rippleColor \[A]
 
 ```ts
 rippleColor?: number | ColorValue | null;
@@ -42,7 +42,7 @@ rippleColor?: number | ColorValue | null;
 
 Defines [color](https://reactnative.dev/docs/colors) of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
-### rippleRadius
+### rippleRadius \[A]
 
 ```ts
 rippleRadius?: number | null;
@@ -50,7 +50,7 @@ rippleRadius?: number | null;
 
 Defines radius of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
-### borderless
+### borderless \[A]
 
 ```ts
 borderless?: boolean;
@@ -58,7 +58,7 @@ borderless?: boolean;
 
 If set to `false`, [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation will render only within view bounds.
 
-### foreground
+### foreground \[A]
 
 ```ts
 foreground?: boolean;
@@ -66,7 +66,7 @@ foreground?: boolean;
 
 Defines whether the [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation should be drawn on the foreground of the view.
 
-### touchSoundDisabled
+### touchSoundDisabled \[A]
 
 ```ts
 touchSoundDisabled?: boolean;
@@ -122,7 +122,7 @@ underlayColor?: string;
 
 Background color that will be dimmed when the button is in an active state.
 
-### activeOpacity
+### activeOpacity \[I]
 
 ```ts
 activeOpacity?: number;
@@ -134,7 +134,7 @@ Opacity applied to the underlay when the button is in an active state.
 
 This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](#basebutton), it accepts the following:
 
-### activeOpacity
+### activeOpacity \[I]
 
 ```ts
 activeOpacity?: number;
@@ -269,7 +269,7 @@ cancelable?: null | boolean;
 
 Whether a press gesture can be interrupted by a parent gesture such as a scroll event. Defaults to `true`.
 
-### onHoverIn
+### onHoverIn \[A]\[W]
 
 ```ts
 onHoverIn?: null | ((event: PressableEvent) => void);
@@ -277,7 +277,7 @@ onHoverIn?: null | ((event: PressableEvent) => void);
 
 Called when pointer is hovering over the element.
 
-### onHoverOut
+### onHoverOut \[A]\[W]
 
 ```ts
 onHoverOut?: null | ((event: PressableEvent) => void);
@@ -285,7 +285,7 @@ onHoverOut?: null | ((event: PressableEvent) => void);
 
 Called when pointer stops hovering over the element.
 
-### delayHoverIn
+### delayHoverIn \[W]
 
 ```ts
 delayHoverIn?: number | null;
@@ -293,7 +293,7 @@ delayHoverIn?: number | null;
 
 Duration to wait after hover in before calling `onHoverIn`.
 
-### delayHoverOut
+### delayHoverOut \[W]
 
 ```ts
 delayHoverOut?: number | null;
@@ -317,7 +317,7 @@ disabled?: null | boolean;
 
 Whether the `Pressable` behavior is disabled.
 
-### hitSlop
+### hitSlop \[A]\[I]
 
 ```ts
 hitSlop?: null | Insets | number;
@@ -327,7 +327,7 @@ Additional distance outside of the view in which a press is detected and [`onPre
 
 The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
 
-### pressRetentionOffset
+### pressRetentionOffset \[A]\[I]
 
 ```ts
 pressRetentionOffset?: null | Insets | number;
@@ -338,7 +338,7 @@ press before [`onPressOut`](#onpressout) is triggered.
 
 The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
 
-### android\_disableSound
+### android\_disableSound \[A]
 
 ```ts
 android_disableSound?: null | boolean;
@@ -346,7 +346,7 @@ android_disableSound?: null | boolean;
 
 If `true`, doesn't play system sound on touch.
 
-### android\_ripple
+### android\_ripple \[A]
 
 ```ts
 android_ripple?: null | PressableAndroidRippleConfig;
@@ -356,7 +356,7 @@ Enables the Android [ripple](https://developer.android.com/reference/android/gra
 
 Accepts values of type [`RippleConfig`](https://reactnative.dev/docs/pressable#rippleconfig).
 
-### needsOffscreenAlphaCompositing
+### needsOffscreenAlphaCompositing \[A]
 
 ```ts
 needsOffscreenAlphaCompositing?: boolean;
@@ -575,7 +575,7 @@ A function is called when the drawer is moving or animating, provided with a `po
 
 A function is called when the status of the drawer changes, taking `newState` to represent the drawer's interaction state and `drawerWillShow`, which is `true` when the drawer starts animating towards the open position and `false` otherwise.
 
-### enableTrackpadTwoFingerGesture
+### enableTrackpadTwoFingerGesture \[I]\[W]
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean | SharedValue<boolean>;
@@ -591,7 +591,7 @@ children?: ReactNode | ((openValue?: SharedValue<number>) => ReactNode);
 
 Either a component rendered in the content view or a function. If `children` is a function, it receives an `openValue` parameter -  [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) that indicates the progress of the drawer's opening or closing animation. This value equals `0` when the drawer is closed and `1` when it is fully opened. The drawer component can use this value to animate its children during the opening or closing process. This function must return a [`ReactNode`](https://reactnative.dev/docs/react-node).
 
-### enableContextMenu
+### enableContextMenu \[W]
 
 ```ts
 enableContextMenu: boolean;
@@ -599,7 +599,7 @@ enableContextMenu: boolean;
 
 Specifies whether the context menu should be enabled after clicking on the underlying view with the right mouse button. Default value is set to `false` if [`MouseButton.RIGHT`](#mousebutton-web--android-only) is specified.
 
-### userSelect
+### userSelect \[W]
 
 ```ts
 userSelect: 'none' | 'auto' | 'text';
@@ -607,7 +607,7 @@ userSelect: 'none' | 'auto' | 'text';
 
 This parameter allows specifying which `userSelect` property should be applied to the underlying view. Default value is set to `"none"`.
 
-### activeCursor
+### activeCursor \[W]
 
 ```ts
 activeCursor?: ActiveCursor | SharedValue<ActiveCursor>;
@@ -883,7 +883,7 @@ block?: AnyGesture | AnyGesture[];
 
 Gestures that `Swipeable` will prevent from activating (see [`block`](/docs/composition/block)).
 
-### enableTrackpadTwoFingerGesture
+### enableTrackpadTwoFingerGesture \[I]\[W]
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean | SharedValue<boolean>;
@@ -1221,7 +1221,7 @@ exclusive?: boolean;
 
 Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
 
-### touchSoundDisabled
+### touchSoundDisabled \[A]
 
 ```ts
 touchSoundDisabled?: boolean;
@@ -1257,11 +1257,11 @@ delayLongPress?: number;
 
 Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress) callback gets called. By default set to `600`.
 
-### androidRipple
+### androidRipple \[A]
 
 Configuration for the ripple effect on Android. If not provided, the ripple effect will be disabled. If `{}` is provided, the ripple effect will be enabled with default configuration.
 
-### cancelOnLeave
+### cancelOnLeave \[A]\[I]
 
 ```ts
 cancelOnLeave?: boolean;
@@ -1269,7 +1269,7 @@ cancelOnLeave?: boolean;
 
 Whether the touch should be canceled when the pointer leaves the component. By default set to `true`. On web this prop doesn't have any effect and behaves as if `true` was set.
 
-### needsOffscreenAlphaCompositing
+### needsOffscreenAlphaCompositing \[A]
 
 ```ts
 needsOffscreenAlphaCompositing?: boolean;
@@ -1573,7 +1573,7 @@ gesture: SingleGesture | ComposedGesture;
 
 A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/composition/overview).
 
-### userSelect
+### userSelect \[W]
 
 ```ts
 userSelect: 'none' | 'auto' | 'text';
@@ -1581,7 +1581,7 @@ userSelect: 'none' | 'auto' | 'text';
 
 This parameter allows specifying which `userSelect` property should be applied to the underlying view. Default value is set to `"none"`.
 
-### touchAction
+### touchAction \[W]
 
 ```ts
 touchAction: TouchAction;
@@ -1589,7 +1589,7 @@ touchAction: TouchAction;
 
 This parameter allows specifying which `touchAction` property should be applied to the underlying view. Supports all CSS [touch-action](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action) values. Default value is set to `"none"`.
 
-### enableContextMenu
+### enableContextMenu \[W]
 
 ```ts
 enableContextMenu: boolean;
@@ -2620,7 +2620,7 @@ testID: string;
 
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
-### cancelsTouchesInView
+### cancelsTouchesInView \[I]
 
 ```ts
 cancelsTouchesInView: boolean | SharedValue<boolean>;
@@ -2688,7 +2688,7 @@ useAnimated: boolean;
 
 Setting this property to `true` ensures that the [Animated API](/docs/fundamentals/animated-interactions) functions correctly when `useNativeDriver` is set to `false`. The default value is set to `false`.
 
-### activeCursor
+### activeCursor \[W]
 
 ```ts
 activeCursor: ActiveCursor | SharedValue<ActiveCursor>;
@@ -2696,7 +2696,7 @@ activeCursor: ActiveCursor | SharedValue<ActiveCursor>;
 
 This parameter allows specifying which cursor should be used when the gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
 
-### cancelsJSResponder
+### cancelsJSResponder \[A]\[I]
 
 ```ts
 cancelsJSResponder?: boolean;
@@ -2728,7 +2728,7 @@ Indicates the type of pointer device in use.
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_shared/mouse-button
 # Title: mouse-button
 
-### mouseButton
+### mouseButton \[A]\[W]
 
 Allows users to choose which mouse buttons to respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
@@ -2887,7 +2887,7 @@ On iOS additional [visual effects](#effect-ios-only) may be configured.
 
 ## Config
 
-### effect
+### effect \[I]
 
 Visual effect applied to the view while the view is hovered. Defaults to `HoverEffect.None`.
 
@@ -3217,7 +3217,7 @@ This example renders a `ScrollView` with multiple colored rectangles, where each
 
 ## Config
 
-### shouldActivateOnStart
+### shouldActivateOnStart \[A]
 
 ```ts
 shouldActivateOnStart: boolean | SharedValue<boolean>;
@@ -3241,7 +3241,7 @@ yieldsToContinuousGestures: boolean | SharedValue<boolean>;
 
 Composes with [`disallowInterruption`](#disallowinterruption). When both are `true`, this handler still cancels discrete gestures (`Tap`, `LongPress`, `Fling`) on activation but allows continuous gestures (`Pan`, `Pinch`, `Rotation`, `Native`, `Manual`, `Hover`) to interrupt it. No-op when `disallowInterruption` is `false`. Defaults to `false`.
 
-### delaysChildPressedState
+### delaysChildPressedState \[A]\[I]
 
 ```ts
 delaysChildPressedState: boolean | SharedValue<boolean>;
@@ -3400,7 +3400,7 @@ When the finger moves outside this range (in points) along X axis and the gestur
 If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
-### averageTouches
+### averageTouches \[A]
 
 ```ts
 averageTouches: boolean | SharedValue<boolean>;
@@ -3408,7 +3408,7 @@ averageTouches: boolean | SharedValue<boolean>;
 
 Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This modifier allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
 
-### enableTrackpadTwoFingerGesture
+### enableTrackpadTwoFingerGesture \[I]\[W]
 
 ```ts
 enableTrackpadTwoFingerGesture: boolean | SharedValue<boolean>;

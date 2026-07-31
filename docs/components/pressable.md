@@ -74,7 +74,7 @@ cancelable?: null | boolean;
 
 Whether a press gesture can be interrupted by a parent gesture such as a scroll event. Defaults to `true`.
 
-### onHoverIn
+### onHoverIn \[A]\[W]
 
 ```ts
 onHoverIn?: null | ((event: PressableEvent) => void);
@@ -82,7 +82,7 @@ onHoverIn?: null | ((event: PressableEvent) => void);
 
 Called when pointer is hovering over the element.
 
-### onHoverOut
+### onHoverOut \[A]\[W]
 
 ```ts
 onHoverOut?: null | ((event: PressableEvent) => void);
@@ -90,7 +90,7 @@ onHoverOut?: null | ((event: PressableEvent) => void);
 
 Called when pointer stops hovering over the element.
 
-### delayHoverIn
+### delayHoverIn \[W]
 
 ```ts
 delayHoverIn?: number | null;
@@ -98,7 +98,7 @@ delayHoverIn?: number | null;
 
 Duration to wait after hover in before calling `onHoverIn`.
 
-### delayHoverOut
+### delayHoverOut \[W]
 
 ```ts
 delayHoverOut?: number | null;
@@ -122,7 +122,7 @@ disabled?: null | boolean;
 
 Whether the `Pressable` behavior is disabled.
 
-### hitSlop
+### hitSlop \[A]\[I]
 
 ```ts
 hitSlop?: null | Insets | number;
@@ -132,7 +132,7 @@ Additional distance outside of the view in which a press is detected and [`onPre
 
 The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
 
-### pressRetentionOffset
+### pressRetentionOffset \[A]\[I]
 
 ```ts
 pressRetentionOffset?: null | Insets | number;
@@ -143,7 +143,7 @@ press before [`onPressOut`](#onpressout) is triggered.
 
 The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
 
-### android\_disableSound
+### android\_disableSound \[A]
 
 ```ts
 android_disableSound?: null | boolean;
@@ -151,7 +151,7 @@ android_disableSound?: null | boolean;
 
 If `true`, doesn't play system sound on touch.
 
-### android\_ripple
+### android\_ripple \[A]
 
 ```ts
 android_ripple?: null | PressableAndroidRippleConfig;
@@ -161,7 +161,7 @@ Enables the Android [ripple](https://developer.android.com/reference/android/gra
 
 Accepts values of type [`RippleConfig`](https://reactnative.dev/docs/pressable#rippleconfig).
 
-### needsOffscreenAlphaCompositing
+### needsOffscreenAlphaCompositing \[A]
 
 ```ts
 needsOffscreenAlphaCompositing?: boolean;

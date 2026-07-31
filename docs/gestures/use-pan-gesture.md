@@ -130,7 +130,7 @@ When the finger moves outside this range (in points) along X axis and the gestur
 If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
-### averageTouches
+### averageTouches \[A]
 
 ```ts
 averageTouches: boolean | SharedValue<boolean>;
@@ -138,7 +138,7 @@ averageTouches: boolean | SharedValue<boolean>;
 
 Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This modifier allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
 
-### enableTrackpadTwoFingerGesture
+### enableTrackpadTwoFingerGesture \[I]\[W]
 
 ```ts
 enableTrackpadTwoFingerGesture: boolean | SharedValue<boolean>;

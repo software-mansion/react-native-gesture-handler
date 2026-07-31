@@ -224,7 +224,7 @@ block?: AnyGesture | AnyGesture[];
 
 Gestures that `Swipeable` will prevent from activating (see [`block`](/docs/composition/block)).
 
-### enableTrackpadTwoFingerGesture
+### enableTrackpadTwoFingerGesture \[I]\[W]
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean | SharedValue<boolean>;

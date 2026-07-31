@@ -163,7 +163,7 @@ A function is called when the drawer is moving or animating, provided with a `po
 
 A function is called when the status of the drawer changes, taking `newState` to represent the drawer's interaction state and `drawerWillShow`, which is `true` when the drawer starts animating towards the open position and `false` otherwise.
 
-### enableTrackpadTwoFingerGesture
+### enableTrackpadTwoFingerGesture \[I]\[W]
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean | SharedValue<boolean>;
@@ -179,7 +179,7 @@ children?: ReactNode | ((openValue?: SharedValue<number>) => ReactNode);
 
 Either a component rendered in the content view or a function. If `children` is a function, it receives an `openValue` parameter -  [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) that indicates the progress of the drawer's opening or closing animation. This value equals `0` when the drawer is closed and `1` when it is fully opened. The drawer component can use this value to animate its children during the opening or closing process. This function must return a [`ReactNode`](https://reactnative.dev/docs/react-node).
 
-### enableContextMenu
+### enableContextMenu \[W]
 
 ```ts
 enableContextMenu: boolean;
@@ -187,7 +187,7 @@ enableContextMenu: boolean;
 
 Specifies whether the context menu should be enabled after clicking on the underlying view with the right mouse button. Default value is set to `false` if [`MouseButton.RIGHT`](#mousebutton-web--android-only) is specified.
 
-### userSelect
+### userSelect \[W]
 
 ```ts
 userSelect: 'none' | 'auto' | 'text';
@@ -195,7 +195,7 @@ userSelect: 'none' | 'auto' | 'text';
 
 This parameter allows specifying which `userSelect` property should be applied to the underlying view. Default value is set to `"none"`.
 
-### activeCursor
+### activeCursor \[W]
 
 ```ts
 activeCursor?: ActiveCursor | SharedValue<ActiveCursor>;

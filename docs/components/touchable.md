@@ -257,7 +257,7 @@ exclusive?: boolean;
 
 Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
 
-### touchSoundDisabled
+### touchSoundDisabled \[A]
 
 ```ts
 touchSoundDisabled?: boolean;
@@ -293,11 +293,11 @@ delayLongPress?: number;
 
 Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress) callback gets called. By default set to `600`.
 
-### androidRipple
+### androidRipple \[A]
 
 Configuration for the ripple effect on Android. If not provided, the ripple effect will be disabled. If `{}` is provided, the ripple effect will be enabled with default configuration.
 
-### cancelOnLeave
+### cancelOnLeave \[A]\[I]
 
 ```ts
 cancelOnLeave?: boolean;
@@ -305,7 +305,7 @@ cancelOnLeave?: boolean;
 
 Whether the touch should be canceled when the pointer leaves the component. By default set to `true`. On web this prop doesn't have any effect and behaves as if `true` was set.
 
-### needsOffscreenAlphaCompositing
+### needsOffscreenAlphaCompositing \[A]
 
 ```ts
 needsOffscreenAlphaCompositing?: boolean;

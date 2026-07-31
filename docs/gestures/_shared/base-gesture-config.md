@@ -41,7 +41,7 @@ testID: string;
 
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
-### cancelsTouchesInView
+### cancelsTouchesInView \[I]
 
 ```ts
 cancelsTouchesInView: boolean | SharedValue<boolean>;
@@ -109,7 +109,7 @@ useAnimated: boolean;
 
 Setting this property to `true` ensures that the [Animated API](/docs/fundamentals/animated-interactions) functions correctly when `useNativeDriver` is set to `false`. The default value is set to `false`.
 
-### activeCursor
+### activeCursor \[W]
 
 ```ts
 activeCursor: ActiveCursor | SharedValue<ActiveCursor>;
@@ -117,7 +117,7 @@ activeCursor: ActiveCursor | SharedValue<ActiveCursor>;
 
 This parameter allows specifying which cursor should be used when the gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
 
-### cancelsJSResponder
+### cancelsJSResponder \[A]\[I]
 
 ```ts
 cancelsJSResponder?: boolean;

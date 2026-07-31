@@ -70,7 +70,7 @@ gesture: SingleGesture | ComposedGesture;
 
 A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/composition/overview).
 
-### userSelect
+### userSelect \[W]
 
 ```ts
 userSelect: 'none' | 'auto' | 'text';
@@ -78,7 +78,7 @@ userSelect: 'none' | 'auto' | 'text';
 
 This parameter allows specifying which `userSelect` property should be applied to the underlying view. Default value is set to `"none"`.
 
-### touchAction
+### touchAction \[W]
 
 ```ts
 touchAction: TouchAction;
@@ -86,7 +86,7 @@ touchAction: TouchAction;
 
 This parameter allows specifying which `touchAction` property should be applied to the underlying view. Supports all CSS [touch-action](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action) values. Default value is set to `"none"`.
 
-### enableContextMenu
+### enableContextMenu \[W]
 
 ```ts
 enableContextMenu: boolean;
