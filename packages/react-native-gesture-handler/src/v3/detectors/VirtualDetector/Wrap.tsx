@@ -1,5 +1,5 @@
 import type { PropsWithChildren, Ref } from 'react';
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import { tagMessage } from '../../../utils';
 
@@ -44,7 +44,7 @@ export const Wrap: React.FunctionComponent<WrapProps> = ({ ref, children }) => {
   } catch (e) {
     throw new Error(
       tagMessage(
-        `GestureDetector got more than one view as a child. If you want the gesture to work on multiple views, wrap them with a common parent and attach the gesture to that view.`
+        `VirtualGestureDetector expects exactly one React element as its child. To use a gesture with multiple views, wrap them in a single parent view and attach the gesture to that.`
       )
     );
   }
@@ -52,8 +52,8 @@ export const Wrap: React.FunctionComponent<WrapProps> = ({ ref, children }) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const childRef = child.props.ref as WrapRef;
 
-  const attachRef = useMemo(
-    () => (instance: unknown) => {
+  const attachRef = useCallback(
+    (instance: unknown) => {
       const childCleanup = assignRef(childRef, instance);
       const forwardedCleanup = assignRef(ref, preferHostInstance(instance));
       const hasCleanup =
