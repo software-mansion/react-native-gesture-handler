@@ -1,5 +1,4 @@
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import clsx from 'clsx';
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import {
@@ -37,14 +36,6 @@ const TouchableShowcase = () => {
           Buttons. It comes with native scale, opacity, underlay, and Android
           ripple feedback built in.
         </p>
-        <a
-          className={clsx(styles.link, styles.stat)}
-          href="https://x.com/swmansion/status/2082488629167841415"
-          target="_blank"
-          rel="noreferrer">
-          <span aria-hidden="true">⚡</span> ~300ms faster than React Native
-          Pressable
-        </a>
         <a
           className={styles.link}
           href="/react-native-gesture-handler/docs/components/touchable">

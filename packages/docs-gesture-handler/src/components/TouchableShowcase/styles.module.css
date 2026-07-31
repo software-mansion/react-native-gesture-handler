@@ -49,11 +49,6 @@
   text-decoration: underline;
 }
 
-.stat {
-  display: flex;
-  margin-bottom: 2rem;
-}
-
 .demo {
   flex-shrink: 0;
 }
