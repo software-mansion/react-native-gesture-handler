@@ -131,6 +131,17 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   [_buttonView prepareForRecycle];
 
+  // The reset above forces this wrapper's alpha and transform back to neutral
+  // values, but Fabric retains `_props` across recycling and `updateProps:`
+  // re-applies opacity/transform only when they differ from the retained
+  // props. Re-sync the layer from the retained props so the next mount's diff
+  // stays valid (the same approach RN takes for Animated-managed props in its
+  // `prepareForRecycle`); otherwise a remount with an unchanged style opacity
+  // keeps the neutral 1.0 instead (https://github.com/software-mansion/react-native-gesture-handler/issues/4353).
+  const auto &viewProps = static_cast<const ViewProps &>(*_props);
+  self.layer.opacity = (float)viewProps.opacity;
+  self.layer.transform = RCTCATransform3DFromTransformMatrix(viewProps.resolveTransform(_layoutMetrics));
+
   // Force the next updateProps: to re-run applyStartAnimationState even if
   // the new mount's defaults match the previous mount's.
   _needsAnimationStateReset = YES;
