@@ -223,7 +223,7 @@ If range is set as an array, first value must be lower or equal to 0, and the se
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 <Badges platforms={['android']}>
-### averageTouches
+### averageTouches [A]
 </Badges>
 
 ```ts
@@ -233,7 +233,7 @@ averageTouches: boolean | SharedValue<boolean>;
 Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This modifier allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
 
 <Badges platforms={['ios', 'web']}>
-### enableTrackpadTwoFingerGesture
+### enableTrackpadTwoFingerGesture [I][W]
 </Badges>
 
 ```ts

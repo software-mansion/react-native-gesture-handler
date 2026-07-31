@@ -43,7 +43,7 @@ exclusive?: boolean;
 Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
 
 <Badges platforms={['android']}>
-### rippleColor
+### rippleColor [A]
 </Badges>
 
 ```ts
@@ -53,7 +53,7 @@ rippleColor?: number | ColorValue | null;
 Defines [color](https://reactnative.dev/docs/colors) of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
 <Badges platforms={['android']}>
-### rippleRadius
+### rippleRadius [A]
 </Badges>
 
 
@@ -64,7 +64,7 @@ rippleRadius?: number | null;
 Defines radius of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
 <Badges platforms={['android']}>
-### borderless
+### borderless [A]
 </Badges>
 
 ```ts
@@ -74,7 +74,7 @@ borderless?: boolean;
 If set to `false`, [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation will render only within view bounds.
 
 <Badges platforms={['android']}>
-### foreground
+### foreground [A]
 </Badges>
 
 ```ts
@@ -84,7 +84,7 @@ foreground?: boolean;
 Defines whether the [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation should be drawn on the foreground of the view.
 
 <Badges platforms={['android']}>
-### touchSoundDisabled
+### touchSoundDisabled [A]
 </Badges>
 
 ```ts
@@ -144,7 +144,7 @@ underlayColor?: string;
 Background color that will be dimmed when the button is in an active state.
 
 <Badges platforms={['ios']}>
-### activeOpacity
+### activeOpacity [I]
 </Badges>
 
 ```ts
@@ -158,7 +158,7 @@ Opacity applied to the underlay when the button is in an active state.
 This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](#basebutton), it accepts the following:
 
 <Badges platforms={['ios']}>
-### activeOpacity
+### activeOpacity [I]
 </Badges>
 
 ```ts
