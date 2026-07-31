@@ -1,3 +1,4 @@
+import AnnouncementChip from '@site/src/components/Hero/AnnouncementChip';
 import HomepageButton from '@site/src/components/HomepageButton';
 import React from 'react';
 
@@ -8,6 +9,11 @@ const StartScreen = () => {
     <section className={styles.hero}>
       <div className={styles.heading}>
         <div>
+          <AnnouncementChip
+            label="Gesture Handler v3 is out"
+            linkLabel="What's new"
+            href="https://swmansion.com/blog/introducing-gesture-handler-3-0-hook-based-api-deeper-reanimated-integration-more-9185b0c8e305/"
+          />
           <h1 className={styles.headingLabel}>
             <span>React Native</span>
             <span>Gesture Handler</span>
