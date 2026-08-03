@@ -32,6 +32,26 @@ class RNGestureHandlerButtonEvent private constructor() : Event<RNGestureHandler
     )
   }
 
+  private fun init(
+    button: RNGestureHandlerButtonViewManager.ButtonViewGroup,
+    sample: RNGestureHandlerButtonViewManager.ButtonViewGroup.HoverSample,
+    type: RNGestureHandlerButtonViewManager.ButtonViewGroup.EventType,
+  ) {
+    super.init(UIManagerHelper.getSurfaceId(button), button.id)
+
+    this.type = type
+    this.eventData = ButtonEventData(
+      x = PixelUtil.toDIPFromPixel(sample.x).toDouble(),
+      y = PixelUtil.toDIPFromPixel(sample.y).toDouble(),
+      absoluteX = PixelUtil.toDIPFromPixel(sample.absoluteX).toDouble(),
+      absoluteY = PixelUtil.toDIPFromPixel(sample.absoluteY).toDouble(),
+      // A hover is always driven by exactly one pointer.
+      numberOfPointers = 1,
+      pointerType = sample.pointerType,
+      pointerInside = sample.pointerInside,
+    )
+  }
+
   override fun onDispose() {
     EVENTS_POOL.release(this)
   }
@@ -41,6 +61,8 @@ class RNGestureHandlerButtonEvent private constructor() : Event<RNGestureHandler
     RNGestureHandlerButtonViewManager.ButtonViewGroup.EventType.PressIn -> ON_PRESS_IN_EVENT_NAME
     RNGestureHandlerButtonViewManager.ButtonViewGroup.EventType.PressOut -> ON_PRESS_OUT_EVENT_NAME
     RNGestureHandlerButtonViewManager.ButtonViewGroup.EventType.LongPress -> ON_LONG_PRESS_EVENT_NAME
+    RNGestureHandlerButtonViewManager.ButtonViewGroup.EventType.HoverIn -> ON_HOVER_IN_EVENT_NAME
+    RNGestureHandlerButtonViewManager.ButtonViewGroup.EventType.HoverOut -> ON_HOVER_OUT_EVENT_NAME
     RNGestureHandlerButtonViewManager.ButtonViewGroup.EventType.InteractionFinished ->
       ON_INTERACTION_FINISHED_EVENT_NAME
   }
@@ -77,6 +99,8 @@ class RNGestureHandlerButtonEvent private constructor() : Event<RNGestureHandler
     private const val ON_PRESS_IN_EVENT_NAME = "onButtonPressIn"
     private const val ON_PRESS_OUT_EVENT_NAME = "onButtonPressOut"
     private const val ON_LONG_PRESS_EVENT_NAME = "onButtonLongPress"
+    private const val ON_HOVER_IN_EVENT_NAME = "onButtonHoverIn"
+    private const val ON_HOVER_OUT_EVENT_NAME = "onButtonHoverOut"
     private const val ON_INTERACTION_FINISHED_EVENT_NAME = "onButtonInteractionFinished"
 
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
@@ -88,6 +112,14 @@ class RNGestureHandlerButtonEvent private constructor() : Event<RNGestureHandler
       type: RNGestureHandlerButtonViewManager.ButtonViewGroup.EventType,
     ): RNGestureHandlerButtonEvent = (EVENTS_POOL.acquire() ?: RNGestureHandlerButtonEvent()).apply {
       init(button, handler, type)
+    }
+
+    fun obtain(
+      button: RNGestureHandlerButtonViewManager.ButtonViewGroup,
+      sample: RNGestureHandlerButtonViewManager.ButtonViewGroup.HoverSample,
+      type: RNGestureHandlerButtonViewManager.ButtonViewGroup.EventType,
+    ): RNGestureHandlerButtonEvent = (EVENTS_POOL.acquire() ?: RNGestureHandlerButtonEvent()).apply {
+      init(button, sample, type)
     }
   }
 }

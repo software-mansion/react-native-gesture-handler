@@ -20,14 +20,16 @@ type PressableAndroidRippleConfig = {
 
 type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 
-// The press events are redeclared below with the unwrapped `ButtonEvent`
+// The interaction events are redeclared below with the unwrapped `ButtonEvent`
 // signature; `onButtonInteractionFinished` is consumed internally by
 // `Touchable`.
-type PressProps =
+type InteractionProps =
   | 'onButtonPress'
   | 'onButtonPressIn'
   | 'onButtonPressOut'
   | 'onButtonLongPress'
+  | 'onButtonHoverIn'
+  | 'onButtonHoverOut'
   | 'onButtonInteractionFinished';
 
 type DurationProps =
@@ -70,7 +72,7 @@ export type AnimationDuration =
 
 export type TouchableProps = Omit<
   ButtonProps,
-  RippleProps | PressProps | 'enabled' | DurationProps
+  RippleProps | InteractionProps | 'enabled' | DurationProps
 > &
   Omit<
     BaseButtonProps,
@@ -107,6 +109,16 @@ export type TouchableProps = Omit<
      * Called when pointer is released from the component.
      */
     onPressOut?: ((event: ButtonEvent) => void) | undefined;
+
+    /**
+     * Called when a non-touch pointer starts hovering over the component.
+     */
+    onHoverIn?: ((event: ButtonEvent) => void) | undefined;
+
+    /**
+     * Called when a non-touch pointer stops hovering over the component.
+     */
+    onHoverOut?: ((event: ButtonEvent) => void) | undefined;
 
     /**
      * Whether the component should ignore touches. By default set to false.

@@ -70,6 +70,20 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
     | undefined;
 
   /**
+   * Called when a non-touch pointer starts hovering over the button.
+   */
+  onButtonHoverIn?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when a non-touch pointer stops hovering over the button.
+   */
+  onButtonHoverOut?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
    * Called when the interaction with the button ends, after any terminal
    * `onButtonPressOut`/`onButtonPress` events, regardless of how it ended.
    */

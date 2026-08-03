@@ -79,6 +79,7 @@ class RNGestureHandlerButtonViewManager :
     view.managedHandlerTestID = null
     view.managedHandlerHitSlop = null
     view.moduleId = null
+    view.resetHoverState()
     // Has to come last — every setter above flags the view as needing a managed handler update.
     view.managedHandlerNeedsUpdate = false
 
@@ -613,14 +614,26 @@ class RNGestureHandlerButtonViewManager :
     private var isHovered = false
 
     // Whether a hover was active at press-start. A hovering pointer fires
-    // ACTION_HOVER_ENTER first (so isHovered is already true at DOWN).
+    // ACTION_HOVER_ENTER first, so isHovered is already true at DOWN.
     private var hoverActiveAtPressStart = false
 
-    private val shouldAnimateHover get() = isHovered && isEnabled
+    // Hover events outlive the MotionEvent behind them (the deferred hover-out,
+    // and `enabled` flipping while hovered), so the position is copied out.
+    private var lastHoverSample: HoverSample? = null
 
-    private val restingOpacity get() = if (shouldAnimateHover) hoverOpacity else defaultOpacity
-    private val restingScale get() = if (shouldAnimateHover) hoverScale else defaultScale
-    private val restingUnderlayOpacity get() = if (shouldAnimateHover) hoverUnderlayOpacity else defaultUnderlayOpacity
+    // Content view's screen position, resolved once per hover session the way
+    // GestureHandler.prepare resolves it once per gesture.
+    private val hoverWindowOffset = IntArray(2)
+
+    // The hover state JS was last told about, which drifts from [effectiveHover]
+    // on purpose — see [dispatchHoverEventIfNeeded] and [onDetachedFromWindow].
+    private var hoverReported = false
+
+    private val effectiveHover get() = isHovered && isEnabled
+
+    private val restingOpacity get() = if (effectiveHover) hoverOpacity else defaultOpacity
+    private val restingScale get() = if (effectiveHover) hoverScale else defaultScale
+    private val restingUnderlayOpacity get() = if (effectiveHover) hoverUnderlayOpacity else defaultUnderlayOpacity
 
     private val hasOpacityAnimation get() = activeOpacity != 1.0f || defaultOpacity != 1.0f || hoverOpacity != 1.0f
     private val hasScaleAnimation get() = activeScale != 1.0f || defaultScale != 1.0f || hoverScale != 1.0f
@@ -858,18 +871,41 @@ class RNGestureHandlerButtonViewManager :
         lastAction = action
 
         // No hover events arrive while the button is held, so derive hover from
-        // the touch stream (within bounds). Gated on hoverActiveAtPressStart so
-        // it only maintains an already-active hover.
+        // the touch stream — only ever to maintain one that was already open.
         when (event.actionMasked) {
           MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> hoverActiveAtPressStart = isHovered
           MotionEvent.ACTION_MOVE,
           MotionEvent.ACTION_UP,
           MotionEvent.ACTION_POINTER_UP,
-          ->
+          -> {
             if (hoverActiveAtPressStart) {
-              isHovered = isWithinBounds(event)
+              // A touch event describes the pressing pointer, which on a dual-input
+              // device isn't the hovering one — a finger drag says nothing about a
+              // mouse or stylus hovering in its own event stream. Only the pointer
+              // that opened the hover may maintain it.
+              val pointerType = event.getPointerType()
+
+              if (pointerType == lastHoverSample?.pointerType) {
+                isHovered = isWithinBounds(event)
+                lastHoverSample = hoverSampleFrom(event, pointerType)
+                dispatchHoverEventIfNeeded()
+              }
             }
-          MotionEvent.ACTION_CANCEL -> isHovered = false
+          }
+          // A cancel takes the gesture away from the button for good, and the hover
+          // stream isn't guaranteed to speak again — hover targets were dropped at
+          // press-start, so a pointer that ends up anywhere else sends this view
+          // nothing. The hover has to be closed here or it stays open forever; a
+          // pointer that is still hovering re-opens it on the next hover-in.
+          MotionEvent.ACTION_CANCEL -> {
+            if (hoverActiveAtPressStart && event.getPointerType() == lastHoverSample?.pointerType) {
+              isHovered = false
+              recordHoverSample(event)
+              dispatchHoverEventIfNeeded()
+            }
+
+            hoverActiveAtPressStart = false
+          }
         }
 
         val handled = super.onTouchEvent(event)
@@ -904,8 +940,8 @@ class RNGestureHandlerButtonViewManager :
 
     override fun onHoverEvent(event: MotionEvent): Boolean {
       when (event.actionMasked) {
-        MotionEvent.ACTION_HOVER_ENTER -> onHoverIn()
-        MotionEvent.ACTION_HOVER_EXIT -> onHoverOut()
+        MotionEvent.ACTION_HOVER_ENTER -> onHoverIn(event)
+        MotionEvent.ACTION_HOVER_EXIT -> onHoverOut(event)
       }
 
       return super.onHoverEvent(event)
@@ -1000,14 +1036,14 @@ class RNGestureHandlerButtonViewManager :
         return
       }
 
-      if (shouldAnimateHover) {
+      if (effectiveHover) {
         animateTo(hoverOpacity, hoverScale, hoverUnderlayOpacity, hoverAnimationInDuration.toLong())
       } else {
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, hoverAnimationOutDuration.toLong())
       }
     }
 
-    private fun onHoverIn() {
+    private fun onHoverIn(event: MotionEvent) {
       cancelPendingHoverOut()
 
       if (isHovered) {
@@ -1015,12 +1051,21 @@ class RNGestureHandlerButtonViewManager :
       }
 
       isHovered = true
+      // Ahead of the first sample — hoverSampleFrom converts with this offset.
+      captureHoverWindowOffset()
+      recordHoverSample(event)
+      dispatchHoverEventIfNeeded()
       animateHoverState()
     }
 
-    private fun onHoverOut() {
+    private fun onHoverOut(event: MotionEvent) {
       if (isPressed) {
         isHovered = false
+        // The hover is genuinely over, so stop deriving it — otherwise the next
+        // ACTION_MOVE re-opens it for the pressing pointer.
+        hoverActiveAtPressStart = false
+        recordHoverSample(event)
+        dispatchHoverEventIfNeeded()
         return
       }
 
@@ -1028,9 +1073,14 @@ class RNGestureHandlerButtonViewManager :
 
       // Hover-out arrives just before a press-down, so defer a frame to let a
       // following press-in cancel it and keep the hover state through the press.
+      // The JS event goes out from the callback too, so a cancelled hover-out
+      // never reaches JS.
+      val sample = hoverSampleFrom(event, event.getPointerType())
       val callback = Choreographer.FrameCallback {
         pendingHoverOut = null
         isHovered = false
+        lastHoverSample = sample
+        dispatchHoverEventIfNeeded()
         animateHoverState()
       }
 
@@ -1041,6 +1091,81 @@ class RNGestureHandlerButtonViewManager :
     private fun cancelPendingHoverOut() {
       pendingHoverOut?.let { Choreographer.getInstance().removeFrameCallback(it) }
       pendingHoverOut = null
+    }
+
+    private fun hoverSampleFrom(event: MotionEvent, pointerType: Int) = HoverSample(
+      x = event.x,
+      y = event.y,
+      absoluteX = event.rawX - hoverWindowOffset[0],
+      absoluteY = event.rawY - hoverWindowOffset[1],
+      pointerType = pointerType,
+      pointerInside = isPointerInside(event.x, event.y),
+    )
+
+    // Asked of the handler so `pointerInside` means the same hitSlop-expanded
+    // rect press events report it from. A sample taken without a handler is
+    // never dispatched, so the fallback is arbitrary.
+    private fun isPointerInside(x: Float, y: Float): Boolean {
+      val moduleId = moduleId ?: return false
+      val handlerTag = managedHandlerTag ?: return false
+      val handler = RNGestureHandlerModule.registries[moduleId]?.getHandler(handlerTag) ?: return false
+
+      return handler.isWithinBounds(this, x, y)
+    }
+
+    // No content view leaves screen coordinates as the best available answer,
+    // the same fallback GestureHandler.prepare takes.
+    private fun captureHoverWindowOffset() {
+      val content = context.findActivity()?.findViewById<View>(android.R.id.content)
+      if (content != null) {
+        content.getLocationOnScreen(hoverWindowOffset)
+      } else {
+        hoverWindowOffset[0] = 0
+        hoverWindowOffset[1] = 0
+      }
+    }
+
+    private fun recordHoverSample(event: MotionEvent) {
+      lastHoverSample = hoverSampleFrom(event, event.getPointerType())
+    }
+
+    fun resetHoverState() {
+      isHovered = false
+      hoverReported = false
+      hoverActiveAtPressStart = false
+      lastHoverSample = null
+    }
+
+    /**
+     * Emits the balancing hover event whenever [hoverReported] drifts from
+     * [effectiveHover]. Sharing that property with the hover visual is what
+     * keeps callbacks and appearance in step, so disabling a hovered button
+     * reports a hover-out and re-enabling it reports a hover-in.
+     */
+    private fun dispatchHoverEventIfNeeded() {
+      // Only the v3 managed button listens for hover events. Checked before
+      // `hoverReported` is touched, so a tag attached midway through a hover
+      // can't leave it claiming a hover-in JS never received.
+      if (managedHandlerTag == null) {
+        return
+      }
+
+      val effective = effectiveHover
+
+      if (effective == hoverReported) {
+        return
+      }
+
+      hoverReported = effective
+      dispatchHoverEvent(if (effective) EventType.HoverIn else EventType.HoverOut)
+    }
+
+    private fun dispatchHoverEvent(type: EventType) {
+      val sample = lastHoverSample ?: return
+      val reactContext = context as? ReactContext ?: return
+      val eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext) ?: return
+
+      eventDispatcher.dispatchEvent(RNGestureHandlerButtonEvent.obtain(this, sample, type))
     }
 
     private fun isWithinBounds(event: MotionEvent): Boolean =
@@ -1206,6 +1331,9 @@ class RNGestureHandlerButtonViewManager :
       cancelPendingHoverOut()
       currentAnimator?.cancel()
       currentAnimator = null
+      // `hoverReported` is deliberately left alone: Fabric reparents by removing
+      // and re-inserting, so detaching is not proof the pointer left. A genuine
+      // teardown clears it in `onDropViewInstance` instead.
       isHovered = false
       applyStartAnimationState()
 
@@ -1348,6 +1476,8 @@ class RNGestureHandlerButtonViewManager :
       // The managed handler mirrors the button's enabled state.
       managedHandlerNeedsUpdate = true
 
+      dispatchHoverEventIfNeeded()
+
       if (isHovered) {
         animateHoverState()
       }
@@ -1403,11 +1533,28 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
+    /**
+     * Snapshot of the hovering pointer, in pixels (events convert to DIP).
+     * [x]/[y] are relative to the button, [absoluteX]/[absoluteY] to the window
+     * as it sat when the hover session opened — a window moved mid-hover leaves
+     * them stale until the pointer leaves and comes back.
+     */
+    data class HoverSample(
+      val x: Float,
+      val y: Float,
+      val absoluteX: Float,
+      val absoluteY: Float,
+      val pointerType: Int,
+      val pointerInside: Boolean,
+    )
+
     enum class EventType {
       Press,
       PressIn,
       PressOut,
       LongPress,
+      HoverIn,
+      HoverOut,
       InteractionFinished,
     }
   }
