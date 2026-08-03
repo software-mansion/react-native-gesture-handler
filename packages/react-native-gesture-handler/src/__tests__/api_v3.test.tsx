@@ -579,6 +579,30 @@ describe('[API v3] Components', () => {
   });
 
   describe('Touchable', () => {
+    test('forwards hover callbacks with the native event payload', () => {
+      const onHoverIn = jest.fn();
+      const onHoverOut = jest.fn();
+
+      render(
+        <GestureHandlerRootView>
+          <Touchable
+            testID="touchable"
+            onHoverIn={onHoverIn}
+            onHoverOut={onHoverOut}
+          />
+        </GestureHandlerRootView>
+      );
+
+      const button = screen.getByTestId('touchable');
+      const hoverInEvent = buttonEvent(true);
+      const hoverOutEvent = buttonEvent(false);
+      fireEvent(button, 'buttonHoverIn', hoverInEvent);
+      fireEvent(button, 'buttonHoverOut', hoverOutEvent);
+
+      expect(onHoverIn).toHaveBeenCalledWith(hoverInEvent.nativeEvent);
+      expect(onHoverOut).toHaveBeenCalledWith(hoverOutEvent.nativeEvent);
+    });
+
     test('calls onPress on successful press', () => {
       const pressFn = jest.fn();
 

@@ -25,6 +25,8 @@ interface NativeProps extends ViewProps {
   onButtonPressIn?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
   onButtonPressOut?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
   onButtonLongPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonHoverIn?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonHoverOut?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
   onButtonInteractionFinished?:
     | CodegenTypes.DirectEventHandler<ButtonEvent>
     | undefined;

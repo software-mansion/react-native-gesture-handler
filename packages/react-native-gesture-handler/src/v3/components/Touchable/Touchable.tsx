@@ -1,4 +1,4 @@
-import React, { use, useCallback, useRef, useState } from 'react';
+import React, { use, useCallback, useMemo, useRef, useState } from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 import { Platform } from 'react-native';
 
@@ -79,6 +79,8 @@ export const Touchable = (props: TouchableProps) => {
     onPress,
     onPressIn,
     onPressOut,
+    onHoverIn,
+    onHoverOut,
     children,
     disabled = false,
     cancelOnLeave = true,
@@ -157,6 +159,25 @@ export const Touchable = (props: TouchableProps) => {
     [onLongPress]
   );
 
+  // Left undefined when the corresponding prop is absent so web can skip
+  // building a hover payload nobody consumes — it costs a synchronous layout
+  // read per pointer enter/leave. The native platforms emit either way.
+  const internalOnHoverIn = useMemo(
+    () =>
+      onHoverIn
+        ? (e: NativeSyntheticEvent<ButtonEvent>) => onHoverIn(e.nativeEvent)
+        : undefined,
+    [onHoverIn]
+  );
+
+  const internalOnHoverOut = useMemo(
+    () =>
+      onHoverOut
+        ? (e: NativeSyntheticEvent<ButtonEvent>) => onHoverOut(e.nativeEvent)
+        : undefined,
+    [onHoverOut]
+  );
+
   // InteractionFinished is dispatched after the terminal PressOut/Press
   // events, so resetting synchronously here is safe.
   const internalOnInteractionFinished = useCallback(() => {
@@ -208,6 +229,8 @@ export const Touchable = (props: TouchableProps) => {
       onButtonPressIn={internalOnPressIn}
       onButtonPressOut={internalOnPressOut}
       onButtonLongPress={internalOnLongPress}
+      onButtonHoverIn={internalOnHoverIn}
+      onButtonHoverOut={internalOnHoverOut}
       onButtonInteractionFinished={internalOnInteractionFinished}>
       {children}
     </GestureHandlerButton>
