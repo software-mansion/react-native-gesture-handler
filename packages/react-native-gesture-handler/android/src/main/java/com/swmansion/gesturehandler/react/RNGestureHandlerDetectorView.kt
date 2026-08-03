@@ -55,10 +55,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val orchestrator = RNGestureHandlerRootView.findGestureHandlerRootView(this)?.orchestrator ?: return
 
     if (!orchestrator.isHandlingTouch) {
-val registry = RNGestureHandlerModule.registries[moduleId] ?: return
-for (tag in attachedHandlers) {
-  registry.getHandler(tag)?.takeIf { it.view != null }?.cancel()
-}
+      val registry = RNGestureHandlerModule.registries[moduleId] ?: return
+      for (tag in attachedHandlers) {
+        registry.getHandler(tag)?.takeIf { it.view != null }?.cancel()
+      }
     }
   }
 
