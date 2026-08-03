@@ -1,0 +1,38 @@
+name: Test Android
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/android.yml
+      - .github/workflows/android-build.yml
+      - packages/react-native-gesture-handler/android/**
+      - packages/react-native-gesture-handler/shared/**
+      - packages/react-native-gesture-handler/src/**
+      - apps/basic-example/**
+      - apps/expo-example/**
+      - apps/common-app/**
+      - rnrepo.config.json
+      - yarn.lock
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [basic-example, expo-example]
+
+    uses: ./.github/workflows/android-build.yml
+    with:
+      app: ${{ matrix.app }}
+      artifact-name: android-apk-${{ matrix.app }}
+      abi: x86_64

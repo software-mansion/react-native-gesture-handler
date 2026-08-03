@@ -1,40 +1,50 @@
-name: Test iOS build
+name: Build iOS app
 
+# Reusable: builds one example app for the simulator in Release and uploads the
+# .app bundle, so `ios-e2e.yml` can install that exact binary instead of
+# building the app a second time. Called by `ios.yml`.
 on:
-  pull_request:
-    paths:
-      - .github/workflows/ios-build.yml
-      - packages/react-native-gesture-handler/RNGestureHandler.podspec
-      - packages/react-native-gesture-handler/apple/**
-      - apps/basic-example/ios/**
-      - apps/basic-example/package.json
-      - rnrepo.config.json
-      - yarn.lock
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      app:
+        description: Directory under apps/ holding the example app to build.
+        required: true
+        type: string
+      scheme:
+        description: Xcode scheme of the app (also the workspace name).
+        required: true
+        type: string
+      artifact-name:
+        description: Name to upload the packaged .app bundle under.
+        required: true
+        type: string
+      xcode-version:
+        description: Xcode version to build with.
+        required: true
+        type: string
 
 jobs:
   build:
-    if: github.repository == 'software-mansion/react-native-gesture-handler'
-
     runs-on: macos-26
-    strategy:
-      matrix:
-        working-directory: [apps/basic-example, apps/expo-example]
-    concurrency:
-      group: ios-${{ matrix.working-directory }}-${{ github.ref }}
-      cancel-in-progress: true
+    timeout-minutes: 60
 
     steps:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: Use latest stable Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: '26.4.1'
+      - name: Select Xcode
+        env:
+          XCODE_VERSION: ${{ inputs.xcode-version }}
+        run: |
+          XCODE_APP="/Applications/Xcode_${XCODE_VERSION}.app"
+          if [ ! -d "$XCODE_APP" ]; then
+            echo "Xcode ${XCODE_VERSION} is not installed on this runner. Available:" >&2
+            ls -d /Applications/Xcode*.app >&2
+            exit 1
+          fi
+          echo "Using $XCODE_APP"
+          echo "DEVELOPER_DIR=$XCODE_APP/Contents/Developer" >> "$GITHUB_ENV"
+          DEVELOPER_DIR="$XCODE_APP/Contents/Developer" xcodebuild -version
 
       - name: Use Node.js 24
         uses: actions/setup-node@v6
@@ -43,14 +53,48 @@ jobs:
           cache: yarn
 
       - name: Install node dependencies
-        working-directory: ${{ matrix.working-directory }}
+        working-directory: apps/${{ inputs.app }}
         run: yarn install --immutable
 
+      # expo-example runs `expo prebuild` on postinstall, which installs its pods.
       - name: Install pods
-        if: ${{ matrix.working-directory == 'apps/basic-example' }}
-        working-directory: ${{ matrix.working-directory }}/ios
+        if: ${{ inputs.app == 'basic-example' }}
+        working-directory: apps/${{ inputs.app }}/ios
         run: bundle install && NO_FLIPPER=1 bundle exec pod install
 
-      - name: Build app
-        working-directory: ${{ matrix.working-directory }}
-        run: npx react-native run-ios
+      - name: Build app in Release mode
+        working-directory: apps/${{ inputs.app }}/ios
+        run: |
+          xcodebuild \
+            -workspace ${{ inputs.scheme }}.xcworkspace \
+            -scheme ${{ inputs.scheme }} \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      # Artifact zips drop POSIX permissions and symlinks, which would leave the
+      # .app with a non-executable binary — tar the bundle to keep it installable.
+      - name: Package app bundle
+        working-directory: apps/${{ inputs.app }}/ios
+        run: |
+          APP_PATH=$(find build/Build/Products/Release-iphonesimulator -maxdepth 1 -name '*.app' -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "Could not find built .app" >&2
+            exit 1
+          fi
+          echo "Packaging $APP_PATH"
+          mkdir -p "$RUNNER_TEMP/artifact"
+          tar -czf "$RUNNER_TEMP/artifact/app.tar.gz" \
+            -C "$(dirname "$APP_PATH")" "$(basename "$APP_PATH")"
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ runner.temp }}/artifact/app.tar.gz
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3

@@ -1,0 +1,44 @@
+name: Test iOS
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/ios.yml
+      - .github/workflows/ios-build.yml
+      - packages/react-native-gesture-handler/RNGestureHandler.podspec
+      - packages/react-native-gesture-handler/apple/**
+      - packages/react-native-gesture-handler/shared/**
+      - packages/react-native-gesture-handler/src/**
+      - apps/basic-example/**
+      - apps/expo-example/**
+      - apps/common-app/**
+      - rnrepo.config.json
+      - yarn.lock
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: basic-example
+            scheme: BasicExample
+          - app: expo-example
+            scheme: ExpoExample
+
+    uses: ./.github/workflows/ios-build.yml
+    with:
+      app: ${{ matrix.app }}
+      scheme: ${{ matrix.scheme }}
+      artifact-name: ios-app-${{ matrix.app }}
+      xcode-version: '26.4.1'
