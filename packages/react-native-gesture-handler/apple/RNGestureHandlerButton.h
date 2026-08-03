@@ -13,14 +13,16 @@ typedef NS_ENUM(NSInteger, RNGHButtonEventType) {
   RNGHButtonEventTypePressIn,
   RNGHButtonEventTypePressOut,
   RNGHButtonEventTypeLongPress,
+  RNGHButtonEventTypeHoverIn,
+  RNGHButtonEventTypeHoverOut,
   RNGHButtonEventTypeInteractionFinished,
 };
 
 /*
- * Receives press events produced by the button's state machine so that they can
- * be dispatched through the component's event emitter.
+ * Receives interaction events produced by the button so that they can be
+ * dispatched through the component's event emitter.
  */
-@protocol RNGHButtonPressEventDelegate <NSObject>
+@protocol RNGHButtonEventDelegate <NSObject>
 
 - (void)dispatchButtonEvent:(RNGHButtonEventType)type
               withExtraData:(nullable RNGestureHandlerEventExtraData *)extraData;
@@ -70,7 +72,7 @@ typedef NS_ENUM(NSInteger, RNGHButtonEventType) {
  */
 @property (nonatomic, strong, nullable) NSNumber *managedHandlerTag;
 
-@property (nonatomic, weak, nullable) id<RNGHButtonPressEventDelegate> pressEventDelegate;
+@property (nonatomic, weak, nullable) id<RNGHButtonEventDelegate> eventDelegate;
 
 /**
  * The view that press animations are applied to. Defaults to self; set by the
