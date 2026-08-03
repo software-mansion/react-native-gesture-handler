@@ -10,6 +10,7 @@ import { getNextHandlerTag } from '../../../handlers/getNextHandlerTag';
 import {
   isKeyboardDismissingTap,
   JSResponderContext,
+  updateResponderEventValue,
 } from '../ScrollViewResponderInterceptor';
 import type { AnimationDuration, TouchableProps } from './TouchableProps';
 
@@ -93,6 +94,18 @@ export const Touchable = (props: TouchableProps) => {
 
   const jsResponderContext = use(JSResponderContext);
   const dropKeyboardTapRef = useRef<boolean | null>(null);
+
+  // The button handles presses natively, without a NativeDetector, so it has
+  // to mark its responder events as RNGH-handled itself — otherwise a tap on
+  // it looks unhandled to an enclosing ScrollView in
+  // keyboardShouldPersistTaps='handled' mode and dismisses the keyboard.
+  const handleStartShouldSetResponderCapture = useCallback(() => {
+    if (!disabled) {
+      updateResponderEventValue(jsResponderContext, true);
+    }
+
+    return false;
+  }, [disabled, jsResponderContext]);
 
   const internalOnPress = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
@@ -179,6 +192,7 @@ export const Touchable = (props: TouchableProps) => {
       {...resolvedDurations}
       ref={ref ?? null}
       enabled={!disabled}
+      onStartShouldSetResponderCapture={handleStartShouldSetResponderCapture}
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTag={handlerTag}
       cancelOnLeave={cancelOnLeave}
