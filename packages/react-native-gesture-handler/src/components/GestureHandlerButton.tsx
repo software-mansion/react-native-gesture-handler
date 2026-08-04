@@ -13,7 +13,7 @@ import RNGestureHandlerButtonNativeComponent, {
   type ButtonEvent as SpecButtonEvent,
 } from '../specs/RNGestureHandlerButtonNativeComponent';
 import type { StaticAssert } from '../typeUtils';
-import type { ButtonEvent } from '../v3/types/EventTypes';
+import type { ButtonEvent } from '../v3/types';
 
 // Compile-time guard: the spec's codegen type must stay structurally
 // identical to the shared `ButtonEvent` in `v3/types`

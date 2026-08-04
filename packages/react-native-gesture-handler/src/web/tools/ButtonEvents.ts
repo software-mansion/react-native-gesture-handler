@@ -1,4 +1,4 @@
-import type { ButtonEvent } from '../../v3/types/EventTypes';
+import type { ButtonEvent } from '../../v3/types';
 
 export const ButtonEventName = {
   Press: 'gh:buttonPress',
