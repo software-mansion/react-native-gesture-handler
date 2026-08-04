@@ -1,3 +1,4 @@
+import { CALLBACK_TYPE } from '../../../CallbackType';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { tagMessage } from '../../../utils';
@@ -7,7 +8,6 @@ import type {
   GestureUpdateEvent,
 } from '../../gestureHandlerCommon';
 import type { HandlerCallbacks } from '../gesture';
-import { CALLBACK_TYPE } from '../gesture';
 import type { GestureStateManagerType } from '../gestureStateManager';
 import { GestureStateManager } from '../gestureStateManager';
 import { Reanimated } from '../reanimatedWrapper';
