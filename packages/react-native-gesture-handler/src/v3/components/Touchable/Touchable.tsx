@@ -10,7 +10,7 @@ import { getNextHandlerTag } from '../../../handlers/getNextHandlerTag';
 import {
   isKeyboardDismissingTap,
   JSResponderContext,
-} from '../ScrollViewResponderInterceptor';
+} from '../../scrollViewInterop';
 import type { AnimationDuration, TouchableProps } from './TouchableProps';
 
 const isAndroid = Platform.OS === 'android';

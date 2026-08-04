@@ -11,13 +11,13 @@ import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
 import { Pressable, RectButton, ScrollView, Touchable } from '../v3/components';
-import {
-  isKeyboardDismissingTap,
-  type JSResponderContextValue,
-} from '../v3/components/ScrollViewResponderInterceptor';
 import { GestureDetector } from '../v3/detectors';
 import { useSimultaneousGestures } from '../v3/hooks';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
+import {
+  isKeyboardDismissingTap,
+  type JSResponderContextValue,
+} from '../v3/scrollViewInterop';
 
 const flushImmediate = () =>
   new Promise((resolve) => {
