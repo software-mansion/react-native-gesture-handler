@@ -91,5 +91,23 @@
     "no-alert": "warn",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "packages/react-native-gesture-handler/src/v3/**",
+        "packages/react-native-gesture-handler/src/web/**",
+        "packages/react-native-gesture-handler/src/*.ts"
+      ],
+      "rules": {
+        "no-restricted-globals": [
+          "error",
+          {
+            "name": "global",
+            "message": "Use the standard `globalThis` — the bare `global` binding is React Native/Node-specific and doesn't exist in browsers."
+          }
+        ]
+      }
+    }
+  ]
 }
