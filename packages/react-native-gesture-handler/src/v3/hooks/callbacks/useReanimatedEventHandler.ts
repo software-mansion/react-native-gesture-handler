@@ -24,14 +24,29 @@ const workletNOOP = () => {
   // no-op
 };
 
-const lastUpdateEventMap = Reanimated?.makeMutable(
-  new Map<number, ReanimatedContext<unknown>>()
-);
+function createLastUpdateEventMap() {
+  return Reanimated?.makeMutable(new Map<number, ReanimatedContext<unknown>>());
+}
 
-function deleteHandlerEventEntry(handlerTag: number) {
+// Created lazily instead of at module scope so importing this module doesn't
+// call into Reanimated during module evaluation.
+let lastUpdateEventMap: ReturnType<typeof createLastUpdateEventMap>;
+
+function getLastUpdateEventMap() {
+  lastUpdateEventMap ??= createLastUpdateEventMap();
+  return lastUpdateEventMap;
+}
+
+function deleteHandlerEventEntry(
+  map: ReturnType<typeof createLastUpdateEventMap>,
+  handlerTag: number
+) {
   'worklet';
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  lastUpdateEventMap!.value.delete(handlerTag);
+  if (map === undefined) {
+    return;
+  }
+
+  map.value.delete(handlerTag);
 }
 
 export function useReanimatedEventHandler<
@@ -59,6 +74,10 @@ export function useReanimatedEventHandler<
     return handlers;
   }, [handlers]);
 
+  // Obtained on the JS thread during render so the worklet below captures the
+  // initialized map rather than the lazy module binding.
+  const updateEventMap = getLastUpdateEventMap();
+
   const callback = (
     event: UnpackedGestureHandlerEventWithHandlerData<
       THandlerData,
@@ -66,13 +85,16 @@ export function useReanimatedEventHandler<
     >
   ) => {
     'worklet';
-    // If we're on Reanimated path, lastUpdateEventMap should always be defined
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    let context = lastUpdateEventMap!.value.get(event.handlerTag);
+    // Undefined only when Reanimated is absent — and then this callback is
+    // never registered (`Reanimated?.useEvent` below short-circuits).
+    if (updateEventMap === undefined) {
+      return;
+    }
+
+    let context = updateEventMap.value.get(event.handlerTag);
     if (context === undefined) {
       context = { lastUpdateEvent: undefined };
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      lastUpdateEventMap!.value.set(event.handlerTag, context);
+      updateEventMap.value.set(event.handlerTag, context);
     }
 
     eventHandler(
@@ -100,9 +122,12 @@ export function useReanimatedEventHandler<
     prevHandlerTagRef.current = handlerTag;
 
     return () => {
-      Reanimated?.runOnUI?.(deleteHandlerEventEntry)(handlerTag);
+      Reanimated?.runOnUI?.(deleteHandlerEventEntry)(
+        updateEventMap,
+        handlerTag
+      );
     };
-  }, [handlerTag]);
+  }, [handlerTag, updateEventMap]);
 
   const reanimatedEvent = Reanimated?.useEvent(
     callback,
