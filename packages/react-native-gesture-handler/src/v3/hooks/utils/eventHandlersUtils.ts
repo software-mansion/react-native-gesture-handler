@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { CALLBACK_TYPE } from '../../../CallbackType';
+import { CallbackType } from '../../../CallbackType';
 import { TouchEventType } from '../../../TouchEventType';
 import type {
   GestureCallbacks,
@@ -62,7 +62,7 @@ export function useMemoizedGestureCallbacks<
 }
 
 function getHandler<THandlerData, TExtendedHandlerData extends THandlerData>(
-  type: CALLBACK_TYPE,
+  type: CallbackType,
   callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>
 ):
   | GestureEventCallback<THandlerData>
@@ -73,42 +73,42 @@ function getHandler<THandlerData, TExtendedHandlerData extends THandlerData>(
   | undefined {
   'worklet';
   switch (type) {
-    case CALLBACK_TYPE.BEGAN:
+    case CallbackType.BEGAN:
       return callbacks.onBegin;
-    case CALLBACK_TYPE.START:
+    case CallbackType.START:
       return callbacks.onActivate;
-    case CALLBACK_TYPE.UPDATE:
+    case CallbackType.UPDATE:
       return callbacks.onUpdate as GestureEventCallback<TExtendedHandlerData>; // Animated event is handled in different place.
-    case CALLBACK_TYPE.END:
+    case CallbackType.END:
       return callbacks.onDeactivate;
-    case CALLBACK_TYPE.FINALIZE:
+    case CallbackType.FINALIZE:
       return callbacks.onFinalize;
-    case CALLBACK_TYPE.TOUCHES_DOWN:
+    case CallbackType.TOUCHES_DOWN:
       return callbacks.onTouchesDown;
-    case CALLBACK_TYPE.TOUCHES_MOVE:
+    case CallbackType.TOUCHES_MOVE:
       return callbacks.onTouchesMove;
-    case CALLBACK_TYPE.TOUCHES_UP:
+    case CallbackType.TOUCHES_UP:
       return callbacks.onTouchesUp;
-    case CALLBACK_TYPE.TOUCHES_CANCEL:
+    case CallbackType.TOUCHES_CANCEL:
       return callbacks.onTouchesCancel;
   }
 }
 
 export function touchEventTypeToCallbackType(
   eventType: TouchEventType
-): CALLBACK_TYPE {
+): CallbackType {
   'worklet';
   switch (eventType) {
     case TouchEventType.TOUCHES_DOWN:
-      return CALLBACK_TYPE.TOUCHES_DOWN;
+      return CallbackType.TOUCHES_DOWN;
     case TouchEventType.TOUCHES_MOVE:
-      return CALLBACK_TYPE.TOUCHES_MOVE;
+      return CallbackType.TOUCHES_MOVE;
     case TouchEventType.TOUCHES_UP:
-      return CALLBACK_TYPE.TOUCHES_UP;
+      return CallbackType.TOUCHES_UP;
     case TouchEventType.TOUCHES_CANCEL:
-      return CALLBACK_TYPE.TOUCHES_CANCEL;
+      return CallbackType.TOUCHES_CANCEL;
   }
-  return CALLBACK_TYPE.UNDEFINED;
+  return CallbackType.UNDEFINED;
 }
 
 type SingleParameterCallback<T> = (event: T) => void;
@@ -117,7 +117,7 @@ export function runCallback<
   THandlerData,
   TExtendedHandlerData extends THandlerData,
 >(
-  type: CALLBACK_TYPE,
+  type: CallbackType,
   callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
   event: UnpackedGestureHandlerEvent<THandlerData>
 ) {

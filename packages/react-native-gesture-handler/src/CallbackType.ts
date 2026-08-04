@@ -1,4 +1,4 @@
-export const CALLBACK_TYPE = {
+export const CallbackType = {
   UNDEFINED: 0,
   BEGAN: 1,
   START: 2,
@@ -12,6 +12,5 @@ export const CALLBACK_TYPE = {
   TOUCHES_CANCEL: 10,
 } as const;
 
-// Allow using CALLBACK_TYPE as object and type
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type CALLBACK_TYPE = (typeof CALLBACK_TYPE)[keyof typeof CALLBACK_TYPE];
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; it can be used as a type and as a value
+export type CallbackType = (typeof CallbackType)[keyof typeof CallbackType];

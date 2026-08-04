@@ -1,4 +1,4 @@
-import { CALLBACK_TYPE } from '../../../CallbackType';
+import { CallbackType } from '../../../CallbackType';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { tagMessage } from '../../../utils';
@@ -14,53 +14,51 @@ import { Reanimated } from '../reanimatedWrapper';
 import type { AttachedGestureState } from './types';
 
 function getHandler(
-  type: CALLBACK_TYPE,
+  type: CallbackType,
   gesture: HandlerCallbacks<Record<string, unknown>>
 ) {
   'worklet';
   switch (type) {
-    case CALLBACK_TYPE.BEGAN:
+    case CallbackType.BEGAN:
       return gesture.onBegin;
-    case CALLBACK_TYPE.START:
+    case CallbackType.START:
       return gesture.onStart;
-    case CALLBACK_TYPE.UPDATE:
+    case CallbackType.UPDATE:
       return gesture.onUpdate;
-    case CALLBACK_TYPE.CHANGE:
+    case CallbackType.CHANGE:
       return gesture.onChange;
-    case CALLBACK_TYPE.END:
+    case CallbackType.END:
       return gesture.onEnd;
-    case CALLBACK_TYPE.FINALIZE:
+    case CallbackType.FINALIZE:
       return gesture.onFinalize;
-    case CALLBACK_TYPE.TOUCHES_DOWN:
+    case CallbackType.TOUCHES_DOWN:
       return gesture.onTouchesDown;
-    case CALLBACK_TYPE.TOUCHES_MOVE:
+    case CallbackType.TOUCHES_MOVE:
       return gesture.onTouchesMove;
-    case CALLBACK_TYPE.TOUCHES_UP:
+    case CallbackType.TOUCHES_UP:
       return gesture.onTouchesUp;
-    case CALLBACK_TYPE.TOUCHES_CANCEL:
+    case CallbackType.TOUCHES_CANCEL:
       return gesture.onTouchesCancelled;
   }
 }
 
-function touchEventTypeToCallbackType(
-  eventType: TouchEventType
-): CALLBACK_TYPE {
+function touchEventTypeToCallbackType(eventType: TouchEventType): CallbackType {
   'worklet';
   switch (eventType) {
     case TouchEventType.TOUCHES_DOWN:
-      return CALLBACK_TYPE.TOUCHES_DOWN;
+      return CallbackType.TOUCHES_DOWN;
     case TouchEventType.TOUCHES_MOVE:
-      return CALLBACK_TYPE.TOUCHES_MOVE;
+      return CallbackType.TOUCHES_MOVE;
     case TouchEventType.TOUCHES_UP:
-      return CALLBACK_TYPE.TOUCHES_UP;
+      return CallbackType.TOUCHES_UP;
     case TouchEventType.TOUCHES_CANCEL:
-      return CALLBACK_TYPE.TOUCHES_CANCEL;
+      return CallbackType.TOUCHES_CANCEL;
   }
-  return CALLBACK_TYPE.UNDEFINED;
+  return CallbackType.UNDEFINED;
 }
 
 function runWorklet(
-  type: CALLBACK_TYPE,
+  type: CallbackType,
   gesture: HandlerCallbacks<Record<string, unknown>>,
   event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
   ...args: unknown[]
@@ -136,30 +134,30 @@ export function useAnimatedGesture(
           event.oldState === State.UNDETERMINED &&
           event.state === State.BEGAN
         ) {
-          runWorklet(CALLBACK_TYPE.BEGAN, gesture, event);
+          runWorklet(CallbackType.BEGAN, gesture, event);
         } else if (
           (event.oldState === State.BEGAN ||
             event.oldState === State.UNDETERMINED) &&
           event.state === State.ACTIVE
         ) {
-          runWorklet(CALLBACK_TYPE.START, gesture, event);
+          runWorklet(CallbackType.START, gesture, event);
           lastUpdateEvent.value[gesture.handlerTag] = undefined;
         } else if (
           event.oldState !== event.state &&
           event.state === State.END
         ) {
           if (event.oldState === State.ACTIVE) {
-            runWorklet(CALLBACK_TYPE.END, gesture, event, true);
+            runWorklet(CallbackType.END, gesture, event, true);
           }
-          runWorklet(CALLBACK_TYPE.FINALIZE, gesture, event, true);
+          runWorklet(CallbackType.FINALIZE, gesture, event, true);
         } else if (
           (event.state === State.FAILED || event.state === State.CANCELLED) &&
           event.state !== event.oldState
         ) {
           if (event.oldState === State.ACTIVE) {
-            runWorklet(CALLBACK_TYPE.END, gesture, event, false);
+            runWorklet(CallbackType.END, gesture, event, false);
           }
-          runWorklet(CALLBACK_TYPE.FINALIZE, gesture, event, false);
+          runWorklet(CallbackType.FINALIZE, gesture, event, false);
         }
       } else if (isTouchEvent(event)) {
         if (
@@ -178,11 +176,11 @@ export function useAnimatedGesture(
           );
         }
       } else {
-        runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);
+        runWorklet(CallbackType.UPDATE, gesture, event);
 
         if (gesture.onChange && gesture.changeEventCalculator) {
           runWorklet(
-            CALLBACK_TYPE.CHANGE,
+            CallbackType.CHANGE,
             gesture,
             gesture.changeEventCalculator?.(
               event,
