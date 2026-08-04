@@ -1,4 +1,4 @@
-import type { ButtonEvent } from '../../specs/RNGestureHandlerButtonNativeComponent';
+import type { ButtonEvent } from '../../v3/types/EventTypes';
 
 export const ButtonEventName = {
   Press: 'gh:buttonPress',

@@ -10,8 +10,20 @@ import type {
 } from 'react-native';
 
 import RNGestureHandlerButtonNativeComponent, {
-  type ButtonEvent,
+  type ButtonEvent as SpecButtonEvent,
 } from '../specs/RNGestureHandlerButtonNativeComponent';
+import type { StaticAssert } from '../typeUtils';
+import type { ButtonEvent } from '../v3/types/EventTypes';
+
+// Compile-time guard: the spec's codegen type must stay structurally
+// identical to the shared `ButtonEvent` in `v3/types`
+export type _ButtonEventMatchesSpec = StaticAssert<
+  SpecButtonEvent extends ButtonEvent
+    ? ButtonEvent extends SpecButtonEvent
+      ? true
+      : false
+    : false
+>;
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {
   children?: React.ReactNode;

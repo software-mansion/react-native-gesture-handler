@@ -4,8 +4,8 @@ import { View } from 'react-native';
 
 import { ActionType } from '../ActionType';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
-import type { ButtonEvent } from '../specs/RNGestureHandlerButtonNativeComponent';
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
+import type { ButtonEvent } from '../v3/types/EventTypes';
 import type { PropsRef } from '../web/interfaces';
 import { NativeGestureRole } from '../web/interfaces';
 import { ButtonEventName } from '../web/tools/ButtonEvents';

@@ -4,6 +4,19 @@ import type { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import type { PointerType } from '../../PointerType';
 import type { State } from '../../State';
 
+// Payload of the managed button's press events. The codegen spec
+// (`specs/RNGestureHandlerButtonNativeComponent`) declares its own
+// codegen type — specs must stay self-contained for the codegen parser
+export type ButtonEvent = Readonly<{
+  pointerInside: boolean;
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+  numberOfPointers: number;
+  pointerType: number;
+}>;
+
 type EventPayload = {
   handlerTag: number;
   state: State;
