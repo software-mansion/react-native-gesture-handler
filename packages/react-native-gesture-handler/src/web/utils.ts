@@ -17,6 +17,16 @@ export function canUseDOM(): boolean {
   );
 }
 
+// Narrows to an element whose inline styles (and DOM attributes) are safe to
+// touch.
+export function isStylableElement(
+  view: unknown
+): view is HTMLElement | SVGElement {
+  return (
+    canUseDOM() && (view instanceof HTMLElement || view instanceof SVGElement)
+  );
+}
+
 export function hasDisplayContents(view: HTMLElement): boolean {
   return (
     view.style.display === 'contents' ||

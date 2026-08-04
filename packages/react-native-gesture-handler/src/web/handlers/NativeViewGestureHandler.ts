@@ -25,7 +25,7 @@ import {
   dispatchGestureLifecycleEvent,
   GestureLifecycleEvent,
 } from '../tools/GestureLifecycleEvents';
-import { canUseDOM } from '../utils';
+import { isStylableElement } from '../utils';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
@@ -69,13 +69,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     const view = this.delegate.view;
 
-    // `Element` rather than `HTMLElement`: the delegate's view may also be an
-    // SVGElement (see GestureHandlerWebDelegate.init).
-    if (!canUseDOM() || !(view instanceof Element)) {
+    if (!isStylableElement(view)) {
       return;
     }
 
-    this.restoreViewStyles(view as HTMLElement);
+    this.restoreViewStyles(view);
 
     if (this.usesNativeOrVirtualDetector()) {
       this.role =
@@ -110,11 +108,13 @@ export default class NativeViewGestureHandler extends GestureHandler {
       this.longPressDuration = config.longPressDuration;
     }
 
-    const view = this.delegate.view as HTMLElement;
-    this.restoreViewStyles(view);
+    const view = this.delegate.view;
+    if (isStylableElement(view)) {
+      this.restoreViewStyles(view);
+    }
   }
 
-  private restoreViewStyles(view: HTMLElement) {
+  private restoreViewStyles(view: HTMLElement | SVGElement) {
     if (!view) {
       return;
     }
