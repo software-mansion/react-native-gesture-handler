@@ -48,10 +48,10 @@ export default class PanGestureHandler extends GestureHandler {
   private stylusData: StylusData | undefined;
 
   private activateAfterLongPress = 0;
-  private activationTimeout = 0;
+  private activationTimeout: ReturnType<typeof setTimeout> | undefined;
 
   private enableTrackpadTwoFingerGesture = false;
-  private endWheelTimeout = 0;
+  private endWheelTimeout: ReturnType<typeof setTimeout> | undefined;
   private wheelDevice = WheelDevice.UNDETERMINED;
 
   private hasCustomActivationCriteria = false;

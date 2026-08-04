@@ -1,5 +1,3 @@
-import { Platform } from 'react-native';
-
 import { ActionType } from '../../ActionType';
 import type { ButtonEvent } from '../../specs/RNGestureHandlerButtonNativeComponent';
 import { State } from '../../State';
@@ -27,6 +25,7 @@ import {
   dispatchGestureLifecycleEvent,
   GestureLifecycleEvent,
 } from '../tools/GestureLifecycleEvents';
+import { canUseDOM } from '../utils';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
@@ -68,13 +67,15 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.shouldCancelWhenOutside = true;
 
-    if (Platform.OS !== 'web') {
+    const view = this.delegate.view;
+
+    // `Element` rather than `HTMLElement`: the delegate's view may also be an
+    // SVGElement (see GestureHandlerWebDelegate.init).
+    if (!canUseDOM() || !(view instanceof Element)) {
       return;
     }
 
-    const view = this.delegate.view as HTMLElement;
-
-    this.restoreViewStyles(view);
+    this.restoreViewStyles(view as HTMLElement);
 
     if (this.usesNativeOrVirtualDetector()) {
       this.role =
