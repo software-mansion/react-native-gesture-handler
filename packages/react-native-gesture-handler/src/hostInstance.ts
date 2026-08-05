@@ -1,3 +1,23 @@
+import type { Ref } from 'react';
+
+export type WrapRef = Ref<unknown> | undefined;
+
+export function assignRef(
+  ref: WrapRef,
+  instance: unknown
+): (() => void) | undefined {
+  if (typeof ref === 'function') {
+    const cleanup = ref(instance as never);
+    return typeof cleanup === 'function' ? cleanup : undefined;
+  }
+
+  if (ref) {
+    ref.current = instance;
+  }
+
+  return undefined;
+}
+
 export function isHostInstance(instance: unknown) {
   return (
     (instance as { __internalInstanceHandle?: unknown } | null | undefined)

@@ -1,22 +1,13 @@
 import React from 'react';
 
-import { isHostInstance, preferHostInstance } from '../../../hostInstance';
+import type { WrapRef } from '../../../hostInstance';
+import {
+  assignRef,
+  isHostInstance,
+  preferHostInstance,
+} from '../../../hostInstance';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../reanimatedWrapper';
-
-type WrapRef = React.Ref<unknown> | undefined;
-
-function assignRef(ref: WrapRef, instance: unknown) {
-  if (typeof ref === 'function') {
-    return ref(instance as never);
-  }
-
-  if (ref) {
-    ref.current = instance;
-  }
-
-  return undefined;
-}
 
 export class Wrap extends React.Component<{
   onGestureHandlerEvent?: unknown;
@@ -48,8 +39,7 @@ export class Wrap extends React.Component<{
   private attachChildRef(instance: unknown) {
     this.attachedChildRef = this.childRef;
 
-    const cleanup = assignRef(this.attachedChildRef, instance);
-    this.childRefCleanup = typeof cleanup === 'function' ? cleanup : undefined;
+    this.childRefCleanup = assignRef(this.attachedChildRef, instance);
   }
 
   private handleChildRef = (instance: unknown) => {
