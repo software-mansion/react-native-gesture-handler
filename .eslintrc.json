@@ -108,6 +108,22 @@
           }
         ]
       }
+    },
+    {
+      "files": ["packages/react-native-gesture-handler/src/web/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "react-native",
+                "message": "The web handlers are platform-agnostic engine code — they must not depend on react-native. Guard on runtime capabilities (e.g. DOM availability) instead."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
