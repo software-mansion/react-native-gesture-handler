@@ -105,6 +105,33 @@ describe('Legacy GestureDetector ref forwarding', () => {
     expect(childRef.mock.calls[0][0]).not.toBeNull();
   });
 
+  test('moves the child instance when its ref is replaced', () => {
+    const gesture = Gesture.Tap();
+    const firstRef = jest.fn();
+    const secondRef = jest.fn();
+
+    function App({ useSecondRef }: { useSecondRef: boolean }) {
+      return (
+        <GestureHandlerRootView>
+          <GestureDetector gesture={gesture}>
+            <View ref={useSecondRef ? secondRef : firstRef} />
+          </GestureDetector>
+        </GestureHandlerRootView>
+      );
+    }
+
+    const { rerender } = render(<App useSecondRef={false} />);
+
+    const childInstance = firstRef.mock.calls[0][0];
+    expect(childInstance).not.toBeNull();
+    firstRef.mockClear();
+
+    rerender(<App useSecondRef />);
+
+    expect(firstRef).toHaveBeenCalledWith(null);
+    expect(secondRef).toHaveBeenCalledWith(childInstance);
+  });
+
   test('does not reattach gestures on re-render', () => {
     const gesture = Gesture.Tap();
 
