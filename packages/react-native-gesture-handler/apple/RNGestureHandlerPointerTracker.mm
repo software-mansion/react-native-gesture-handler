@@ -195,6 +195,18 @@
     return;
   }
 
+#if TARGET_OS_OSX
+  // Refresh the tracked slot with the ending event so extractAllTouches below reports
+  // the pointer's final position. On iOS the stored UITouch is a live object that
+  // always reads its current location; a stored NSEvent is a stale snapshot.
+  for (RNGHUITouch *touch in touches) {
+    int index = [self findTouchIndex:touch];
+    if (index >= 0) {
+      _trackedPointers[index] = touch;
+    }
+  }
+#endif
+
   // extract all touches first to include the ones that were just lifted
   [self extractAllTouches];
 
