@@ -81,10 +81,22 @@ export const PropsToFilter = new Set<
   'activeOffsetX',
 ]);
 
-// Don't pass testID to the native side in production
-if (!__DEV__) {
-  allowedNativeProps.delete('testID');
-  PropsToFilter.add('testID');
+let productionTestIDFilterApplied = false;
+
+// Don't pass testID to the native side in production. Applied lazily instead
+// of at module scope so importing this module never reads `__DEV__` during
+// module evaluation — the value may not be defined yet in non-Metro
+// environments where the global is set up by an entrypoint side effect.
+export function applyProductionTestIDFilter() {
+  if (productionTestIDFilterApplied) {
+    return;
+  }
+  productionTestIDFilterApplied = true;
+
+  if (!__DEV__) {
+    allowedNativeProps.delete('testID');
+    PropsToFilter.add('testID');
+  }
 }
 
 export const PropsWhiteLists = new Map<
