@@ -1,4 +1,4 @@
-import { tagMessage } from '../utils';
+import { isWorkletRuntime, tagMessage } from '../utils';
 import type { HitSlop } from './gestureHandlerCommon';
 
 /**
@@ -40,7 +40,7 @@ type HitSlopEdge =
 
 type HitSlopObject = Partial<Record<HitSlopEdge, number | undefined>>;
 
-function validateHitSlop(hitSlop: CanonicalHitSlop) {
+function getHitSlopError(hitSlop: CanonicalHitSlop): string | null {
   'worklet';
   const [left, top, right, bottom, width, height] = hitSlop;
 
@@ -48,44 +48,51 @@ function validateHitSlop(hitSlop: CanonicalHitSlop) {
   // deltas, so a negative value describes an inverted region that no pointer
   // can fall into — the gesture would just never activate.
   if (width !== null && width < 0) {
-    throw new Error(tagMessage("HitSlop error: 'width' cannot be negative"));
+    return "HitSlop error: 'width' cannot be negative";
   }
 
   if (height !== null && height < 0) {
-    throw new Error(tagMessage("HitSlop error: 'height' cannot be negative"));
+    return "HitSlop error: 'height' cannot be negative";
   }
 
   if (width !== null && left !== null && right !== null) {
-    throw new Error(
-      tagMessage(
-        "HitSlop error: cannot have all of 'left', 'right' and 'width' defined"
-      )
-    );
+    return "HitSlop error: cannot have all of 'left', 'right' and 'width' defined";
   }
 
   if (width !== null && left === null && right === null) {
-    throw new Error(
-      tagMessage(
-        "HitSlop error: when 'width' is defined, either 'left' or 'right' has to be defined"
-      )
-    );
+    return "HitSlop error: when 'width' is defined, either 'left' or 'right' has to be defined";
   }
 
   if (height !== null && top !== null && bottom !== null) {
-    throw new Error(
-      tagMessage(
-        "HitSlop error: cannot have all of 'top', 'bottom' and 'height' defined"
-      )
-    );
+    return "HitSlop error: cannot have all of 'top', 'bottom' and 'height' defined";
   }
 
   if (height !== null && top === null && bottom === null) {
-    throw new Error(
-      tagMessage(
-        "HitSlop error: when 'height' is defined, either 'top' or 'bottom' has to be defined"
-      )
-    );
+    return "HitSlop error: when 'height' is defined, either 'top' or 'bottom' has to be defined";
   }
+
+  return null;
+}
+
+function reportHitSlopError(hitSlop: CanonicalHitSlop) {
+  'worklet';
+  const error = getHitSlopError(hitSlop);
+
+  if (error === null) {
+    return;
+  }
+
+  // On the UI runtime this runs inside a shared value listener, where throwing
+  // would tear down the listener and leave the shared value and the native
+  // config out of sync. Report instead, and let the invalid value take the same
+  // path it would take in a release build — validation is purely diagnostic and
+  // must not change what the pipeline does.
+  if (isWorkletRuntime()) {
+    console.error(tagMessage(error));
+    return;
+  }
+
+  throw new Error(tagMessage(error));
 }
 
 /**
@@ -132,7 +139,7 @@ export function normalizeHitSlop(
   ];
 
   if (__DEV__) {
-    validateHitSlop(normalized);
+    reportHitSlopError(normalized);
   }
 
   return normalized;

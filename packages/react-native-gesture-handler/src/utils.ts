@@ -43,6 +43,28 @@ export function tagMessage(msg: string) {
   return `[react-native-gesture-handler] ${msg}`;
 }
 
+const RUNTIME_KIND_REACT_NATIVE = 1;
+
+/**
+ * Whether the caller is executing on a Worklet runtime (the UI runtime or a
+ * worker) rather than on the React Native one.
+ *
+ * Worklets deprecated `_WORKLET` in favour of `__RUNTIME_KIND`, but Reanimated
+ * is an optional dependency here and older versions only expose the former, so
+ * both are consulted.
+ */
+export function isWorkletRuntime(): boolean {
+  'worklet';
+
+  const runtimeKind: number | undefined = globalThis.__RUNTIME_KIND;
+
+  if (runtimeKind !== undefined) {
+    return runtimeKind !== RUNTIME_KIND_REACT_NATIVE;
+  }
+
+  return globalThis._WORKLET === true;
+}
+
 export function isRemoteDebuggingEnabled(): boolean {
   // react-native-reanimated checks if in remote debugging in the same way
   // @ts-ignore global is available but node types are not included
