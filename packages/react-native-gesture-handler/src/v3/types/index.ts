@@ -19,6 +19,7 @@ export type {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
   HandlerData,
+  NativeEventWrapper,
   StateChangeEventWithHandlerData,
   TouchEvent,
   UnpackedGestureHandlerEvent,
