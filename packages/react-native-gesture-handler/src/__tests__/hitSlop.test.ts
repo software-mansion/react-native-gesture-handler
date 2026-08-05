@@ -8,6 +8,28 @@ describe('normalizeHitSlop', () => {
     expect(normalizeHitSlop(null)).toBeNull();
   });
 
+  test('is idempotent', () => {
+    // Normalizing an already normalized value must not empty it out.
+    const normalized = normalizeHitSlop({ horizontal: -10, top: -5 });
+
+    expect(normalizeHitSlop(normalized)).toEqual([
+      -10,
+      -5,
+      -10,
+      null,
+      null,
+      null,
+    ]);
+    expect(normalizeHitSlop(normalizeHitSlop(-10))).toEqual([
+      -10,
+      -10,
+      -10,
+      -10,
+      null,
+      null,
+    ]);
+  });
+
   test('expands a number onto every edge', () => {
     expect(normalizeHitSlop(-10)).toEqual([-10, -10, -10, -10, null, null]);
     expect(normalizeHitSlop(0)).toEqual([0, 0, 0, 0, null, null]);

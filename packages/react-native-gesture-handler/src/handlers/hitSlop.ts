@@ -85,14 +85,22 @@ function validateHitSlop(hitSlop: CanonicalHitSlop) {
  * missing), while an explicit `null` is passed through as a request to clear
  * the hit slop.
  *
+ * Already normalized values are returned as-is, which keeps the function
+ * idempotent — normalizing twice would otherwise find none of the edge keys on
+ * the array and silently empty the hit slop.
+ *
  * Runs on the UI thread as well, since `hitSlop` can be a shared value.
  */
 export function normalizeHitSlop(
-  hitSlop: HitSlop
+  hitSlop: HitSlop | CanonicalHitSlop
 ): CanonicalHitSlop | null | undefined {
   'worklet';
 
   if (hitSlop === undefined || hitSlop === null) {
+    return hitSlop;
+  }
+
+  if (Array.isArray(hitSlop)) {
     return hitSlop;
   }
 
