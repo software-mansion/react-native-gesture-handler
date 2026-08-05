@@ -37,6 +37,12 @@ function getLastUpdateEventMap() {
   return lastUpdateEventMap;
 }
 
+// Takes the map as an argument on purpose: reading the lazy `let` from this
+// module-scope worklet would snapshot its value at module evaluation — before
+// the first `getLastUpdateEventMap()` call — so the UI-runtime copy would stay
+// `undefined` forever and the cleanup would silently never run. `runOnUI`
+// arguments are serialized fresh on every call, so they always carry the
+// initialized map.
 function deleteHandlerEventEntry(
   map: ReturnType<typeof createLastUpdateEventMap>,
   handlerTag: number
