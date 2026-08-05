@@ -1,3 +1,4 @@
+import './cjsGuard';
 import './globals';
 
 import { initialize } from './init';
