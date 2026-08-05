@@ -100,6 +100,13 @@
         "packages/react-native-gesture-handler/src/*.ts"
       ],
       "rules": {
+        "no-restricted-globals": [
+          "error",
+          {
+            "name": "global",
+            "message": "Use the standard `globalThis` — the bare `global` binding is React Native/Node-specific and doesn't exist in browsers."
+          }
+        ],
         "no-restricted-syntax": [
           "error",
           {
