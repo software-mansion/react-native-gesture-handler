@@ -44,6 +44,17 @@ function validateHitSlop(hitSlop: CanonicalHitSlop) {
   'worklet';
   const [left, top, right, bottom, width, height] = hitSlop;
 
+  // Unlike the edges, `width` and `height` are absolute sizes rather than
+  // deltas, so a negative value describes an inverted region that no pointer
+  // can fall into — the gesture would just never activate.
+  if (width !== null && width < 0) {
+    throw new Error(tagMessage("HitSlop error: 'width' cannot be negative"));
+  }
+
+  if (height !== null && height < 0) {
+    throw new Error(tagMessage("HitSlop error: 'height' cannot be negative"));
+  }
+
   if (width !== null && left !== null && right !== null) {
     throw new Error(
       tagMessage(

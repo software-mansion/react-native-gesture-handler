@@ -142,6 +142,29 @@ describe('normalizeHitSlop', () => {
     );
   });
 
+  test('rejects a negative `width` or `height`', () => {
+    expect(() => normalizeHitSlop({ left: 0, width: -20 } as HitSlop)).toThrow(
+      "'width' cannot be negative"
+    );
+
+    expect(() => normalizeHitSlop({ top: 0, height: -20 } as HitSlop)).toThrow(
+      "'height' cannot be negative"
+    );
+  });
+
+  test('allows a zero `width` or `height`', () => {
+    // An empty hit area is degenerate but coherent, and a hit slop animated
+    // from zero upwards passes through it.
+    expect(normalizeHitSlop({ left: 0, width: 0 })).toEqual([
+      0,
+      null,
+      null,
+      null,
+      0,
+      null,
+    ]);
+  });
+
   test('counts a shorthand as defining both of its edges', () => {
     // `horizontal` fills in both `left` and `right`, which conflicts with `width`.
     expect(() =>
