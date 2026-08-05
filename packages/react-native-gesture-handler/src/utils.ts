@@ -35,7 +35,7 @@ export function hasProperty(object: object, key: string) {
 
 export function isTestEnv(): boolean {
   // @ts-ignore Do not use `@types/node` because it will prioritise Node types over RN types which breaks the types (ex. setTimeout) in React Native projects.
-  return hasProperty(global, 'process') && process.env.NODE_ENV === 'test';
+  return hasProperty(globalThis, 'process') && process.env.NODE_ENV === 'test';
 }
 
 export function tagMessage(msg: string) {
@@ -45,8 +45,8 @@ export function tagMessage(msg: string) {
 
 export function isRemoteDebuggingEnabled(): boolean {
   // react-native-reanimated checks if in remote debugging in the same way
-  // @ts-ignore global is available but node types are not included
-  const localGlobal = global as any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+  const localGlobal = globalThis as any;
   return (
     (!localGlobal.nativeCallSyncHook || !!localGlobal.__REMOTEDEV__) &&
     !localGlobal.RN$Bridgeless

@@ -2,6 +2,31 @@ import type { StylusData } from '../handlers/gestureHandlerCommon';
 import { PointerType } from '../PointerType';
 import type { GestureHandlerRef, Point, SVGRef } from './interfaces';
 
+// Duplicate of the check in `src/useIsomorphicLayoutEffect.tsx` — kept as a
+// separate copy on purpose, since the web engine is its own compilation unit
+// and must not import from the react-native side. Keep the two in sync.
+//
+// The web handlers also run under react-native-windows, where RN aliases
+// `window` to `global` but there is no DOM — so checking `window` alone is
+// not enough.
+export function canUseDOM(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.document !== 'undefined' &&
+    typeof window.document.createElement !== 'undefined'
+  );
+}
+
+// Narrows to an element whose inline styles (and DOM attributes) are safe to
+// touch.
+export function isStylableElement(
+  view: unknown
+): view is HTMLElement | SVGElement {
+  return (
+    canUseDOM() && (view instanceof HTMLElement || view instanceof SVGElement)
+  );
+}
+
 export function hasDisplayContents(view: HTMLElement): boolean {
   return (
     view.style.display === 'contents' ||

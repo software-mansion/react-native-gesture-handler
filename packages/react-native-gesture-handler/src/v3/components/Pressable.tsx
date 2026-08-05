@@ -43,11 +43,11 @@ import {
   useNativeGesture,
   useSimultaneousGestures,
 } from '../hooks';
-import { PureNativeButton } from './GestureButtons';
 import {
   isKeyboardDismissingTap,
   JSResponderContext,
-} from './ScrollViewResponderInterceptor';
+} from '../scrollViewInterop';
+import { PureNativeButton } from './GestureButtons';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();

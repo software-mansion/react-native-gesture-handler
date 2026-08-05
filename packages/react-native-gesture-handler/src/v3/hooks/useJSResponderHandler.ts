@@ -4,7 +4,7 @@ import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import {
   JSResponderContext,
   updateResponderEventValue,
-} from '../components/ScrollViewResponderInterceptor';
+} from '../scrollViewInterop';
 import { type Gesture, type SharedValue, SingleGestureName } from '../types';
 import { isComposedGesture, isGestureEnabled } from './utils';
 import {
