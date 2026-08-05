@@ -1,8 +1,7 @@
 import { ActionType } from '../../ActionType';
-import type { ButtonEvent } from '../../specs/RNGestureHandlerButtonNativeComponent';
 import { State } from '../../State';
 import type { NativeHandlerData } from '../../v3/hooks/gestures/native/NativeTypes';
-import type { HandlerData } from '../../v3/types';
+import type { ButtonEvent, HandlerData } from '../../v3/types';
 import { SingleGestureName } from '../../v3/types';
 import {
   DEFAULT_TOUCH_SLOP,

@@ -9,9 +9,8 @@ import type {
   ViewStyle,
 } from 'react-native';
 
-import RNGestureHandlerButtonNativeComponent, {
-  type ButtonEvent,
-} from '../specs/RNGestureHandlerButtonNativeComponent';
+import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
+import type { ButtonEvent } from '../v3/types';
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {
   children?: React.ReactNode;

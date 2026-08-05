@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["../src/global.d.ts", "jest"],
+    "rootDir": "..",
+    "noUnusedLocals": false
+  },
+  "include": ["."]
+}
