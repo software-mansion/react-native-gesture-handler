@@ -39,7 +39,14 @@
 - (int)unregisterTouch:(RNGHUITouch *)touch
 {
   for (int index = 0; index < MAX_POINTERS_COUNT; index++) {
+#if TARGET_OS_OSX
+    // A macOS mouse sequence delivers a fresh NSEvent per event, so identity matching
+    // (valid on iOS, where a UITouch is one stable object for the whole touch) never
+    // matches. There is only one mouse pointer — match the tracked slot instead.
+    if (_trackedPointers[index] != nil) {
+#else
     if (_trackedPointers[index] == touch) {
+#endif
       _trackedPointers[index] = nil;
       return index;
     }
@@ -51,7 +58,12 @@
 - (int)findTouchIndex:(RNGHUITouch *)touch
 {
   for (int index = 0; index < MAX_POINTERS_COUNT; index++) {
+#if TARGET_OS_OSX
+    // See unregisterTouch: — identity matching cannot work for NSEvents.
+    if (_trackedPointers[index] != nil) {
+#else
     if (_trackedPointers[index] == touch) {
+#endif
       return index;
     }
   }
@@ -158,6 +170,12 @@
     if (index < 0) {
       continue;
     }
+
+#if TARGET_OS_OSX
+    // Replace the stored mouse-down event with the latest one so extractAllTouches
+    // reads the pointer's current position, not where the sequence started.
+    _trackedPointers[index] = touch;
+#endif
 
     data[changedCount++] = [self extractPointerData:index forTouch:touch];
   }
