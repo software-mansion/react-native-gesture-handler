@@ -151,8 +151,8 @@
 #if TARGET_OS_OSX
   // NSPanGestureRecognizer transitions to the Began state on mouse-down, without any
   // built-in movement hysteresis. To honor the custom activation criteria (minDist,
-  // activeOffsets, minVelocity) we hold the recognizer in the Possible state (see the
-  // setState: override) until they are met in interactionsMoved.
+  // activeOffsets, minVelocity) we hold the recognizer in the Possible state until
+  // they are met in interactionsMoved.
   _blockAutomaticActivation = _hasCustomActivationCriteria;
   [super mouseDown:event];
 #else
