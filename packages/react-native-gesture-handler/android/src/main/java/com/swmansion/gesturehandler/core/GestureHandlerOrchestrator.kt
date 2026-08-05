@@ -52,7 +52,8 @@ class GestureHandlerOrchestrator(
   // `contains` method on HashSet has O(1) complexity, so calling it inside for loop won't result in O(n^2) (contrary to ArrayList)
   private val awaitingHandlersTags = HashSet<Int>()
 
-  private var isHandlingTouch = false
+  var isHandlingTouch = false
+    private set
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
   private var activationIndex = 0
@@ -356,6 +357,30 @@ class GestureHandlerOrchestrator(
     }
 
     event.recycle()
+  }
+
+  /**
+   * Cancels all handlers created using API v1 and v2
+   */
+  fun cancelAllLegacyHandlers() {
+    val handlersToProcess = obtainHandlerList()
+    handlersToProcess.addAll(gestureHandlers)
+
+    try {
+      handlersToProcess.forEach {
+        if (it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API ||
+          it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API ||
+          it.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET ||
+          it.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
+        ) {
+          it.cancel()
+        }
+      }
+
+      scheduleFinishedHandlersCleanup()
+    } finally {
+      recycleHandlerList(handlersToProcess)
+    }
   }
 
   /**

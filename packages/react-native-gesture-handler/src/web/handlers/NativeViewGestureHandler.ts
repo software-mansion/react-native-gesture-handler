@@ -1,5 +1,3 @@
-import { Platform } from 'react-native';
-
 import { ActionType } from '../../ActionType';
 import type { ButtonEvent } from '../../specs/RNGestureHandlerButtonNativeComponent';
 import { State } from '../../State';
@@ -27,6 +25,7 @@ import {
   dispatchGestureLifecycleEvent,
   GestureLifecycleEvent,
 } from '../tools/GestureLifecycleEvents';
+import { isStylableElement } from '../utils';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
@@ -68,11 +67,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.shouldCancelWhenOutside = true;
 
-    if (Platform.OS !== 'web') {
+    const view = this.delegate.view;
+
+    if (!isStylableElement(view)) {
       return;
     }
-
-    const view = this.delegate.view as HTMLElement;
 
     this.restoreViewStyles(view);
 
@@ -109,11 +108,13 @@ export default class NativeViewGestureHandler extends GestureHandler {
       this.longPressDuration = config.longPressDuration;
     }
 
-    const view = this.delegate.view as HTMLElement;
-    this.restoreViewStyles(view);
+    const view = this.delegate.view;
+    if (isStylableElement(view)) {
+      this.restoreViewStyles(view);
+    }
   }
 
-  private restoreViewStyles(view: HTMLElement) {
+  private restoreViewStyles(view: HTMLElement | SVGElement) {
     if (!view) {
       return;
     }

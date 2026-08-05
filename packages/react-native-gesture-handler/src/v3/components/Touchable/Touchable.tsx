@@ -11,7 +11,7 @@ import {
   isKeyboardDismissingTap,
   JSResponderContext,
   updateResponderEventValue,
-} from '../ScrollViewResponderInterceptor';
+} from '../../scrollViewInterop';
 import type { AnimationDuration, TouchableProps } from './TouchableProps';
 
 const isAndroid = Platform.OS === 'android';
