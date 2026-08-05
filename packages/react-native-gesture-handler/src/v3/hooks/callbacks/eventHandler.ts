@@ -1,5 +1,5 @@
+import { CallbackType } from '../../../CallbackType';
 import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
@@ -37,13 +37,13 @@ function handleStateChangeEvent<
   const event = flattenAndFilterEvent(eventWithData);
 
   if (oldState === State.UNDETERMINED && state === State.BEGAN) {
-    runCallback(CALLBACK_TYPE.BEGAN, callbacks, event);
+    runCallback(CallbackType.BEGAN, callbacks, event);
   } else if (
     (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
     state === State.ACTIVE
   ) {
     fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
-    runCallback(CALLBACK_TYPE.START, callbacks, event);
+    runCallback(CallbackType.START, callbacks, event);
   } else if (
     oldState !== state &&
     (state === State.END || state === State.FAILED || state === State.CANCELLED)
@@ -57,13 +57,13 @@ function handleStateChangeEvent<
     if (oldState === State.ACTIVE) {
       fillInDefaultValues?.(endEvent as GestureEndEvent<TExtendedHandlerData>);
       runCallback<THandlerData, TExtendedHandlerData>(
-        CALLBACK_TYPE.END,
+        CallbackType.END,
         callbacks,
         endEvent
       );
     }
     runCallback<THandlerData, TExtendedHandlerData>(
-      CALLBACK_TYPE.FINALIZE,
+      CallbackType.FINALIZE,
       callbacks,
       endEvent
     );
@@ -92,7 +92,7 @@ export function handleUpdateEvent<
     : eventWithData;
 
   const event = flattenAndFilterEvent(eventWithChanges);
-  runCallback(CALLBACK_TYPE.UPDATE, handlers, event);
+  runCallback(CallbackType.UPDATE, handlers, event);
 
   if (context) {
     context.lastUpdateEvent = eventWithData;
