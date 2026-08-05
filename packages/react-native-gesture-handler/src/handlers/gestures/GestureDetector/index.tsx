@@ -6,6 +6,7 @@ import { GestureType } from '../gesture';
 import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
 import { isTestEnv } from '../../../utils';
+import { resolveHostInstance } from '../../../hostInstance';
 
 import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
 import { AttachedGestureState, GestureDetectorState } from './types';
@@ -149,7 +150,9 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
   useIsomorphicLayoutEffect(() => {
-    const viewTag = findNodeHandle(state.viewRef) as number;
+    const viewTag = findNodeHandle(
+      resolveHostInstance(state.viewRef)
+    ) as number;
     preparedGesture.isMounted = true;
 
     attachHandlers({
