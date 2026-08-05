@@ -1,8 +1,6 @@
 name: Build Android app
 
-# Reusable: builds one example app in Release and uploads the APK, so
-# `android-e2e.yml` can install that exact APK instead of building the app a
-# second time. Called by `android.yml`.
+# Reusable: builds one example app in Release and uploads the APK.
 on:
   workflow_call:
     inputs:

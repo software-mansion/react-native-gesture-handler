@@ -1,8 +1,7 @@
 name: Build iOS app
 
 # Reusable: builds one example app for the simulator in Release and uploads the
-# .app bundle, so `ios-e2e.yml` can install that exact binary instead of
-# building the app a second time. Called by `ios.yml`.
+# .app bundle.
 on:
   workflow_call:
     inputs:
