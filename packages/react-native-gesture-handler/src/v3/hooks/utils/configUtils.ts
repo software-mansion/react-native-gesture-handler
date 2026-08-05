@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 
+import type { HitSlop } from '../../../handlers/gestureHandlerCommon';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { normalizeHitSlop } from '../../../handlers/hitSlop';
 import { isTestEnv, tagMessage } from '../../../utils';
 import type {
   BaseGestureConfig,
@@ -105,8 +107,14 @@ export function prepareConfigForNativeSide<
   for (const [key, value] of Object.entries(config)) {
     // @ts-ignore That's the point, we want to see if key exists in the whitelists
     if (allowedNativeProps.has(key) || handlerPropsWhiteList.has(key)) {
+      const unpackedValue = Reanimated?.isSharedValue(value)
+        ? value.value
+        : value;
+
       (filteredConfig as Record<string, unknown>)[key] =
-        Reanimated?.isSharedValue(value) ? value.value : value;
+        key === 'hitSlop'
+          ? normalizeHitSlop(unpackedValue as HitSlop)
+          : unpackedValue;
     } else if (PropsToFilter.has(key)) {
       continue;
     } else {

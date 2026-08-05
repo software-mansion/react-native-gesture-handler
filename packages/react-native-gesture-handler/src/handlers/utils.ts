@@ -4,7 +4,9 @@ import { findNodeHandle as findNodeHandleRN, Platform } from 'react-native';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { toArray } from '../utils';
+import type { HitSlop } from './gestureHandlerCommon';
 import { handlerIDToTag } from './handlersRegistry';
+import { normalizeHitSlop } from './hitSlop';
 
 function isConfigParam(param: unknown, name: string) {
   // param !== Object(param) returns false if `param` is a function
@@ -34,8 +36,8 @@ export function filterConfig(
     if (isConfigParam(value, key)) {
       if (key === 'simultaneousHandlers' || key === 'waitFor') {
         value = transformIntoHandlerTags(props[key]);
-      } else if (key === 'hitSlop' && typeof value !== 'object') {
-        value = { top: value, left: value, bottom: value, right: value };
+      } else if (key === 'hitSlop') {
+        value = normalizeHitSlop(value as HitSlop);
       }
       filteredConfig[key] = value;
     }

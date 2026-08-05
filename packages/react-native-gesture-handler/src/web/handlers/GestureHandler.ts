@@ -7,6 +7,7 @@ import type {
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import type { CanonicalHitSlop } from '../../handlers/hitSlop';
 import { PointerType } from '../../PointerType';
 import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
@@ -21,7 +22,6 @@ import type {
   AdaptedEvent,
   Config,
   GestureHandlerNativeEvent,
-  HitSlop,
   HostDetector,
   PointerData,
   PropsRef,
@@ -54,7 +54,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _handlerTag!: number;
   private _testID?: string | undefined = undefined;
 
-  private hitSlop?: HitSlop | undefined = undefined;
+  private hitSlop?: CanonicalHitSlop | undefined = undefined;
   private manualActivation: boolean = false;
   private mouseButton?: MouseButton | undefined = undefined;
   private needsPointerData: boolean = false;
@@ -795,7 +795,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     // `undefined` means the property was not part of this update.
     if (config.hitSlop !== undefined) {
       this.hitSlop = config.hitSlop ?? undefined;
-      this.validateHitSlops();
     }
 
     if (config.testID !== undefined) {
@@ -870,52 +869,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
   }
 
-  private validateHitSlops(): void {
-    if (!this.hitSlop) {
-      return;
-    }
-
-    if (
-      this.hitSlop.left !== undefined &&
-      this.hitSlop.right !== undefined &&
-      this.hitSlop.width !== undefined
-    ) {
-      throw new Error(
-        'HitSlop Error: Cannot define left, right and width at the same time'
-      );
-    }
-
-    if (
-      this.hitSlop.width !== undefined &&
-      this.hitSlop.left === undefined &&
-      this.hitSlop.right === undefined
-    ) {
-      throw new Error(
-        'HitSlop Error: When width is defined, either left or right has to be defined'
-      );
-    }
-
-    if (
-      this.hitSlop.height !== undefined &&
-      this.hitSlop.top !== undefined &&
-      this.hitSlop.bottom !== undefined
-    ) {
-      throw new Error(
-        'HitSlop Error: Cannot define top, bottom and height at the same time'
-      );
-    }
-
-    if (
-      this.hitSlop.height !== undefined &&
-      this.hitSlop.top === undefined &&
-      this.hitSlop.bottom === undefined
-    ) {
-      throw new Error(
-        'HitSlop Error: When height is defined, either top or bottom has to be defined'
-      );
-    }
-  }
-
   private checkHitSlop(): boolean {
     if (!this.hitSlop) {
       return true;
@@ -923,50 +876,43 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     const { width, height } = this.delegate.measureView();
 
+    const [slopLeft, slopTop, slopRight, slopBottom, slopWidth, slopHeight] =
+      this.hitSlop;
+
     let left = 0;
     let top = 0;
     let right: number = width;
     let bottom: number = height;
 
-    if (this.hitSlop.horizontal !== undefined) {
-      left -= this.hitSlop.horizontal;
-      right += this.hitSlop.horizontal;
+    if (slopLeft !== null) {
+      left = -slopLeft;
     }
 
-    if (this.hitSlop.vertical !== undefined) {
-      top -= this.hitSlop.vertical;
-      bottom += this.hitSlop.vertical;
+    if (slopRight !== null) {
+      right = width + slopRight;
     }
 
-    if (this.hitSlop.left !== undefined) {
-      left = -this.hitSlop.left;
+    if (slopTop !== null) {
+      top = -slopTop;
     }
 
-    if (this.hitSlop.right !== undefined) {
-      right = width + this.hitSlop.right;
+    if (slopBottom !== null) {
+      bottom = height + slopBottom;
     }
 
-    if (this.hitSlop.top !== undefined) {
-      top = -this.hitSlop.top;
-    }
-
-    if (this.hitSlop.bottom !== undefined) {
-      bottom = height + this.hitSlop.bottom;
-    }
-
-    if (this.hitSlop.width !== undefined) {
-      if (this.hitSlop.left !== undefined) {
-        right = left + this.hitSlop.width;
-      } else if (this.hitSlop.right !== undefined) {
-        left = right - this.hitSlop.width;
+    if (slopWidth !== null) {
+      if (slopLeft !== null) {
+        right = left + slopWidth;
+      } else if (slopRight !== null) {
+        left = right - slopWidth;
       }
     }
 
-    if (this.hitSlop.height !== undefined) {
-      if (this.hitSlop.top !== undefined) {
-        bottom = top + this.hitSlop.height;
-      } else if (this.hitSlop.bottom !== undefined) {
-        top = bottom - this.hitSlop.height;
+    if (slopHeight !== null) {
+      if (slopTop !== null) {
+        bottom = top + slopHeight;
+      } else if (slopBottom !== null) {
+        top = bottom - slopHeight;
       }
     }
 
