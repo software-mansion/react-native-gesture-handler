@@ -2,6 +2,7 @@ import type React from 'react';
 import { useCallback } from 'react';
 
 import findNodeHandle from '../../../findNodeHandle';
+import { resolveHostInstance } from '../../../hostInstance';
 import type { PropsRef } from '../../../web/interfaces';
 import type { GestureType } from '../gesture';
 import type { ComposedGesture } from '../gestureComposition';
@@ -27,7 +28,9 @@ export function useDetectorUpdater(
     // skipConfigUpdate is used to prevent unnecessary updates when only checking if the view has changed
     (skipConfigUpdate?: boolean) => {
       // If the underlying view has changed we need to reattach handlers to the new view
-      const viewTag = findNodeHandle(state.viewRef) as number;
+      const viewTag = findNodeHandle(
+        resolveHostInstance(state.viewRef)
+      ) as number;
       const didUnderlyingViewChange = viewTag !== state.previousViewTag;
 
       if (

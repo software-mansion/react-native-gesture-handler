@@ -1,40 +1,13 @@
-import type { PropsWithChildren, Ref } from 'react';
+import type { PropsWithChildren } from 'react';
 import React, { useCallback } from 'react';
 
+import type { WrapRef } from '../../../hostInstance';
+import { assignRef, preferHostInstance } from '../../../hostInstance';
 import { tagMessage } from '../../../utils';
 
-export type WrapRef = Ref<unknown> | undefined;
+export type { WrapRef };
 
 export type WrapProps = PropsWithChildren<{ ref?: WrapRef }>;
-
-function isHostInstance(instance: unknown) {
-  return (
-    (instance as { __internalInstanceHandle?: unknown } | null | undefined)
-      ?.__internalInstanceHandle !== undefined
-  );
-}
-
-function preferHostInstance(instance: unknown) {
-  if (instance === null || instance === undefined || isHostInstance(instance)) {
-    return instance;
-  }
-
-  const nativeRef = (
-    instance as { getNativeScrollRef?: () => unknown }
-  ).getNativeScrollRef?.();
-
-  return isHostInstance(nativeRef) ? nativeRef : instance;
-}
-
-function assignRef(ref: WrapRef, instance: unknown) {
-  if (typeof ref === 'function') {
-    return ref(instance as never);
-  }
-  if (ref) {
-    ref.current = instance;
-  }
-  return undefined;
-}
 
 export const Wrap: React.FunctionComponent<WrapProps> = ({ ref, children }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
