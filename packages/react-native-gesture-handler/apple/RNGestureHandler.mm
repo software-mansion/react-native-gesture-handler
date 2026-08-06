@@ -854,11 +854,22 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 
+// The logic detector has a virtual view tag set only if the real hierarchy was folded
+// into a single View — only then is hit-testing routed through the virtual view.
+- (BOOL)hasVirtualTarget
+{
+  return _actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil;
+}
+
+- (BOOL)virtualTargetContainsPoint:(CGPoint)point
+{
+  return [self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view];
+}
+
 - (BOOL)containsPointInView
 {
-  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
-    CGPoint point = [_recognizer locationInView:_recognizer.view];
-    return [self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view];
+  if ([self hasVirtualTarget]) {
+    return [self virtualTargetContainsPoint:[_recognizer locationInView:_recognizer.view]];
   }
 
   RNGHUIView *viewToHitTest = _recognizer.view;
@@ -875,9 +886,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)wantsToHandleEventsAtPoint:(CGPoint)point
 {
-  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
+  if ([self hasVirtualTarget]) {
     // point is in _recognizer.view (detector) coordinate space; search the whole subtree
-    return [self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view];
+    return [self virtualTargetContainsPoint:point];
   }
 
   RNGHUIView *viewToHitTest = _recognizer.view;
@@ -908,13 +919,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     }
   }
 
-  // Logic detector has a virtual view tag set only if the real hierarchy was folded into a single View
-  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
-    CGPoint point = [_recognizer locationInView:_recognizer.view];
-    if (![self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view]) {
-      return NO;
-    }
+#if TARGET_OS_OSX
+  // On iOS this gate lives in gestureRecognizer:shouldReceiveTouch: instead — this delegate method is
+  // also invoked manually by some recognizers (Pan) before any touch is tracked, when locationInView
+  // returns a stale point, and at the Began transition the pointer may have legitimately left the
+  // virtual view already. AppKit has no shouldReceiveTouch equivalent, so macOS keeps the check here.
+  if ([self hasVirtualTarget] && ![self virtualTargetContainsPoint:[_recognizer locationInView:_recognizer.view]]) {
+    return NO;
   }
+#endif
 
   [self reset];
   return YES;
@@ -922,6 +935,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(RNGHUITouch *)touch
 {
+#if !TARGET_OS_OSX
+  // Virtual-detector handlers only handle touches that start on their virtual view. This is the
+  // earliest point where the touch's own location is available (the recognizer hasn't received it
+  // yet, so recognizer.locationInView is not usable), matching how Android routes by the initial
+  // touch position at down time.
+  if ([self hasVirtualTarget] && ![self virtualTargetContainsPoint:[touch locationInView:gestureRecognizer.view]]) {
+    return NO;
+  }
+#endif
+
   // If hitSlop is set we use it to determine if a given gesture recognizer should start processing
   // touch stream. This only works for negative values of hitSlop as this method won't be triggered
   // unless touch startes in the bounds of the attached view. To acheve similar effect with positive
