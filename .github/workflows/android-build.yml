@@ -1,30 +1,26 @@
-name: Test Android build
+name: Build Android app
 
+# Reusable: builds one example app in Release and uploads the APK.
 on:
-  pull_request:
-    paths:
-      - .github/workflows/android-build.yml
-      - packages/react-native-gesture-handler/android/**
-      - apps/basic-example/android/**
-      - apps/basic-example/package.json
-      - rnrepo.config.json
-      - yarn.lock
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      app:
+        description: Directory under apps/ holding the example app to build.
+        required: true
+        type: string
+      artifact-name:
+        description: Name to upload the built APK under.
+        required: true
+        type: string
+      abi:
+        description: ABI to build. Must match the emulator the e2e job installs the APK on.
+        required: true
+        type: string
 
 jobs:
   build:
-    if: github.repository == 'software-mansion/react-native-gesture-handler'
-
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        working-directory: [apps/basic-example, apps/expo-example]
-    concurrency:
-      group: android-${{ matrix.working-directory }}-${{ github.ref }}
-      cancel-in-progress: true
+    timeout-minutes: 60
 
     steps:
       - name: checkout
@@ -43,9 +39,18 @@ jobs:
           cache: yarn
 
       - name: Install node dependencies
-        working-directory: ${{ matrix.working-directory }}
+        working-directory: apps/${{ inputs.app }}
         run: yarn install --immutable
 
-      - name: Build app
-        working-directory: ${{ matrix.working-directory }}/android
-        run: ./gradlew :app:assembleDebug --console=plain -PreactNativeArchitectures=arm64-v8a
+      - name: Build app in Release mode
+        working-directory: apps/${{ inputs.app }}/android
+        run: ./gradlew :app:assembleRelease --console=plain -PreactNativeArchitectures=${{ inputs.abi }}
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: apps/${{ inputs.app }}/android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
