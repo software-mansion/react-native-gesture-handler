@@ -12,12 +12,16 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var moduleId: Int = -1
   private var rootViewEnabled = false
   private var unstableForceActive = false
   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+
+  val orchestrator: GestureHandlerOrchestrator?
+    get() = rootHelper?.orchestrator
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
@@ -72,7 +76,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   }
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    if (rootViewEnabled) {
+    if (rootViewEnabled && disallowIntercept) {
       rootHelper!!.requestDisallowInterceptTouchEvent()
     }
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
@@ -114,6 +118,10 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
       while (parent != null) {
         if (parent is RNGestureHandlerRootView) {
           gestureHandlerRootView = parent
+
+          if (parent.rootViewEnabled) {
+            return parent
+          }
         }
         parent = parent.parent
       }

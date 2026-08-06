@@ -783,6 +783,24 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
+    override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+      super.requestDisallowInterceptTouchEvent(disallowIntercept)
+      if (!disallowIntercept) {
+        return
+      }
+
+      val moduleId = moduleId ?: return
+      val managedHandlerTag = managedHandlerTag ?: return
+
+      val orchestrator =
+        RNGestureHandlerRootView.findGestureHandlerRootView(this)?.orchestrator ?: return
+      val handler = RNGestureHandlerModule.registries[moduleId]?.getHandler(managedHandlerTag) ?: return
+
+      if (!orchestrator.isHandlingTouch && handler.view != null) {
+        handler.cancel()
+      }
+    }
+
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
       if (super.onInterceptTouchEvent(event)) {
         return true

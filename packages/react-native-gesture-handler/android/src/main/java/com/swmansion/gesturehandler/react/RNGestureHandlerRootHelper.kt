@@ -16,7 +16,7 @@ import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
 import com.swmansion.gesturehandler.core.OnJSResponderCancelListener
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup, private val moduleId: Int) {
-  private val orchestrator: GestureHandlerOrchestrator?
+  val orchestrator: GestureHandlerOrchestrator?
   private val jsGestureHandler: GestureHandler?
   val rootView: ViewGroup
   private var shouldIntercept = false
@@ -57,7 +57,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
     jsGestureHandler = RootViewGestureHandler(handlerTag = -wrappedViewTag)
     registry.registerHandler(jsGestureHandler)
-    registry.attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API)
+    registry.attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, GestureHandler.ACTION_TYPE_NONE)
     module.registerRootHelper(this)
   }
 
@@ -120,7 +120,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     if (orchestrator != null && !passingTouch) {
       // if we are in the process of delivering touch events via GH orchestrator, we don't want to
       // treat it as a native gesture capturing the lock
-      tryCancelAllHandlers()
+      orchestrator.cancelAllLegacyHandlers()
     }
   }
 
@@ -140,17 +140,6 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     wasIntercepting = shouldIntercept
 
     return shouldIntercept
-  }
-
-  private fun tryCancelAllHandlers() {
-    // In order to cancel handlers we activate handler that is hooked to the root view
-    jsGestureHandler?.apply {
-      if (state == GestureHandler.STATE_BEGAN) {
-        // Try activate main JS handler
-        activate()
-        end()
-      }
-    }
   }
 
   fun activateNativeHandlers(view: View) {

@@ -11,13 +11,13 @@ import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
 import { Pressable, RectButton, ScrollView, Touchable } from '../v3/components';
-import {
-  isKeyboardDismissingTap,
-  type JSResponderContextValue,
-} from '../v3/components/ScrollViewResponderInterceptor';
 import { GestureDetector } from '../v3/detectors';
 import { useSimultaneousGestures } from '../v3/hooks';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
+import {
+  isKeyboardDismissingTap,
+  type JSResponderContextValue,
+} from '../v3/scrollViewInterop';
 
 const flushImmediate = () =>
   new Promise((resolve) => {
@@ -333,6 +333,53 @@ describe('[API v3] Components', () => {
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
       expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
+        false
+      );
+    });
+
+    test('handles responder event passed through Touchable for keyboardShouldPersistTaps handled', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <Touchable testID="touchable" />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      const button = screen.getByTestId('touchable');
+
+      expect(scrollViewResponder).toBeDefined();
+      expect(
+        scrollViewResponder?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
+      // The button marks the tap as RNGH-handled without claiming it...
+      expect(button.props.onStartShouldSetResponderCapture()).toBe(false);
+      // ...so the logical responder claims it and the mark is consumed.
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
+        false
+      );
+    });
+
+    test('does not mark responder events for a disabled Touchable', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <Touchable testID="touchable" disabled />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      const button = screen.getByTestId('touchable');
+
+      expect(button.props.onStartShouldSetResponderCapture()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );

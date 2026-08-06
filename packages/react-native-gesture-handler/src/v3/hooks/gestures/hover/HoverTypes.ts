@@ -1,5 +1,5 @@
 import type { StylusData } from '../../../../handlers/gestureHandlerCommon';
-import type { HoverEffect } from '../../../../handlers/gestures/hoverGesture';
+import type { HoverEffect } from '../../../../HoverEffect';
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,

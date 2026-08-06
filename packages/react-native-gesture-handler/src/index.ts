@@ -127,7 +127,6 @@ export type {
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
 export type { GestureStateManagerType as LegacyGestureStateManager } from './handlers/gestures/gestureStateManager';
 export type { HoverGestureType as LegacyHoverGesture } from './handlers/gestures/hoverGesture';
-export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type { LongPressGestureType as LegacyLongPressGesture } from './handlers/gestures/longPressGesture';
 export type { ManualGestureType as LegacyManualGesture } from './handlers/gestures/manualGesture';
 export type { PanGestureChangeEventPayload } from './handlers/gestures/panGesture';
@@ -148,6 +147,7 @@ export type { RotationGestureHandlerProps } from './handlers/RotationGestureHand
 export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 export type { TapGestureHandlerProps } from './handlers/TapGestureHandler';
 export { TapGestureHandler } from './handlers/TapGestureHandler';
+export { HoverEffect } from './HoverEffect';
 export { PointerType } from './PointerType';
 export { State } from './State';
 export * from './v3';

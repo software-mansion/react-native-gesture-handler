@@ -10,6 +10,10 @@ const webpack = require('webpack');
 const redirectsData = require('./redirects.json');
 
 import { topbarBannerReservationScript } from '@swmansion/t-rex-ui/topbar-banner';
+import {
+  processHeaderMarkers,
+  removeHeaderJSX,
+} from '@swmansion/t-rex-ui/platform-circles';
 import { TOP_BAR_BANNER } from './src/components/topBarBannerConfig';
 
 const firstBannerZone = TOP_BAR_BANNER.zones[0];
@@ -71,6 +75,8 @@ const config = {
               label: '3.x',
             },
           },
+          beforeDefaultRemarkPlugins: [processHeaderMarkers],
+          remarkPlugins: [removeHeaderJSX],
         },
         theme: {
           customCss: require.resolve('./src/css/index.css'),

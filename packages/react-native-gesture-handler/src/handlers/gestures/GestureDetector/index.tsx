@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 
 import findNodeHandle from '../../../findNodeHandle';
+import { resolveHostInstance } from '../../../hostInstance';
 import { useIsomorphicLayoutEffect } from '../../../useIsomorphicLayoutEffect';
 import type { TouchAction, UserSelect } from '../../gestureHandlerCommon';
 import type { GestureType } from '../gesture';
@@ -139,7 +140,9 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
   useIsomorphicLayoutEffect(() => {
-    const viewTag = findNodeHandle(state.viewRef) as number;
+    const viewTag = findNodeHandle(
+      resolveHostInstance(state.viewRef)
+    ) as number;
     preparedGesture.isMounted = true;
 
     attachHandlers({

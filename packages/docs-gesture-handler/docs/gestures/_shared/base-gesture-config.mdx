@@ -68,7 +68,7 @@ testID: string;
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
 <Badges platforms={['ios']}>
-### cancelsTouchesInView
+### cancelsTouchesInView [I]
 </Badges>
 
 ```ts
@@ -138,7 +138,7 @@ useAnimated: boolean;
 Setting this property to `true` ensures that the [Animated API](/docs/fundamentals/animated-interactions) functions correctly when `useNativeDriver` is set to `false`. The default value is set to `false`.
 
 <Badges platforms={['web']}>
-### activeCursor
+### activeCursor [W]
 </Badges>
 
 ```ts
@@ -148,7 +148,7 @@ activeCursor: ActiveCursor | SharedValue<ActiveCursor>;
 This parameter allows specifying which cursor should be used when the gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
 
 <Badges platforms={['ios', 'android']}>
-  ### cancelsJSResponder
+  ### cancelsJSResponder [A][I]
 </Badges>
 
 ```ts
