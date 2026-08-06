@@ -5,7 +5,7 @@ import type { ButtonProps } from '../../components/GestureHandlerButton';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
 
 /**
- * @deprecated `RawButtonProps` is deprecated, use `ClickableProps` instead
+ * @deprecated `RawButtonProps` is deprecated, use `TouchableProps` instead
  */
 export interface RawButtonProps
   extends Omit<
@@ -32,7 +32,7 @@ export interface RawButtonProps
     > {}
 
 /**
- * @deprecated `BaseButtonProps` is deprecated, use `ClickableProps` instead
+ * @deprecated `BaseButtonProps` is deprecated, use `TouchableProps` instead
  */
 export interface BaseButtonProps extends RawButtonProps {
   /**
@@ -63,7 +63,7 @@ export interface BaseButtonProps extends RawButtonProps {
 }
 
 /**
- * @deprecated `RectButtonProps` is deprecated, use `ClickableProps` instead
+ * @deprecated `RectButtonProps` is deprecated, use `TouchableProps` instead
  */
 export interface RectButtonProps extends BaseButtonProps {
   /**
@@ -80,7 +80,7 @@ export interface RectButtonProps extends BaseButtonProps {
 }
 
 /**
- * @deprecated `BorderlessButtonProps` is deprecated, use `ClickableProps` instead
+ * @deprecated `BorderlessButtonProps` is deprecated, use `TouchableProps` instead
  */
 export interface BorderlessButtonProps extends BaseButtonProps {
   /**
