@@ -143,12 +143,28 @@
   [_gestureHandler handleGesture:self];
 }
 
+- (void)triggerAction
+{
+  [_gestureHandler handleGesture:self fromReset:NO fromManualStateChange:NO];
+}
+
+- (void)triggerActionFromReset
+{
+  [_gestureHandler handleGesture:self fromReset:YES fromManualStateChange:NO];
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
+  [_gestureHandler setCurrentPointerTypeToMouse];
+  [_gestureHandler reset];
   [super mouseDown:event];
 
   startPosition = [self locationInView:self.view];
   startTime = CACurrentMediaTime();
+
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+  // Send the BEGAN event, mirroring what the iOS recognizer does in touchesBegan.
+  [self triggerAction];
 
   self.state = NSGestureRecognizerStatePossible;
 
@@ -172,6 +188,8 @@
 {
   [super mouseDragged:event];
 
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
+
   NSPoint currentPosition = [self locationInView:self.view];
   double currentTime = CACurrentMediaTime();
 
@@ -191,10 +209,20 @@
 {
   [super mouseUp:event];
 
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
+
   dispatch_block_cancel(failFlingAction);
 
   self.state =
       self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
+}
+
+- (void)reset
+{
+  [self triggerActionFromReset];
+  [_gestureHandler.pointerTracker reset];
+  [super reset];
+  [_gestureHandler reset];
 }
 
 - (void)tryActivate:(RNGHVector *)velocityVector
