@@ -205,13 +205,21 @@
   [self tryActivate:velocityVector];
 }
 
+- (void)cancelFailFlingAction
+{
+  if (failFlingAction != nil) {
+    dispatch_block_cancel(failFlingAction);
+    failFlingAction = nil;
+  }
+}
+
 - (void)mouseUp:(NSEvent *)event
 {
   [super mouseUp:event];
 
   [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
 
-  dispatch_block_cancel(failFlingAction);
+  [self cancelFailFlingAction];
 
   self.state =
       self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
@@ -221,6 +229,9 @@
 {
   [self triggerActionFromReset];
   [_gestureHandler.pointerTracker reset];
+  // The gesture may end without a mouse-up (view unmount, cancellation) — a still-scheduled
+  // fail block would fire later and set the state to Failed during the next gesture.
+  [self cancelFailFlingAction];
   [super reset];
   [_gestureHandler reset];
 }
