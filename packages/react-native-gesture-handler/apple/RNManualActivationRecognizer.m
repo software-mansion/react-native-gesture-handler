@@ -26,7 +26,7 @@
     // On iOS, this recognizer completing is enough to deny the handler's recognizer —
     // UIKit fails a recognizer whose required-to-fail dependency recognizes. AppKit
     // does not do this reliably: completing the blocker can flush the dependent
-    // recognizer's buffered recognition instead of discarding it. Fail it explicitly.
+    // recognizer's buffered recognition instead of discarding it.
     _handler.recognizer.state = UIGestureRecognizerStateFailed;
 #endif
     self.state = UIGestureRecognizerStateEnded;
@@ -87,9 +87,6 @@
 - (void)reset
 {
   self.enabled = YES;
-  // A recognizer that has reset tracks no pointers. On iOS a stale count is already
-  // prevented by touchesCancelled; on macOS there is no cancellation callback, so a
-  // mouse-up missed while the recognizer was disabled (after activate()) would leak it.
   _activePointers = 0;
   [super reset];
 }
