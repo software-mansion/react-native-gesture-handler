@@ -296,7 +296,7 @@
   }
 
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
-  // it that recognizer tried to send event, the app would crash because the target of the event
+  // if that recognizer tried to send an event, the app would crash because the target of the event
   // would be nil. Detector-attached handlers (native and virtual alike) don't route events by
   // the view's reactTag — they dispatch through the detector view — so a nil tag is not an
   // obstacle for them. The virtual recognizer's view has no reactTag at all, so without this
