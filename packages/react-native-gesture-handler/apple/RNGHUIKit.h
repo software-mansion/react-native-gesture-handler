@@ -9,11 +9,11 @@ typedef UITouch RNGHUITouch;
 typedef UIScrollView RNGHUIScrollView;
 typedef UIColor RNGHColor;
 
-#define RNGHGestureRecognizerStateFailed UIGestureRecognizerStateFailed;
-#define RNGHGestureRecognizerStatePossible UIGestureRecognizerStatePossible;
-#define RNGHGestureRecognizerStateCancelled UIGestureRecognizerStateCancelled;
-#define RNGHGestureRecognizerStateBegan UIGestureRecognizerStateBegan;
-#define RNGHGestureRecognizerStateEnded UIGestureRecognizerStateEnded;
+#define RNGHGestureRecognizerStateFailed UIGestureRecognizerStateFailed
+#define RNGHGestureRecognizerStatePossible UIGestureRecognizerStatePossible
+#define RNGHGestureRecognizerStateCancelled UIGestureRecognizerStateCancelled
+#define RNGHGestureRecognizerStateBegan UIGestureRecognizerStateBegan
+#define RNGHGestureRecognizerStateEnded UIGestureRecognizerStateEnded
 
 #else // TARGET_OS_OSX [
 
@@ -26,10 +26,10 @@ typedef RCTUITouch RNGHUITouch;
 typedef NSScrollView RNGHUIScrollView;
 typedef NSColor RNGHColor;
 
-#define RNGHGestureRecognizerStateFailed NSGestureRecognizerStateFailed;
-#define RNGHGestureRecognizerStatePossible NSGestureRecognizerStatePossible;
-#define RNGHGestureRecognizerStateCancelled NSGestureRecognizerStateCancelled;
-#define RNGHGestureRecognizerStateBegan NSGestureRecognizerStateBegan;
-#define RNGHGestureRecognizerStateEnded NSGestureRecognizerStateEnded;
+#define RNGHGestureRecognizerStateFailed NSGestureRecognizerStateFailed
+#define RNGHGestureRecognizerStatePossible NSGestureRecognizerStatePossible
+#define RNGHGestureRecognizerStateCancelled NSGestureRecognizerStateCancelled
+#define RNGHGestureRecognizerStateBegan NSGestureRecognizerStateBegan
+#define RNGHGestureRecognizerStateEnded NSGestureRecognizerStateEnded
 
 #endif // ] TARGET_OS_OSX
