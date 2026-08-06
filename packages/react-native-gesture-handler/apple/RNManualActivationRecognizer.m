@@ -22,24 +22,31 @@
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
   if (recognizer.state == UIGestureRecognizerStateBegan) {
+#if TARGET_OS_OSX
+    // On iOS, this recognizer completing is enough to deny the handler's recognizer —
+    // UIKit fails a recognizer whose required-to-fail dependency recognizes. AppKit
+    // does not do this reliably: completing the blocker can flush the dependent
+    // recognizer's buffered recognition instead of discarding it.
+    _handler.recognizer.state = UIGestureRecognizerStateFailed;
+#endif
     self.state = UIGestureRecognizerStateEnded;
     [self reset];
   }
 }
 
 #if TARGET_OS_OSX
-- (void)mouseUp:(NSEvent *)event
-{
-  [super mouseUp:event];
-
-  _activePointers -= 1;
-}
-
 - (void)mouseDown:(NSEvent *)event
 {
   [super mouseDown:event];
 
   _activePointers += 1;
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [super mouseUp:event];
+
+  _activePointers -= 1;
 
   if (_activePointers == 0) {
     self.state = UIGestureRecognizerStateBegan;
@@ -80,6 +87,7 @@
 - (void)reset
 {
   self.enabled = YES;
+  _activePointers = 0;
   [super reset];
 }
 
@@ -105,5 +113,16 @@
 
   return NO;
 }
+
+#if TARGET_OS_OSX
+// On iOS the method above is a UIGestureRecognizer subclass override, called by the system
+// to establish the failure requirement. NSGestureRecognizer has no such subclass hook —
+// AppKit only consults the delegate, so forward the delegate callback to the shared logic.
+- (BOOL)gestureRecognizer:(NSGestureRecognizer *)gestureRecognizer
+    shouldBeRequiredToFailByGestureRecognizer:(NSGestureRecognizer *)otherGestureRecognizer
+{
+  return [self shouldBeRequiredToFailByGestureRecognizer:otherGestureRecognizer];
+}
+#endif
 
 @end
