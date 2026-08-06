@@ -596,7 +596,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
 {
-  if (_actionType == RNGestureHandlerActionTypeNativeDetector) {
+  if ([self usesNativeOrVirtualDetector]) {
     [self.emitter sendNativeTouchEventForGestureHandler:self
                                         withPointerType:_pointerType
                                          forHandlerType:[self eventHandlerType]];
