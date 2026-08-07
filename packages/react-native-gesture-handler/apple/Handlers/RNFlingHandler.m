@@ -101,7 +101,8 @@
 #else
 
 @interface RNBetterSwipeGestureRecognizer : NSGestureRecognizer {
-  dispatch_block_t failFlingAction;
+  // scheduled on mouseDown; fails the gesture if the fling doesn't complete within maxDuration
+  dispatch_block_t maxDurationTimeout;
   int maxDuration;
   int minVelocity;
   double defaultAlignmentCone;
@@ -170,7 +171,7 @@
 
   __weak typeof(self) weakSelf = self;
 
-  failFlingAction = dispatch_block_create(0, ^{
+  maxDurationTimeout = dispatch_block_create(0, ^{
     __strong typeof(self) strongSelf = weakSelf;
 
     if (strongSelf) {
@@ -181,7 +182,7 @@
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(maxDuration * NSEC_PER_SEC)),
       dispatch_get_main_queue(),
-      failFlingAction);
+      maxDurationTimeout);
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -205,11 +206,11 @@
   [self tryActivate:velocityVector];
 }
 
-- (void)cancelFailFlingAction
+- (void)cancelMaxDurationTimeout
 {
-  if (failFlingAction != nil) {
-    dispatch_block_cancel(failFlingAction);
-    failFlingAction = nil;
+  if (maxDurationTimeout != nil) {
+    dispatch_block_cancel(maxDurationTimeout);
+    maxDurationTimeout = nil;
   }
 }
 
@@ -219,7 +220,7 @@
 
   [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
 
-  [self cancelFailFlingAction];
+  [self cancelMaxDurationTimeout];
 
   self.state =
       self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
@@ -230,8 +231,8 @@
   [self triggerActionFromReset];
   [_gestureHandler.pointerTracker reset];
   // The gesture may end without a mouse-up (view unmount, cancellation) — a still-scheduled
-  // fail block would fire later and set the state to Failed during the next gesture.
-  [self cancelFailFlingAction];
+  // timeout would fire later and set the state to Failed during the next gesture.
+  [self cancelMaxDurationTimeout];
   [super reset];
   [_gestureHandler reset];
 }
