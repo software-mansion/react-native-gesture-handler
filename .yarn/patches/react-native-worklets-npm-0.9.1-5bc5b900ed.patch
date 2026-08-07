@@ -1,0 +1,14 @@
+diff --git a/src/mock.ts b/src/mock.ts
+index b82bb310c288221b392282d8660738e525aac9ab..a1516c5d68d9b9068e7f3178b81fbdc0f0e1d75c 100644
+--- a/src/mock.ts
++++ b/src/mock.ts
+@@ -44,6 +44,9 @@ const WorkletAPI = {
+   },
+   scheduleOnRuntime: IMMEDIATE_CALLBACK_INVOCATION,
+   createSerializable: ID,
++  createShareable: (hostRuntimeId: number, initial: unknown) => ({
++    value: initial,
++  }),
+   isSerializableRef: ID,
+   serializableMappingCache: new Map(),
+   createSynchronizable: ID,
