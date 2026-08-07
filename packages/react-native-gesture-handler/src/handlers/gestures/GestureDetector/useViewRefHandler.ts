@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 
 import findNodeHandle from '../../../findNodeHandle';
 import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
+import { resolveHostInstance } from '../../../hostInstance';
 import { tagMessage } from '../../../utils';
 import type { GestureDetectorState } from './types';
 
@@ -27,7 +28,9 @@ export function useViewRefHandler(
 
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
       if (state.previousViewTag === -1) {
-        state.previousViewTag = findNodeHandle(state.viewRef) as number;
+        state.previousViewTag = findNodeHandle(
+          resolveHostInstance(state.viewRef)
+        ) as number;
       }
 
       // Pass true as `skipConfigUpdate`. Here we only want to trigger the eventual reattaching of handlers
@@ -37,7 +40,7 @@ export function useViewRefHandler(
       }
 
       if (__DEV__ && global._isViewFlatteningDisabled) {
-        const node = getShadowNodeFromRef(ref);
+        const node = getShadowNodeFromRef(resolveHostInstance(ref));
         if (global._isViewFlatteningDisabled(node) === false) {
           console.error(
             tagMessage(
