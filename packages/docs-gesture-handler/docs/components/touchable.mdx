@@ -373,13 +373,16 @@ label="Show composed types definitions"
 expandedLabel="Hide composed types definitions"
 lineBounds={[0, 1]}
 src={`
-onPressIn?: (e: GestureEvent<NativeHandlerData>) => void;
+onPressIn?: (e: ButtonEvent) => void;
 
-type GestureEvent<NativeHandlerData> = {
-    handlerTag: number;
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
     numberOfPointers: number;
     pointerType: PointerType;
-    pointerInside: boolean;
 }
 
 enum PointerType {
@@ -400,13 +403,16 @@ label="Show composed types definitions"
 expandedLabel="Hide composed types definitions"
 lineBounds={[0, 1]}
 src={`
-onPressOut?: (e: GestureEvent<NativeHandlerData>) => void;
+onPressOut?: (e: ButtonEvent) => void;
 
-type GestureEvent<NativeHandlerData> = {
-    handlerTag: number;
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
     numberOfPointers: number;
     pointerType: PointerType;
-    pointerInside: boolean;
 }
 
 enum PointerType {
@@ -427,13 +433,16 @@ label="Show composed types definitions"
 expandedLabel="Hide composed types definitions"
 lineBounds={[0, 1]}
 src={`
-onPress?: (e: GestureEvent<NativeHandlerData>) => void;
+onPress?: (e: ButtonEvent) => void;
 
-type GestureEvent<NativeHandlerData> = {
-    handlerTag: number;
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
     numberOfPointers: number;
     pointerType: PointerType;
-    pointerInside: boolean;
 }
 
 enum PointerType {
@@ -449,11 +458,101 @@ Triggered when the button gets pressed (analogous to `onPress` in `Pressable` fr
 
 ### onLongPress
 
-```ts
-onLongPress?: () => void;
-```
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onLongPress?: (e: ButtonEvent) => void;
+
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
 
 Triggered when the button gets pressed for at least [`delayLongPress`](#delaylongpress) milliseconds.
+
+### onHoverIn
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onHoverIn?: (e: ButtonEvent) => void;
+
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
+
+Triggered when a non-touch pointer — a mouse, a trackpad cursor, or a hovering stylus — moves over the button (analogous to `onHoverIn` in `Pressable` from RN core). Touch pointers never report hover.
+
+### onHoverOut
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onHoverOut?: (e: ButtonEvent) => void;
+
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
+
+Triggered when the hovering pointer leaves the button (analogous to `onHoverOut` in `Pressable` from RN core).
+
+The two callbacks are paired — an `onHoverIn` is followed by exactly one `onHoverOut` once the pointer leaves. Because hover is only reported while the button is not `disabled`, disabling a hovered button reports `onHoverOut`, and re-enabling it while the pointer is still inside reports `onHoverIn` again.
+
+On Android, iOS, and macOS the crossings are reported during a press as well: dragging a held pointer off the button and back on reports `onHoverOut` and `onHoverIn`, provided a hover was already open when the press started — which for a stylus needs hardware that reports stylus hover at all. On web nothing is reported while a stylus is in contact, because the browser captures the pointer for the duration of the press.
+
+On tvOS hover follows focus rather than a pointer. Focusing the button reports `onHoverIn` and moving focus away reports `onHoverOut`, with the event describing the center of the button and a `pointerType` of `OTHER`.
+
+Unmounting a hovered component does not report `onHoverOut` — the callback goes away with the component. On Android, iOS, and macOS the hover state is also not carried across a detach: if the component moves in the tree while hovered and lands away from the pointer, the pending `onHoverOut` is not delivered, and the next hover over it is treated as a continuation rather than a new `onHoverIn`, resynchronizing on the following `onHoverOut`. On web the component is rebuilt instead, so the next hover reports a fresh `onHoverIn`. Use these callbacks to drive presentation, not to hold state that has to be unwound.
 
 
 ### delayLongPress
