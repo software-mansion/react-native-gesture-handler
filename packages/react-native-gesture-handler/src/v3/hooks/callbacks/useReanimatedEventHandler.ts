@@ -30,7 +30,8 @@ const workletNOOP = () => {
 function createLastUpdateEventMap() {
   if (
     Worklets?.createShareable === undefined ||
-    Worklets.UIRuntimeId === undefined
+    Worklets.UIRuntimeId === undefined ||
+    Reanimated === undefined
   ) {
     return undefined;
   }
