@@ -854,7 +854,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 
-// The logic detector has a virtual view tag set only if the real hierarchy was folded
+// The virtual detector has a virtual view tag set only if the real hierarchy was folded
 // into a single View — only then is hit-testing routed through the virtual view.
 - (BOOL)hasVirtualTarget
 {
