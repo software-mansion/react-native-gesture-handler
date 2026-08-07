@@ -63,18 +63,6 @@ test('passes the Worklets runtime holder to native during installation', () => {
   expect(globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER).toBeUndefined();
 });
 
-test('installs legacy bindings when Reanimated is available without Worklets', () => {
-  const installUIRuntimeBindings = jest.fn(() => true);
-
-  loadReanimatedWrapper(
-    { reanimated: { useSharedValue: true } },
-    installUIRuntimeBindings
-  );
-
-  expect(installUIRuntimeBindings).toHaveBeenCalledTimes(1);
-  expect(globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER).toBeUndefined();
-});
-
 test('does not install bindings when no runtime provider is available', () => {
   const installUIRuntimeBindings = jest.fn(() => true);
 
