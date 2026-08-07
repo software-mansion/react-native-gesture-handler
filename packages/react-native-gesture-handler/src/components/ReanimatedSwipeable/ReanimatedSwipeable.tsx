@@ -294,15 +294,14 @@ const Swipeable = (props: SwipeableProps) => {
       shouldEnableTap.value = rowState.value !== 0;
     },
     [
-      animationOptions,
       rowState,
-      rightWidth.value,
-      leftWidth.value,
+      animationOptions,
       appliedTranslation,
       showLeftProgress,
+      leftWidth,
       showRightProgress,
+      rightWidth,
       dispatchImmediateEvents,
-      shouldEnableTap,
       dispatchEndEvents,
     ]
   );
