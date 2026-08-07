@@ -47,10 +47,6 @@ typedef NS_ENUM(NSUInteger, RNGHHitSlopIndex) {
 
 static CGFloat RNGHHitSlopEdge(NSArray *hitSlop, RNGHHitSlopIndex index)
 {
-  if (index >= hitSlop.count) {
-    return NAN;
-  }
-
   id value = hitSlop[index];
   return [value isKindOfClass:[NSNumber class]] ? [value doubleValue] : NAN;
 }
@@ -187,7 +183,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _cancelsJSResponder = [RCTConvert BOOL:prop];
   }
 
-  // The `width`/`height` combinations are validated on the JS side, before the value gets here.
   prop = config[@"hitSlop"];
   if ([prop isKindOfClass:[NSArray class]]) {
     _hitSlop.left = RNGHHitSlopEdge(prop, RNGHHitSlopIndexLeft);

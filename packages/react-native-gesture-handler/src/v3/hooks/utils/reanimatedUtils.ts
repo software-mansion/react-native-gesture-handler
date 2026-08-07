@@ -57,10 +57,12 @@ export function bindSharedValues<
         return;
       }
 
-      updateGestureHandlerConfig(handlerTag, {
-        [configKey]:
-          configKey === 'hitSlop' ? normalizeHitSlop(value as HitSlop) : value,
-      });
+      if (configKey === 'hitSlop') {
+        updateGestureHandlerConfig(handlerTag, {
+          hitSlop: normalizeHitSlop(value as HitSlop),
+        });
+        return;
+      }
     });
   };
 

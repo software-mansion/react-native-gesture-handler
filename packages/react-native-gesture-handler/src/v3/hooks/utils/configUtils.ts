@@ -107,9 +107,7 @@ export function prepareConfigForNativeSide<
   for (const [key, value] of Object.entries(config)) {
     // @ts-ignore That's the point, we want to see if key exists in the whitelists
     if (allowedNativeProps.has(key) || handlerPropsWhiteList.has(key)) {
-      const unpackedValue = Reanimated?.isSharedValue(value)
-        ? value.value
-        : value;
+      const unpackedValue = maybeUnpackValue(value);
 
       (filteredConfig as Record<string, unknown>)[key] =
         key === 'hitSlop'

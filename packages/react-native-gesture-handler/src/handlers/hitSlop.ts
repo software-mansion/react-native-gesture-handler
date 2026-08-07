@@ -1,4 +1,3 @@
-import { isWorkletRuntime, tagMessage } from '../utils';
 import type { HitSlop } from './gestureHandlerCommon';
 
 /**
@@ -40,59 +39,44 @@ type HitSlopEdge =
 
 type HitSlopObject = Partial<Record<HitSlopEdge, number | undefined>>;
 
-function getHitSlopError(hitSlop: CanonicalHitSlop): string | null {
+function validateHitSlop(hitSlop: CanonicalHitSlop) {
   'worklet';
   const [left, top, right, bottom, width, height] = hitSlop;
 
   // Unlike the edges, `width` and `height` are absolute sizes rather than
   // deltas, so a negative value describes an inverted region that no pointer
-  // can fall into — the gesture would just never activate.
+  // can fall into.
   if (width !== null && width < 0) {
-    return "HitSlop error: 'width' cannot be negative";
+    throw new Error("HitSlop error: 'width' cannot be negative");
   }
 
   if (height !== null && height < 0) {
-    return "HitSlop error: 'height' cannot be negative";
+    throw new Error("HitSlop error: 'height' cannot be negative");
   }
 
   if (width !== null && left !== null && right !== null) {
-    return "HitSlop error: cannot have all of 'left', 'right' and 'width' defined";
+    throw new Error(
+      "HitSlop error: cannot have all of 'left', 'right' and 'width' defined"
+    );
   }
 
   if (width !== null && left === null && right === null) {
-    return "HitSlop error: when 'width' is defined, either 'left' or 'right' has to be defined";
+    throw new Error(
+      "HitSlop error: when 'width' is defined, either 'left' or 'right' has to be defined"
+    );
   }
 
   if (height !== null && top !== null && bottom !== null) {
-    return "HitSlop error: cannot have all of 'top', 'bottom' and 'height' defined";
+    throw new Error(
+      "HitSlop error: cannot have all of 'top', 'bottom' and 'height' defined"
+    );
   }
 
   if (height !== null && top === null && bottom === null) {
-    return "HitSlop error: when 'height' is defined, either 'top' or 'bottom' has to be defined";
+    throw new Error(
+      "HitSlop error: when 'height' is defined, either 'top' or 'bottom' has to be defined"
+    );
   }
-
-  return null;
-}
-
-function reportHitSlopError(hitSlop: CanonicalHitSlop) {
-  'worklet';
-  const error = getHitSlopError(hitSlop);
-
-  if (error === null) {
-    return;
-  }
-
-  // On the UI runtime this runs inside a shared value listener, where throwing
-  // would tear down the listener and leave the shared value and the native
-  // config out of sync. Report instead, and let the invalid value take the same
-  // path it would take in a release build — validation is purely diagnostic and
-  // must not change what the pipeline does.
-  if (isWorkletRuntime()) {
-    console.error(tagMessage(error));
-    return;
-  }
-
-  throw new Error(tagMessage(error));
 }
 
 /**
@@ -104,8 +88,7 @@ function reportHitSlopError(hitSlop: CanonicalHitSlop) {
  * the hit slop.
  *
  * Already normalized values are returned as-is, which keeps the function
- * idempotent — normalizing twice would otherwise find none of the edge keys on
- * the array and silently empty the hit slop.
+ * idempotent.
  *
  * Runs on the UI thread as well, since `hitSlop` can be a shared value.
  */
@@ -114,11 +97,7 @@ export function normalizeHitSlop(
 ): CanonicalHitSlop | null | undefined {
   'worklet';
 
-  if (hitSlop === undefined || hitSlop === null) {
-    return hitSlop;
-  }
-
-  if (Array.isArray(hitSlop)) {
+  if (hitSlop === undefined || hitSlop === null || Array.isArray(hitSlop)) {
     return hitSlop;
   }
 
@@ -139,7 +118,7 @@ export function normalizeHitSlop(
   ];
 
   if (__DEV__) {
-    reportHitSlopError(normalized);
+    validateHitSlop(normalized);
   }
 
   return normalized;
