@@ -156,6 +156,13 @@ class GestureHandlerOrchestrator(
   /*package*/
   fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
+
+    if (handler.isAwaiting &&
+      (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED)
+    ) {
+      handler.isAwaiting = false
+    }
+
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
       // while iterating over its elements
