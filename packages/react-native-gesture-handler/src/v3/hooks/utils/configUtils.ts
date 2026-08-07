@@ -11,6 +11,7 @@ import type {
 import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 import {
   allowedNativeProps,
+  applyProductionTestIDFilter,
   EMPTY_WHITE_LIST,
   PropsToFilter,
   PropsWhiteLists,
@@ -90,6 +91,8 @@ export function prepareConfigForNativeSide<
   handlerType: SingleGestureName,
   config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ) {
+  applyProductionTestIDFilter();
+
   // @ts-ignore Seems like TypeScript can't infer the type here properly because of generic
   const filteredConfig: BaseGestureConfig<
     TConfig,

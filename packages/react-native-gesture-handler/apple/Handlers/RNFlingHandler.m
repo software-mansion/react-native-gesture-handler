@@ -101,7 +101,8 @@
 #else
 
 @interface RNBetterSwipeGestureRecognizer : NSGestureRecognizer {
-  dispatch_block_t failFlingAction;
+  // scheduled on mouseDown; fails the gesture if the fling doesn't complete within maxDuration
+  dispatch_block_t maxDurationTimeout;
   int maxDuration;
   int minVelocity;
   double defaultAlignmentCone;
@@ -143,18 +144,34 @@
   [_gestureHandler handleGesture:self];
 }
 
+- (void)triggerAction
+{
+  [_gestureHandler handleGesture:self fromReset:NO fromManualStateChange:NO];
+}
+
+- (void)triggerActionFromReset
+{
+  [_gestureHandler handleGesture:self fromReset:YES fromManualStateChange:NO];
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
+  [_gestureHandler setCurrentPointerTypeToMouse];
+  [_gestureHandler reset];
   [super mouseDown:event];
 
   startPosition = [self locationInView:self.view];
   startTime = CACurrentMediaTime();
 
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+  // Send the BEGAN event, mirroring what the iOS recognizer does in touchesBegan.
+  [self triggerAction];
+
   self.state = NSGestureRecognizerStatePossible;
 
   __weak typeof(self) weakSelf = self;
 
-  failFlingAction = dispatch_block_create(0, ^{
+  maxDurationTimeout = dispatch_block_create(0, ^{
     __strong typeof(self) strongSelf = weakSelf;
 
     if (strongSelf) {
@@ -165,12 +182,14 @@
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(maxDuration * NSEC_PER_SEC)),
       dispatch_get_main_queue(),
-      failFlingAction);
+      maxDurationTimeout);
 }
 
 - (void)mouseDragged:(NSEvent *)event
 {
   [super mouseDragged:event];
+
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
 
   NSPoint currentPosition = [self locationInView:self.view];
   double currentTime = CACurrentMediaTime();
@@ -187,14 +206,35 @@
   [self tryActivate:velocityVector];
 }
 
+- (void)cancelMaxDurationTimeout
+{
+  if (maxDurationTimeout != nil) {
+    dispatch_block_cancel(maxDurationTimeout);
+    maxDurationTimeout = nil;
+  }
+}
+
 - (void)mouseUp:(NSEvent *)event
 {
   [super mouseUp:event];
 
-  dispatch_block_cancel(failFlingAction);
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
+
+  [self cancelMaxDurationTimeout];
 
   self.state =
       self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
+}
+
+- (void)reset
+{
+  [self triggerActionFromReset];
+  [_gestureHandler.pointerTracker reset];
+  // The gesture may end without a mouse-up (view unmount, cancellation) — a still-scheduled
+  // timeout would fire later and set the state to Failed during the next gesture.
+  [self cancelMaxDurationTimeout];
+  [super reset];
+  [_gestureHandler reset];
 }
 
 - (void)tryActivate:(RNGHVector *)velocityVector
