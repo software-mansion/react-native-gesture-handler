@@ -9,17 +9,20 @@ import type { LayoutChangeEvent } from 'react-native';
 import { I18nManager, StyleSheet, View } from 'react-native';
 import Animated, {
   interpolate,
+  isSharedValue,
   measure,
   ReduceMotion,
-  runOnJS,
-  runOnUI,
   useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import {
+  isWorkletRuntime,
+  scheduleOnRN,
+  scheduleOnUI,
+} from 'react-native-worklets';
 
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
 import { GestureDetector } from '../../v3/detectors';
 import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
@@ -89,22 +92,22 @@ const Swipeable = (props: SwipeableProps) => {
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
-      if (!Reanimated?.isSharedValue<number>(dragOffsetFromRight)) {
+      if (!isSharedValue<number>(dragOffsetFromRight)) {
         return;
       }
 
       const listenerId = Math.random() + SHARED_VALUE_OFFSET;
 
-      Reanimated?.runOnUI(() => {
+      scheduleOnUI(() => {
         'worklet';
         dragOffsetFromRight.addListener(listenerId, checkValue);
-      })();
+      });
 
       return () => {
-        Reanimated?.runOnUI(() => {
+        scheduleOnUI(() => {
           'worklet';
           dragOffsetFromRight.removeListener(listenerId);
-        })();
+        });
       };
     }, [dragOffsetFromRight, checkValue]);
   }
@@ -190,13 +193,15 @@ const Swipeable = (props: SwipeableProps) => {
       'worklet';
 
       if (onSwipeableWillOpen && toValue !== 0) {
-        runOnJS(onSwipeableWillOpen)(
+        scheduleOnRN(
+          onSwipeableWillOpen,
           toValue > 0 ? SwipeDirection.RIGHT : SwipeDirection.LEFT
         );
       }
 
       if (onSwipeableWillClose && toValue === 0) {
-        runOnJS(onSwipeableWillClose)(
+        scheduleOnRN(
+          onSwipeableWillClose,
           fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT
         );
       }
@@ -209,13 +214,15 @@ const Swipeable = (props: SwipeableProps) => {
       'worklet';
 
       if (onSwipeableOpen && toValue !== 0) {
-        runOnJS(onSwipeableOpen)(
+        scheduleOnRN(
+          onSwipeableOpen,
           toValue > 0 ? SwipeDirection.RIGHT : SwipeDirection.LEFT
         );
       }
 
       if (onSwipeableClose && toValue === 0) {
-        runOnJS(onSwipeableClose)(
+        scheduleOnRN(
+          onSwipeableClose,
           fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT
         );
       }
@@ -287,14 +294,15 @@ const Swipeable = (props: SwipeableProps) => {
       shouldEnableTap.value = rowState.value !== 0;
     },
     [
-      rowState,
       animationOptions,
+      rowState,
+      rightWidth.value,
+      leftWidth.value,
       appliedTranslation,
       showLeftProgress,
-      leftWidth,
       showRightProgress,
-      rightWidth,
       dispatchImmediateEvents,
+      shouldEnableTap,
       dispatchEndEvents,
     ]
   );
@@ -328,37 +336,37 @@ const Swipeable = (props: SwipeableProps) => {
     () => ({
       close() {
         'worklet';
-        if (_WORKLET) {
+        if (isWorkletRuntime()) {
           animateRow(0);
           return;
         }
-        runOnUI(() => {
+        scheduleOnUI(() => {
           animateRow(0);
-        })();
+        });
       },
       openLeft() {
         'worklet';
-        if (_WORKLET) {
+        if (isWorkletRuntime()) {
           updateElementWidths();
           animateRow(leftWidth.value);
           return;
         }
-        runOnUI(() => {
+        scheduleOnUI(() => {
           updateElementWidths();
           animateRow(leftWidth.value);
-        })();
+        });
       },
       openRight() {
         'worklet';
-        if (_WORKLET) {
+        if (isWorkletRuntime()) {
           updateElementWidths();
           animateRow(-rightWidth.value);
           return;
         }
-        runOnUI(() => {
+        scheduleOnUI(() => {
           updateElementWidths();
           animateRow(-rightWidth.value);
-        })();
+        });
       },
       reset() {
         'worklet';
@@ -544,9 +552,9 @@ const Swipeable = (props: SwipeableProps) => {
       if (!dragStarted.value) {
         dragStarted.value = true;
         if (rowState.value === 0 && onSwipeableOpenStartDrag) {
-          runOnJS(onSwipeableOpenStartDrag)(direction);
+          scheduleOnRN(onSwipeableOpenStartDrag, direction);
         } else if (onSwipeableCloseStartDrag) {
-          runOnJS(onSwipeableCloseStartDrag)(direction);
+          scheduleOnRN(onSwipeableCloseStartDrag, direction);
         }
       }
 
