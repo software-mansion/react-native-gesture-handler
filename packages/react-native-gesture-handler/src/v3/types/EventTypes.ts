@@ -16,7 +16,7 @@ export type ButtonEvent = Readonly<{
   absoluteX: number;
   absoluteY: number;
   numberOfPointers: number;
-  pointerType: number;
+  pointerType: PointerType;
 }>;
 
 type EventPayload = {
