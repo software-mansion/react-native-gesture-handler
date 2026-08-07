@@ -10,13 +10,15 @@ import type { NativeWrapperProperties } from '../types/NativeWrapperType';
 export interface RawButtonProps
   extends Omit<
       ButtonProps,
-      // The native press events are omitted — the deprecated buttons drive
-      // their press callbacks from the gesture in JS and redeclare them with
-      // their own signatures.
+      // The native interaction events are omitted — the deprecated buttons
+      // drive their press callbacks from the gesture in JS and redeclare them
+      // with their own signatures, and never report hover at all.
       | 'onButtonPress'
       | 'onButtonPressIn'
       | 'onButtonPressOut'
       | 'onButtonLongPress'
+      | 'onButtonHoverIn'
+      | 'onButtonHoverOut'
       | 'onButtonInteractionFinished'
       | 'defaultOpacity'
       | 'defaultScale'
