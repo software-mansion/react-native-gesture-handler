@@ -25,7 +25,7 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
     "react-native-svg": "15.15.4",
-    "react-native-worklets": "0.8.1"
+    "react-native-worklets": "patch:react-native-worklets@npm%3A0.9.1#~/.yarn/patches/react-native-worklets-npm-0.9.1-5bc5b900ed.patch"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
