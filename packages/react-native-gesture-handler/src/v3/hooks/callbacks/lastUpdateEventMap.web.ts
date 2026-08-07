@@ -1,7 +1,7 @@
+import type { SimplifiedShareableHost } from '../../../handlers/gestures/reanimatedWrapper';
+
 export type LastUpdateEventMap = Map<number, { lastUpdateEvent: unknown }>;
 
-// `createShareable` from react-native-worklets throws on web, so the
-// last-update-event map is never created on this platform.
-export function createLastUpdateEventMap() {
-  return undefined;
+export function createLastUpdateEventMap(): SimplifiedShareableHost<LastUpdateEventMap> {
+  return { value: new Map() };
 }

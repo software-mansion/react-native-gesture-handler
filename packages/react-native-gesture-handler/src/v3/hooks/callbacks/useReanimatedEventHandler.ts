@@ -90,9 +90,8 @@ export function useReanimatedEventHandler<
     >
   ) => {
     'worklet';
-    // Undefined when Worklets is absent or on web — in the former case this
-    // callback is never registered (`Reanimated?.useEvent` below
-    // short-circuits).
+    // Undefined only when Worklets is absent — and then this callback is
+    // never registered (`Reanimated?.useEvent` below short-circuits).
     if (updateEventMap === undefined) {
       return;
     }

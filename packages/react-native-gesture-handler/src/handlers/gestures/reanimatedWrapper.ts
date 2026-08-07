@@ -1,13 +1,12 @@
 import type { ComponentClass, ComponentType } from 'react';
 
-import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 import { tagMessage } from '../../utils';
-import { NativeProxy } from '../../v3/NativeProxy';
 import type {
   GestureCallbacks,
   GestureUpdateEventWithHandlerData,
   SharedValue,
 } from '../../v3/types';
+import { installUIRuntimeBindings } from './installUIRuntimeBindings';
 
 export type ReanimatedContext<THandlerData> = {
   lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
@@ -121,24 +120,7 @@ if (!Reanimated?.useSharedValue) {
 }
 
 if (Worklets !== undefined) {
-  ghQueueMicrotask(() => {
-    globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER =
-      Worklets?.getUIRuntimeHolder?.();
-
-    try {
-      const decorated = NativeProxy.installUIRuntimeBindings();
-
-      if (!decorated) {
-        console.warn(
-          tagMessage(
-            'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
-          )
-        );
-      }
-    } finally {
-      globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = undefined;
-    }
-  });
+  installUIRuntimeBindings(Worklets.getUIRuntimeHolder);
 }
 
 if (Reanimated !== undefined && !Reanimated.setGestureState) {
