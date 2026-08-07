@@ -11,7 +11,6 @@ import android.view.View
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
@@ -183,18 +182,6 @@ open class GestureHandler {
     hitSlop!![HIT_SLOP_BOTTOM_IDX] = bottomPad
     hitSlop!![HIT_SLOP_WIDTH_IDX] = width
     hitSlop!![HIT_SLOP_HEIGHT_IDX] = height
-    require(!(hitSlopSet(width) && hitSlopSet(leftPad) && hitSlopSet(rightPad))) {
-      "Cannot have all of left, right and width defined"
-    }
-    require(!(hitSlopSet(width) && !hitSlopSet(leftPad) && !hitSlopSet(rightPad))) {
-      "When width is set one of left or right pads need to be defined"
-    }
-    require(!(hitSlopSet(height) && hitSlopSet(bottomPad) && hitSlopSet(topPad))) {
-      "Cannot have all of top, bottom and height defined"
-    }
-    require(!(hitSlopSet(height) && !hitSlopSet(bottomPad) && !hitSlopSet(topPad))) {
-      "When height is set one of top or bottom pads need to be defined"
-    }
   }
 
   fun setHitSlop(padding: Float?) {
@@ -983,68 +970,37 @@ open class GestureHandler {
       private const val KEY_MANUAL_ACTIVATION = "manualActivation"
       private const val KEY_MOUSE_BUTTON = "mouseButton"
       private const val KEY_HIT_SLOP = "hitSlop"
-      private const val KEY_HIT_SLOP_LEFT = "left"
-      private const val KEY_HIT_SLOP_TOP = "top"
-      private const val KEY_HIT_SLOP_RIGHT = "right"
-      private const val KEY_HIT_SLOP_BOTTOM = "bottom"
-      private const val KEY_HIT_SLOP_VERTICAL = "vertical"
-      private const val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
-      private const val KEY_HIT_SLOP_WIDTH = "width"
-      private const val KEY_HIT_SLOP_HEIGHT = "height"
       private const val KEY_TEST_ID = "testID"
       private const val KEY_CANCELS_JS_RESPONDER = "cancelsJSResponder"
 
+      /**
+       * `hitSlop` arrives already normalized by the JS side as
+       * `[left, top, right, bottom, width, height]`, where `null` marks an edge that was not
+       * specified. Validation of the `width`/`height` combinations happens in JS as well, so all
+       * that is left here is converting the values from DIP to pixels.
+       */
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.isNull(KEY_HIT_SLOP)) {
           handler.setHitSlop(null)
-        } else if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
-          val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
-          handler.setHitSlop(
-            hitSlop,
-            hitSlop,
-            hitSlop,
-            hitSlop,
-            GestureHandler.HIT_SLOP_NONE,
-            GestureHandler.HIT_SLOP_NONE,
-          )
-        } else {
-          val hitSlop = config.getMap(KEY_HIT_SLOP)!!
-          var left = GestureHandler.HIT_SLOP_NONE
-          var top = GestureHandler.HIT_SLOP_NONE
-          var right = GestureHandler.HIT_SLOP_NONE
-          var bottom = GestureHandler.HIT_SLOP_NONE
-          var width = GestureHandler.HIT_SLOP_NONE
-          var height = GestureHandler.HIT_SLOP_NONE
-          if (hitSlop.hasKey(KEY_HIT_SLOP_HORIZONTAL)) {
-            val horizontalPad = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_HORIZONTAL))
-            right = horizontalPad
-            left = right
-          }
-          if (hitSlop.hasKey(KEY_HIT_SLOP_VERTICAL)) {
-            val verticalPad = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_VERTICAL))
-            bottom = verticalPad
-            top = bottom
-          }
-          if (hitSlop.hasKey(KEY_HIT_SLOP_LEFT)) {
-            left = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_LEFT))
-          }
-          if (hitSlop.hasKey(KEY_HIT_SLOP_TOP)) {
-            top = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_TOP))
-          }
-          if (hitSlop.hasKey(KEY_HIT_SLOP_RIGHT)) {
-            right = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_RIGHT))
-          }
-          if (hitSlop.hasKey(KEY_HIT_SLOP_BOTTOM)) {
-            bottom = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_BOTTOM))
-          }
-          if (hitSlop.hasKey(KEY_HIT_SLOP_WIDTH)) {
-            width = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_WIDTH))
-          }
-          if (hitSlop.hasKey(KEY_HIT_SLOP_HEIGHT)) {
-            height = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_HEIGHT))
-          }
-          handler.setHitSlop(left, top, right, bottom, width, height)
+          return
         }
+
+        val hitSlop = config.getArray(KEY_HIT_SLOP)!!
+
+        fun edge(index: Int) = if (hitSlop.isNull(index)) {
+          GestureHandler.HIT_SLOP_NONE
+        } else {
+          PixelUtil.toPixelFromDIP(hitSlop.getDouble(index))
+        }
+
+        handler.setHitSlop(
+          edge(HIT_SLOP_LEFT_IDX),
+          edge(HIT_SLOP_TOP_IDX),
+          edge(HIT_SLOP_RIGHT_IDX),
+          edge(HIT_SLOP_BOTTOM_IDX),
+          edge(HIT_SLOP_WIDTH_IDX),
+          edge(HIT_SLOP_HEIGHT_IDX),
+        )
       }
     }
   }

@@ -3,6 +3,7 @@ import type { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 import { View } from 'react-native';
 
 import { ActionType } from '../ActionType';
+import { normalizeHitSlop } from '../handlers/hitSlop';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
 import type { ButtonEvent } from '../v3/types';
@@ -133,7 +134,7 @@ export const ButtonComponent = ({
     disallowInterruption: true,
     yieldsToContinuousGestures: true,
     testID: gestureTestID,
-    hitSlop: gestureHitSlop,
+    hitSlop: normalizeHitSlop(gestureHitSlop),
     hasLongPressHandler,
     longPressDuration,
   });
@@ -144,7 +145,7 @@ export const ButtonComponent = ({
     disallowInterruption: true,
     yieldsToContinuousGestures: true,
     testID: gestureTestID,
-    hitSlop: gestureHitSlop,
+    hitSlop: normalizeHitSlop(gestureHitSlop),
     hasLongPressHandler,
     longPressDuration,
   };

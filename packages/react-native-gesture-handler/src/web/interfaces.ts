@@ -9,23 +9,13 @@ import type {
   TouchAction,
   UserSelect,
 } from '../handlers/gestureHandlerCommon';
+import type { CanonicalHitSlop } from '../handlers/hitSlop';
 import type { PointerType } from '../PointerType';
 import type { State } from '../State';
 import type {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
 } from '../v3/types';
-
-export interface HitSlop {
-  left?: number | undefined;
-  right?: number | undefined;
-  top?: number | undefined;
-  bottom?: number | undefined;
-  horizontal?: number | undefined;
-  vertical?: number | undefined;
-  width?: number | undefined;
-  height?: number | undefined;
-}
 
 export interface Handler {
   handlerTag: number;
@@ -35,7 +25,7 @@ type ConfigArgs =
   | number
   | boolean
   | string
-  | HitSlop
+  | CanonicalHitSlop
   | UserSelect
   | TouchAction
   | ActiveCursor
@@ -49,7 +39,7 @@ export interface Config extends Record<string, ConfigArgs> {
   simultaneousHandlers?: Handler[] | null | undefined;
   waitFor?: Handler[] | null | undefined;
   blocksHandlers?: Handler[] | null | undefined;
-  hitSlop?: HitSlop | null | undefined;
+  hitSlop?: CanonicalHitSlop | null | undefined;
   shouldCancelWhenOutside?: boolean | undefined;
   userSelect?: UserSelect | undefined;
   activeCursor?: ActiveCursor | undefined;

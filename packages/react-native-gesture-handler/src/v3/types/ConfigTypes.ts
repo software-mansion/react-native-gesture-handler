@@ -6,6 +6,7 @@ import type {
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
+import type { CanonicalHitSlop } from '../../handlers/hitSlop';
 import type {
   AnimatedEvent,
   ChangeCalculatorType,
@@ -73,7 +74,7 @@ export type CommonGestureConfig = {
     runOnJS?: boolean | undefined;
     enabled?: boolean | undefined;
     shouldCancelWhenOutside?: boolean | undefined;
-    hitSlop?: HitSlop | undefined;
+    hitSlop?: HitSlop | CanonicalHitSlop | undefined;
     activeCursor?: ActiveCursor | undefined;
     mouseButton?: MouseButton | undefined;
     cancelsTouchesInView?: boolean | undefined;
