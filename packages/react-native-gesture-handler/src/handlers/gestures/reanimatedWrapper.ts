@@ -96,19 +96,18 @@ type ReanimatedPackage = {
 
 let Reanimated: ReanimatedPackage | undefined;
 let Worklets: WorkletsPackage | undefined;
-let uiRuntimeHolder: object | undefined;
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   Worklets = require('react-native-worklets') as WorkletsPackage;
-  uiRuntimeHolder = Worklets?.getUIRuntimeHolder?.();
 } catch (e) {
   // When 'react-native-worklets' is not available we want to quietly continue
   Worklets = undefined;
 }
 
 try {
-  Reanimated = require('react-native-reanimated');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  Reanimated = require('react-native-reanimated') as ReanimatedPackage;
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized
@@ -121,9 +120,10 @@ if (!Reanimated?.useSharedValue) {
   Reanimated = undefined;
 }
 
-if (uiRuntimeHolder !== undefined || Reanimated !== undefined) {
+if (Worklets !== undefined) {
   ghQueueMicrotask(() => {
-    globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = uiRuntimeHolder;
+    globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER =
+      Worklets?.getUIRuntimeHolder?.();
 
     try {
       const decorated = NativeProxy.installUIRuntimeBindings();
@@ -137,7 +137,6 @@ if (uiRuntimeHolder !== undefined || Reanimated !== undefined) {
       }
     } finally {
       globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = undefined;
-      uiRuntimeHolder = undefined;
     }
   });
 }
