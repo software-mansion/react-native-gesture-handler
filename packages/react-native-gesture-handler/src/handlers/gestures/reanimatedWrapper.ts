@@ -1,13 +1,12 @@
 import type { ComponentClass, ComponentType } from 'react';
 
-import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 import { tagMessage } from '../../utils';
-import { NativeProxy } from '../../v3/NativeProxy';
 import type {
   GestureCallbacks,
   GestureUpdateEventWithHandlerData,
   SharedValue,
 } from '../../v3/types';
+import { installUIRuntimeBindings } from './installUIRuntimeBindings';
 
 export type ReanimatedContext<THandlerData> = {
   lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
@@ -32,8 +31,17 @@ export type ReanimatedHandler<THandlerData> = {
   context: ReanimatedContext<THandlerData>;
 };
 
-type WorkletsModule = {
+export type SimplifiedShareableHost<TValue = unknown> = {
+  value: TValue;
+};
+
+type WorkletsPackage = {
   getUIRuntimeHolder?: () => object;
+  createShareable?: <TValue>(
+    hostRuntimeId: number,
+    initial: TValue
+  ) => SimplifiedShareableHost<TValue>;
+  UIRuntimeId?: number;
 };
 
 export type NativeEventsManager = new (component: {
@@ -49,59 +57,56 @@ export type NativeEventsManager = new (component: {
   updateEvents: (prevProps: Record<string, unknown>) => void;
 };
 
-let Reanimated:
-  | {
-      default: {
-        // Slightly modified definition copied from 'react-native-reanimated'
-        createAnimatedComponent<P extends object>(
-          component: ComponentType<P>,
-          options?: unknown
-        ): ComponentClass<P>;
-      };
-      NativeEventsManager: NativeEventsManager;
-      useHandler: <THandlerData, TExtendedHandlerData extends THandlerData>(
-        handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
-      ) => ReanimatedHandler<TExtendedHandlerData>;
-      useEvent: <T>(
-        callback: (event: T) => void,
-        events: string[],
-        rebuild: boolean
-      ) => (event: unknown) => void;
-      useSharedValue: <T>(value: T) => SharedValue<T>;
-      setGestureState: (handlerTag: number, newState: number) => void;
-      isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
-      isWorkletFunction<
-        Args extends unknown[] = unknown[],
-        ReturnValue = unknown,
-      >(
-        value: unknown
-      ): value is WorkletFunction<Args, ReturnValue>;
-      useComposedEventHandler<T>(
-        handlers: (((event: T) => void) | null)[]
-      ): (event: T) => void;
-      // TODO: runOnJS and runOnUI are deprecated. These should be removed in near future.
-      runOnJS: <A extends unknown[], R>(
-        fn: (...args: A) => R
-      ) => (...args: Parameters<typeof fn>) => void;
-      runOnUI<A extends any[], R>(
-        fn: (...args: A) => R
-      ): (...args: Parameters<typeof fn>) => void;
-      makeMutable<T>(value: T): { value: T };
-    }
-  | undefined;
+type ReanimatedPackage = {
+  default: {
+    // Slightly modified definition copied from 'react-native-reanimated'
+    createAnimatedComponent<P extends object>(
+      component: ComponentType<P>,
+      options?: unknown
+    ): ComponentClass<P>;
+  };
+  NativeEventsManager: NativeEventsManager;
+  useHandler: <THandlerData, TExtendedHandlerData extends THandlerData>(
+    handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
+  ) => ReanimatedHandler<TExtendedHandlerData>;
+  useEvent: <T>(
+    callback: (event: T) => void,
+    events: string[],
+    rebuild: boolean
+  ) => (event: unknown) => void;
+  useSharedValue: <T>(value: T) => SharedValue<T>;
+  setGestureState: (handlerTag: number, newState: number) => void;
+  isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
+  isWorkletFunction<Args extends unknown[] = unknown[], ReturnValue = unknown>(
+    value: unknown
+  ): value is WorkletFunction<Args, ReturnValue>;
+  useComposedEventHandler<T>(
+    handlers: (((event: T) => void) | null)[]
+  ): (event: T) => void;
+  // TODO: runOnJS and runOnUI are deprecated. These should be removed in near future.
+  runOnJS: <A extends unknown[], R>(
+    fn: (...args: A) => R
+  ) => (...args: Parameters<typeof fn>) => void;
+  runOnUI<A extends any[], R>(
+    fn: (...args: A) => R
+  ): (...args: Parameters<typeof fn>) => void;
+  makeMutable<T>(value: T): { value: T };
+};
 
-let uiRuntimeHolder: object | undefined;
+let Reanimated: ReanimatedPackage | undefined;
+let Worklets: WorkletsPackage | undefined;
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const Worklets = require('react-native-worklets') as WorkletsModule;
-  uiRuntimeHolder = Worklets?.getUIRuntimeHolder?.();
+  Worklets = require('react-native-worklets') as WorkletsPackage;
 } catch (e) {
   // When 'react-native-worklets' is not available we want to quietly continue
+  Worklets = undefined;
 }
 
 try {
-  Reanimated = require('react-native-reanimated');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  Reanimated = require('react-native-reanimated') as ReanimatedPackage;
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized
@@ -114,25 +119,8 @@ if (!Reanimated?.useSharedValue) {
   Reanimated = undefined;
 }
 
-if (uiRuntimeHolder !== undefined || Reanimated !== undefined) {
-  ghQueueMicrotask(() => {
-    globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = uiRuntimeHolder;
-
-    try {
-      const decorated = NativeProxy.installUIRuntimeBindings();
-
-      if (!decorated) {
-        console.warn(
-          tagMessage(
-            'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
-          )
-        );
-      }
-    } finally {
-      globalThis.__RNGH_UI_WORKLET_RUNTIME_HOLDER = undefined;
-      uiRuntimeHolder = undefined;
-    }
-  });
+if (Worklets !== undefined) {
+  installUIRuntimeBindings(Worklets.getUIRuntimeHolder);
 }
 
 if (Reanimated !== undefined && !Reanimated.setGestureState) {
@@ -147,4 +135,4 @@ if (Reanimated !== undefined && !Reanimated.setGestureState) {
   };
 }
 
-export { Reanimated };
+export { Reanimated, Worklets };
