@@ -32,8 +32,17 @@ export type ReanimatedHandler<THandlerData> = {
   context: ReanimatedContext<THandlerData>;
 };
 
-type WorkletsModule = {
+export type SimplifiedShareableHost<TValue = unknown> = {
+  value: TValue;
+};
+
+type WorkletsPackage = {
   getUIRuntimeHolder?: () => object;
+  createShareable?: <TValue>(
+    hostRuntimeId: number,
+    initial: TValue
+  ) => SimplifiedShareableHost<TValue>;
+  UIRuntimeId?: number;
 };
 
 export type NativeEventsManager = new (component: {
@@ -49,55 +58,53 @@ export type NativeEventsManager = new (component: {
   updateEvents: (prevProps: Record<string, unknown>) => void;
 };
 
-let Reanimated:
-  | {
-      default: {
-        // Slightly modified definition copied from 'react-native-reanimated'
-        createAnimatedComponent<P extends object>(
-          component: ComponentType<P>,
-          options?: unknown
-        ): ComponentClass<P>;
-      };
-      NativeEventsManager: NativeEventsManager;
-      useHandler: <THandlerData, TExtendedHandlerData extends THandlerData>(
-        handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
-      ) => ReanimatedHandler<TExtendedHandlerData>;
-      useEvent: <T>(
-        callback: (event: T) => void,
-        events: string[],
-        rebuild: boolean
-      ) => (event: unknown) => void;
-      useSharedValue: <T>(value: T) => SharedValue<T>;
-      setGestureState: (handlerTag: number, newState: number) => void;
-      isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
-      isWorkletFunction<
-        Args extends unknown[] = unknown[],
-        ReturnValue = unknown,
-      >(
-        value: unknown
-      ): value is WorkletFunction<Args, ReturnValue>;
-      useComposedEventHandler<T>(
-        handlers: (((event: T) => void) | null)[]
-      ): (event: T) => void;
-      // TODO: runOnJS and runOnUI are deprecated. These should be removed in near future.
-      runOnJS: <A extends unknown[], R>(
-        fn: (...args: A) => R
-      ) => (...args: Parameters<typeof fn>) => void;
-      runOnUI<A extends any[], R>(
-        fn: (...args: A) => R
-      ): (...args: Parameters<typeof fn>) => void;
-      makeMutable<T>(value: T): { value: T };
-    }
-  | undefined;
+type ReanimatedPackage = {
+  default: {
+    // Slightly modified definition copied from 'react-native-reanimated'
+    createAnimatedComponent<P extends object>(
+      component: ComponentType<P>,
+      options?: unknown
+    ): ComponentClass<P>;
+  };
+  NativeEventsManager: NativeEventsManager;
+  useHandler: <THandlerData, TExtendedHandlerData extends THandlerData>(
+    handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
+  ) => ReanimatedHandler<TExtendedHandlerData>;
+  useEvent: <T>(
+    callback: (event: T) => void,
+    events: string[],
+    rebuild: boolean
+  ) => (event: unknown) => void;
+  useSharedValue: <T>(value: T) => SharedValue<T>;
+  setGestureState: (handlerTag: number, newState: number) => void;
+  isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
+  isWorkletFunction<Args extends unknown[] = unknown[], ReturnValue = unknown>(
+    value: unknown
+  ): value is WorkletFunction<Args, ReturnValue>;
+  useComposedEventHandler<T>(
+    handlers: (((event: T) => void) | null)[]
+  ): (event: T) => void;
+  // TODO: runOnJS and runOnUI are deprecated. These should be removed in near future.
+  runOnJS: <A extends unknown[], R>(
+    fn: (...args: A) => R
+  ) => (...args: Parameters<typeof fn>) => void;
+  runOnUI<A extends any[], R>(
+    fn: (...args: A) => R
+  ): (...args: Parameters<typeof fn>) => void;
+  makeMutable<T>(value: T): { value: T };
+};
 
+let Reanimated: ReanimatedPackage | undefined;
+let Worklets: WorkletsPackage | undefined;
 let uiRuntimeHolder: object | undefined;
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const Worklets = require('react-native-worklets') as WorkletsModule;
+  Worklets = require('react-native-worklets') as WorkletsPackage;
   uiRuntimeHolder = Worklets?.getUIRuntimeHolder?.();
 } catch (e) {
   // When 'react-native-worklets' is not available we want to quietly continue
+  Worklets = undefined;
 }
 
 try {
@@ -147,4 +154,4 @@ if (Reanimated !== undefined && !Reanimated.setGestureState) {
   };
 }
 
-export { Reanimated };
+export { Reanimated, Worklets };
