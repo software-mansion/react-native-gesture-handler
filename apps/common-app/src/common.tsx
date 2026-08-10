@@ -144,17 +144,20 @@ type Props = {
 export function useIndexedLogger() {
   const messageCounter = useRef(0);
 
-  const logMessage = (message: string) => {
+  const logMessage = useCallback((message: string) => {
     messageCounter.current += 1;
     const indexedMessage = `${messageCounter.current}. ${message}`;
     console.log(indexedMessage);
-  };
+  }, []);
 
-  const logMessageWorklet = (message: string) => {
-    'worklet';
-    // Schedule log on the JS thread so the console interceptor can pick it up
-    scheduleOnRN(logMessage, message);
-  };
+  const logMessageWorklet = useCallback(
+    (message: string) => {
+      'worklet';
+      // Schedule log on the JS thread so the console interceptor can pick it up
+      scheduleOnRN(logMessage, message);
+    },
+    [logMessage]
+  );
 
   return logMessageWorklet;
 }
