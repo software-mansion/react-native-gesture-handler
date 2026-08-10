@@ -32,9 +32,7 @@ jobs:
           if [ ! -d "$XCODE_APP" ]; then
             echo "Xcode ${XCODE_VERSION} is not installed on this runner. Available:" >&2
             ls -d /Applications/Xcode*.app >&2
-            XCODE_APP=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
-            [ -n "$XCODE_APP" ] || XCODE_APP=/Applications/Xcode.app
-            echo "Falling back to $XCODE_APP" >&2
+            exit 1
           fi
           echo "Using $XCODE_APP"
           echo "DEVELOPER_DIR=$XCODE_APP/Contents/Developer" >> "$GITHUB_ENV"
