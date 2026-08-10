@@ -4,7 +4,10 @@ import type {
   ReanimatedContext,
   ReanimatedHandler,
 } from '../../../handlers/gestures/reanimatedWrapper';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import {
+  Reanimated,
+  Worklets,
+} from '../../../handlers/gestures/reanimatedWrapper';
 import type {
   ChangeCalculatorType,
   GestureCallbacks,
