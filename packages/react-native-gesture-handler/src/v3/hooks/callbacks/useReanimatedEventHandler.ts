@@ -4,7 +4,10 @@ import type {
   ReanimatedContext,
   ReanimatedHandler,
 } from '../../../handlers/gestures/reanimatedWrapper';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import {
+  Reanimated,
+  Worklets,
+} from '../../../handlers/gestures/reanimatedWrapper';
 import type {
   ChangeCalculatorType,
   GestureCallbacks,
@@ -39,7 +42,7 @@ type ShareableLastUpdateEventMap = ReturnType<typeof createLastUpdateEventMap>;
 // Takes the map as an argument on purpose: reading the lazy `let` from this
 // module-scope worklet would snapshot its value at module evaluation — before
 // the first `getLastUpdateEventMap()` call — so the UI-runtime copy would stay
-// `undefined` forever and the cleanup would silently never run. `runOnUI`
+// `undefined` forever and the cleanup would silently never run. `scheduleOnUI`
 // arguments are serialized fresh on every call, so they always carry the
 // initialized map.
 function deleteHandlerEventEntry(
@@ -69,7 +72,7 @@ export function useReanimatedEventHandler<
     // The only difference is whether we will send events to Reanimated or not.
     // The problem here is that if someone passes `Animated.event` as `onUpdate` prop,
     // it won't be workletized and therefore `useHandler` will throw. In that case we override it to empty `worklet`.
-    if (!Reanimated?.isWorkletFunction(handlers.onUpdate)) {
+    if (!Worklets?.isWorkletFunction(handlers.onUpdate)) {
       return {
         ...handlers,
         onUpdate: workletNOOP,
@@ -127,7 +130,8 @@ export function useReanimatedEventHandler<
     prevHandlerTagRef.current = handlerTag;
 
     return () => {
-      Reanimated?.runOnUI?.(deleteHandlerEventEntry)(
+      Worklets?.scheduleOnUI(
+        deleteHandlerEventEntry,
         updateEventMap,
         handlerTag
       );

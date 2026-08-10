@@ -36,12 +36,26 @@ export type SimplifiedShareableHost<TValue = unknown> = {
 };
 
 type WorkletsPackage = {
-  getUIRuntimeHolder?: () => object;
-  createShareable?: <TValue>(
+  getUIRuntimeHolder: () => object;
+  createShareable: <TValue>(
     hostRuntimeId: number,
     initial: TValue
   ) => SimplifiedShareableHost<TValue>;
-  UIRuntimeId?: number;
+  UIRuntimeId: number;
+  scheduleOnUI: <Args extends unknown[], ReturnValue>(
+    worklet: (...args: Args) => ReturnValue,
+    ...args: Args
+  ) => void;
+  scheduleOnRN: <Args extends unknown[], ReturnValue>(
+    fun: (...args: Args) => ReturnValue,
+    ...args: Args
+  ) => void;
+  isWorkletFunction: <
+    Args extends unknown[] = unknown[],
+    ReturnValue = unknown,
+  >(
+    value: unknown
+  ) => value is WorkletFunction<Args, ReturnValue>;
 };
 
 export type NativeEventsManager = new (component: {
@@ -77,20 +91,9 @@ type ReanimatedPackage = {
   useSharedValue: <T>(value: T) => SharedValue<T>;
   setGestureState: (handlerTag: number, newState: number) => void;
   isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
-  isWorkletFunction<Args extends unknown[] = unknown[], ReturnValue = unknown>(
-    value: unknown
-  ): value is WorkletFunction<Args, ReturnValue>;
   useComposedEventHandler<T>(
     handlers: (((event: T) => void) | null)[]
   ): (event: T) => void;
-  // TODO: runOnJS and runOnUI are deprecated. These should be removed in near future.
-  runOnJS: <A extends unknown[], R>(
-    fn: (...args: A) => R
-  ) => (...args: Parameters<typeof fn>) => void;
-  runOnUI<A extends any[], R>(
-    fn: (...args: A) => R
-  ): (...args: Parameters<typeof fn>) => void;
-  makeMutable<T>(value: T): { value: T };
 };
 
 let Reanimated: ReanimatedPackage | undefined;
@@ -110,12 +113,6 @@ try {
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized
-  Reanimated = undefined;
-}
-
-if (!Reanimated?.useSharedValue) {
-  // @ts-ignore Make sure the loaded module is actually Reanimated, if it's not
-  // reset the module to undefined so we can fallback to the default implementation
   Reanimated = undefined;
 }
 

@@ -1,4 +1,7 @@
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import {
+  Reanimated,
+  Worklets,
+} from '../../../handlers/gestures/reanimatedWrapper';
 import { NativeProxy } from '../../NativeProxy';
 import type {
   BaseGestureConfig,
@@ -35,7 +38,9 @@ export function bindSharedValues<
   config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>,
   handlerTag: number
 ) {
-  if (Reanimated === undefined) {
+  const scheduleOnUI = Worklets?.scheduleOnUI;
+
+  if (Reanimated === undefined || scheduleOnUI === undefined) {
     return;
   }
 
@@ -64,7 +69,7 @@ export function bindSharedValues<
       continue;
     }
 
-    Reanimated.runOnUI(attachListener)(maybeSharedValue, key);
+    scheduleOnUI(attachListener, maybeSharedValue, key);
   }
 }
 
@@ -76,7 +81,9 @@ export function unbindSharedValues<
   config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>,
   handlerTag: number
 ) {
-  if (Reanimated === undefined) {
+  const scheduleOnUI = Worklets?.scheduleOnUI;
+
+  if (Reanimated === undefined || scheduleOnUI === undefined) {
     return;
   }
 
@@ -90,9 +97,9 @@ export function unbindSharedValues<
     const keyHash = hash(key);
     const listenerId = baseListenerId + keyHash;
 
-    Reanimated.runOnUI(() => {
+    scheduleOnUI(() => {
       maybeSharedValue.removeListener(listenerId);
-    })();
+    });
   }
 }
 
