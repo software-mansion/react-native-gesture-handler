@@ -12,6 +12,7 @@ import type {
   UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
 import { eventHandler } from './eventHandler';
+import { createLastUpdateEventMap } from './lastUpdateEventMap';
 
 const REANIMATED_EVENT_NAMES = [
   'onGestureHandlerReanimatedEvent',
@@ -24,18 +25,16 @@ const workletNOOP = () => {
   // no-op
 };
 
-function createLastUpdateEventMap() {
-  return Reanimated?.makeMutable(new Map<number, ReanimatedContext<unknown>>());
-}
-
 // Created lazily instead of at module scope so importing this module doesn't
-// call into Reanimated during module evaluation.
+// call into Worklets during module evaluation.
 let lastUpdateEventMap: ReturnType<typeof createLastUpdateEventMap>;
 
 function getLastUpdateEventMap() {
   lastUpdateEventMap ??= createLastUpdateEventMap();
   return lastUpdateEventMap;
 }
+
+type ShareableLastUpdateEventMap = ReturnType<typeof createLastUpdateEventMap>;
 
 // Takes the map as an argument on purpose: reading the lazy `let` from this
 // module-scope worklet would snapshot its value at module evaluation — before
@@ -44,7 +43,7 @@ function getLastUpdateEventMap() {
 // arguments are serialized fresh on every call, so they always carry the
 // initialized map.
 function deleteHandlerEventEntry(
-  map: ReturnType<typeof createLastUpdateEventMap>,
+  map: ShareableLastUpdateEventMap,
   handlerTag: number
 ) {
   'worklet';
@@ -91,7 +90,7 @@ export function useReanimatedEventHandler<
     >
   ) => {
     'worklet';
-    // Undefined only when Reanimated is absent — and then this callback is
+    // Undefined only when Worklets is absent — and then this callback is
     // never registered (`Reanimated?.useEvent` below short-circuits).
     if (updateEventMap === undefined) {
       return;
