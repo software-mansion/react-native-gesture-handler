@@ -4,10 +4,7 @@ import type {
   ReanimatedContext,
   ReanimatedHandler,
 } from '../../../handlers/gestures/reanimatedWrapper';
-import {
-  Reanimated,
-  Worklets,
-} from '../../../handlers/gestures/reanimatedWrapper';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import type {
   ChangeCalculatorType,
   GestureCallbacks,
@@ -15,6 +12,7 @@ import type {
   UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
 import { eventHandler } from './eventHandler';
+import { createLastUpdateEventMap } from './lastUpdateEventMap';
 
 const REANIMATED_EVENT_NAMES = [
   'onGestureHandlerReanimatedEvent',
@@ -27,17 +25,6 @@ const workletNOOP = () => {
   // no-op
 };
 
-function createLastUpdateEventMap() {
-  if (Worklets === undefined || Reanimated === undefined) {
-    return undefined;
-  }
-
-  return Worklets.createShareable<LastUpdateEventMap>(
-    Worklets.UIRuntimeId,
-    new Map()
-  );
-}
-
 // Created lazily instead of at module scope so importing this module doesn't
 // call into Worklets during module evaluation.
 let lastUpdateEventMap: ReturnType<typeof createLastUpdateEventMap>;
@@ -47,7 +34,6 @@ function getLastUpdateEventMap() {
   return lastUpdateEventMap;
 }
 
-type LastUpdateEventMap = Map<number, { lastUpdateEvent: unknown }>;
 type ShareableLastUpdateEventMap = ReturnType<typeof createLastUpdateEventMap>;
 
 // Takes the map as an argument on purpose: reading the lazy `let` from this
