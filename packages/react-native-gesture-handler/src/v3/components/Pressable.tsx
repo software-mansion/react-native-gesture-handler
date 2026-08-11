@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 
 import type { PressableProps } from '../../components/Pressable/PressableProps';
 import PressableWithTouchable from './PressableWithTouchable';
@@ -14,15 +14,14 @@ import StatefulPressable from './StatefulPressable';
  * - {@link PressableWithTouchable} — the simpler engine built on the native
  *   button `Touchable`, used for everything else (the common case).
  *
- * The choice is made once, at mount, so conditionally adding or removing a
- * relation prop later cannot swap engines mid-life and lose the current press.
+ * The choice is re-evaluated each render: toggling a relation prop at runtime
+ * swaps engines, which remounts and drops any in-progress press.
  */
 const Pressable = (props: PressableProps) => {
-  const usesRelations = useRef(
+  const usesRelations =
     props.simultaneousWith != null ||
-      props.requireToFail != null ||
-      props.block != null
-  ).current;
+    props.requireToFail != null ||
+    props.block != null;
 
   return usesRelations ? (
     <StatefulPressable {...props} />
