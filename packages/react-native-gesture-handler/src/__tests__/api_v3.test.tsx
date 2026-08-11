@@ -259,15 +259,11 @@ describe('[API v3] Components', () => {
       const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
       const button = screen.getByTestId('pressable');
 
-      // Default Pressable delegates to the native-button Touchable, which marks
-      // the tap as RNGH-handled via the button's capture handler.
       expect(scrollViewResponder).toBeDefined();
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      // The button marks the tap as RNGH-handled without claiming it...
       expect(button.props.onStartShouldSetResponderCapture()).toBe(false);
-      // ...so the logical responder claims it and the mark is consumed.
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
