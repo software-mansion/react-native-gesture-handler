@@ -5,7 +5,6 @@ import type { ButtonEvent } from '../../components/GestureHandlerButton';
 import type {
   InnerPressableEvent,
   PressableDimensions,
-  PressableEvent,
   PressableProps,
 } from '../../components/Pressable/PressableProps';
 import {
@@ -15,6 +14,21 @@ import {
 } from '../../components/Pressable/utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { Touchable } from './Touchable/Touchable';
+
+// RN's Pressable default. Touchable's own default is 600ms
+const DEFAULT_LONG_PRESS_DURATION = 500;
+
+type Timers = {
+  press: ReturnType<typeof setTimeout> | null;
+  hoverIn: ReturnType<typeof setTimeout> | null;
+  hoverOut: ReturnType<typeof setTimeout> | null;
+};
+
+function normalizeInset(value: Insets | number | null | undefined): Insets {
+  return typeof value === 'number'
+    ? numberAsInset(value)
+    : (value ?? numberAsInset(0));
+}
 
 function buttonToInner(event: ButtonEvent): InnerPressableEvent {
   return {
@@ -42,21 +56,6 @@ function buttonToPressableEvent(event: ButtonEvent) {
     },
   };
 }
-
-// RN's Pressable default. Touchable's own default is 600ms
-const DEFAULT_LONG_PRESS_DURATION = 500;
-
-function normalizeInset(value: Insets | number | null | undefined): Insets {
-  return typeof value === 'number'
-    ? numberAsInset(value)
-    : (value ?? numberAsInset(0));
-}
-
-type Timers = {
-  press: ReturnType<typeof setTimeout> | null;
-  hoverIn: ReturnType<typeof setTimeout> | null;
-  hoverOut: ReturnType<typeof setTimeout> | null;
-};
 
 const PressableWithTouchable = (props: PressableProps) => {
   const {
@@ -144,6 +143,17 @@ const PressableWithTouchable = (props: PressableProps) => {
     normalizeInset(pressRetentionOffset)
   );
 
+  // Long press is measured from onPressIn, which `unstable_pressDelay` defers,
+  // so fold it in to match RN / StatefulPressable.
+  const resolvedDelayLongPress =
+    (delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
+    (unstable_pressDelay ?? 0);
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    onLayout?.(event);
+    dimensions.current = event.nativeEvent.layout;
+  };
+
   const firePressIn = (event: ButtonEvent) => {
     setPressed(true);
     onPressIn?.(buttonToPressableEvent(event));
@@ -196,21 +206,29 @@ const PressableWithTouchable = (props: PressableProps) => {
     onPressOut?.(buttonToPressableEvent(event));
   };
 
-  const makeActiveHandler = (
-    handler: ((event: PressableEvent) => void) | null | undefined
-  ) =>
-    handler
-      ? (event: ButtonEvent) => {
-          if (isActive.current) {
-            handler(buttonToPressableEvent(event));
-          }
+  const handlePress = onPress
+    ? (event: ButtonEvent) => {
+        if (isActive.current) {
+          onPress(buttonToPressableEvent(event));
         }
-      : undefined;
+      }
+    : undefined;
 
-  const handleLayout = (event: LayoutChangeEvent) => {
-    onLayout?.(event);
-    dimensions.current = event.nativeEvent.layout;
-  };
+  const handleLongPress = onLongPress
+    ? (event: ButtonEvent) => {
+        if (!isActive.current) {
+          return;
+        }
+        // Flush the deferred onPressIn so it can't arrive after onLongPress
+        // (e.g. delayLongPress={0} makes the two timers coincide).
+        if (timers.current.press) {
+          clearTimeout(timers.current.press);
+          timers.current.press = null;
+          firePressIn(event);
+        }
+        onLongPress(buttonToPressableEvent(event));
+      }
+    : undefined;
 
   const handleHoverIn = onHoverIn
     ? (event: ButtonEvent) => {
@@ -266,12 +284,12 @@ const PressableWithTouchable = (props: PressableProps) => {
       onLayout={handleLayout}
       androidRipple={androidRipple}
       touchSoundDisabled={android_disableSound ?? undefined}
-      delayLongPress={delayLongPress ?? DEFAULT_LONG_PRESS_DURATION}
+      delayLongPress={resolvedDelayLongPress}
       style={resolvedStyle}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      onPress={makeActiveHandler(onPress)}
-      onLongPress={makeActiveHandler(onLongPress)}
+      onPress={handlePress}
+      onLongPress={handleLongPress}
       onHoverIn={handleHoverIn}
       onHoverOut={handleHoverOut}>
       {resolvedChildren}
