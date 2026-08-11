@@ -1,7 +1,7 @@
 name: Start Argent tool-server
 description: >-
   Installs the Argent CLI and starts a tool-server for later steps and
-  ARGENT_SERVER_LOG for the caller to print on failure.
+  ARGENT_SERVER_LOG for the caller to collect on failure.
 
 inputs:
   port:
@@ -37,7 +37,7 @@ runs:
         SIMULATOR_SERVER_LOG: ${{ inputs.simulator-server-log }}
       run: |
         LOG="$RUNNER_TEMP/argent-server.log"
-        # Exported before anything can fail, so the caller's log-printing step
+        # Exported before anything can fail, so the caller's log-collecting step
         # can find it even when startup is what went wrong.
         echo "ARGENT_SERVER_LOG=$LOG" >> "$GITHUB_ENV"
 

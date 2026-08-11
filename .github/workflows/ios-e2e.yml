@@ -74,6 +74,26 @@ jobs:
           xcrun simctl bootstatus "$UDID"
           echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
 
+      - name: Disable keyboard intelligence on the simulator
+        run: |
+          KEYS=(
+            KeyboardPrediction
+            KeyboardAutocorrection
+            KeyboardCheckSpelling
+            KeyboardAutocapitalization
+            KeyboardPeriodShortcut
+            KeyboardCapsLock
+            KeyboardContinuousPathEnabled
+          )
+          for key in "${KEYS[@]}"; do
+            xcrun simctl spawn "$SIMULATOR_UDID" defaults write "Apple Global Domain" "$key" -bool false
+            xcrun simctl spawn "$SIMULATOR_UDID" defaults write com.apple.Preferences "$key" -bool false
+          done
+          # Suppress the slide-to-type intro overlay a fresh sim shows on first keyboard use
+          xcrun simctl spawn "$SIMULATOR_UDID" defaults write com.apple.keyboard.preferences \
+            DidShowContinuousPathIntroduction -bool true
+          xcrun simctl spawn "$SIMULATOR_UDID" defaults read "Apple Global Domain" | grep Keyboard || true
+
       - name: Install app on simulator
         run: |
           echo "Installing $APP_PATH on $SIMULATOR_UDID"
@@ -82,12 +102,50 @@ jobs:
       - name: Install Argent and start the tool-server
         uses: ./.github/actions/argent-server
 
+      # h264 rather than the default hevc, which most browsers cannot play.
+      - name: Start screen recording
+        run: |
+          mkdir -p "$RUNNER_TEMP/e2e-debug/recordings"
+          nohup xcrun simctl io "$SIMULATOR_UDID" recordVideo --codec h264 --force \
+            "$RUNNER_TEMP/e2e-debug/recordings/rec.mp4" > recordvideo.log 2>&1 &
+          echo "RECORDING_PID=$!" >> "$GITHUB_ENV"
+          # simctl only records from the first processed frame, which it
+          # announces; without the wait the tests start before the recording.
+          for _ in $(seq 1 30); do
+            if grep -q "Recording started" recordvideo.log 2>/dev/null; then break; fi
+            sleep 1
+          done
+
       - name: Run E2E tests
         run: argent flow run ./.argent/flows --device $SIMULATOR_UDID
+
+      - name: Stop screen recording
+        if: ${{ always() }}
+        run: |
+          # SIGINT is what makes recordVideo write the mp4 trailer; killed any
+          # other way, the file is unplayable.
+          kill -INT "${RECORDING_PID:-}" 2>/dev/null || true
+          for _ in $(seq 1 15); do
+            kill -0 "${RECORDING_PID:-}" 2>/dev/null || break
+            sleep 1
+          done
 
       # The tool-server log also carries the device backend's stderr
       # (`[sim <udid>]` lines), where a failed connection to the simulator is
       # explained.
-      - name: Print Argent tool-server log
+      - name: Collect logs
+        if: ${{ always() }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/e2e-debug/logs"
+          for f in recordvideo.log "${ARGENT_SERVER_LOG:-}"; do
+            cp "$f" "$RUNNER_TEMP/e2e-debug/logs" 2>/dev/null || true
+          done
+          ls -lR "$RUNNER_TEMP/e2e-debug"
+
+      - name: Upload logs and screen recording
         if: ${{ !success() }}
-        run: cat "$ARGENT_SERVER_LOG" 2>/dev/null || echo "no Argent tool-server log"
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-ios-debug-${{ inputs.artifact-name }}
+          path: ${{ runner.temp }}/e2e-debug/
+          if-no-files-found: ignore

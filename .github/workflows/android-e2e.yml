@@ -121,8 +121,11 @@ jobs:
           fi
           adb shell input keyevent 82
           adb shell settings put global window_animation_scale 0.0
-          adb shell settings put global transition_animation_scale 0.0
           adb shell settings put global animator_duration_scale 0.0
+          # transition_animation_scale is left alone on purpose: Reanimated
+          # reports reduced motion when it is 0, which finishes every withTiming
+          # in a single frame.
+          adb shell settings put system show_touches 1
           SERIAL=$(adb devices | awk 'NR>1 && $2=="device"{print $1; exit}')
           echo "Emulator ready: $SERIAL"
           echo "ANDROID_SERIAL=$SERIAL" >> "$GITHUB_ENV"
@@ -143,13 +146,52 @@ jobs:
         with:
           simulator-server-log: debug
 
+      # `screenrecord` stops on its own after 3 minutes, so record in segments
+      # until the stop step interrupts it.
+      - name: Start screen recording
+        run: |
+          adb shell 'rm -f /sdcard/rec-*.mp4'
+          nohup bash -c '
+            i=0
+            while adb shell screenrecord --bit-rate 2000000 --time-limit 180 \
+              "/sdcard/rec-$(printf %03d "$i").mp4"; do
+              i=$((i + 1))
+            done
+          ' > screenrecord.log 2>&1 &
+          echo "SCREENRECORD_PID=$!" >> "$GITHUB_ENV"
+
       - name: Run E2E tests
         run: argent flow run ./.argent/flows --device "$ANDROID_SERIAL"
 
-      - name: Print emulator log
-        if: ${{ !success() }}
-        run: cat emulator.log 2>/dev/null || echo "no emulator.log"
+      - name: Stop screen recording
+        if: ${{ always() }}
+        run: |
+          kill "${SCREENRECORD_PID:-}" 2>/dev/null || true
+          # SIGINT is what makes screenrecord write the mp4 trailer; killed any
+          # other way, the last segment is unplayable.
+          adb shell pkill -INT screenrecord || true
+          for _ in $(seq 1 15); do
+            adb shell pgrep screenrecord > /dev/null 2>&1 || break
+            sleep 1
+          done
+          mkdir -p "$RUNNER_TEMP/e2e-debug/recordings"
+          for f in $(adb shell 'ls /sdcard/rec-*.mp4' 2>/dev/null | tr -d '\r'); do
+            adb pull "$f" "$RUNNER_TEMP/e2e-debug/recordings" || true
+          done
 
-      - name: Print Argent tool-server log
+      - name: Collect logs
+        if: ${{ always() }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/e2e-debug/logs"
+          for f in emulator.log screenrecord.log "${ARGENT_SERVER_LOG:-}"; do
+            cp "$f" "$RUNNER_TEMP/e2e-debug/logs" 2>/dev/null || true
+          done
+          ls -lR "$RUNNER_TEMP/e2e-debug"
+
+      - name: Upload logs and screen recording
         if: ${{ !success() }}
-        run: cat "$ARGENT_SERVER_LOG" 2>/dev/null || echo "no Argent tool-server log"
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-android-debug-${{ inputs.artifact-name }}
+          path: ${{ runner.temp }}/e2e-debug/
+          if-no-files-found: ignore
