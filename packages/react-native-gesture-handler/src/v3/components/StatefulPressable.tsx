@@ -198,7 +198,7 @@ const Pressable = (props: PressableProps) => {
   const handlePressOut = useCallback(
     (event: PressableEvent, success: boolean = true) => {
       if (!isCurrentlyPressed.current) {
-        // Some prop configurations may lead to handlePressOut being called mutliple times.
+        // Some prop configurations may lead to handlePressOut being called multiple times.
         return;
       }
 
