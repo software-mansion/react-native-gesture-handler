@@ -42,7 +42,9 @@
 
 @implementation RNBetterPanGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
-#if !TARGET_OS_OSX
+#if TARGET_OS_OSX
+  BOOL _blockAutomaticActivation;
+#else
   NSUInteger _realMinimumNumberOfTouches;
 #endif
   BOOL _hasCustomActivationCriteria;
@@ -114,6 +116,9 @@
 
 - (void)activateAfterLongPress
 {
+#if TARGET_OS_OSX
+  _blockAutomaticActivation = NO;
+#endif
   self.state = UIGestureRecognizerStateBegan;
   // Send event in ACTIVE state because UIGestureRecognizerStateBegan is mapped to RNGestureHandlerStateBegan
   [_gestureHandler handleGesture:self inState:RNGestureHandlerStateActive];
@@ -144,6 +149,11 @@
 #endif
 
 #if TARGET_OS_OSX
+  // NSPanGestureRecognizer transitions to the Began state on mouse-down, without any
+  // built-in movement hysteresis. To honor the custom activation criteria (minDist,
+  // activeOffsets, minVelocity) we hold the recognizer in the Possible state until
+  // they are met in interactionsMoved.
+  _blockAutomaticActivation = _hasCustomActivationCriteria;
   [super mouseDown:event];
 #else
   [super touchesBegan:touches withEvent:event];
@@ -181,7 +191,14 @@
     }
   }
 
-#if !TARGET_OS_TV && !TARGET_OS_OSX
+#if TARGET_OS_OSX
+  if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible &&
+      [self shouldActivateUnderCustomCriteria]) {
+    _blockAutomaticActivation = NO;
+    self.state = UIGestureRecognizerStateBegan;
+    [self setTranslation:CGPointMake(0, 0) inView:self.view];
+  }
+#elif !TARGET_OS_TV
   if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible &&
       [self shouldActivateUnderCustomCriteria]) {
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
@@ -213,6 +230,23 @@
 }
 
 #if TARGET_OS_OSX
+
+- (void)setState:(NSGestureRecognizerState)state
+{
+  if (_blockAutomaticActivation) {
+    if (state == NSGestureRecognizerStateBegan || state == NSGestureRecognizerStateChanged) {
+      // Hold the recognizer in the Possible state until the custom activation criteria
+      // are met — the superclass keeps tracking the mouse regardless, so translation
+      // and velocity stay valid for the criteria checks.
+      return;
+    }
+    if (state == NSGestureRecognizerStateEnded) {
+      // Mouse released before the activation criteria were met — the gesture failed.
+      state = NSGestureRecognizerStateFailed;
+    }
+  }
+  [super setState:state];
+}
 
 - (void)mouseDown:(NSEvent *)event
 {
@@ -269,6 +303,9 @@
   [self triggerActionFromReset];
   [_gestureHandler.pointerTracker reset];
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
+#if TARGET_OS_OSX
+  _blockAutomaticActivation = NO;
+#endif
   [super reset];
   [_gestureHandler reset];
 

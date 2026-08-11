@@ -4,19 +4,60 @@ import { View } from 'react-native';
 
 import { ActionType } from '../ActionType';
 import { normalizeHitSlop } from '../handlers/hitSlop';
+import { PointerType } from '../PointerType';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
-import type { ButtonEvent } from '../specs/RNGestureHandlerButtonNativeComponent';
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
+import type { ButtonEvent } from '../v3/types';
 import type { PropsRef } from '../web/interfaces';
 import { NativeGestureRole } from '../web/interfaces';
 import { ButtonEventName } from '../web/tools/ButtonEvents';
 import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
+import {
+  calculateViewScale,
+  getEffectiveBoundingRect,
+  PointerTypeMapping,
+} from '../web/utils';
 
 const prefersReducedMotion = (): boolean =>
   typeof window !== 'undefined' &&
   !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
 
 const noopGestureEvent = () => undefined;
+
+type ButtonPointerEvent = NativeSyntheticEvent<{
+  clientX?: number;
+  clientY?: number;
+  pointerType?: string;
+}>;
+
+// Same coordinate basis as the press path (see PointerEventManager's
+// `mapEvent`), so the two payloads agree. Both reads below force a layout flush,
+// hence the caller-side gate on a hover callback existing.
+const buttonEventFromPointerEvent = (
+  event: ButtonPointerEvent
+): ButtonEvent => {
+  const view = event.currentTarget as unknown as HTMLElement;
+  const rect = getEffectiveBoundingRect(view);
+  const { scaleX, scaleY } = calculateViewScale(view);
+  const absoluteX = event.nativeEvent.clientX ?? 0;
+  const absoluteY = event.nativeEvent.clientY ?? 0;
+
+  return {
+    pointerInside:
+      absoluteX >= rect.left &&
+      absoluteX <= rect.right &&
+      absoluteY >= rect.top &&
+      absoluteY <= rect.bottom,
+    x: (absoluteX - rect.left) / scaleX,
+    y: (absoluteY - rect.top) / scaleY,
+    absoluteX,
+    absoluteY,
+    numberOfPointers: 1,
+    pointerType:
+      PointerTypeMapping.get(event.nativeEvent.pointerType ?? '') ??
+      PointerType.OTHER,
+  };
+};
 
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
@@ -63,6 +104,12 @@ type ButtonProps = ViewProps & {
   onButtonLongPress?:
     | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
     | undefined;
+  onButtonHoverIn?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+  onButtonHoverOut?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
   onButtonInteractionFinished?:
     | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
     | undefined;
@@ -97,6 +144,8 @@ export const ButtonComponent = ({
   onButtonPressIn,
   onButtonPressOut,
   onButtonLongPress,
+  onButtonHoverIn,
+  onButtonHoverOut,
   onButtonInteractionFinished,
   style,
   children,
@@ -117,6 +166,12 @@ export const ButtonComponent = ({
     null
   );
   const gestureEnabledRef = React.useRef(true);
+  // Hover events outlive the pointer event behind them (`enabled` flipping while
+  // hovered), so the payload is copied out.
+  const hoverSample = React.useRef<ButtonEvent | null>(null);
+  // The hover state JS was last told about, which drifts from the effective one
+  // on purpose — see `dispatchHoverEventIfNeeded`.
+  const hoverReported = React.useRef(false);
   const viewRef = React.useRef<HTMLElement | null>(null);
   const gesturePropsRef = React.useRef<PropsRef>({
     // Managed button handlers dispatch their events through DOM CustomEvents,
@@ -380,35 +435,102 @@ export const ButtonComponent = ({
     longPressDuration,
   ]);
 
-  const handlePointerEnter = React.useCallback(
-    (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
-      if (!enabled || event.nativeEvent.pointerType === 'touch') {
+  // The payload costs a layout read, so only sample when someone is listening.
+  // Truthiness, so `onHoverIn={cond && handler}` can't slip a `false` past.
+  const hasHoverCallbacks =
+    Boolean(onButtonHoverIn) || Boolean(onButtonHoverOut);
+
+  // Emits the balancing hover event whenever `hoverReported` drifts from the
+  // effective hover state. Recomputed from an argument rather than read off the
+  // render-scope `effectiveHovered`, because a handler reports a flag React
+  // hasn't committed to `hovered` yet.
+  const dispatchHoverEventIfNeeded = React.useCallback(
+    (isHovered: boolean) => {
+      const effectiveHovered = isHovered && enabled;
+      const sample = hoverSample.current;
+
+      if (effectiveHovered === hoverReported.current || sample === null) {
         return;
       }
+
+      hoverReported.current = effectiveHovered;
+      const event = {
+        nativeEvent: sample,
+      } as NativeSyntheticEvent<ButtonEvent>;
+
+      if (effectiveHovered) {
+        onButtonHoverIn?.(event);
+      } else {
+        onButtonHoverOut?.(event);
+      }
+    },
+    [enabled, onButtonHoverIn, onButtonHoverOut]
+  );
+
+  const handlePointerEnter = React.useCallback(
+    (event: ButtonPointerEvent) => {
+      if (event.nativeEvent.pointerType === 'touch') {
+        return;
+      }
+
+      if (hasHoverCallbacks) {
+        hoverSample.current = buttonEventFromPointerEvent(event);
+      }
+      // From the handler rather than the effect below, so a leave and a
+      // re-enter batched into one render still produce both events.
+      dispatchHoverEventIfNeeded(true);
+
       // Skip duration update while pressed so the press transition owns it.
       if (!pressed) {
         setCurrentDuration(hoverAnimationInDuration);
       }
+      // Tracked regardless of `enabled`, which is masked at render and when
+      // reporting — so hover resumes if it flips back while inside.
       setHovered(true);
     },
-    [enabled, pressed, hoverAnimationInDuration]
+    [
+      hasHoverCallbacks,
+      hoverAnimationInDuration,
+      pressed,
+      dispatchHoverEventIfNeeded,
+    ]
   );
 
   const handlePointerLeave = React.useCallback(
-    (event: NativeSyntheticEvent<{ pointerType?: string }>) => {
+    (event: ButtonPointerEvent) => {
       if (handlerTag === undefined) {
         pressOut(event);
       }
       if (event.nativeEvent.pointerType === 'touch') {
         return;
       }
+
+      if (hasHoverCallbacks) {
+        hoverSample.current = buttonEventFromPointerEvent(event);
+      }
+      dispatchHoverEventIfNeeded(false);
+
       if (!pressed) {
         setCurrentDuration(hoverAnimationOutDuration);
       }
       setHovered(false);
     },
-    [handlerTag, hoverAnimationOutDuration, pressOut, pressed]
+    [
+      handlerTag,
+      hasHoverCallbacks,
+      hoverAnimationOutDuration,
+      pressOut,
+      pressed,
+      dispatchHoverEventIfNeeded,
+    ]
   );
+
+  // The one transition the pointer handlers can't see: `enabled` flipping while
+  // the pointer is inside. Plain `useEffect` keeps a consumer that toggles
+  // `enabled` from its own hover callback out of the commit phase.
+  React.useEffect(() => {
+    dispatchHoverEventIfNeeded(hovered);
+  }, [hovered, dispatchHoverEventIfNeeded]);
 
   // Mask hover at render rather than clearing the state. Avoids a state
   // write inside an effect, and lets hover resume naturally when `enabled`

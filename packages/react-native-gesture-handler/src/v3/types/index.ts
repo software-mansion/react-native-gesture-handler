@@ -11,6 +11,7 @@ export type {
 export type { DetectorCallbacks, VirtualChild } from './DetectorTypes';
 export type {
   AnimatedEvent,
+  ButtonEvent,
   ChangeCalculatorType,
   DiffCalculatorType,
   GestureEndEvent,
@@ -19,6 +20,7 @@ export type {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
   HandlerData,
+  NativeEventWrapper,
   StateChangeEventWithHandlerData,
   TouchEvent,
   UnpackedGestureHandlerEvent,

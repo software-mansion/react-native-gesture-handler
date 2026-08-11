@@ -1,15 +1,12 @@
 package com.swmansion.gesturehandler.core
 
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
@@ -19,6 +16,8 @@ import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.findActivity
+import com.swmansion.gesturehandler.react.getPointerType
 import com.swmansion.gesturehandler.react.isHoverAction
 import java.lang.IllegalStateException
 import java.util.*
@@ -206,7 +205,7 @@ open class GestureHandler {
     this.view = view
     this.orchestrator = orchestrator
 
-    val content = getActivity(view?.context)?.findViewById<View>(android.R.id.content)
+    val content = view?.context.findActivity()?.findViewById<View>(android.R.id.content)
     if (content != null) {
       content.getLocationOnScreen(windowOffset)
     } else {
@@ -218,13 +217,6 @@ open class GestureHandler {
   }
 
   protected open fun onPrepare() {}
-
-  private fun getActivity(context: Context?): Activity? = when (context) {
-    is ReactContext -> context.currentActivity
-    is Activity -> context
-    is ContextWrapper -> getActivity(context.baseContext)
-    else -> null
-  }
 
   private fun findNextLocalPointerId(): Int {
     var localPointerId = 0
@@ -886,14 +878,7 @@ open class GestureHandler {
   }
 
   private fun setPointerType(event: MotionEvent) {
-    val pointerIndex = event.actionIndex
-
-    pointerType = when (event.getToolType(pointerIndex)) {
-      MotionEvent.TOOL_TYPE_FINGER -> POINTER_TYPE_TOUCH
-      MotionEvent.TOOL_TYPE_STYLUS -> POINTER_TYPE_STYLUS
-      MotionEvent.TOOL_TYPE_MOUSE -> POINTER_TYPE_MOUSE
-      else -> POINTER_TYPE_OTHER
-    }
+    pointerType = event.getPointerType(event.actionIndex)
   }
 
   open fun wantsToAttachDirectlyToView() = false
@@ -1043,7 +1028,8 @@ open class GestureHandler {
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
-    const val POINTER_TYPE_OTHER = 3
+    const val POINTER_TYPE_KEY = 3
+    const val POINTER_TYPE_OTHER = 4
     private const val MAX_POINTERS_COUNT = 17
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>

@@ -30,7 +30,7 @@ const RawButtonInner = createNativeWrapper<
 });
 
 /**
- * @deprecated `RawButton` is deprecated, use `Clickable` instead
+ * @deprecated `RawButton` is deprecated, use `Touchable` instead
  */
 export const RawButton = (props: RawButtonProps) => (
   <RawButtonInner {...props} needsOffscreenAlphaCompositing />

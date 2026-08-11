@@ -12,14 +12,6 @@ jest.mock('../handlers/gestures/reanimatedWrapper', () => {
     useEvent: jest.fn(() => jest.fn()),
     isSharedValue: (value: unknown): boolean =>
       value !== null && typeof value === 'object' && 'value' in value,
-    isWorkletFunction: (value: unknown): boolean =>
-      typeof value === 'function' && '__workletHash' in value,
-    makeMutable: <T,>(value: T) => ({ value }),
-    runOnUI: () => jest.fn(),
-    runOnJS:
-      (fn: (...args: unknown[]) => unknown) =>
-      (...args: unknown[]) =>
-        fn(...args),
     useSharedValue: <T,>(value: T) => ({ value }),
     setGestureState: jest.fn(),
   };

@@ -1,4 +1,4 @@
-import React, { use, useCallback, useRef, useState } from 'react';
+import React, { use, useCallback, useMemo, useRef, useState } from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 import { Platform } from 'react-native';
 
@@ -10,7 +10,8 @@ import { getNextHandlerTag } from '../../../handlers/getNextHandlerTag';
 import {
   isKeyboardDismissingTap,
   JSResponderContext,
-} from '../ScrollViewResponderInterceptor';
+  updateResponderEventValue,
+} from '../../scrollViewInterop';
 import type { AnimationDuration, TouchableProps } from './TouchableProps';
 
 const isAndroid = Platform.OS === 'android';
@@ -78,6 +79,8 @@ export const Touchable = (props: TouchableProps) => {
     onPress,
     onPressIn,
     onPressOut,
+    onHoverIn,
+    onHoverOut,
     children,
     disabled = false,
     cancelOnLeave = true,
@@ -93,6 +96,18 @@ export const Touchable = (props: TouchableProps) => {
 
   const jsResponderContext = use(JSResponderContext);
   const dropKeyboardTapRef = useRef<boolean | null>(null);
+
+  // The button handles presses natively, without a NativeDetector, so it has
+  // to mark its responder events as RNGH-handled itself — otherwise a tap on
+  // it looks unhandled to an enclosing ScrollView in
+  // keyboardShouldPersistTaps='handled' mode and dismisses the keyboard.
+  const handleStartShouldSetResponderCapture = useCallback(() => {
+    if (!disabled) {
+      updateResponderEventValue(jsResponderContext, true);
+    }
+
+    return false;
+  }, [disabled, jsResponderContext]);
 
   const internalOnPress = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
@@ -144,6 +159,25 @@ export const Touchable = (props: TouchableProps) => {
     [onLongPress]
   );
 
+  // Left undefined when the corresponding prop is absent so web can skip
+  // building a hover payload nobody consumes — it costs a synchronous layout
+  // read per pointer enter/leave. The native platforms emit either way.
+  const internalOnHoverIn = useMemo(
+    () =>
+      onHoverIn
+        ? (e: NativeSyntheticEvent<ButtonEvent>) => onHoverIn(e.nativeEvent)
+        : undefined,
+    [onHoverIn]
+  );
+
+  const internalOnHoverOut = useMemo(
+    () =>
+      onHoverOut
+        ? (e: NativeSyntheticEvent<ButtonEvent>) => onHoverOut(e.nativeEvent)
+        : undefined,
+    [onHoverOut]
+  );
+
   // InteractionFinished is dispatched after the terminal PressOut/Press
   // events, so resetting synchronously here is safe.
   const internalOnInteractionFinished = useCallback(() => {
@@ -179,6 +213,7 @@ export const Touchable = (props: TouchableProps) => {
       {...resolvedDurations}
       ref={ref ?? null}
       enabled={!disabled}
+      onStartShouldSetResponderCapture={handleStartShouldSetResponderCapture}
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTag={handlerTag}
       cancelOnLeave={cancelOnLeave}
@@ -194,6 +229,8 @@ export const Touchable = (props: TouchableProps) => {
       onButtonPressIn={internalOnPressIn}
       onButtonPressOut={internalOnPressOut}
       onButtonLongPress={internalOnLongPress}
+      onButtonHoverIn={internalOnHoverIn}
+      onButtonHoverOut={internalOnHoverOut}
       onButtonInteractionFinished={internalOnInteractionFinished}>
       {children}
     </GestureHandlerButton>

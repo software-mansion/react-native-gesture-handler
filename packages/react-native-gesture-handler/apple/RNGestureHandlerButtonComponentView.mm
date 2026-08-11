@@ -30,7 +30,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 }
 
-@interface RNGestureHandlerButtonComponentView () <RCTRNGestureHandlerButtonViewProtocol, RNGHButtonPressEventDelegate>
+@interface RNGestureHandlerButtonComponentView () <RCTRNGestureHandlerButtonViewProtocol, RNGHButtonEventDelegate>
 @end
 
 @implementation RNGestureHandlerButtonComponentView {
@@ -65,7 +65,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
     _moduleId = -1;
     _buttonView = [[RNGestureHandlerButton alloc] initWithFrame:self.bounds];
     _buttonView.animationTarget = self;
-    _buttonView.pressEventDelegate = self;
+    _buttonView.eventDelegate = self;
 
     self.contentView = _buttonView;
   }
@@ -374,7 +374,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   [self dropManagedHandler];
 }
 
-#pragma mark - RNGHButtonPressEventDelegate
+#pragma mark - RNGHButtonEventDelegate
 
 - (void)dispatchButtonEvent:(RNGHButtonEventType)type withExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
@@ -410,6 +410,12 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
       break;
     case RNGHButtonEventTypeLongPress:
       eventEmitter.onButtonLongPress(fillEvent(RNGestureHandlerButtonEventEmitter::OnButtonLongPress{}));
+      break;
+    case RNGHButtonEventTypeHoverIn:
+      eventEmitter.onButtonHoverIn(fillEvent(RNGestureHandlerButtonEventEmitter::OnButtonHoverIn{}));
+      break;
+    case RNGHButtonEventTypeHoverOut:
+      eventEmitter.onButtonHoverOut(fillEvent(RNGestureHandlerButtonEventEmitter::OnButtonHoverOut{}));
       break;
     case RNGHButtonEventTypeInteractionFinished:
       eventEmitter.onButtonInteractionFinished(

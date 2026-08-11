@@ -55,6 +55,25 @@
   BOOL _isPressed;
   dispatch_block_t _pendingHoverOutBlock;
 
+  // Whether a hover was already open at press-start. The touch stream may only
+  // *maintain* such a hover — opening one where the recognizer reports none (a
+  // pencil on an iPad without hover support) would leave nothing to close it.
+  BOOL _hoverActiveAtPressStart;
+  // Whether the pressing pointer is the one that can hover, latched at
+  // press-start because `cancelTrackingWithEvent:` carries no touch to ask.
+  BOOL _pressTouchIsHovering;
+
+  // The hover state JS was last told about, which drifts from `effectiveHover`
+  // on purpose — see `dispatchHoverEventIfNeeded` and `willMoveToWindow:`.
+  BOOL _hoverReported;
+  // Hover events outlive the event behind them (the deferred hover-out, and
+  // `userEnabled` flipping while hovered), so the position is copied out. Stays
+  // unsampled on tvOS, where focus opens the hover with no pointer behind it.
+  BOOL _hasHoverSample;
+  CGPoint _lastHoverPosition;
+  CGPoint _lastHoverAbsolutePosition;
+  RNGestureHandlerPointerType _lastHoverPointerType;
+
   // Press event state machine, driven by the state of the managed handler.
   // Cannot rely on the pointerInside flag alone because it may change multiple
   // times between the dispatched events.
@@ -97,6 +116,8 @@
   _hoverScale = -1.0;
   _hoverUnderlayOpacity = -1.0;
   _isHovered = NO;
+  _hoverActiveAtPressStart = NO;
+  _pressTouchIsHovering = NO;
   _isPressed = NO;
   _pendingHoverOutBlock = nil;
   _hasLongPressHandler = NO;
@@ -184,7 +205,13 @@
   _suppressSuperControlActionDispatch = NO;
   _pressInTimestamp = 0;
   _isHovered = NO;
+  _hoverActiveAtPressStart = NO;
+  _pressTouchIsHovering = NO;
   _isPressed = NO;
+  // Recycling hands the button to a different component, so drop the hover
+  // bookkeeping outright rather than reporting a hover-out to the old one.
+  _hoverReported = NO;
+  _hasHoverSample = NO;
 }
 
 #if TARGET_OS_OSX
@@ -199,7 +226,12 @@
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
     _pressInTimestamp = 0;
+    // `_hoverReported` is deliberately left alone: Fabric reparents by removing
+    // and re-inserting, so leaving the window is not proof the pointer left. A
+    // genuine teardown clears it in `prepareForRecycle` instead.
     _isHovered = NO;
+    _hoverActiveAtPressStart = NO;
+    _pressTouchIsHovering = NO;
     _isPressed = NO;
     _lastEventWasInside = NO;
     _longPressDetected = NO;
@@ -218,7 +250,12 @@
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
     _pressInTimestamp = 0;
+    // `_hoverReported` is deliberately left alone: Fabric reparents by removing
+    // and re-inserting, so leaving the window is not proof the pointer left. A
+    // genuine teardown clears it in `prepareForRecycle` instead.
     _isHovered = NO;
+    _hoverActiveAtPressStart = NO;
+    _pressTouchIsHovering = NO;
     _isPressed = NO;
     _lastEventWasInside = NO;
     _longPressDetected = NO;
@@ -264,7 +301,7 @@
 
 // The hover visual is masked while disabled, so a hover only counts when the
 // button is also enabled.
-- (BOOL)shouldAnimateHover
+- (BOOL)effectiveHover
 {
   return _isHovered && _userEnabled;
 }
@@ -273,17 +310,17 @@
 // press-out settles on the hover values instead of the defaults.
 - (CGFloat)restingOpacity
 {
-  return [self shouldAnimateHover] ? self.hoverOpacity : _defaultOpacity;
+  return [self effectiveHover] ? self.hoverOpacity : _defaultOpacity;
 }
 
 - (CGFloat)restingScale
 {
-  return [self shouldAnimateHover] ? self.hoverScale : _defaultScale;
+  return [self effectiveHover] ? self.hoverScale : _defaultScale;
 }
 
 - (CGFloat)restingUnderlayOpacity
 {
-  return [self shouldAnimateHover] ? self.hoverUnderlayOpacity : _defaultUnderlayOpacity;
+  return [self effectiveHover] ? self.hoverUnderlayOpacity : _defaultUnderlayOpacity;
 }
 
 - (void)setUserEnabled:(BOOL)userEnabled
@@ -293,6 +330,7 @@
   }
 
   _userEnabled = userEnabled;
+  [self dispatchHoverEventIfNeeded];
 
   if (_isHovered && !_isPressed) {
     [self animateHoverState];
@@ -664,7 +702,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)dispatchButtonEvent:(RNGHButtonEventType)type withExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
-  [self.pressEventDelegate dispatchButtonEvent:type withExtraData:extraData];
+  [self.eventDelegate dispatchButtonEvent:type withExtraData:extraData];
 
   if (type == RNGHButtonEventTypePressIn) {
     _lastEventWasInside = YES;
@@ -701,15 +739,35 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 }
 
 #if !TARGET_OS_OSX && !TARGET_OS_TV
+- (void)recordHoverSampleForRecognizer:(UIHoverGestureRecognizer *)recognizer
+{
+  RNGestureHandlerPointerType pointerType = RNGestureHandlerMouse;
+  if (@available(iOS 16.1, *)) {
+    if (recognizer.zOffset > 0.0) {
+      pointerType = RNGestureHandlerStylus;
+    }
+  }
+
+  [self recordHoverSampleAtPosition:[recognizer locationInView:self]
+                   absolutePosition:[recognizer locationInView:self.window]
+                        pointerType:pointerType];
+}
+
 - (void)handleHover:(UIHoverGestureRecognizer *)recognizer
 {
   switch (recognizer.state) {
+    // Changed only refreshes the position, since `onHoverIn` bails when the
+    // hover is already open — so a hover-out emitted much later still points at
+    // where the pointer actually is.
     case UIGestureRecognizerStateBegan:
+    case UIGestureRecognizerStateChanged:
+      [self recordHoverSampleForRecognizer:recognizer];
       [self onHoverIn];
       break;
     case UIGestureRecognizerStateEnded:
     case UIGestureRecognizerStateCancelled:
     case UIGestureRecognizerStateFailed:
+      [self recordHoverSampleForRecognizer:recognizer];
       [self onHoverOut];
       break;
     default:
@@ -717,6 +775,81 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 }
 #endif
+
+// The rect a hovering pointer counts as "inside", matching the hitSlop-expanded
+// frame the press path hit-tests against.
+- (CGRect)hoverHitFrame
+{
+#if !TARGET_OS_OSX
+  return UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+#else
+  return self.bounds;
+#endif
+}
+
+// The pointer type is latched for the duration of a reported hover: a pencil's
+// `zOffset` collapses to zero as it approaches contact, which would otherwise
+// make the closing hover-out claim a different type than the hover-in.
+- (void)recordHoverSampleAtPosition:(CGPoint)position
+                   absolutePosition:(CGPoint)absolutePosition
+                        pointerType:(RNGestureHandlerPointerType)pointerType
+{
+  _lastHoverPosition = position;
+  _lastHoverAbsolutePosition = absolutePosition;
+
+  if (!_hoverReported) {
+    _lastHoverPointerType = pointerType;
+  }
+
+  _hasHoverSample = YES;
+}
+
+/*
+ * Emits the balancing hover event whenever `_hoverReported` drifts from
+ * `effectiveHover`. Sharing that accessor with the hover visual is what keeps
+ * callbacks and appearance in step, so disabling a hovered button reports a
+ * hover-out and re-enabling it reports a hover-in.
+ */
+- (void)dispatchHoverEventIfNeeded
+{
+  // Only the v3 managed button listens for hover events. Checked before
+  // `_hoverReported` is touched, so a tag attached midway through a hover can't
+  // leave it claiming a hover-in JS never received.
+  if (_managedHandlerTag == nil) {
+    return;
+  }
+
+  BOOL effective = [self effectiveHover];
+
+  if (effective == _hoverReported) {
+    return;
+  }
+
+  _hoverReported = effective;
+
+  // tvOS drives hover from focus: the component view's
+  // `didUpdateFocusInContext:` calls `onHoverIn`/`onHoverOut` with no pointer
+  // behind them, so fall back to the button's centre.
+  CGPoint position = _lastHoverPosition;
+  CGPoint absolutePosition = _lastHoverAbsolutePosition;
+  RNGestureHandlerPointerType pointerType = _lastHoverPointerType;
+
+  if (!_hasHoverSample) {
+    position = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
+    absolutePosition = [self convertPoint:position toView:nil];
+    pointerType = RNGestureHandlerOtherPointer;
+  }
+
+  RNGestureHandlerEventExtraData *extraData =
+      [RNGestureHandlerEventExtraData forPointerInside:CGRectContainsPoint([self hoverHitFrame], position)
+                                          withPosition:position
+                                  withAbsolutePosition:absolutePosition
+                                   withNumberOfTouches:1
+                                       withPointerType:pointerType];
+
+  [self dispatchButtonEvent:effective ? RNGHButtonEventTypeHoverIn : RNGHButtonEventTypeHoverOut
+              withExtraData:extraData];
+}
 
 // Animate to the effective hover visual. No-op while pressed — the press owns
 // the visual and press-out settles on the recorded hover state via resting*.
@@ -726,7 +859,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     return;
   }
 
-  if ([self shouldAnimateHover]) {
+  if ([self effectiveHover]) {
     [self animateToOpacity:self.hoverOpacity
                      scale:self.hoverScale
            underlayOpacity:self.hoverUnderlayOpacity
@@ -758,6 +891,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   _isHovered = YES;
+  [self dispatchHoverEventIfNeeded];
   [self animateHoverState];
 }
 
@@ -767,20 +901,26 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     // A genuine exit while pressed — drop hover so the release settles on the
     // default state rather than animating back to the hover values.
     _isHovered = NO;
+    // The hover is genuinely over, so stop deriving it — otherwise the next drag
+    // update re-opens it for the pressing pointer.
+    _hoverActiveAtPressStart = NO;
+    [self dispatchHoverEventIfNeeded];
     return;
   }
 
   [self cancelPendingHoverOut];
 
-  // An Apple Pencil press is bracketed by a hover-out just before touch-down, so
-  // defer a frame to let a following press-in cancel it and keep the hover state
-  // through the press. A real leave has no press, so it settles to default.
+  // A pencil press is bracketed by a hover-out just before touch-down, so defer
+  // a frame to let a following press-in cancel it and keep the hover through the
+  // press. The JS event goes out from the block too, so a cancelled hover-out
+  // never reaches JS.
   __weak auto weakSelf = self;
   _pendingHoverOutBlock = dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
     __strong auto strongSelf = weakSelf;
     if (strongSelf) {
       strongSelf->_pendingHoverOutBlock = nil;
       strongSelf->_isHovered = NO;
+      [strongSelf dispatchHoverEventIfNeeded];
       [strongSelf animateHoverState];
     }
   });
@@ -1024,14 +1164,29 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   [super updateTrackingAreas];
 }
 
+- (void)recordHoverSampleForMouseEvent:(NSEvent *)event
+{
+  CGPoint windowLocation = [event locationInWindow];
+  // `locationInWindow` is bottom-left origin and the window's content view is
+  // not flipped, so mirror y to match the top-left origin every other event in
+  // the library reports (see RNGestureHandlerPointerTracker).
+  CGFloat windowHeight = self.window.contentView.frame.size.height;
+
+  [self recordHoverSampleAtPosition:[self convertPoint:windowLocation fromView:nil]
+                   absolutePosition:CGPointMake(windowLocation.x, windowHeight - windowLocation.y)
+                        pointerType:RNGestureHandlerMouse];
+}
+
 - (void)mouseEntered:(NSEvent *)event
 {
+  [self recordHoverSampleForMouseEvent:event];
   [self onHoverIn];
   [super mouseEntered:event];
 }
 
 - (void)mouseExited:(NSEvent *)event
 {
+  [self recordHoverSampleForMouseEvent:event];
   [self onHoverOut];
   [super mouseExited:event];
 }
@@ -1047,6 +1202,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 {
   NSPoint locationInView = [self convertPoint:[event locationInWindow] fromView:nil];
   _isHovered = NSPointInRect(locationInView, self.bounds);
+  [self recordHoverSampleForMouseEvent:event];
+  [self dispatchHoverEventIfNeeded];
 
   [self handleAnimatePressOut];
   _isTouchInsideBounds = NO;
@@ -1059,7 +1216,11 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
   BOOL currentlyInside = NSPointInRect(locationInView, self.bounds);
 
+  // The tracking area omits NSTrackingEnabledDuringMouseDrag, so enter/exit
+  // don't arrive mid-press — derive the hover transitions from the drag.
   _isHovered = currentlyInside;
+  [self recordHoverSampleForMouseEvent:event];
+  [self dispatchHoverEventIfNeeded];
 
   if (currentlyInside && !_isTouchInsideBounds) {
     _isTouchInsideBounds = YES;
@@ -1084,6 +1245,12 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 - (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
   _isTouchInsideBounds = YES;
+  // A pencil's hover-out arrives just before touch-down but only schedules the
+  // clear, so `_isHovered` still reflects the open hover. Under Reduce Motion
+  // that delay is zero and the block can land first — the press then brackets
+  // with a hover-out and hover-in instead of holding it, which is still balanced.
+  _hoverActiveAtPressStart = _isHovered;
+  _pressTouchIsHovering = [self isHoveringTouch:touch];
   return [super beginTrackingWithTouch:touch withEvent:event];
 }
 
@@ -1091,6 +1258,13 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 - (BOOL)isHoveringTouch:(UITouch *)touch
 {
   return touch.type == UITouchTypeIndirectPointer ? YES : touch.type == UITouchTypePencil;
+}
+
+- (void)recordHoverSampleForTouch:(UITouch *)touch
+{
+  [self recordHoverSampleAtPosition:[touch locationInView:self]
+                   absolutePosition:[touch locationInView:self.window]
+                        pointerType:touch.type == UITouchTypePencil ? RNGestureHandlerStylus : RNGestureHandlerMouse];
 }
 
 // Mirrors `sendActionsForControlEvents:` but preserves the real `UIEvent`
@@ -1144,11 +1318,13 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
   BOOL currentlyInside = CGRectContainsPoint(hitFrame, location);
 
-  // Keep `_isHovered` in sync with the drag position for a hovering pointer.
-  // An Apple Pencil suppresses hover events while in contact, so the hover
-  // recognizer can't track in/out transitions during a drag.
-  if ([self isHoveringTouch:touch]) {
+  // A pencil suppresses hover events while in contact, so the recognizer can't
+  // track in/out transitions during a drag — derive them, but only ever to
+  // maintain a hover that was already open.
+  if (_hoverActiveAtPressStart && [self isHoveringTouch:touch]) {
     _isHovered = currentlyInside;
+    [self recordHoverSampleForTouch:touch];
+    [self dispatchHoverEventIfNeeded];
   }
 
   if (currentlyInside) {
@@ -1190,8 +1366,11 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
     BOOL inside = CGRectContainsPoint(hitFrame, location);
 
-    if ([self isHoveringTouch:touch]) {
+    // Gated as in `continueTrackingWithTouch:`.
+    if (_hoverActiveAtPressStart && [self isHoveringTouch:touch]) {
       _isHovered = inside;
+      [self recordHoverSampleForTouch:touch];
+      [self dispatchHoverEventIfNeeded];
     }
 
     if (inside) {
@@ -1208,8 +1387,21 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)cancelTrackingWithEvent:(UIEvent *)event
 {
+  // A pencil's hover stream stays suppressed for as long as it is in contact, so
+  // lifting it out of range after a cancel sends this view nothing — the hover
+  // has to be closed here or it stays open forever. A pointer that is still
+  // hovering re-opens it on the recognizer's next sample.
+  BOOL closesHover = _hoverActiveAtPressStart && _pressTouchIsHovering;
+
   _isHovered = NO;
+  _hoverActiveAtPressStart = NO;
+  _pressTouchIsHovering = NO;
   _isTouchInsideBounds = NO;
+
+  if (closesHover) {
+    [self dispatchHoverEventIfNeeded];
+  }
+
   [super cancelTrackingWithEvent:event];
 }
 

@@ -91,5 +91,46 @@
     "no-alert": "warn",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "packages/react-native-gesture-handler/src/v3/**",
+        "packages/react-native-gesture-handler/src/web/**",
+        "packages/react-native-gesture-handler/src/*.ts"
+      ],
+      "rules": {
+        "no-restricted-globals": [
+          "error",
+          {
+            "name": "global",
+            "message": "Use the standard `globalThis` — the bare `global` binding is React Native/Node-specific and doesn't exist in browsers."
+          }
+        ],
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "Identifier[name='__DEV__']:not(:function *)",
+            "message": "Don't read __DEV__ at module scope — the global may not be defined yet outside Metro when modules are evaluated. Read it lazily inside a function instead."
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/react-native-gesture-handler/src/web/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "react-native",
+                "message": "The web handlers are platform-agnostic engine code — they must not depend on react-native. Guard on runtime capabilities (e.g. DOM availability) instead."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

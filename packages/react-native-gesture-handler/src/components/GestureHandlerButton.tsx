@@ -9,9 +9,8 @@ import type {
   ViewStyle,
 } from 'react-native';
 
-import RNGestureHandlerButtonNativeComponent, {
-  type ButtonEvent,
-} from '../specs/RNGestureHandlerButtonNativeComponent';
+import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
+import type { ButtonEvent } from '../v3/types';
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {
   children?: React.ReactNode;
@@ -67,6 +66,20 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    * Called when the button gets pressed and held past `longPressDuration`.
    */
   onButtonLongPress?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when a non-touch pointer starts hovering over the button.
+   */
+  onButtonHoverIn?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when a non-touch pointer stops hovering over the button.
+   */
+  onButtonHoverOut?:
     | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
     | undefined;
 
