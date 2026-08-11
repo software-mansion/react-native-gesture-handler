@@ -42,7 +42,7 @@ jobs:
       # simulator runtime matches the SDK.
       - name: Pin versions
         id: versions
-        run: echo "xcode=26.4.1" >> "$GITHUB_OUTPUT"
+        run: echo "xcode=26.6" >> "$GITHUB_OUTPUT"
 
   expo-example:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
