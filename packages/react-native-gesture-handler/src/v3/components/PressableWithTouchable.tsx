@@ -1,33 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { Insets } from 'react-native';
+import type { Insets, LayoutChangeEvent } from 'react-native';
 
 import type { ButtonEvent } from '../../components/GestureHandlerButton';
 import type {
   InnerPressableEvent,
+  PressableDimensions,
+  PressableEvent,
   PressableProps,
 } from '../../components/Pressable/PressableProps';
-import { addInsets, numberAsInset } from '../../components/Pressable/utils';
+import {
+  addInsets,
+  isTouchWithinInset,
+  numberAsInset,
+} from '../../components/Pressable/utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { Touchable } from './Touchable/Touchable';
 
-// The native button reports coordinates on every press/hover event, so a
-// `ButtonEvent` carries everything a `PressableEvent` exposes. There is no touch
-// list at this layer, so `touches`/`changedTouches` mirror the single point
-// (matching the other Pressable event converters).
-function buttonToPressableEvent(event: ButtonEvent) {
-  const timestamp = Date.now();
-  const inner: InnerPressableEvent = {
+function buttonToInner(event: ButtonEvent): InnerPressableEvent {
+  return {
     identifier: 0,
     locationX: event.x,
     locationY: event.y,
     pageX: event.absoluteX,
     pageY: event.absoluteY,
     target: 0,
-    timestamp,
+    timestamp: Date.now(),
     touches: [],
     changedTouches: [],
     force: undefined,
   };
+}
+
+function buttonToPressableEvent(event: ButtonEvent) {
+  const inner = buttonToInner(event);
 
   return {
     nativeEvent: {
@@ -37,6 +42,9 @@ function buttonToPressableEvent(event: ButtonEvent) {
     },
   };
 }
+
+// RN's Pressable default. Touchable's own default is 600ms
+const DEFAULT_LONG_PRESS_DURATION = 500;
 
 function normalizeInset(value: Insets | number | null | undefined): Insets {
   return typeof value === 'number'
@@ -76,9 +84,8 @@ const PressableWithTouchable = (props: PressableProps) => {
     ...rest
   } = props;
 
-  // Pull the props that must not reach Touchable: `cancelable` /
-  // `dimensionsAfterResize` are unsupported here, and the relation props are
-  // handled by the wrapper (which routes them to the stateful implementation).
+  // Drop props Touchable doesn't take: `cancelable`/`dimensionsAfterResize` are
+  // unsupported; the relation props are handled by the wrapper.
   //
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const {
@@ -93,9 +100,11 @@ const PressableWithTouchable = (props: PressableProps) => {
 
   const [pressed, setPressed] = useState(testOnly_pressed ?? false);
   const timers = useRef<Timers>({ press: null, hoverIn: null, hoverOut: null });
+  const dimensions = useRef<PressableDimensions>({ width: 0, height: 0 });
 
-  // Clear any pending timers on unmount so a delayed callback never fires into
-  // a torn-down component.
+  // Whether the in-progress press activated within hitSlop (see handlePressIn).
+  const isActive = useRef(false);
+
   useEffect(
     () => () => {
       const pending = timers.current;
@@ -126,8 +135,12 @@ const PressableWithTouchable = (props: PressableProps) => {
       }
     : undefined;
 
+  // Activation is gated to `normalizedHitSlop` (see handlePressIn); the native
+  // button gets the wider `appliedHitSlop` so an active press is retained out
+  // to hitSlop + pressRetentionOffset before it cancels.
+  const normalizedHitSlop = normalizeInset(hitSlop);
   const appliedHitSlop = addInsets(
-    normalizeInset(hitSlop),
+    normalizedHitSlop,
     normalizeInset(pressRetentionOffset)
   );
 
@@ -137,17 +150,40 @@ const PressableWithTouchable = (props: PressableProps) => {
   };
 
   const handlePressIn = (event: ButtonEvent) => {
+    // A down in the retention-only zone is held by the button but isn't a press.
+    isActive.current = isTouchWithinInset(
+      dimensions.current,
+      normalizedHitSlop,
+      buttonToInner(event)
+    );
+
+    if (!isActive.current) {
+      return;
+    }
+
     if (unstable_pressDelay) {
+      // Drop a still-pending timer so a re-entrant press can't double-fire.
+      if (timers.current.press) {
+        clearTimeout(timers.current.press);
+      }
+
       timers.current.press = setTimeout(() => {
         timers.current.press = null;
         firePressIn(event);
       }, unstable_pressDelay);
       return;
     }
+
     firePressIn(event);
   };
 
   const handlePressOut = (event: ButtonEvent) => {
+    // Not cleared here: onPress fires after onPressOut and must stay suppressed
+    // too; isActive resets on the next press-in.
+    if (!isActive.current) {
+      return;
+    }
+
     // If the touch is released before `unstable_pressDelay` elapses, RN still
     // emits the deferred `onPressIn` before `onPressOut` — flush it now.
     if (timers.current.press) {
@@ -158,6 +194,22 @@ const PressableWithTouchable = (props: PressableProps) => {
 
     setPressed(false);
     onPressOut?.(buttonToPressableEvent(event));
+  };
+
+  const makeActiveHandler = (
+    handler: ((event: PressableEvent) => void) | null | undefined
+  ) =>
+    handler
+      ? (event: ButtonEvent) => {
+          if (isActive.current) {
+            handler(buttonToPressableEvent(event));
+          }
+        }
+      : undefined;
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    onLayout?.(event);
+    dimensions.current = event.nativeEvent.layout;
   };
 
   const handleHoverIn = onHoverIn
@@ -211,26 +263,20 @@ const PressableWithTouchable = (props: PressableProps) => {
       accessible={accessible !== false}
       disabled={disabled === true}
       hitSlop={appliedHitSlop}
-      onLayout={onLayout}
+      onLayout={handleLayout}
       androidRipple={androidRipple}
       touchSoundDisabled={android_disableSound ?? undefined}
-      delayLongPress={delayLongPress ?? undefined}
+      delayLongPress={delayLongPress ?? DEFAULT_LONG_PRESS_DURATION}
       style={resolvedStyle}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      onPress={
-        onPress ? (event) => onPress(buttonToPressableEvent(event)) : undefined
-      }
-      onLongPress={
-        onLongPress
-          ? (event) => onLongPress(buttonToPressableEvent(event))
-          : undefined
-      }
+      onPress={makeActiveHandler(onPress)}
+      onLongPress={makeActiveHandler(onLongPress)}
       onHoverIn={handleHoverIn}
       onHoverOut={handleHoverOut}>
       {resolvedChildren}
       {__DEV__ ? (
-        <PressabilityDebugView color="red" hitSlop={appliedHitSlop} />
+        <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
       ) : null}
     </Touchable>
   );
