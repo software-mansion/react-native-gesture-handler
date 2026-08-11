@@ -63,6 +63,8 @@ export function bindSharedValues<
         });
         return;
       }
+
+      updateGestureHandlerConfig(handlerTag, { [configKey]: value });
     });
   };
 
