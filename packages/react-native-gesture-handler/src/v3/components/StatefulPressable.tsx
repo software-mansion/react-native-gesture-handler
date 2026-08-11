@@ -52,7 +52,7 @@ import { PureNativeButton } from './GestureButtons';
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
 
-const Pressable = (props: PressableProps) => {
+const StatefulPressable = (props: PressableProps) => {
   const {
     testOnly_pressed,
     hitSlop,
@@ -450,4 +450,4 @@ const Pressable = (props: PressableProps) => {
   );
 };
 
-export default Pressable;
+export default StatefulPressable;
