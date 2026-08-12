@@ -46,7 +46,8 @@ export default {
           ],
         },
       ],
-      "@rnrepo/expo-config-plugin",
+      '@rnrepo/expo-config-plugin',
+      'expo-status-bar',
     ],
   },
 };
