@@ -33,7 +33,24 @@ typedef struct RNGHHitSlop {
 
 static RNGHHitSlop RNGHHitSlopEmpty = {NAN, NAN, NAN, NAN, NAN, NAN};
 
-#define RNGH_HIT_SLOP_GET(key) (prop[key] == nil ? NAN : [prop[key] doubleValue])
+// `hitSlop` reaches the native side already normalized by JS into
+// `[left, top, right, bottom, width, height]`, where `null` marks an unspecified edge.
+typedef NS_ENUM(NSUInteger, RNGHHitSlopIndex) {
+  RNGHHitSlopIndexLeft = 0,
+  RNGHHitSlopIndexTop,
+  RNGHHitSlopIndexRight,
+  RNGHHitSlopIndexBottom,
+  RNGHHitSlopIndexWidth,
+  RNGHHitSlopIndexHeight,
+  RNGHHitSlopIndexCount,
+};
+
+static CGFloat RNGHHitSlopEdge(NSArray *hitSlop, RNGHHitSlopIndex index)
+{
+  id value = hitSlop[index];
+  return [value isKindOfClass:[NSNumber class]] ? [value doubleValue] : NAN;
+}
+
 #define RNGH_HIT_SLOP_IS_SET(hitSlop) \
   (!isnan(hitSlop.left) || !isnan(hitSlop.right) || !isnan(hitSlop.top) || !isnan(hitSlop.bottom))
 #define RNGH_HIT_SLOP_INSET(key) (isnan(hitSlop.key) ? 0. : hitSlop.key)
@@ -166,32 +183,23 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _cancelsJSResponder = [RCTConvert BOOL:prop];
   }
 
+  // A cleared hit slop arrives as six unset slots rather than as `null`, because the TurboModule
+  // bridge drops null-valued keys on this platform. A missing key still means the property was not
+  // part of this update, and leaves the previous value alone.
   prop = config[@"hitSlop"];
   if ([prop isKindOfClass:[NSNumber class]]) {
-    _hitSlop.left = _hitSlop.right = _hitSlop.top = _hitSlop.bottom = [prop doubleValue];
-  } else if ([prop isKindOfClass:[NSNull class]]) {
+    // A uniform hit slop stays a plain number on the wire, skipping the array wrapper.
     _hitSlop = RNGHHitSlopEmpty;
+    _hitSlop.left = _hitSlop.right = _hitSlop.top = _hitSlop.bottom = [prop doubleValue];
+  } else if ([prop isKindOfClass:[NSArray class]]) {
+    _hitSlop.left = RNGHHitSlopEdge(prop, RNGHHitSlopIndexLeft);
+    _hitSlop.top = RNGHHitSlopEdge(prop, RNGHHitSlopIndexTop);
+    _hitSlop.right = RNGHHitSlopEdge(prop, RNGHHitSlopIndexRight);
+    _hitSlop.bottom = RNGHHitSlopEdge(prop, RNGHHitSlopIndexBottom);
+    _hitSlop.width = RNGHHitSlopEdge(prop, RNGHHitSlopIndexWidth);
+    _hitSlop.height = RNGHHitSlopEdge(prop, RNGHHitSlopIndexHeight);
   } else if (prop != nil) {
-    _hitSlop.left = _hitSlop.right = RNGH_HIT_SLOP_GET(@"horizontal");
-    _hitSlop.top = _hitSlop.bottom = RNGH_HIT_SLOP_GET(@"vertical");
-    _hitSlop.left = RNGH_HIT_SLOP_GET(@"left");
-    _hitSlop.right = RNGH_HIT_SLOP_GET(@"right");
-    _hitSlop.top = RNGH_HIT_SLOP_GET(@"top");
-    _hitSlop.bottom = RNGH_HIT_SLOP_GET(@"bottom");
-    _hitSlop.width = RNGH_HIT_SLOP_GET(@"width");
-    _hitSlop.height = RNGH_HIT_SLOP_GET(@"height");
-    if (isnan(_hitSlop.left) && isnan(_hitSlop.right) && !isnan(_hitSlop.width)) {
-      RCTLogError(@"When width is set one of left or right pads need to be defined");
-    }
-    if (!isnan(_hitSlop.width) && !isnan(_hitSlop.left) && !isnan(_hitSlop.right)) {
-      RCTLogError(@"Cannot have all of left, right and width defined");
-    }
-    if (isnan(_hitSlop.top) && isnan(_hitSlop.bottom) && !isnan(_hitSlop.height)) {
-      RCTLogError(@"When height is set one of top or bottom pads need to be defined");
-    }
-    if (!isnan(_hitSlop.height) && !isnan(_hitSlop.top) && !isnan(_hitSlop.bottom)) {
-      RCTLogError(@"Cannot have all of top, bottom and height defined");
-    }
+    _hitSlop = RNGHHitSlopEmpty;
   }
 }
 
