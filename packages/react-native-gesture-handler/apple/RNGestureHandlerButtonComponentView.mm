@@ -290,12 +290,16 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   // and the handler keeps its unset default instead of hit-testing against an identical frame.
   if (props.gestureHitSlop.top != 0 || props.gestureHitSlop.left != 0 || props.gestureHitSlop.bottom != 0 ||
       props.gestureHitSlop.right != 0) {
-    config[@"hitSlop"] = @{
-      @"top" : @(props.gestureHitSlop.top),
-      @"left" : @(props.gestureHitSlop.left),
-      @"bottom" : @(props.gestureHitSlop.bottom),
-      @"right" : @(props.gestureHitSlop.right),
-    };
+    // Matches the normalized `[left, top, right, bottom, width, height]` layout the JS side sends;
+    // the button only exposes the four edges, so width and height are always unset.
+    config[@"hitSlop"] = @[
+      @(props.gestureHitSlop.left),
+      @(props.gestureHitSlop.top),
+      @(props.gestureHitSlop.right),
+      @(props.gestureHitSlop.bottom),
+      [NSNull null],
+      [NSNull null],
+    ];
   }
 
   return config;

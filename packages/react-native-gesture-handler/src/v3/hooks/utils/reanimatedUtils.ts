@@ -1,7 +1,9 @@
+import type { HitSlop } from '../../../handlers/gestureHandlerCommon';
 import {
   Reanimated,
   Worklets,
 } from '../../../handlers/gestures/reanimatedWrapper';
+import { normalizeHitSlop } from '../../../handlers/hitSlop';
 import { NativeProxy } from '../../NativeProxy';
 import type {
   BaseGestureConfig,
@@ -53,14 +55,21 @@ export function bindSharedValues<
     const listenerId = baseListenerId + keyHash;
 
     sharedValue.addListener(listenerId, (value) => {
-      updateGestureHandlerConfig(
-        handlerTag,
-        configKey === 'runOnJS'
-          ? {
-              dispatchesReanimatedEvents: shouldUseReanimatedDetector && !value,
-            }
-          : { [configKey]: value }
-      );
+      if (configKey === 'runOnJS') {
+        updateGestureHandlerConfig(handlerTag, {
+          dispatchesReanimatedEvents: shouldUseReanimatedDetector && !value,
+        });
+        return;
+      }
+
+      if (configKey === 'hitSlop') {
+        updateGestureHandlerConfig(handlerTag, {
+          hitSlop: normalizeHitSlop(value as HitSlop),
+        });
+        return;
+      }
+
+      updateGestureHandlerConfig(handlerTag, { [configKey]: value });
     });
   };
 
