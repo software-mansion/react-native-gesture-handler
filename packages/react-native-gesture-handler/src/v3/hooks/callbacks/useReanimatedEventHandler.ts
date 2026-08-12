@@ -4,7 +4,10 @@ import type {
   ReanimatedContext,
   ReanimatedHandler,
 } from '../../../handlers/gestures/reanimatedWrapper';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import {
+  Reanimated,
+  Worklets,
+} from '../../../handlers/gestures/reanimatedWrapper';
 import type {
   ChangeCalculatorType,
   GestureCallbacks,
@@ -12,6 +15,7 @@ import type {
   UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
 import { eventHandler } from './eventHandler';
+import { createLastUpdateEventMap } from './lastUpdateEventMap';
 
 const REANIMATED_EVENT_NAMES = [
   'onGestureHandlerReanimatedEvent',
@@ -24,14 +28,33 @@ const workletNOOP = () => {
   // no-op
 };
 
-const lastUpdateEventMap = Reanimated?.makeMutable(
-  new Map<number, ReanimatedContext<unknown>>()
-);
+// Created lazily instead of at module scope so importing this module doesn't
+// call into Worklets during module evaluation.
+let lastUpdateEventMap: ReturnType<typeof createLastUpdateEventMap>;
 
-function deleteHandlerEventEntry(handlerTag: number) {
+function getLastUpdateEventMap() {
+  lastUpdateEventMap ??= createLastUpdateEventMap();
+  return lastUpdateEventMap;
+}
+
+type ShareableLastUpdateEventMap = ReturnType<typeof createLastUpdateEventMap>;
+
+// Takes the map as an argument on purpose: reading the lazy `let` from this
+// module-scope worklet would snapshot its value at module evaluation — before
+// the first `getLastUpdateEventMap()` call — so the UI-runtime copy would stay
+// `undefined` forever and the cleanup would silently never run. `scheduleOnUI`
+// arguments are serialized fresh on every call, so they always carry the
+// initialized map.
+function deleteHandlerEventEntry(
+  map: ShareableLastUpdateEventMap,
+  handlerTag: number
+) {
   'worklet';
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  lastUpdateEventMap!.value.delete(handlerTag);
+  if (map === undefined) {
+    return;
+  }
+
+  map.value.delete(handlerTag);
 }
 
 export function useReanimatedEventHandler<
@@ -49,7 +72,7 @@ export function useReanimatedEventHandler<
     // The only difference is whether we will send events to Reanimated or not.
     // The problem here is that if someone passes `Animated.event` as `onUpdate` prop,
     // it won't be workletized and therefore `useHandler` will throw. In that case we override it to empty `worklet`.
-    if (!Reanimated?.isWorkletFunction(handlers.onUpdate)) {
+    if (!Worklets?.isWorkletFunction(handlers.onUpdate)) {
       return {
         ...handlers,
         onUpdate: workletNOOP,
@@ -59,6 +82,10 @@ export function useReanimatedEventHandler<
     return handlers;
   }, [handlers]);
 
+  // Obtained on the JS thread during render so the worklet below captures the
+  // initialized map rather than the lazy module binding.
+  const updateEventMap = getLastUpdateEventMap();
+
   const callback = (
     event: UnpackedGestureHandlerEventWithHandlerData<
       THandlerData,
@@ -66,13 +93,16 @@ export function useReanimatedEventHandler<
     >
   ) => {
     'worklet';
-    // If we're on Reanimated path, lastUpdateEventMap should always be defined
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    let context = lastUpdateEventMap!.value.get(event.handlerTag);
+    // Undefined only when Worklets is absent — and then this callback is
+    // never registered (`Reanimated?.useEvent` below short-circuits).
+    if (updateEventMap === undefined) {
+      return;
+    }
+
+    let context = updateEventMap.value.get(event.handlerTag);
     if (context === undefined) {
       context = { lastUpdateEvent: undefined };
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      lastUpdateEventMap!.value.set(event.handlerTag, context);
+      updateEventMap.value.set(event.handlerTag, context);
     }
 
     eventHandler(
@@ -100,9 +130,13 @@ export function useReanimatedEventHandler<
     prevHandlerTagRef.current = handlerTag;
 
     return () => {
-      Reanimated?.runOnUI?.(deleteHandlerEventEntry)(handlerTag);
+      Worklets?.scheduleOnUI(
+        deleteHandlerEventEntry,
+        updateEventMap,
+        handlerTag
+      );
     };
-  }, [handlerTag]);
+  }, [handlerTag, updateEventMap]);
 
   const reanimatedEvent = Reanimated?.useEvent(
     callback,

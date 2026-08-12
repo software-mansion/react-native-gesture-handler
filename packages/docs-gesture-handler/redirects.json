@@ -1,8 +1,16 @@
 {
   "redirects": [
     {
-      "to": "/docs/fundamentals/introduction",
+      "to": "/docs/fundamentals/getting-started",
       "from": "/docs/"
+    },
+    {
+      "to": "/docs/fundamentals/getting-started",
+      "from": "/docs/fundamentals/introduction"
+    },
+    {
+      "to": "/docs/fundamentals/getting-started",
+      "from": "/docs/fundamentals/installation"
     },
     {
       "to": "/docs/legacy-gestures/pan-gesture",
@@ -49,8 +57,24 @@
       "from": "/docs/guides/upgrading-to-2"
     },
     {
-      "to": "/docs/fundamentals/gesture-detectors",
+      "to": "/docs/core-components/gesture-detectors",
       "from": "/docs/gestures/gesture-detector"
+    },
+    {
+      "to": "/docs/core-components/gesture-detectors",
+      "from": "/docs/fundamentals/gesture-detectors"
+    },
+    {
+      "to": "/docs/core-components/root-view",
+      "from": "/docs/fundamentals/root-view"
+    },
+    {
+      "to": "/docs/fundamentals/gesture-animation",
+      "from": "/docs/guides/quickstart"
+    },
+    {
+      "to": "/docs/gestures/state-manager",
+      "from": "/docs/fundamentals/state-manager"
     }
   ]
 }

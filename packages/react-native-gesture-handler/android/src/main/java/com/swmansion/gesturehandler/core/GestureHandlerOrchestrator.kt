@@ -52,7 +52,8 @@ class GestureHandlerOrchestrator(
   // `contains` method on HashSet has O(1) complexity, so calling it inside for loop won't result in O(n^2) (contrary to ArrayList)
   private val awaitingHandlersTags = HashSet<Int>()
 
-  private var isHandlingTouch = false
+  var isHandlingTouch = false
+    private set
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
   private var activationIndex = 0
@@ -159,6 +160,12 @@ class GestureHandlerOrchestrator(
   /*package*/
   fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
+
+    if (handler.isAwaiting &&
+      (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED)
+    ) {
+      handler.isAwaiting = false
+    }
 
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
@@ -328,9 +335,8 @@ class GestureHandlerOrchestrator(
     }
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
-      val isFirstEvent = handler.state == 0
       handler.handle(event, sourceEvent)
-      if (handler.isActive) {
+      if (handler.state == GestureHandler.STATE_ACTIVE && handler.isActive) {
         // After handler is done waiting for other one to fail its progress should be
         // reset, otherwise there may be a visible jump in values sent by the handler.
         // When handler is waiting it's already activated but the `isAwaiting` flag
@@ -357,6 +363,30 @@ class GestureHandlerOrchestrator(
     }
 
     event.recycle()
+  }
+
+  /**
+   * Cancels all handlers created using API v1 and v2
+   */
+  fun cancelAllLegacyHandlers() {
+    val handlersToProcess = obtainHandlerList()
+    handlersToProcess.addAll(gestureHandlers)
+
+    try {
+      handlersToProcess.forEach {
+        if (it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API ||
+          it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API ||
+          it.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET ||
+          it.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
+        ) {
+          it.cancel()
+        }
+      }
+
+      scheduleFinishedHandlersCleanup()
+    } finally {
+      recycleHandlerList(handlersToProcess)
+    }
   }
 
   /**

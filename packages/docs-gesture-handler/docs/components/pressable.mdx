@@ -2,6 +2,7 @@
 id: pressable
 title: Pressable
 sidebar_label: Pressable
+sidebar_position: 2
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -17,7 +18,7 @@ This component is a drop-in replacement for the `Pressable` component.
 
 `Pressable` is a component that can detect various stages of tap, press, and hover interactions on any of its children.
 
-To use `Pressable`, ensure that your app is wrapped in [`GestureHandlerRootView`](/docs/fundamentals/root-view) and import it as follows:
+To use `Pressable`, ensure that your app is wrapped in [`GestureHandlerRootView`](/docs/core-components/root-view) and import it as follows:
 
 ```ts
 import { Pressable } from 'react-native-gesture-handler';
@@ -88,7 +89,7 @@ cancelable?: null | boolean;
 Whether a press gesture can be interrupted by a parent gesture such as a scroll event. Defaults to `true`.
 
 <Badges platforms={['android', 'web']}>
-### onHoverIn
+### onHoverIn [A][W]
 </Badges>
 
 ```ts
@@ -98,7 +99,7 @@ onHoverIn?: null | ((event: PressableEvent) => void);
 Called when pointer is hovering over the element.
 
 <Badges platforms={['android', 'web']}>
-### onHoverOut
+### onHoverOut [A][W]
 </Badges>
 
 ```ts
@@ -108,7 +109,7 @@ onHoverOut?: null | ((event: PressableEvent) => void);
 Called when pointer stops hovering over the element.
 
 <Badges platforms={['web']}>
-### delayHoverIn
+### delayHoverIn [W]
 </Badges>
 
 ```ts
@@ -118,7 +119,7 @@ delayHoverIn?: number | null;
 Duration to wait after hover in before calling `onHoverIn`.
 
 <Badges platforms={['web']}>
-### delayHoverOut
+### delayHoverOut [W]
 </Badges>
 
 ```ts
@@ -144,7 +145,7 @@ disabled?: null | boolean;
 Whether the `Pressable` behavior is disabled.
 
 <Badges platforms={['android', 'ios']}>
-### hitSlop
+### hitSlop [A][I]
 </Badges>
 
 ```ts
@@ -156,7 +157,7 @@ Additional distance outside of the view in which a press is detected and [`onPre
 The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
 
 <Badges platforms={['android', 'ios']}>
-### pressRetentionOffset
+### pressRetentionOffset [A][I]
 </Badges>
 
 ```ts
@@ -169,7 +170,7 @@ press before [`onPressOut`](#onpressout) is triggered.
 The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
 
 <Badges platforms={['android']}>
-### android_disableSound
+### android_disableSound [A]
 </Badges>
 
 ```ts
@@ -179,7 +180,7 @@ android_disableSound?: null | boolean;
 If `true`, doesn't play system sound on touch.
 
 <Badges platforms={['android']}>
-### android_ripple
+### android_ripple [A]
 </Badges>
 
 ```ts
@@ -191,7 +192,7 @@ Enables the Android [ripple](https://developer.android.com/reference/android/gra
 Accepts values of type [`RippleConfig`](https://reactnative.dev/docs/pressable#rippleconfig).
 
 <Badges platforms={['android']}>
-### needsOffscreenAlphaCompositing
+### needsOffscreenAlphaCompositing [A]
 </Badges>
 
 ```ts

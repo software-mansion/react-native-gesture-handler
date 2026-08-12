@@ -169,6 +169,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   prop = config[@"hitSlop"];
   if ([prop isKindOfClass:[NSNumber class]]) {
     _hitSlop.left = _hitSlop.right = _hitSlop.top = _hitSlop.bottom = [prop doubleValue];
+  } else if ([prop isKindOfClass:[NSNull class]]) {
+    _hitSlop = RNGHHitSlopEmpty;
   } else if (prop != nil) {
     _hitSlop.left = _hitSlop.right = RNGH_HIT_SLOP_GET(@"horizontal");
     _hitSlop.top = _hitSlop.bottom = RNGH_HIT_SLOP_GET(@"vertical");
@@ -312,6 +314,24 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)unbindFromView
 {
+  // If the gesture is still in flight - e.g. the view is being unmounted mid-gesture - deliver
+  // the final event now, while the recognizer is still attached and the target view is known.
+  // Otherwise the onBegin/onFinalize and onActivate/onDeactivate guarantees would be broken
+  // and `_lastState` would never be cleared by `reset`.
+  if (self.recognizer.view != nil &&
+      (_lastState == RNGestureHandlerStateBegan || _lastState == RNGestureHandlerStateActive)) {
+    if ([self eventTagForRecognizer:self.recognizer] != nil) {
+      [self handleGesture:self.recognizer
+                  inState:_lastState == RNGestureHandlerStateActive ? RNGestureHandlerStateCancelled
+                                                                    : RNGestureHandlerStateFailed];
+    } else {
+      // The event has no tag to be dispatched with, so it cannot be delivered on any path - reset
+      // the bookkeeping so the handler doesn't stay in-flight forever.
+      _lastState = RNGestureHandlerStateUndetermined;
+      _state = RNGestureHandlerStateBegan;
+    }
+  }
+
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
 
@@ -401,9 +421,21 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   //
   // While this solution is not great, we decided to check whether sending events was triggered from `reset` method.
   // This way we can detect double Began mapping by checking previous sent state and current state of recognizer.
-  if (fromReset && _lastState == RNGestureHandlerStateBegan &&
-      self.recognizer.state == UIGestureRecognizerStatePossible) {
-    _state = RNGestureHandlerStateFailed;
+  //
+  // The same applies to gestures interrupted mid-flight, e.g. when the view is unmounted during an active
+  // gesture the recognizer may be reset without its cancel action ever firing.
+  // If the last sent state is not final, synthesize the missing final event so that the
+  // `onBegin`/`onFinalize` and `onActivate`/`onDeactivate` guarantees hold.
+  if (fromReset && self.recognizer.state == UIGestureRecognizerStatePossible) {
+    if (_lastState == RNGestureHandlerStateBegan) {
+      _state = RNGestureHandlerStateFailed;
+    } else if (_lastState == RNGestureHandlerStateActive) {
+      _state = RNGestureHandlerStateCancelled;
+    } else {
+      // The final event was already delivered; mapping Possible to Began here would emit a stray
+      // BEGAN event after the gesture has finished.
+      return;
+    }
   }
 
   [self handleGesture:recognizer inState:_state fromManualStateChange:fromManualStateChange];
@@ -412,6 +444,21 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)handleGesture:(UIGestureRecognizer *)recognizer inState:(RNGestureHandlerState)state
 {
   [self handleGesture:recognizer inState:state fromManualStateChange:NO];
+}
+
+- (nullable NSNumber *)eventTagForRecognizer:(UIGestureRecognizer *)recognizer
+{
+  NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
+
+  if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
+    tag = @(recognizer.view.tag);
+  }
+
+  if (_virtualViewTag != nil && _actionType == RNGestureHandlerActionTypeVirtualDetector) {
+    tag = _virtualViewTag;
+  }
+
+  return tag;
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
@@ -426,15 +473,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return;
   }
 
-  NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
-
-  if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
-    tag = @(recognizer.view.tag);
-  }
-
-  if (_virtualViewTag != nil && _actionType == RNGestureHandlerActionTypeVirtualDetector) {
-    tag = _virtualViewTag;
-  }
+  NSNumber *tag = [self eventTagForRecognizer:recognizer];
 
   react_native_assert(tag != nil && "Tag should be defined when dispatching an event");
 
@@ -497,6 +536,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
         state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !fromManualStateChange &&
         !_manualActivation) {
       // Otherwise send activate state change event to preserve correct gesture flow
+      RNGestureHandlerState prevSynthesizedState = _lastState;
       id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                             handlerTag:_tag
                                                                  state:RNGestureHandlerStateActive
@@ -504,7 +544,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                              extraData:extraData];
       [self sendEvent:event];
       _lastState = RNGestureHandlerStateActive;
+      [self dispatchStateChange:RNGestureHandlerStateActive prevState:prevSynthesizedState extraData:extraData];
     }
+    RNGestureHandlerState prevState = _lastState;
     id stateEvent = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                                handlerTag:_tag
                                                                     state:state
@@ -512,6 +554,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                 extraData:extraData];
     [self sendEvent:stateEvent];
     _lastState = state;
+    [self dispatchStateChange:state prevState:prevState extraData:extraData];
   }
 
   if (state == RNGestureHandlerStateActive) {
@@ -522,7 +565,20 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                      forHandlerType:[self eventHandlerType]
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
+    [self dispatchHandlerUpdate:extraData];
   }
+}
+
+- (void)dispatchStateChange:(RNGestureHandlerState)newState
+                  prevState:(RNGestureHandlerState)prevState
+                  extraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  // no-op
+}
+
+- (void)dispatchHandlerUpdate:(RNGestureHandlerEventExtraData *)extraData
+{
+  // no-op
 }
 
 - (RNGHUIView *)findViewForEvents
@@ -540,7 +596,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
 {
-  if (_actionType == RNGestureHandlerActionTypeNativeDetector) {
+  if ([self usesNativeOrVirtualDetector]) {
     [self.emitter sendNativeTouchEventForGestureHandler:self
                                         withPointerType:_pointerType
                                          forHandlerType:[self eventHandlerType]];
@@ -786,17 +842,34 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // might be called after some pointers are down, and after state manipulation by the user.
   // Pointer tracker calls this method when it resets, and in that case it no longer tracks
   // any pointers, thus entering this if
-  if (!_needsPointerData || _pointerTracker.trackedPointersCount == 0) {
+  //
+  // Also do not clear _lastState while the gesture is in flight (BEGAN/ACTIVE) - the final
+  // state-change event hasn't been dispatched yet. When the view is removed mid-gesture,
+  // the pointer tracker resets before the recognizer's cancel action fires; clearing _lastState
+  // here would corrupt the prevState of the outgoing CANCELLED event and break the onActivate/onDeactivate guarantee.
+  if ((!_needsPointerData || _pointerTracker.trackedPointersCount == 0) && _lastState != RNGestureHandlerStateBegan &&
+      _lastState != RNGestureHandlerStateActive) {
     _lastState = RNGestureHandlerStateUndetermined;
     _state = RNGestureHandlerStateBegan;
   }
 }
 
+// The virtual detector has a virtual view tag set only if the real hierarchy was folded
+// into a single View — only then is hit-testing routed through the virtual view.
+- (BOOL)hasVirtualTarget
+{
+  return _actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil;
+}
+
+- (BOOL)virtualTargetContainsPoint:(CGPoint)point
+{
+  return [self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view];
+}
+
 - (BOOL)containsPointInView
 {
-  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
-    CGPoint point = [_recognizer locationInView:_recognizer.view];
-    return [self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view];
+  if ([self hasVirtualTarget]) {
+    return [self virtualTargetContainsPoint:[_recognizer locationInView:_recognizer.view]];
   }
 
   RNGHUIView *viewToHitTest = _recognizer.view;
@@ -813,9 +886,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)wantsToHandleEventsAtPoint:(CGPoint)point
 {
-  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
+  if ([self hasVirtualTarget]) {
     // point is in _recognizer.view (detector) coordinate space; search the whole subtree
-    return [self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view];
+    return [self virtualTargetContainsPoint:point];
   }
 
   RNGHUIView *viewToHitTest = _recognizer.view;
@@ -846,13 +919,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     }
   }
 
-  // Logic detector has a virtual view tag set only if the real hierarchy was folded into a single View
-  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
-    CGPoint point = [_recognizer locationInView:_recognizer.view];
-    if (![self isVirtualViewTag:_virtualViewTag touchedAtPoint:point inView:_recognizer.view]) {
-      return NO;
-    }
+#if TARGET_OS_OSX
+  // On iOS this gate lives in gestureRecognizer:shouldReceiveTouch: instead — this delegate method is
+  // also invoked manually by some recognizers (Pan) before any touch is tracked, when locationInView
+  // returns a stale point, and at the Began transition the pointer may have legitimately left the
+  // virtual view already. AppKit has no shouldReceiveTouch equivalent, so macOS keeps the check here.
+  if ([self hasVirtualTarget] && ![self virtualTargetContainsPoint:[_recognizer locationInView:_recognizer.view]]) {
+    return NO;
   }
+#endif
 
   [self reset];
   return YES;
@@ -860,6 +935,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(RNGHUITouch *)touch
 {
+#if !TARGET_OS_OSX
+  // Virtual-detector handlers only handle touches that start on their virtual view. This is the
+  // earliest point where the touch's own location is available (the recognizer hasn't received it
+  // yet, so recognizer.locationInView is not usable), matching how Android routes by the initial
+  // touch position at down time.
+  if ([self hasVirtualTarget] && ![self virtualTargetContainsPoint:[touch locationInView:gestureRecognizer.view]]) {
+    return NO;
+  }
+#endif
+
   // If hitSlop is set we use it to determine if a given gesture recognizer should start processing
   // touch stream. This only works for negative values of hitSlop as this method won't be triggered
   // unless touch startes in the bounds of the attached view. To acheve similar effect with positive

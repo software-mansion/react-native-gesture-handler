@@ -2,6 +2,7 @@
 id: wrapped-components
 title: Wrapped Components
 sidebar_label: Wrapped Components
+sidebar_position: 5
 ---
 
 Some components come with a [`Native`](/docs/gestures/use-native-gesture) gesture pre-applied. This allows them to participate in the gesture recognition process. Have a look at the example below.
@@ -87,4 +88,4 @@ Those components also receive an additional prop named `onGestureUpdate_CAN_CAUS
 onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (gesture: NativeGesture) => void;
 ```
 
-This callback is invoked when the wrapped component's underlying `Native` gesture instance or configuration changes, providing access to the underlying gesture. This can be helpful when setting up [relations](/docs/fundamentals/gesture-composition) with other gestures. You can check example usage in our [`ScrollView`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/v3/components/GestureComponents.tsx#L78) component.
+This callback is invoked when the wrapped component's underlying `Native` gesture instance or configuration changes, providing access to the underlying gesture. This can be helpful when setting up [relations](/docs/composition/overview) with other gestures. You can check example usage in our [`ScrollView`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/v3/components/GestureComponents.tsx#L78) component.

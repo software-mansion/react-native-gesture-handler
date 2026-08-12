@@ -68,7 +68,7 @@ testID: string;
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
 <Badges platforms={['ios']}>
-### cancelsTouchesInView
+### cancelsTouchesInView [I]
 </Badges>
 
 ```ts
@@ -107,7 +107,7 @@ simultaneousWith: Gesture | Gesture[]
 
 Adds a gesture that should be recognized simultaneously with this one.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### requireToFail
 
@@ -117,7 +117,7 @@ requireToFail: Gesture | Gesture[]
 
 Adds a relation requiring another gesture to fail, before this one can activate.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### block
 
@@ -127,7 +127,7 @@ block: Gesture | Gesture[]
 
 Adds a relation that makes other gestures wait with activation until this gesture fails (or doesn't start at all).
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/composition/overview). [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### useAnimated
 
@@ -138,7 +138,7 @@ useAnimated: boolean;
 Setting this property to `true` ensures that the [Animated API](/docs/fundamentals/animated-interactions) functions correctly when `useNativeDriver` is set to `false`. The default value is set to `false`.
 
 <Badges platforms={['web']}>
-### activeCursor
+### activeCursor [W]
 </Badges>
 
 ```ts
@@ -148,7 +148,7 @@ activeCursor: ActiveCursor | SharedValue<ActiveCursor>;
 This parameter allows specifying which cursor should be used when the gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
 
 <Badges platforms={['ios', 'android']}>
-  ### cancelsJSResponder
+  ### cancelsJSResponder [A][I]
 </Badges>
 
 ```ts

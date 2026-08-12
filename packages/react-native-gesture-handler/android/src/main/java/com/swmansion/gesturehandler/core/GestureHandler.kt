@@ -1,15 +1,12 @@
 package com.swmansion.gesturehandler.core
 
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.UiThreadUtil
@@ -20,6 +17,8 @@ import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.findActivity
+import com.swmansion.gesturehandler.react.getPointerType
 import com.swmansion.gesturehandler.react.isHoverAction
 import java.lang.IllegalStateException
 import java.util.*
@@ -75,7 +74,7 @@ open class GestureHandler {
   var isWithinBounds = false
     private set
   var isEnabled = true
-    private set(enabled) {
+    protected set(enabled) {
       // Don't cancel handler when not changing the value of the isEnabled, executing it always caused
       // handlers to be cancelled on re-render because that's the moment when the config is updated.
       // If the enabled prop "changed" from true to true the handler would get cancelled.
@@ -197,7 +196,13 @@ open class GestureHandler {
     }
   }
 
-  fun setHitSlop(padding: Float) = setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
+  fun setHitSlop(padding: Float?) {
+    if (padding == null) {
+      hitSlop = DEFAULT_HIT_SLOP
+    } else {
+      setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
+    }
+  }
 
   fun setInteractionController(controller: GestureHandlerInteractionController?) {
     interactionController = controller
@@ -213,7 +218,7 @@ open class GestureHandler {
     this.view = view
     this.orchestrator = orchestrator
 
-    val content = getActivity(view?.context)?.findViewById<View>(android.R.id.content)
+    val content = view?.context.findActivity()?.findViewById<View>(android.R.id.content)
     if (content != null) {
       content.getLocationOnScreen(windowOffset)
     } else {
@@ -225,13 +230,6 @@ open class GestureHandler {
   }
 
   protected open fun onPrepare() {}
-
-  private fun getActivity(context: Context?): Activity? = when (context) {
-    is ReactContext -> context.currentActivity
-    is Activity -> context
-    is ContextWrapper -> getActivity(context.baseContext)
-    else -> null
-  }
 
   private fun findNextLocalPointerId(): Int {
     var localPointerId = 0
@@ -477,10 +475,15 @@ open class GestureHandler {
   }
 
   private fun dispatchTouchUpEvent(event: MotionEvent, sourceEvent: MotionEvent) {
+    val pointerId = event.getPointerId(event.actionIndex)
+
+    if (trackedPointers[pointerId] == null) {
+      return
+    }
+
     extractAllPointersData()
     changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_UP
-    val pointerId = event.getPointerId(event.actionIndex)
     val offsetX = sourceEvent.rawX - sourceEvent.x
     val offsetY = sourceEvent.rawY - sourceEvent.y
 
@@ -888,14 +891,7 @@ open class GestureHandler {
   }
 
   private fun setPointerType(event: MotionEvent) {
-    val pointerIndex = event.actionIndex
-
-    pointerType = when (event.getToolType(pointerIndex)) {
-      MotionEvent.TOOL_TYPE_FINGER -> POINTER_TYPE_TOUCH
-      MotionEvent.TOOL_TYPE_STYLUS -> POINTER_TYPE_STYLUS
-      MotionEvent.TOOL_TYPE_MOUSE -> POINTER_TYPE_MOUSE
-      else -> POINTER_TYPE_OTHER
-    }
+    pointerType = event.getPointerType(event.actionIndex)
   }
 
   open fun wantsToAttachDirectlyToView() = false
@@ -984,7 +980,9 @@ open class GestureHandler {
       private const val KEY_CANCELS_JS_RESPONDER = "cancelsJSResponder"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
-        if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
+        if (config.isNull(KEY_HIT_SLOP)) {
+          handler.setHitSlop(null)
+        } else if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
           val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
           handler.setHitSlop(
             hitSlop,
@@ -1064,6 +1062,7 @@ open class GestureHandler {
     const val DIRECTION_LEFT = 2
     const val DIRECTION_UP = 4
     const val DIRECTION_DOWN = 8
+    const val ACTION_TYPE_NONE = 0
     const val ACTION_TYPE_REANIMATED_WORKLET = 1
     const val ACTION_TYPE_NATIVE_ANIMATED_EVENT = 2
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
@@ -1073,7 +1072,8 @@ open class GestureHandler {
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
-    const val POINTER_TYPE_OTHER = 3
+    const val POINTER_TYPE_KEY = 3
+    const val POINTER_TYPE_OTHER = 4
     private const val MAX_POINTERS_COUNT = 17
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>

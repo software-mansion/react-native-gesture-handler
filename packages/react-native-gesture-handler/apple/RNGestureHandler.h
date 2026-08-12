@@ -15,6 +15,8 @@
 #define TEST_MIN_IF_NOT_NAN(value, limit) \
   (!isnan(limit) && ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit)))
 
+#define TEST_ABS_MIN_IF_NOT_NAN(value, limit) (!isnan(limit) && fabs(value) >= fabs(limit))
+
 #define TEST_MAX_IF_NOT_NAN(value, max) (!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
 #define APPLY_PROP(recognizer, config, type, prop, propName) \
@@ -125,6 +127,21 @@
 
 - (void)stopActivationBlocker;
 - (void)reset;
+
+/*
+ * Called after a state-change event has been dispatched. No-op by default, may be
+ * overridden by subclasses to observe the state flow regardless of the action type.
+ */
+- (void)dispatchStateChange:(RNGestureHandlerState)newState
+                  prevState:(RNGestureHandlerState)prevState
+                  extraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
+
+/*
+ * Called after an update event has been dispatched in the ACTIVE state. No-op by
+ * default, may be overridden by subclasses.
+ */
+- (void)dispatchHandlerUpdate:(nonnull RNGestureHandlerEventExtraData *)extraData;
+
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;

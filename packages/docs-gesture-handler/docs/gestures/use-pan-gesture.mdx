@@ -20,6 +20,8 @@ import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-c
 import SharedValueInfo from './\_shared/shared-value-info.md';
 import MouseButtonProp from './\_shared/mouse-button.mdx';
 
+A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
+
 <div className={webContainer}>
   <InteractiveExample
     component={<PanGestureBasic/>}
@@ -28,7 +30,6 @@ import MouseButtonProp from './\_shared/mouse-button.mdx';
   />
 </div>
 
-A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
 
 The gesture activates when a finger is placed on the screen and moved some initial distance.
 
@@ -125,6 +126,30 @@ minDistance: number | SharedValue<number>;
 
 Minimum distance the finger (or multiple fingers) need to travel before the gesture activates. Expressed in points.
 
+### minVelocity
+
+```ts
+minVelocity: number | SharedValue<number>;
+```
+
+Minimum speed the pointer has to reach in order to activate the gesture. Expressed in points per second.
+
+### minVelocityX
+
+```ts
+minVelocityX: number | SharedValue<number>;
+```
+
+Minimum speed along X axis the pointer has to reach in order to activate the gesture. Expressed in points per second.
+
+### minVelocityY
+
+```ts
+minVelocityY: number | SharedValue<number>;
+```
+
+Minimum speed along Y axis the pointer has to reach in order to activate the gesture. Expressed in points per second.
+
 ### minPointers
 
 ```ts
@@ -198,7 +223,7 @@ If range is set as an array, first value must be lower or equal to 0, and the se
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 <Badges platforms={['android']}>
-### averageTouches
+### averageTouches [A]
 </Badges>
 
 ```ts
@@ -208,7 +233,7 @@ averageTouches: boolean | SharedValue<boolean>;
 Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This modifier allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
 
 <Badges platforms={['ios', 'web']}>
-### enableTrackpadTwoFingerGesture
+### enableTrackpadTwoFingerGesture [I][W]
 </Badges>
 
 ```ts
@@ -283,7 +308,7 @@ Velocity of the pan gesture along the Y axis in the current moment. The value is
 x: number;
 ```
 
-X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### y
 
@@ -291,7 +316,7 @@ X coordinate of the current position of the pointer (finger or a leading pointer
 y: number;
 ```
 
-Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### absoluteX
 

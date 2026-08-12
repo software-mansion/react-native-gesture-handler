@@ -49,7 +49,7 @@ export interface Config extends Record<string, ConfigArgs> {
   simultaneousHandlers?: Handler[] | null | undefined;
   waitFor?: Handler[] | null | undefined;
   blocksHandlers?: Handler[] | null | undefined;
-  hitSlop?: HitSlop | undefined;
+  hitSlop?: HitSlop | null | undefined;
   shouldCancelWhenOutside?: boolean | undefined;
   userSelect?: UserSelect | undefined;
   activeCursor?: ActiveCursor | undefined;
@@ -91,6 +91,8 @@ export interface Config extends Record<string, ConfigArgs> {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
   yieldsToContinuousGestures?: boolean;
+  hasLongPressHandler?: boolean;
+  longPressDuration?: number;
   direction?: Directions;
   enableTrackpadTwoFingerGesture?: boolean;
 }

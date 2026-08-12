@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { tagMessage } from '../../../utils';
+import { isTestEnv, tagMessage } from '../../../utils';
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
@@ -11,6 +11,7 @@ import type {
 import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 import {
   allowedNativeProps,
+  applyProductionTestIDFilter,
   EMPTY_WHITE_LIST,
   PropsToFilter,
   PropsWhiteLists,
@@ -36,6 +37,10 @@ export function resolveInternalConfigProps<
   THandlerData,
   TExtendedHandlerData extends THandlerData,
 >(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
+  if (isTestEnv() && config.disableReanimated === undefined) {
+    config.disableReanimated = true;
+  }
+
   if (
     __DEV__ &&
     isNativeAnimatedEvent(config.onUpdate) &&
@@ -86,6 +91,8 @@ export function prepareConfigForNativeSide<
   handlerType: SingleGestureName,
   config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ) {
+  applyProductionTestIDFilter();
+
   // @ts-ignore Seems like TypeScript can't infer the type here properly because of generic
   const filteredConfig: BaseGestureConfig<
     TConfig,

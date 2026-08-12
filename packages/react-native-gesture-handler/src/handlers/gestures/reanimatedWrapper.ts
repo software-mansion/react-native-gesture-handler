@@ -1,13 +1,12 @@
 import type { ComponentClass, ComponentType } from 'react';
 
-import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 import { tagMessage } from '../../utils';
-import { NativeProxy } from '../../v3/NativeProxy';
 import type {
   GestureCallbacks,
   GestureUpdateEventWithHandlerData,
   SharedValue,
 } from '../../v3/types';
+import { installUIRuntimeBindings } from './installUIRuntimeBindings';
 
 export type ReanimatedContext<THandlerData> = {
   lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
@@ -32,6 +31,33 @@ export type ReanimatedHandler<THandlerData> = {
   context: ReanimatedContext<THandlerData>;
 };
 
+export type SimplifiedShareableHost<TValue = unknown> = {
+  value: TValue;
+};
+
+type WorkletsPackage = {
+  getUIRuntimeHolder: () => object;
+  createShareable: <TValue>(
+    hostRuntimeId: number,
+    initial: TValue
+  ) => SimplifiedShareableHost<TValue>;
+  UIRuntimeId: number;
+  scheduleOnUI: <Args extends unknown[], ReturnValue>(
+    worklet: (...args: Args) => ReturnValue,
+    ...args: Args
+  ) => void;
+  scheduleOnRN: <Args extends unknown[], ReturnValue>(
+    fun: (...args: Args) => ReturnValue,
+    ...args: Args
+  ) => void;
+  isWorkletFunction: <
+    Args extends unknown[] = unknown[],
+    ReturnValue = unknown,
+  >(
+    value: unknown
+  ) => value is WorkletFunction<Args, ReturnValue>;
+};
+
 export type NativeEventsManager = new (component: {
   props: Record<string, unknown>;
   _componentRef: React.Ref<unknown>;
@@ -45,78 +71,53 @@ export type NativeEventsManager = new (component: {
   updateEvents: (prevProps: Record<string, unknown>) => void;
 };
 
-let Reanimated:
-  | {
-      default: {
-        // Slightly modified definition copied from 'react-native-reanimated'
-        createAnimatedComponent<P extends object>(
-          component: ComponentType<P>,
-          options?: unknown
-        ): ComponentClass<P>;
-      };
-      NativeEventsManager: NativeEventsManager;
-      useHandler: <THandlerData, TExtendedHandlerData extends THandlerData>(
-        handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
-      ) => ReanimatedHandler<TExtendedHandlerData>;
-      useEvent: <T>(
-        callback: (event: T) => void,
-        events: string[],
-        rebuild: boolean
-      ) => (event: unknown) => void;
-      useSharedValue: <T>(value: T) => SharedValue<T>;
-      setGestureState: (handlerTag: number, newState: number) => void;
-      isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
-      isWorkletFunction<
-        Args extends unknown[] = unknown[],
-        ReturnValue = unknown,
-      >(
-        value: unknown
-      ): value is WorkletFunction<Args, ReturnValue>;
-      useComposedEventHandler<T>(
-        handlers: (((event: T) => void) | null)[]
-      ): (event: T) => void;
-      // TODO: runOnJS and runOnUI are deprecated. These should be removed in near future.
-      runOnJS: <A extends unknown[], R>(
-        fn: (...args: A) => R
-      ) => (...args: Parameters<typeof fn>) => void;
-      runOnUI<A extends any[], R>(
-        fn: (...args: A) => R
-      ): (...args: Parameters<typeof fn>) => void;
-      makeMutable<T>(value: T): { value: T };
-    }
-  | undefined;
+type ReanimatedPackage = {
+  default: {
+    // Slightly modified definition copied from 'react-native-reanimated'
+    createAnimatedComponent<P extends object>(
+      component: ComponentType<P>,
+      options?: unknown
+    ): ComponentClass<P>;
+  };
+  NativeEventsManager: NativeEventsManager;
+  useHandler: <THandlerData, TExtendedHandlerData extends THandlerData>(
+    handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
+  ) => ReanimatedHandler<TExtendedHandlerData>;
+  useEvent: <T>(
+    callback: (event: T) => void,
+    events: string[],
+    rebuild: boolean
+  ) => (event: unknown) => void;
+  useSharedValue: <T>(value: T) => SharedValue<T>;
+  setGestureState: (handlerTag: number, newState: number) => void;
+  isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
+  useComposedEventHandler<T>(
+    handlers: (((event: T) => void) | null)[]
+  ): (event: T) => void;
+};
+
+let Reanimated: ReanimatedPackage | undefined;
+let Worklets: WorkletsPackage | undefined;
 
 try {
-  Reanimated = require('react-native-reanimated');
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-  const Worklets = require('react-native-worklets');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  Worklets = require('react-native-worklets') as WorkletsPackage;
+} catch (e) {
+  // When 'react-native-worklets' is not available we want to quietly continue
+  Worklets = undefined;
+}
 
-  // Make sure worklets are initialized before attempting to install UI runtime bindings
-  Worklets?.scheduleOnUI(() => {
-    'worklet';
-  });
-
-  ghQueueMicrotask(() => {
-    const decorated = NativeProxy.installUIRuntimeBindings();
-
-    if (!decorated) {
-      console.warn(
-        tagMessage(
-          'Failed to install UI runtime bindings. Please report this at https://github.com/software-mansion/react-native-gesture-handler/issues.'
-        )
-      );
-    }
-  });
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  Reanimated = require('react-native-reanimated') as ReanimatedPackage;
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized
   Reanimated = undefined;
 }
 
-if (!Reanimated?.useSharedValue) {
-  // @ts-ignore Make sure the loaded module is actually Reanimated, if it's not
-  // reset the module to undefined so we can fallback to the default implementation
-  Reanimated = undefined;
+if (Worklets !== undefined) {
+  installUIRuntimeBindings(Worklets.getUIRuntimeHolder);
 }
 
 if (Reanimated !== undefined && !Reanimated.setGestureState) {
@@ -131,4 +132,4 @@ if (Reanimated !== undefined && !Reanimated.setGestureState) {
   };
 }
 
-export { Reanimated };
+export { Reanimated, Worklets };

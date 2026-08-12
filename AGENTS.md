@@ -21,6 +21,11 @@
 - This project contains 3 versions of API. The newest is located in `packages/react-native-gesture-handler/src/v3` directory. Most of the logic is shared, but make sure that your changes do not break older APIs.
 - When writing code, you can use `usesNativeOrVirtualDetector` function to either include only, or exclude new API v3. It is available on all platforms.
 
+## API versions — defaults for new code
+
+- **Always use the v3 API by default** for any new code, examples, reproductions, or test screens. `Gesture.*` builders (v2) and `*GestureHandler` components (v1) are legacy. Even when a bug is reported against a legacy API, build the reproduction with v3 first to check whether it affects v3 too — switch to the legacy API only if the issue does not reproduce on v3, or the user explicitly asks for a legacy reproduction.
+- v3 usage: hook-based gestures (`usePanGesture`, `useTapGesture`, `useLongPressGesture`, …) attached via `GestureDetector`, all imported from `react-native-gesture-handler` (the main entry re-exports `src/v3`).
+
 ## Build checks
 
 - To check Android build go to `apps/basic-example` and run `yarn android` command.

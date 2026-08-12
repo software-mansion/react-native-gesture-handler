@@ -2,6 +2,7 @@
 id: touchable
 title: Touchable
 sidebar_label: Touchable
+sidebar_position: 1
 ---
 
 :::note
@@ -356,7 +357,7 @@ exclusive?: boolean;
 Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
 
 <Badges platforms={['android']}>
-### touchSoundDisabled
+### touchSoundDisabled [A]
 </Badges>
 
 ```ts
@@ -372,13 +373,16 @@ label="Show composed types definitions"
 expandedLabel="Hide composed types definitions"
 lineBounds={[0, 1]}
 src={`
-onPressIn?: (e: GestureEvent<NativeHandlerData>) => void;
+onPressIn?: (e: ButtonEvent) => void;
 
-type GestureEvent<NativeHandlerData> = {
-    handlerTag: number;
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
     numberOfPointers: number;
     pointerType: PointerType;
-    pointerInside: boolean;
 }
 
 enum PointerType {
@@ -399,13 +403,16 @@ label="Show composed types definitions"
 expandedLabel="Hide composed types definitions"
 lineBounds={[0, 1]}
 src={`
-onPressOut?: (e: GestureEvent<NativeHandlerData>) => void;
+onPressOut?: (e: ButtonEvent) => void;
 
-type GestureEvent<NativeHandlerData> = {
-    handlerTag: number;
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
     numberOfPointers: number;
     pointerType: PointerType;
-    pointerInside: boolean;
 }
 
 enum PointerType {
@@ -426,13 +433,16 @@ label="Show composed types definitions"
 expandedLabel="Hide composed types definitions"
 lineBounds={[0, 1]}
 src={`
-onPress?: (e: GestureEvent<NativeHandlerData>) => void;
+onPress?: (e: ButtonEvent) => void;
 
-type GestureEvent<NativeHandlerData> = {
-    handlerTag: number;
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
     numberOfPointers: number;
     pointerType: PointerType;
-    pointerInside: boolean;
 }
 
 enum PointerType {
@@ -448,12 +458,93 @@ Triggered when the button gets pressed (analogous to `onPress` in `Pressable` fr
 
 ### onLongPress
 
-```ts
-onLongPress?: () => void;
-```
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onLongPress?: (e: ButtonEvent) => void;
+
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
 
 Triggered when the button gets pressed for at least [`delayLongPress`](#delaylongpress) milliseconds.
 
+### onHoverIn
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onHoverIn?: (e: ButtonEvent) => void;
+
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
+
+Triggered when a non-touch pointer - a mouse, a trackpad cursor, or a hovering stylus - moves over the button (analogous to `onHoverIn` in `Pressable` from RN core). Touch pointers never report hover.
+
+### onHoverOut
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onHoverOut?: (e: ButtonEvent) => void;
+
+type ButtonEvent = {
+    pointerInside: boolean;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
+
+Triggered when the hovering pointer leaves the button (analogous to `onHoverOut` in `Pressable` from RN core).
 
 ### delayLongPress
 
@@ -465,7 +556,7 @@ Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress
 
 
 <Badges platforms={['android']}>
-### androidRipple
+### androidRipple [A]
 </Badges>
 
 <CollapsibleCode 
@@ -486,7 +577,7 @@ type PressableAndroidRippleConfig = {
 Configuration for the ripple effect on Android. If not provided, the ripple effect will be disabled. If `{}` is provided, the ripple effect will be enabled with default configuration.
 
 <Badges platforms={['android', 'ios']}>
-### cancelOnLeave
+### cancelOnLeave [A][I]
 </Badges>
 
 ```ts
@@ -496,7 +587,7 @@ cancelOnLeave?: boolean;
 Whether the touch should be canceled when the pointer leaves the component. By default set to `true`. On web this prop doesn't have any effect and behaves as if `true` was set.
 
 <Badges platforms={['android']}>
-### needsOffscreenAlphaCompositing
+### needsOffscreenAlphaCompositing [A]
 </Badges>
 
 ```ts

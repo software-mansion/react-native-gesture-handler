@@ -14,6 +14,8 @@ import com.facebook.soloader.SoLoader
 import com.swmansion.gesturehandler.NativeRNGestureHandlerModuleSpec
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerEventDispatcher
+import java.lang.ref.WeakReference
+import java.util.concurrent.ConcurrentHashMap
 
 @ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
@@ -34,6 +36,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   init {
     registries[moduleId] = RNGestureHandlerRegistry()
+    modules[moduleId] = WeakReference(this)
   }
 
   override fun getName() = NAME
@@ -120,7 +123,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun installUIRuntimeBindings(): Boolean {
     if (!uiRuntimeDecorated) {
-      uiRuntimeDecorated = decorateUIRuntime()
+      uiRuntimeDecorated = installUIRuntimeBindingsNative()
     }
 
     return uiRuntimeDecorated
@@ -162,7 +165,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   private external fun initHybrid(): HybridData
   private external fun getBindingsInstallerCxx(): BindingsInstallerHolder
-  private external fun decorateUIRuntime(): Boolean
+  private external fun installUIRuntimeBindingsNative(): Boolean
   private external fun invalidateNative(): Unit
 
   override fun getBindingsInstaller() = getBindingsInstallerCxx()
@@ -182,6 +185,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       }
     }
     registries.remove(moduleId)
+    modules.remove(moduleId)
     invalidateNative()
     super.invalidate()
   }
@@ -202,6 +206,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
     private var nextModuleId = 0
     val registries: MutableMap<Int, RNGestureHandlerRegistry> = mutableMapOf()
+
+    private val modules: MutableMap<Int, WeakReference<RNGestureHandlerModule>> = ConcurrentHashMap()
+
+    fun getModule(moduleId: Int): RNGestureHandlerModule? {
+      val module = modules[moduleId]?.get()
+
+      if (module == null) {
+        // Either the module was never registered, or it was collected without `invalidate`
+        // running — drop the dangling reference so the maps don't grow across reloads.
+        modules.remove(moduleId)
+        registries.remove(moduleId)
+      }
+
+      return module
+    }
 
     init {
       SoLoader.loadLibrary("gesturehandler")

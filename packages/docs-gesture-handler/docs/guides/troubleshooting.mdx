@@ -1,7 +1,7 @@
 ---
 id: troubleshooting
 title: Troubleshooting
-sidebar_position: 3
+sidebar_position: 2
 ---
 
 import Tabs from '@theme/Tabs';
@@ -15,7 +15,7 @@ Thanks for giving this library a try! We are sorry that you might have encounter
 2. When sure your problem hasn't been reported or was reported but the proposed solution doesn't work for you please follow [our issue reporting guidelines](#reporting-issues).
 3. You can try seeking help on [Software Mansion Discord](https://discord.com/invite/VemJ4df8Yr).
 4. If you feel like reading the source code we highly recommend it, as this is by far the best resource and gives you the most up to date insights into how the library works and what might be causing the bug.
-5. If you managed to find the solution consider [contributing](/docs/fundamentals/introduction#contributing) a fix or update our documentation to make this information easier to find for others in the future.
+5. If you managed to find the solution consider contributing a fix or update our documentation to make this information easier to find for others in the future.
 
 ## Reporting issues
 
@@ -33,7 +33,7 @@ This library is maintained by a very small team. Please keep this in mind when r
 - Changing `enabled` prop during a gesture has no effect, only when a gesture starts (that is, a finger touches the screen) the `enabled` prop is taken into consideration to decide whether to extract (or not) the gesture and provide it with stream of events to analyze.
 - `Native` gesture may not conform to the standard state flow due to platform specific workarounds to incorporate native views into RNGH.
 - Keep in mind that [Legacy `Touchables`](/docs/components/legacy-touchables) from RNGH are rendering two additional views that may need to be styled separately to achieve desired effect (`style` and `containerStyle` props).
-- In order for the [gesture composition](/docs/fundamentals/gesture-composition) to work, all composed gestures must be attached to the same [`GestureHandlerRootView`](/docs/fundamentals/root-view).
+- In order for the [gesture composition](/docs/composition/overview) to work, all composed gestures must be attached to the same [`GestureHandlerRootView`](/docs/core-components/root-view).
 
 ## Multiple instances of Gesture Handler were detected
 
@@ -86,3 +86,24 @@ You can resolve this problem manually by modifying your `package.json` file. Thi
     ```
   </TabItem>
 </Tabs>
+
+## RNGestureHandlerModule could not be found
+
+If you see an error `TurboModuleRegistry.getEnforcing(...): 'RNGestureHandlerModule' could not be found`, this usually happens when `react-native-gesture-handler` isn't a direct dependency of your app. If it's only pulled in transitively — for example as a `peerDependency` of some other library you use — React Native's codegen won't run for it, so the native module is never generated, even though the package is present in `node_modules`.
+
+The fix is to add `react-native-gesture-handler` directly to your app's own dependencies:
+
+<Tabs groupId="package-managers">
+  <TabItem value="npm" label="NPM">
+    ```bash
+    npm install react-native-gesture-handler
+    ```
+  </TabItem>
+  <TabItem value="yarn" label="YARN">
+    ```bash
+    yarn add react-native-gesture-handler
+    ```
+  </TabItem>
+</Tabs>
+
+If the issue persists after that, please open a new issue following [our issue reporting guidelines](#reporting-issues) and attach a [minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).

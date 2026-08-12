@@ -1,10 +1,10 @@
 import { use, useCallback, useEffect, useRef, useState } from 'react';
 
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import { Worklets } from '../../handlers/gestures/reanimatedWrapper';
 import {
   JSResponderContext,
   updateResponderEventValue,
-} from '../components/ScrollViewResponderInterceptor';
+} from '../scrollViewInterop';
 import { type Gesture, type SharedValue, SingleGestureName } from '../types';
 import { isComposedGesture, isGestureEnabled } from './utils';
 import {
@@ -51,10 +51,9 @@ export function useJSResponderHandler<
   }
 
   useEffect(() => {
-    const reanimated = Reanimated;
     const enabledSharedValues = getEnabledSharedValues(gesture);
 
-    if (reanimated === undefined || enabledSharedValues.length === 0) {
+    if (Worklets === undefined || enabledSharedValues.length === 0) {
       return;
     }
 
@@ -63,7 +62,7 @@ export function useJSResponderHandler<
       return;
     }
 
-    const { runOnJS } = reanimated;
+    const { scheduleOnUI, scheduleOnRN } = Worklets;
 
     const notifyEnabledChanged = () => {
       setEnabledSharedValueRevision((revision) => revision + 1);
@@ -75,7 +74,9 @@ export function useJSResponderHandler<
       notify: () => void
     ) => {
       'worklet';
-      const listener = runOnJS(notify);
+      const listener = () => {
+        scheduleOnRN(notify);
+      };
 
       for (const sharedValue of sharedValues) {
         sharedValue.addListener(id, listener);
@@ -92,14 +93,15 @@ export function useJSResponderHandler<
       }
     };
 
-    reanimated.runOnUI(attachListeners)(
+    scheduleOnUI(
+      attachListeners,
       enabledSharedValues,
       listenerId,
       notifyEnabledChanged
     );
 
     return () => {
-      reanimated.runOnUI(detachListeners)(enabledSharedValues, listenerId);
+      scheduleOnUI(detachListeners, enabledSharedValues, listenerId);
     };
   }, [gesture]);
 

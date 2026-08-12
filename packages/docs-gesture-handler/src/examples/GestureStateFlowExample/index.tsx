@@ -1,164 +1,387 @@
-import { useEffect, useMemo, useReducer } from 'react';
-import { StyleSheet, View, useWindowDimensions, Text } from 'react-native';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  useCompetingGestures,
+  useLongPressGesture,
+  usePanGesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
-import ChartManager from './ChartManager';
-import FlowChart from './FlowChart';
 
-// widths pulled from CSS
-const MIN_DESKTOP_WIDTH = 1298;
+import styles from './styles.module.css';
 
-export default function App() {
-  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
-  const chartManager = useMemo(() => new ChartManager(), []);
+type FlowState =
+  | 'undetermined'
+  | 'began'
+  | 'active'
+  | 'end'
+  | 'failed'
+  | 'cancelled';
 
-  const [panHandle, capturedPan, resetPan] = useMemo(
-    () => chartManager.newGesture(Gesture.Pan()),
-    [chartManager]
-  );
+const COLORS = {
+  amber: 'oklch(80% 0.14 85)',
+  blue: 'oklch(66% 0.17 250)',
+  green: 'oklch(68% 0.15 150)',
+  red: 'oklch(65% 0.19 25)',
+};
 
-  const [pressHandle, capturedPress, resetLongPress] = useMemo(
-    () => chartManager.newGesture(Gesture.LongPress()),
-    [chartManager]
-  );
+// [background, text] of a node highlighted as the current state
+const NODE_HIGHLIGHT: Record<FlowState, [string, string]> = {
+  undetermined: [COLORS.amber, 'oklch(20% 0.02 260)'],
+  began: [COLORS.blue, 'white'],
+  active: [COLORS.green, 'oklch(15% 0.02 150)'],
+  end: [COLORS.blue, 'white'],
+  failed: [COLORS.red, 'white'],
+  cancelled: [COLORS.red, 'white'],
+};
 
-  const dimensions = useWindowDimensions();
-  const isDesktopMode = dimensions.width > MIN_DESKTOP_WIDTH;
+const BALL_CLAMP_RADIUS = 70;
+const AUTO_RESET_MS = 1000;
+const SPRING_BACK = { damping: 14, stiffness: 220 };
 
-  useEffect(() => {
-    // Timing issue, neither useEffect, useLayoutEffect or requestAnimationFrame work
-    const timeout = setTimeout(() => {
-      resetPan();
-      resetLongPress();
-    }, 300);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [resetLongPress, resetPan]);
-
-  useEffect(() => {
-    const panIds = panHandle.idObject;
-    const pressIds = pressHandle.idObject;
-
-    // prettier-ignore
-    const desktopLayout = [
-      [panIds.undetermined, ChartManager.EMPTY_SPACE_ID, pressIds.undetermined, ChartManager.EMPTY_SPACE_ID],
-      [panIds.began,        panIds.failed,               pressIds.began,        pressIds.failed],
-      [panIds.active,       panIds.cancelled,            pressIds.active,       pressIds.cancelled],
-      [panIds.end,          ChartManager.EMPTY_SPACE_ID, pressIds.end,          ChartManager.EMPTY_SPACE_ID],
-    ];
-
-    // prettier-ignore
-    const phoneLayout = [
-      [panIds.undetermined],
-      [panIds.began,        panIds.failed],
-      [panIds.active,       panIds.cancelled],
-      [panIds.end,          ChartManager.EMPTY_SPACE_ID],
-    ];
-
-    chartManager.layout = isDesktopMode ? desktopLayout : phoneLayout;
-    forceUpdate();
-  }, [chartManager, isDesktopMode, panHandle, pressHandle]);
-
-  const pressed = useSharedValue(false);
-  const offset = useSharedValue(0);
-  const scale = useSharedValue(1);
-
-  const pan = Gesture.Pan()
-    .onBegin(() => {
-      pressed.value = true;
-    })
-    .onStart(() => {
-      scale.value = withSpring(0.7);
-    })
-    .onFinalize(() => {
-      offset.value = withSpring(0, { damping: 20, stiffness: 150 });
-      scale.value = withTiming(1);
-      pressed.value = false;
-    })
-    .onUpdate((event) => {
-      offset.value = event.translationX;
-    });
-
-  const press = Gesture.LongPress()
-    .onStart(() => {
-      scale.value = withSpring(1.3, { stiffness: 175 });
-    })
-    .onFinalize(() => {
-      scale.value = withTiming(1);
-    });
-
-  const composedPan = Gesture.Simultaneous(pan, capturedPan);
-  const composedPress = Gesture.Simultaneous(press, capturedPress);
-  const composed = Gesture.Race(composedPan, composedPress);
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: withSpring(offset.value, { duration: 1000 }) },
-      { scale: scale.value },
-    ],
-    backgroundColor: pressed.value ? '#ffe04b' : '#b58df1',
-  }));
+function StateNode({
+  label,
+  current,
+  gridRow,
+  gridColumn,
+  nodeRef,
+}: {
+  label: FlowState;
+  current: FlowState;
+  gridRow: number;
+  gridColumn: number;
+  nodeRef: (el: HTMLDivElement | null) => void;
+}) {
+  const isCurrent = label === current;
+  const [background, color] = NODE_HIGHLIGHT[label];
 
   return (
-    <>
-      <View style={[styles.container, styles.chartContainer]}>
-        <View style={styles.row}>
-          <Text style={styles.label}>Gesture.Pan()</Text>
-          {isDesktopMode && (
-            <Text style={styles.label}>Gesture.LongPress()</Text>
-          )}
-        </View>
-        <FlowChart chartManager={chartManager} />
-      </View>
-      <GestureHandlerRootView style={styles.container}>
-        <View style={styles.container}>
-          <GestureDetector gesture={composed}>
-            <Animated.View style={[styles.circle, animatedStyles]} />
-          </GestureDetector>
-        </View>
-      </GestureHandlerRootView>
-    </>
+    <div
+      ref={nodeRef}
+      className={styles.node}
+      style={{
+        gridRow,
+        gridColumn,
+        ...(isCurrent
+          ? {
+              background,
+              borderColor: background,
+              color,
+              transform: 'scale(1.03)',
+            }
+          : undefined),
+      }}>
+      {label.toUpperCase()}
+    </div>
   );
 }
 
-const styles = StyleSheet.create({
-  chartContainer: {
-    marginBottom: 60,
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-  },
-  circle: {
-    height: 120,
-    width: 120,
-    borderRadius: 500,
-    cursor: 'grab',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 24,
-    marginBottom: 14,
-    color: 'var(--ifm-font-color-base)',
-  },
-});
+// [state, gridRow, gridColumn] — rows 2/4/6 are 28px spacers the arrows run through
+const NODE_LAYOUT: [FlowState, number, number][] = [
+  ['undetermined', 1, 1],
+  ['began', 3, 1],
+  ['failed', 3, 3],
+  ['active', 5, 1],
+  ['cancelled', 5, 3],
+  ['end', 7, 1],
+];
+
+type NodeRect = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  cx: number;
+  cy: number;
+};
+
+function buildPaths(n: Record<FlowState, NodeRect>): string[] {
+  return [
+    `M${n.undetermined.cx},${n.undetermined.bottom} L${n.began.cx},${n.began.top}`,
+    `M${n.began.right},${n.began.cy} L${n.failed.left},${n.failed.cy}`,
+    `M${n.began.cx},${n.began.bottom} L${n.active.cx},${n.active.top}`,
+    `M${n.began.right},${n.began.bottom} L${n.cancelled.left},${n.cancelled.top}`,
+    `M${n.active.right},${n.active.cy} L${n.cancelled.left},${n.cancelled.cy}`,
+    `M${n.active.cx},${n.active.bottom} L${n.end.cx},${n.end.top}`,
+  ];
+}
+
+function StateColumn({
+  title,
+  current,
+}: {
+  title: string;
+  current: FlowState;
+}) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const nodeRefs = useRef<Partial<Record<FlowState, HTMLDivElement>>>({});
+  const [geometry, setGeometry] = useState<{
+    paths: string[];
+    viewBox: string;
+  } | null>(null);
+
+  const measureGeometry = useCallback(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) {
+      return;
+    }
+    const wrapRect = wrap.getBoundingClientRect();
+    if (wrapRect.width === 0) {
+      // column is hidden (mobile layout)
+      return;
+    }
+
+    const rects = {} as Record<FlowState, NodeRect>;
+    for (const [state] of NODE_LAYOUT) {
+      const el = nodeRefs.current[state];
+      if (!el) {
+        return;
+      }
+      const r = el.getBoundingClientRect();
+      rects[state] = {
+        left: r.left - wrapRect.left,
+        right: r.right - wrapRect.left,
+        top: r.top - wrapRect.top,
+        bottom: r.bottom - wrapRect.top,
+        cx: (r.left + r.right) / 2 - wrapRect.left,
+        cy: (r.top + r.bottom) / 2 - wrapRect.top,
+      };
+    }
+
+    // measuring DOM geometry can only happen after mount
+    // eslint-disable-next-line @eslint-react/hooks-extra/no-direct-set-state-in-use-effect
+    setGeometry({
+      paths: buildPaths(rects),
+      viewBox: `0 0 ${Math.round(wrapRect.width)} ${Math.round(wrapRect.height)}`,
+    });
+  }, []);
+
+  useEffect(() => {
+    measureGeometry();
+    window.addEventListener('resize', measureGeometry);
+    void document.fonts?.ready.then(measureGeometry);
+
+    const resizeObserver = new ResizeObserver(measureGeometry);
+    if (wrapRef.current) {
+      resizeObserver.observe(wrapRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', measureGeometry);
+      resizeObserver.disconnect();
+    };
+  }, [measureGeometry]);
+
+  const markerId = `arrowhead-${title}`;
+
+  return (
+    <div>
+      <div className={styles.columnTitle}>{title}</div>
+      <div className={styles.stateGridWrap} ref={wrapRef}>
+        {geometry && (
+          <svg className={styles.arrowsOverlay} viewBox={geometry.viewBox}>
+            <defs>
+              <marker
+                id={markerId}
+                markerUnits="userSpaceOnUse"
+                markerWidth={9}
+                markerHeight={9}
+                refX={8}
+                refY={4.5}
+                orient="auto">
+                <path d="M0,0 L8,4.5 L0,9 Z" className={styles.arrowHead} />
+              </marker>
+            </defs>
+            {geometry.paths.map((d) => (
+              <path
+                key={d}
+                d={d}
+                className={styles.arrowLine}
+                markerEnd={`url(#${markerId})`}
+              />
+            ))}
+          </svg>
+        )}
+        <div className={styles.stateGrid}>
+          {NODE_LAYOUT.map(([state, gridRow, gridColumn]) => (
+            <StateNode
+              key={state}
+              label={state}
+              current={current}
+              gridRow={gridRow}
+              gridColumn={gridColumn}
+              nodeRef={(el) => {
+                nodeRefs.current[state] = el ?? undefined;
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StateFlowsDiagram() {
+  const [panState, setPanState] = useState<FlowState>('undetermined');
+  const [lpState, setLpState] = useState<FlowState>('undetermined');
+
+  const panResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lpResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const panWasActive = useRef(false);
+  const lpWasActive = useRef(false);
+
+  const clearPanResetTimer = useCallback(() => {
+    if (panResetTimer.current) {
+      clearTimeout(panResetTimer.current);
+      panResetTimer.current = null;
+    }
+  }, []);
+
+  const clearLpResetTimer = useCallback(() => {
+    if (lpResetTimer.current) {
+      clearTimeout(lpResetTimer.current);
+      lpResetTimer.current = null;
+    }
+  }, []);
+
+  const schedulePanReset = useCallback(() => {
+    clearPanResetTimer();
+    panResetTimer.current = setTimeout(() => {
+      setPanState('undetermined');
+    }, AUTO_RESET_MS);
+  }, [clearPanResetTimer]);
+
+  const scheduleLpReset = useCallback(() => {
+    clearLpResetTimer();
+    lpResetTimer.current = setTimeout(() => {
+      setLpState('undetermined');
+    }, AUTO_RESET_MS);
+  }, [clearLpResetTimer]);
+
+  useEffect(() => {
+    return () => {
+      clearPanResetTimer();
+      clearLpResetTimer();
+    };
+  }, [clearPanResetTimer, clearLpResetTimer]);
+
+  const ballX = useSharedValue(0);
+  const ballY = useSharedValue(0);
+
+  const pan = usePanGesture({
+    onBegin: () => {
+      clearPanResetTimer();
+      setPanState('began');
+    },
+    onActivate: () => {
+      panWasActive.current = true;
+      setPanState('active');
+    },
+    onUpdate: (event) => {
+      // follow the pointer, clamped to a fixed radius from the origin
+      const distance = Math.hypot(event.translationX, event.translationY);
+      const scale =
+        distance > BALL_CLAMP_RADIUS ? BALL_CLAMP_RADIUS / distance : 1;
+      ballX.value = event.translationX * scale;
+      ballY.value = event.translationY * scale;
+    },
+    onDeactivate: (event) => {
+      if (!event.canceled) {
+        setPanState('end');
+      }
+    },
+    onFinalize: (event) => {
+      if (event.canceled) {
+        setPanState(panWasActive.current ? 'cancelled' : 'failed');
+      }
+      panWasActive.current = false;
+      ballX.value = withSpring(0, SPRING_BACK);
+      ballY.value = withSpring(0, SPRING_BACK);
+      schedulePanReset();
+    },
+  });
+
+  const longPress = useLongPressGesture({
+    onBegin: () => {
+      clearLpResetTimer();
+      setLpState('began');
+    },
+    onActivate: () => {
+      lpWasActive.current = true;
+      setLpState('active');
+    },
+    onDeactivate: (event) => {
+      if (!event.canceled) {
+        setLpState('end');
+      }
+    },
+    onFinalize: (event) => {
+      if (event.canceled) {
+        setLpState(lpWasActive.current ? 'cancelled' : 'failed');
+      }
+      lpWasActive.current = false;
+      scheduleLpReset();
+    },
+  });
+
+  const gesture = useCompetingGestures(pan, longPress);
+
+  const ballAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: ballX.value }, { translateY: ballY.value }],
+  }));
+
+  const onReset = () => {
+    clearPanResetTimer();
+    clearLpResetTimer();
+    panWasActive.current = false;
+    lpWasActive.current = false;
+    setPanState('undetermined');
+    setLpState('undetermined');
+    ballX.value = withSpring(0, SPRING_BACK);
+    ballY.value = withSpring(0, SPRING_BACK);
+  };
+
+  return (
+    <div className={styles.panel}>
+      <div className={styles.columns}>
+        <StateColumn title="usePanGesture" current={panState} />
+        <div className={styles.longPressColumn}>
+          <StateColumn title="useLongPressGesture" current={lpState} />
+        </div>
+      </div>
+
+      <div className={styles.ballArea}>
+        <GestureHandlerRootView>
+          <GestureDetector gesture={gesture}>
+            {/* react-native-web drops oklch() colors in RN styles, so the
+                gesture-handling Animated.View only moves and a plain div
+                paints the ball */}
+            <Animated.View style={ballAnimatedStyle}>
+              <div className={styles.ball} />
+            </Animated.View>
+          </GestureDetector>
+        </GestureHandlerRootView>
+        <div className={styles.caption}>Drag or hold the circle</div>
+      </div>
+
+      <div className={styles.resetRow}>
+        <button type="button" className={styles.resetButton} onClick={onReset}>
+          reset ↺
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function GestureStateFlowExample() {
+  return (
+    <BrowserOnly fallback={<div style={{ minHeight: 480 }} />}>
+      {() => <StateFlowsDiagram />}
+    </BrowserOnly>
+  );
+}

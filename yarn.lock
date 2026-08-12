@@ -13770,6 +13770,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-worklets@npm:0.12.0-nightly-20260810-fb9cb5596":
+  version: 0.12.0-nightly-20260810-fb9cb5596
+  resolution: "react-native-worklets@npm:0.12.0-nightly-20260810-fb9cb5596"
+  dependencies:
+    "@babel/generator": "npm:^7.27.1"
+    "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
+    "@babel/plugin-transform-class-properties": "npm:^7.28.6"
+    "@babel/plugin-transform-classes": "npm:^7.28.6"
+    "@babel/plugin-transform-nullish-coalescing-operator": "npm:^7.28.6"
+    "@babel/plugin-transform-optional-chaining": "npm:^7.28.6"
+    "@babel/plugin-transform-shorthand-properties": "npm:^7.27.1"
+    "@babel/plugin-transform-template-literals": "npm:^7.27.1"
+    "@babel/plugin-transform-unicode-regex": "npm:^7.27.1"
+    "@babel/preset-typescript": "npm:^7.28.5"
+    "@babel/traverse": "npm:^7.27.1"
+    "@babel/types": "npm:^7.27.1"
+    convert-source-map: "npm:^2.0.0"
+    semver: "npm:^7.7.4"
+  peerDependencies:
+    "@babel/core": "*"
+    "@react-native/metro-config": "*"
+    react: "*"
+    react-native: 0.83 - 0.87
+  checksum: 10c0/c504d67e90e09299eab17b3a43fa4b3772276fc549288680e1f32a93f2c3f64dd8fbf826d57a830928fcfe7925fba8f3f2d32326e98d2c03628811b7c46c89fa
+  languageName: node
+  linkType: hard
+
 "react-native-worklets@npm:0.8.1":
   version: 0.8.1
   resolution: "react-native-worklets@npm:0.8.1"
@@ -13794,9 +13821,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:nightly":
+"react-native-worklets@patch:react-native-worklets@npm%3A0.12.0-nightly-20260810-fb9cb5596#~/.yarn/patches/react-native-worklets-npm-0.12.0-nightly-20260810-fb9cb5596-f08a72b88e.patch":
   version: 0.12.0-nightly-20260810-fb9cb5596
-  resolution: "react-native-worklets@npm:0.12.0-nightly-20260810-fb9cb5596"
+  resolution: "react-native-worklets@patch:react-native-worklets@npm%3A0.12.0-nightly-20260810-fb9cb5596#~/.yarn/patches/react-native-worklets-npm-0.12.0-nightly-20260810-fb9cb5596-f08a72b88e.patch::version=0.12.0-nightly-20260810-fb9cb5596&hash=615328"
   dependencies:
     "@babel/generator": "npm:^7.27.1"
     "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
@@ -13817,7 +13844,7 @@ __metadata:
     "@react-native/metro-config": "*"
     react: "*"
     react-native: 0.83 - 0.87
-  checksum: 10c0/c504d67e90e09299eab17b3a43fa4b3772276fc549288680e1f32a93f2c3f64dd8fbf826d57a830928fcfe7925fba8f3f2d32326e98d2c03628811b7c46c89fa
+  checksum: 10c0/0ab22e112779e49f8fc7b76b749369f05c587939a1230ccce4495b243d00a155390e2fc3e3a8ed00f46bd63fb9c5ab1375bfd50b373eb61f638340f37cb92d9a
   languageName: node
   linkType: hard
 

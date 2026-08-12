@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest",
     "build": "yarn tsc -p tsconfig.build.json && bob build",
-    "ts-check": "yarn tsc --noEmit",
+    "ts-check": "yarn tsc --noEmit && yarn tsc -p __typetests__ --noEmit",
     "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
     "format:js": "yarn format-js",
     "format:android": "node ../../scripts/format-android.js",

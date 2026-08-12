@@ -12,6 +12,8 @@ import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPre
 
 import MouseButtonProp from './\_shared/mouse-button.mdx';
 
+Gesture that activates when the corresponding view is pressed for a sufficiently long time.
+
 <div className={webContainer}>
   <InteractiveExample
     component={<LongPressGestureBasic/>}
@@ -27,7 +29,6 @@ import SharedValueInfo from './\_shared/shared-value-info.md';
 
 import LongPressExample from '!!raw-loader!./_examples/LongPressExample';
 
-Gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture will deactivate immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#minduration) or if the finger is moved further than the [allowable distance](#maxdistance).
 
@@ -76,7 +77,7 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 x: number;
 ```
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector).
 
 ### y
 
@@ -84,7 +85,7 @@ X coordinate, expressed in points, of the current position of the pointer (finge
 y: number;
 ```
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector).
 
 ### absoluteX
 
@@ -92,7 +93,7 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 absoluteX: number;
 ```
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
 
 ### absoluteY
 
@@ -100,7 +101,7 @@ X coordinate, expressed in points, of the current position of the pointer (finge
 absoluteY: number;
 ```
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
 
 ### duration
 

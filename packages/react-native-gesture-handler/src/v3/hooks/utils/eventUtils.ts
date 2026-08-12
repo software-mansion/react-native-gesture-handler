@@ -1,5 +1,3 @@
-import type { NativeSyntheticEvent } from 'react-native';
-
 import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../../utils';
 import type {
@@ -11,16 +9,15 @@ import type {
   GestureHandlerEventWithHandlerData,
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
+  NativeEventWrapper,
 } from '../../types';
 
 function isNativeEvent<THandlerData, TExtendedHandlerData extends THandlerData>(
   event: GestureHandlerEventWithHandlerData<THandlerData, TExtendedHandlerData>
 ): event is
-  | NativeSyntheticEvent<
-      GestureUpdateEventWithHandlerData<TExtendedHandlerData>
-    >
-  | NativeSyntheticEvent<GestureStateChangeEventWithHandlerData<THandlerData>>
-  | NativeSyntheticEvent<GestureTouchEvent> {
+  | NativeEventWrapper<GestureUpdateEventWithHandlerData<TExtendedHandlerData>>
+  | NativeEventWrapper<GestureStateChangeEventWithHandlerData<THandlerData>>
+  | NativeEventWrapper<GestureTouchEvent> {
   'worklet';
 
   return 'nativeEvent' in event;
@@ -118,6 +115,12 @@ export function getChangeEventCalculator<TExtendedHandlerData>(
   ) => {
     'worklet';
     const currentEventData = current.handlerData;
+
+    // Guard against malformed events
+    if (currentEventData === undefined) {
+      return current;
+    }
+
     const previousEventData = previous ? previous.handlerData : null;
 
     const changePayload = diffCalculator(currentEventData, previousEventData);

@@ -2,6 +2,7 @@
 id: reanimated-drawer-layout
 title: Reanimated Drawer Layout
 sidebar_label: Reanimated Drawer Layout
+sidebar_position: 4
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -12,7 +13,7 @@ import MouseButtonProp from '../gestures/\_shared/mouse-button.mdx';
 This component acts as a cross-platform replacement for React Native's [`DrawerLayoutAndroid`](http://reactnative.dev/docs/drawerlayoutandroid.html) component, written using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started). For detailed information on standard parameters, please refer to the [React Native documentation](http://reactnative.dev/docs/drawerlayoutandroid.html).
 :::
 
-To use `ReanimatedDrawerLayout`, first ensure that Reanimated is installed and that your app is wrapped in [`GestureHandlerRootView`](/docs/fundamentals/root-view). You can then import it as follows:
+To use `ReanimatedDrawerLayout`, first ensure that Reanimated is installed and that your app is wrapped in [`GestureHandlerRootView`](/docs/core-components/root-view). You can then import it as follows:
 
 ```ts
 import ReanimatedDrawerLayout from 'react-native-gesture-handler/ReanimatedDrawerLayout';
@@ -228,7 +229,7 @@ export enum DrawerState {
 A function is called when the status of the drawer changes, taking `newState` to represent the drawer's interaction state and `drawerWillShow`, which is `true` when the drawer starts animating towards the open position and `false` otherwise.
 
 <Badges platforms={['ios', 'web']}>
-### enableTrackpadTwoFingerGesture
+### enableTrackpadTwoFingerGesture [I][W]
 </Badges>
 
 ```ts
@@ -249,7 +250,7 @@ Either a component rendered in the content view or a function. If `children` is 
 <MouseButtonProp />
 
 <Badges platforms={['web']}>
-### enableContextMenu
+### enableContextMenu [W]
 </Badges>
 
 ```ts
@@ -259,7 +260,7 @@ enableContextMenu: boolean;
 Specifies whether the context menu should be enabled after clicking on the underlying view with the right mouse button. Default value is set to `false` if [`MouseButton.RIGHT`](#mousebutton-web--android-only) is specified.
 
 <Badges platforms={['web']}>
-### userSelect
+### userSelect [W]
 </Badges>
 
 ```ts
@@ -269,7 +270,7 @@ userSelect: 'none' | 'auto' | 'text';
 This parameter allows specifying which `userSelect` property should be applied to the underlying view. Default value is set to `"none"`.
 
 <Badges platforms={['web']}>
-### activeCursor
+### activeCursor [W]
 </Badges>
 
 ```ts

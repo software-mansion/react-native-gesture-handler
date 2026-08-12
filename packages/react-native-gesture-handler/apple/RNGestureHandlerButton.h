@@ -8,6 +8,27 @@
 
 #import "RNGestureHandler.h"
 
+typedef NS_ENUM(NSInteger, RNGHButtonEventType) {
+  RNGHButtonEventTypePress,
+  RNGHButtonEventTypePressIn,
+  RNGHButtonEventTypePressOut,
+  RNGHButtonEventTypeLongPress,
+  RNGHButtonEventTypeHoverIn,
+  RNGHButtonEventTypeHoverOut,
+  RNGHButtonEventTypeInteractionFinished,
+};
+
+/*
+ * Receives interaction events produced by the button so that they can be
+ * dispatched through the component's event emitter.
+ */
+@protocol RNGHButtonEventDelegate <NSObject>
+
+- (void)dispatchButtonEvent:(RNGHButtonEventType)type
+              withExtraData:(nullable RNGestureHandlerEventExtraData *)extraData;
+
+@end
+
 #if TARGET_OS_OSX
 
 #include <react/renderer/core/LayoutMetrics.h>
@@ -43,6 +64,15 @@
 @property (nonatomic, assign) CGFloat hoverScale;
 @property (nonatomic, assign) CGFloat hoverUnderlayOpacity;
 @property (nonatomic, strong, nullable) RNGHColor *underlayColor;
+@property (nonatomic, assign) BOOL hasLongPressHandler;
+
+/**
+ * Tag of the gesture handler managed by the button component. The press event
+ * state machine runs only while it's set.
+ */
+@property (nonatomic, strong, nullable) NSNumber *managedHandlerTag;
+
+@property (nonatomic, weak, nullable) id<RNGHButtonEventDelegate> eventDelegate;
 
 /**
  * The view that press animations are applied to. Defaults to self; set by the

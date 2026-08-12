@@ -29,8 +29,8 @@ export default class TapGestureHandler extends GestureHandler {
   private lastX = 0;
   private lastY = 0;
 
-  private waitTimeout: number | undefined;
-  private delayTimeout: number | undefined;
+  private waitTimeout: ReturnType<typeof setTimeout> | undefined;
+  private delayTimeout: ReturnType<typeof setTimeout> | undefined;
 
   private tapsSoFar = 0;
 
@@ -167,7 +167,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     this.offsetX += this.lastX - this.startX;
-    this.offsetY += this.lastY = this.startY;
+    this.offsetY += this.lastY - this.startY;
 
     this.updateLastCoords();
 

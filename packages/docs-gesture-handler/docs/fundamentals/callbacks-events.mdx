@@ -2,10 +2,13 @@
 id: callbacks-events
 title: Gesture callbacks & events
 sidebar_label: Gesture callbacks & events
-sidebar_position: 6
+sidebar_position: 3
 ---
 
-import { GestureEventFlowChart, TouchEventFlowChart } from '@site/src/examples/CallbacksFlowCharts'
+import {
+  GestureCallbacksExample,
+  TouchCallbacksExample,
+} from '@site/src/examples/CallbacksFlowExamples';
 
 At any given time, each handler instance has an assigned [state](/docs/under-the-hood/state) that can change when new touch events occur or can be forced to change by the touch system under certain circumstances. You can hook into state transitions using specific [gesture callbacks](#callbacks).
 
@@ -15,7 +18,9 @@ When Reanimated is installed, all callbacks are automatically workletized. For m
 
 ### GestureEvent callbacks
 
-<GestureEventFlowChart />
+Drag or hold the circle below to see how the callback chain reacts.
+
+<GestureCallbacksExample />
 
 Note that some of these callbacks are complementary:
 
@@ -24,7 +29,9 @@ Note that some of these callbacks are complementary:
 
 ### TouchEvent callbacks
 
-<TouchEventFlowChart />
+Low-level `TouchEvent` callbacks are tied to raw pointer activity. Drag out of the card to cancel, or release inside it to see how the callback chain reacts.
+
+<TouchCallbacksExample />
 
 ## Callbacks
 
@@ -41,7 +48,7 @@ Called when a handler begins to recognize gestures. If `onBegin` was called, it 
 ```ts
 onActivate: (event: GestureEvent<HandlerData>) => void
 ```
- 
+
 Called when activation criteria for the handler are met. If `onActivate` was called, it is guaranteed that `onDeactivate` will be called later.
 
 ### onUpdate
@@ -185,7 +192,7 @@ export type TouchData = {
 };
 `}/>
 
-`TouchEvent` carries information about raw touch events, like touching the screen or moving the finger. 
+`TouchEvent` carries information about raw touch events, like touching the screen or moving the finger.
 
 - `eventType` - Type of the current event - whether the finger was placed on the screen, moved, lifted or cancelled.
 
@@ -195,13 +202,13 @@ export type TouchData = {
 
 - `numberOfTouches` - Number representing the count of currently active touches.
 
-`TouchData` contains information about a single touch. 
+`TouchData` contains information about a single touch.
 
 - `id` - A number representing the id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
 
-- `x` - X coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+- `x` - X coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
-- `y` - Y coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+- `y` - Y coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 - `absoluteX` - X coordinate of the current position of the touch relative to the window. The value is expressed in point units. It is recommended to use it instead of `x` in cases when the original view can be transformed as an effect of the gesture.
 
@@ -210,4 +217,3 @@ export type TouchData = {
 :::danger
 Don't rely on the order of items in the `changedTouches`/`allTouches` arrays as it may change during the gesture, instead use the `id` attribute to track individual touches across events.
 :::
-

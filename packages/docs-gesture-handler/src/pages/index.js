@@ -7,6 +7,7 @@ import HomepageStartScreen from '@site/src/components/Hero/StartScreen';
 import LandingBackground from '@site/src/components/Hero/LandingBackground';
 import FooterBackground from '../components/FooterBackground';
 import Playground from '@site/src/components/Playground';
+import TouchableShowcase from '@site/src/components/TouchableShowcase';
 import GestureFeatures from '@site/src/components/GestureFeatures';
 import Testimonials from '@site/src/components/Testimonials';
 import Sponsors from '@site/src/components/Sponsors';
@@ -23,6 +24,7 @@ function Home() {
       <LandingBackground />
       <div className={styles.container}>
         <HomepageStartScreen />
+        <TouchableShowcase />
         <Playground />
       </div>
       <div className={styles.waveContainer}>

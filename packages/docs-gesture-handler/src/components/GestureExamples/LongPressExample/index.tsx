@@ -1,33 +1,36 @@
+// eslint-disable-next-line import-x/extensions
+import Hand from '@site/static/img/hand-one.svg';
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
-  GestureHandlerRootView,
   GestureDetector,
-  Gesture,
+  GestureHandlerRootView,
+  useLongPressGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import Hand from '@site/static/img/hand-one.svg';
-import stylesWeb from './styles.module.css';
+
 import { RADIUS, useStylesForExample } from '../utils';
+import stylesWeb from './styles.module.css';
 
 export default function LongPressExample() {
   const colorModeStyles = useStylesForExample();
   const [showHand, setShowHand] = useState(true);
   const pressed = useSharedValue(false);
 
-  const longPress = Gesture.LongPress()
-    .onStart(() => {
+  const longPress = useLongPressGesture({
+    onActivate: () => {
       pressed.value = true;
       setShowHand(false);
-    })
-    .onEnd(() => {
+    },
+    onDeactivate: () => {
       pressed.value = false;
       setShowHand(true);
-    });
+    },
+  });
 
   const animatedStyles = useAnimatedStyle(() => ({
     backgroundColor: pressed.value

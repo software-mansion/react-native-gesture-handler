@@ -6,8 +6,46 @@ import type {
 } from 'react-native';
 import { codegenNativeComponent } from 'react-native';
 
+export type ButtonEvent = Readonly<{
+  pointerInside: boolean;
+  x: CodegenTypes.Double;
+  y: CodegenTypes.Double;
+  absoluteX: CodegenTypes.Double;
+  absoluteY: CodegenTypes.Double;
+  numberOfPointers: CodegenTypes.Int32;
+  pointerType: CodegenTypes.Int32;
+}>;
+
 // @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it
 interface NativeProps extends ViewProps {
+  // The events are namespaced with `Button` because the base view config on iOS
+  // already registers `topPress` as a bubbling event — a direct event with the
+  // same top-level name would fail view config validation in dev.
+  onButtonPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonPressIn?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonPressOut?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonLongPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonHoverIn?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonHoverOut?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
+  onButtonInteractionFinished?:
+    | CodegenTypes.DirectEventHandler<ButtonEvent>
+    | undefined;
+
+  hasLongPressHandler?: CodegenTypes.WithDefault<boolean, false>;
+  // Used on iOS to resolve the gesture handler module instance managing the
+  // handler created for `handlerTag`. Android resolves the module from the
+  // view's context instead.
+  moduleId?: CodegenTypes.WithDefault<CodegenTypes.Int32, -1>;
+  handlerTag?: CodegenTypes.Double | undefined;
+  cancelOnLeave?: CodegenTypes.WithDefault<boolean, true>;
+  gestureTestID?: string;
+  gestureHitSlop?: Readonly<{
+    top?: CodegenTypes.Double | undefined;
+    left?: CodegenTypes.Double | undefined;
+    bottom?: CodegenTypes.Double | undefined;
+    right?: CodegenTypes.Double | undefined;
+  }>;
+
   exclusive?: CodegenTypes.WithDefault<boolean, true>;
   foreground?: boolean;
   borderless?: boolean;

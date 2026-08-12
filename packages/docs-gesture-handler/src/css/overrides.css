@@ -185,3 +185,26 @@ table [class*='codeBlockContent'] code {
 button[class*='DocSearch-Button'] {
   margin: 0 !important;
 }
+
+/* t-rex-ui sidebar badges expose no variables for border or sizing,
+   only text/background (see --swm-sidebar-label-* in colors.css) */
+[class*='_badge_'] {
+  font-size: 12px;
+  padding: 0.0625rem 0.25rem;
+}
+
+[data-theme='dark'] [class*='_badge_'][class*='_new_'] {
+  border-color: rgba(52, 199, 130, 0.28);
+}
+
+[data-theme='dark'] [class*='_badge_'][class*='_deprecated_'] {
+  border-color: rgba(140, 148, 180, 0.22);
+}
+
+[data-theme='light'] [class*='_badge_'][class*='_new_'] {
+  border-color: rgba(37, 160, 105, 0.32);
+}
+
+[data-theme='light'] [class*='_badge_'][class*='_deprecated_'] {
+  border-color: rgba(90, 100, 134, 0.26);
+}

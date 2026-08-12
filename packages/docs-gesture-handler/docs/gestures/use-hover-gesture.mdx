@@ -10,6 +10,8 @@ import { webContainer } from '@site/src/utils/getGestureStyles';
 import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
+Gesture that can recognize hovering above the view it's attached to.
+
 <div className={webContainer}>
   <InteractiveExample
     component={<HoverGestureBasic/>}
@@ -24,12 +26,12 @@ import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-Gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
+The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional [visual effects](#effect-ios-only) may be configured.
 
 :::note
-Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan`](/docs/gestures/use-pan-gesture) gesture.
+Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/composition/overview) it with [`Pan`](/docs/gestures/use-pan-gesture) gesture.
 :::
 
 ## Example
@@ -79,7 +81,7 @@ const styles = StyleSheet.create({
 <SharedValueInfo />
 
 <Badges platforms={['ios']}>
-### effect
+### effect [I]
 </Badges>
 
 <CollapsibleCode 
@@ -114,7 +116,7 @@ Visual effect applied to the view while the view is hovered. Defaults to `HoverE
 x: number;
 ```
 
-X coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+X coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### y
 
@@ -122,7 +124,7 @@ X coordinate of the current position of the pointer relative to the view attache
 y: number;
 ```
 
-Y coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
+Y coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). Expressed in point units.
 
 ### absoluteX
 

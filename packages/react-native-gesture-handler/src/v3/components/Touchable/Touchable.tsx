@@ -1,31 +1,23 @@
-import React, { use, useCallback, useRef } from 'react';
+import React, { use, useCallback, useMemo, useRef, useState } from 'react';
+import type { NativeSyntheticEvent } from 'react-native';
 import { Platform } from 'react-native';
 
-import GestureHandlerButton from '../../../components/GestureHandlerButton';
+import GestureHandlerButton, {
+  type ButtonEvent,
+} from '../../../components/GestureHandlerButton';
 import { getTVProps } from '../../../components/utils';
-import { NativeDetector } from '../../detectors/NativeDetector';
-import { useNativeGesture } from '../../hooks';
+import { getNextHandlerTag } from '../../../handlers/getNextHandlerTag';
 import {
   isKeyboardDismissingTap,
   JSResponderContext,
-} from '../ScrollViewResponderInterceptor';
-import type {
-  AnimationDuration,
-  CallbackEventType,
-  EndCallbackEventType,
-  TouchableProps,
-} from './TouchableProps';
+  updateResponderEventValue,
+} from '../../scrollViewInterop';
+import type { AnimationDuration, TouchableProps } from './TouchableProps';
 
 const isAndroid = Platform.OS === 'android';
 const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 const DEFAULT_IN_DURATION_MS = 50;
 const DEFAULT_OUT_DURATION_MS = 100;
-
-enum PointerState {
-  UNKNOWN,
-  INSIDE,
-  OUTSIDE,
-}
 
 // Clamp user-supplied durations to finite, non-negative milliseconds.
 // Negative, NaN, or Infinity values would produce invalid CSS transitions
@@ -87,151 +79,110 @@ export const Touchable = (props: TouchableProps) => {
     onPress,
     onPressIn,
     onPressOut,
+    onHoverIn,
+    onHoverOut,
     children,
     disabled = false,
     cancelOnLeave = true,
     ref,
     ...rest
   } = props;
+  const [handlerTag] = useState(() => getNextHandlerTag());
 
   const resolvedDurations = resolveAnimationDuration(animationDuration);
   const resolvedDelayLongPress = sanitizeDuration(delayLongPress);
 
   const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
-  const pointerState = useRef<PointerState>(PointerState.UNKNOWN);
-  const longPressDetected = useRef(false);
-  const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  );
-
-  // Swallow the tap that dismisses the keyboard in
-  // keyboardShouldPersistTaps="never", matching RN's touchables.
   const jsResponderContext = use(JSResponderContext);
   const dropKeyboardTapRef = useRef<boolean | null>(null);
 
-  const captureKeyboardDismiss = useCallback(() => {
-    dropKeyboardTapRef.current ??= isKeyboardDismissingTap(jsResponderContext);
-  }, [jsResponderContext]);
-
-  const resetKeyboardDismiss = useCallback(() => {
-    dropKeyboardTapRef.current = null;
-  }, []);
-
-  const wrappedLongPress = useCallback(() => {
-    longPressDetected.current = true;
-    onLongPress?.();
-  }, [onLongPress]);
-
-  const startLongPressTimer = useCallback(() => {
-    longPressDetected.current = false;
-
-    if (onLongPress && !longPressTimeout.current) {
-      longPressTimeout.current = setTimeout(
-        wrappedLongPress,
-        resolvedDelayLongPress
-      );
+  // The button handles presses natively, without a NativeDetector, so it has
+  // to mark its responder events as RNGH-handled itself — otherwise a tap on
+  // it looks unhandled to an enclosing ScrollView in
+  // keyboardShouldPersistTaps='handled' mode and dismisses the keyboard.
+  const handleStartShouldSetResponderCapture = useCallback(() => {
+    if (!disabled) {
+      updateResponderEventValue(jsResponderContext, true);
     }
-  }, [onLongPress, resolvedDelayLongPress, wrappedLongPress]);
 
-  const onBegin = useCallback(
-    (e: CallbackEventType) => {
-      captureKeyboardDismiss();
+    return false;
+  }, [disabled, jsResponderContext]);
 
-      if (!e.pointerInside || dropKeyboardTapRef.current) {
-        pointerState.current = PointerState.OUTSIDE;
-        return;
-      }
-
-      onPressIn?.(e);
-      startLongPressTimer();
-
-      pointerState.current = PointerState.INSIDE;
-    },
-    [captureKeyboardDismiss, startLongPressTimer, onPressIn]
-  );
-
-  const onActivate = useCallback((e: CallbackEventType) => {
-    if (!e.pointerInside && longPressTimeout.current !== undefined) {
-      clearTimeout(longPressTimeout.current);
-      longPressTimeout.current = undefined;
-    }
-  }, []);
-
-  const onFinalize = useCallback(
-    (e: EndCallbackEventType) => {
-      if (
-        !dropKeyboardTapRef.current &&
-        pointerState.current === PointerState.INSIDE
-      ) {
-        onPressOut?.(e);
-      }
-
-      if (
-        !dropKeyboardTapRef.current &&
-        !e.canceled &&
-        !longPressDetected.current &&
-        e.pointerInside
-      ) {
-        onPress?.(e);
-      }
-
-      pointerState.current = PointerState.UNKNOWN;
-
-      if (longPressTimeout.current !== undefined) {
-        clearTimeout(longPressTimeout.current);
-        longPressTimeout.current = undefined;
-      }
-
-      resetKeyboardDismiss();
-    },
-    [resetKeyboardDismiss, onPressOut, onPress]
-  );
-
-  const onUpdate = useCallback(
-    (e: CallbackEventType) => {
+  const internalOnPress = useCallback(
+    (e: NativeSyntheticEvent<ButtonEvent>) => {
       if (dropKeyboardTapRef.current) {
         return;
       }
 
-      if (pointerState.current === PointerState.UNKNOWN) {
+      onPress?.(e.nativeEvent);
+    },
+    [onPress]
+  );
+
+  const internalOnPressIn = useCallback(
+    (e: NativeSyntheticEvent<ButtonEvent>) => {
+      // PressIn opens every press sequence; capture the verdict once per
+      // sequence so a re-entry PressIn (with cancelOnLeave={false}) doesn't
+      // overwrite it after the keyboard is already dismissed.
+      dropKeyboardTapRef.current ??=
+        isKeyboardDismissingTap(jsResponderContext);
+
+      if (dropKeyboardTapRef.current) {
         return;
       }
 
-      if (e.pointerInside) {
-        if (pointerState.current === PointerState.OUTSIDE) {
-          onPressIn?.(e);
-        }
-        pointerState.current = PointerState.INSIDE;
-      } else {
-        if (pointerState.current === PointerState.INSIDE) {
-          onPressOut?.(e);
-
-          if (longPressTimeout.current !== undefined) {
-            clearTimeout(longPressTimeout.current);
-            longPressTimeout.current = undefined;
-          }
-        }
-        pointerState.current = PointerState.OUTSIDE;
-      }
+      onPressIn?.(e.nativeEvent);
     },
-    [onPressIn, onPressOut]
+    [jsResponderContext, onPressIn]
   );
 
-  const nativeGesture = useNativeGesture({
-    onBegin,
-    onActivate,
-    onFinalize,
-    onUpdate,
-    hitSlop: props.hitSlop,
-    testID: props.testID,
-    enabled: !disabled,
-    shouldCancelWhenOutside: cancelOnLeave,
-    disableReanimated: true,
-    shouldActivateOnStart: false,
-    disallowInterruption: true,
-    yieldsToContinuousGestures: true,
-  });
+  const internalOnPressOut = useCallback(
+    (e: NativeSyntheticEvent<ButtonEvent>) => {
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
+      onPressOut?.(e.nativeEvent);
+    },
+    [onPressOut]
+  );
+
+  const internalOnLongPress = useCallback(
+    (e: NativeSyntheticEvent<ButtonEvent>) => {
+      if (dropKeyboardTapRef.current) {
+        return;
+      }
+
+      onLongPress?.(e.nativeEvent);
+    },
+    [onLongPress]
+  );
+
+  // Left undefined when the corresponding prop is absent so web can skip
+  // building a hover payload nobody consumes — it costs a synchronous layout
+  // read per pointer enter/leave. The native platforms emit either way.
+  const internalOnHoverIn = useMemo(
+    () =>
+      onHoverIn
+        ? (e: NativeSyntheticEvent<ButtonEvent>) => onHoverIn(e.nativeEvent)
+        : undefined,
+    [onHoverIn]
+  );
+
+  const internalOnHoverOut = useMemo(
+    () =>
+      onHoverOut
+        ? (e: NativeSyntheticEvent<ButtonEvent>) => onHoverOut(e.nativeEvent)
+        : undefined,
+    [onHoverOut]
+  );
+
+  // InteractionFinished is dispatched after the terminal PressOut/Press
+  // events, so resetting synchronously here is safe.
+  const internalOnInteractionFinished = useCallback(() => {
+    dropKeyboardTapRef.current = null;
+  }, []);
 
   const rippleProps = shouldUseNativeRipple
     ? {
@@ -244,22 +195,44 @@ export const Touchable = (props: TouchableProps) => {
 
   const tvProps = getTVProps(rest);
 
+  const hitSlop =
+    typeof props.hitSlop === 'number'
+      ? {
+          top: props.hitSlop,
+          left: props.hitSlop,
+          bottom: props.hitSlop,
+          right: props.hitSlop,
+        }
+      : props.hitSlop;
+
   return (
-    <NativeDetector gesture={nativeGesture}>
-      <GestureHandlerButton
-        {...rest}
-        {...tvProps}
-        {...rippleProps}
-        {...resolvedDurations}
-        ref={ref ?? null}
-        enabled={!disabled}
-        defaultOpacity={defaultOpacity}
-        defaultUnderlayOpacity={defaultUnderlayOpacity}
-        activeUnderlayOpacity={activeUnderlayOpacity}
-        underlayColor={underlayColor}
-        longPressDuration={resolvedDelayLongPress}>
-        {children}
-      </GestureHandlerButton>
-    </NativeDetector>
+    <GestureHandlerButton
+      {...rest}
+      {...tvProps}
+      {...rippleProps}
+      {...resolvedDurations}
+      ref={ref ?? null}
+      enabled={!disabled}
+      onStartShouldSetResponderCapture={handleStartShouldSetResponderCapture}
+      moduleId={globalThis._RNGH_MODULE_ID}
+      handlerTag={handlerTag}
+      cancelOnLeave={cancelOnLeave}
+      gestureTestID={props.testID}
+      gestureHitSlop={hitSlop}
+      defaultOpacity={defaultOpacity}
+      defaultUnderlayOpacity={defaultUnderlayOpacity}
+      activeUnderlayOpacity={activeUnderlayOpacity}
+      underlayColor={underlayColor}
+      longPressDuration={resolvedDelayLongPress}
+      hasLongPressHandler={onLongPress !== undefined}
+      onButtonPress={internalOnPress}
+      onButtonPressIn={internalOnPressIn}
+      onButtonPressOut={internalOnPressOut}
+      onButtonLongPress={internalOnLongPress}
+      onButtonHoverIn={internalOnHoverIn}
+      onButtonHoverOut={internalOnHoverOut}
+      onButtonInteractionFinished={internalOnInteractionFinished}>
+      {children}
+    </GestureHandlerButton>
   );
 };

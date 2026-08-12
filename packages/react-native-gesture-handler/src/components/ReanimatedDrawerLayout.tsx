@@ -27,13 +27,13 @@ import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   Extrapolation,
   interpolate,
-  runOnJS,
   useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
 import type {
   ActiveCursor,
@@ -342,7 +342,7 @@ const DrawerLayout = function DrawerLayout(
   const openValue = useSharedValue<number>(0);
 
   useDerivedValue(() => {
-    onDrawerSlide && runOnJS(onDrawerSlide)(openValue.value);
+    onDrawerSlide && scheduleOnRN(onDrawerSlide, openValue.value);
   }, []);
 
   const isDrawerOpen = useSharedValue(false);
@@ -355,7 +355,7 @@ const DrawerLayout = function DrawerLayout(
     (newState: DrawerState, drawerWillShow: boolean) => {
       'worklet';
       onDrawerStateChanged &&
-        runOnJS(onDrawerStateChanged)?.(newState, drawerWillShow);
+        scheduleOnRN(onDrawerStateChanged, newState, drawerWillShow);
     },
     [onDrawerStateChanged]
   );
@@ -395,10 +395,10 @@ const DrawerLayout = function DrawerLayout(
       isDrawerOpen.value = willShow;
 
       emitStateChanged(DrawerState.SETTLING, willShow);
-      runOnJS(setDrawerState)(DrawerState.SETTLING);
+      scheduleOnRN(setDrawerState, DrawerState.SETTLING);
 
       if (hideStatusBar) {
-        runOnJS(setStatusBarHidden)(willShow, statusBarAnimation);
+        scheduleOnRN(setStatusBarHidden, willShow, statusBarAnimation);
       }
 
       const normalizedToValue = interpolate(
@@ -429,12 +429,12 @@ const DrawerLayout = function DrawerLayout(
         (finished) => {
           if (finished) {
             emitStateChanged(DrawerState.IDLE, willShow);
-            runOnJS(setDrawerOpened)(willShow);
-            runOnJS(setDrawerState)(DrawerState.IDLE);
+            scheduleOnRN(setDrawerOpened, willShow);
+            scheduleOnRN(setDrawerState, DrawerState.IDLE);
             if (willShow) {
-              onDrawerOpen && runOnJS(onDrawerOpen)?.();
+              onDrawerOpen && scheduleOnRN(onDrawerOpen);
             } else {
-              onDrawerClose && runOnJS(onDrawerClose)?.();
+              onDrawerClose && scheduleOnRN(onDrawerClose);
             }
           }
         }
@@ -553,12 +553,12 @@ const DrawerLayout = function DrawerLayout(
     onActivate: () => {
       'worklet';
       emitStateChanged(DrawerState.DRAGGING, false);
-      runOnJS(setDrawerState)(DrawerState.DRAGGING);
+      scheduleOnRN(setDrawerState, DrawerState.DRAGGING);
       if (keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
-        runOnJS(dismissKeyboard)();
+        scheduleOnRN(dismissKeyboard);
       }
       if (hideStatusBar) {
-        runOnJS(setStatusBarHidden)(true, statusBarAnimation);
+        scheduleOnRN(setStatusBarHidden, true, statusBarAnimation);
       }
     },
     onUpdate: (event) => {

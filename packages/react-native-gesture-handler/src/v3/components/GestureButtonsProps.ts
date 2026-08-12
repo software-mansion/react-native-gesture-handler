@@ -5,11 +5,21 @@ import type { ButtonProps } from '../../components/GestureHandlerButton';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
 
 /**
- * @deprecated `RawButtonProps` is deprecated, use `ClickableProps` instead
+ * @deprecated `RawButtonProps` is deprecated, use `TouchableProps` instead
  */
 export interface RawButtonProps
   extends Omit<
       ButtonProps,
+      // The native interaction events are omitted — the deprecated buttons
+      // drive their press callbacks from the gesture in JS and redeclare them
+      // with their own signatures, and never report hover at all.
+      | 'onButtonPress'
+      | 'onButtonPressIn'
+      | 'onButtonPressOut'
+      | 'onButtonLongPress'
+      | 'onButtonHoverIn'
+      | 'onButtonHoverOut'
+      | 'onButtonInteractionFinished'
       | 'defaultOpacity'
       | 'defaultScale'
       | 'defaultUnderlayOpacity'
@@ -24,7 +34,7 @@ export interface RawButtonProps
     > {}
 
 /**
- * @deprecated `BaseButtonProps` is deprecated, use `ClickableProps` instead
+ * @deprecated `BaseButtonProps` is deprecated, use `TouchableProps` instead
  */
 export interface BaseButtonProps extends RawButtonProps {
   /**
@@ -55,7 +65,7 @@ export interface BaseButtonProps extends RawButtonProps {
 }
 
 /**
- * @deprecated `RectButtonProps` is deprecated, use `ClickableProps` instead
+ * @deprecated `RectButtonProps` is deprecated, use `TouchableProps` instead
  */
 export interface RectButtonProps extends BaseButtonProps {
   /**
@@ -72,7 +82,7 @@ export interface RectButtonProps extends BaseButtonProps {
 }
 
 /**
- * @deprecated `BorderlessButtonProps` is deprecated, use `ClickableProps` instead
+ * @deprecated `BorderlessButtonProps` is deprecated, use `TouchableProps` instead
  */
 export interface BorderlessButtonProps extends BaseButtonProps {
   /**

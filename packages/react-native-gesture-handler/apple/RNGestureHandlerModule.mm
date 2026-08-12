@@ -104,16 +104,23 @@ RCT_EXPORT_MODULE()
   _operations = [NSMutableArray new];
 }
 
-- (bool)decorateUIRuntime
+- (bool)tryInstallUIRuntimeBindings
 {
   __weak RNGestureHandlerModule *weakSelf = self;
+  const auto resolved = RNGHRuntimeDecorator::tryFindUIRuntime(*_rnRuntime);
 
-  return RNGHRuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
+  if (resolved.runtime == nullptr) {
+    return false;
+  }
+
+  RNGHRuntimeDecorator::installUIRuntimeBindings(*resolved.runtime, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
     }
   });
+
+  return true;
 }
 
 - (void)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
@@ -185,7 +192,7 @@ RCT_EXPORT_MODULE()
 - (nonnull NSNumber *)installUIRuntimeBindings
 {
   if (!_uiRuntimeDecorated) {
-    _uiRuntimeDecorated = [self decorateUIRuntime];
+    _uiRuntimeDecorated = [self tryInstallUIRuntimeBindings];
   }
 
   return _uiRuntimeDecorated ? @1 : @0;

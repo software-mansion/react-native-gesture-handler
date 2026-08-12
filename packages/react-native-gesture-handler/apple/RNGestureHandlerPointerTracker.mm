@@ -39,7 +39,14 @@
 - (int)unregisterTouch:(RNGHUITouch *)touch
 {
   for (int index = 0; index < MAX_POINTERS_COUNT; index++) {
+#if TARGET_OS_OSX
+    // A macOS mouse sequence delivers a fresh NSEvent per event, so identity matching
+    // (valid on iOS, where a UITouch is one stable object for the whole touch) never
+    // matches. There is only one mouse pointer — match the tracked slot instead.
+    if (_trackedPointers[index] != nil) {
+#else
     if (_trackedPointers[index] == touch) {
+#endif
       _trackedPointers[index] = nil;
       return index;
     }
@@ -51,7 +58,12 @@
 - (int)findTouchIndex:(RNGHUITouch *)touch
 {
   for (int index = 0; index < MAX_POINTERS_COUNT; index++) {
+#if TARGET_OS_OSX
+    // See unregisterTouch: — identity matching cannot work for NSEvents.
+    if (_trackedPointers[index] != nil) {
+#else
     if (_trackedPointers[index] == touch) {
+#endif
       return index;
     }
   }
@@ -116,18 +128,25 @@
   _eventType = RNGHTouchEventTypePointerDown;
 
   NSDictionary *data[touches.count];
+  int changedCount = 0;
 
   for (int i = 0; i < [touches count]; i++) {
     RNGHUITouch *touch = [[touches allObjects] objectAtIndex:i];
     int index = [self registerTouch:touch];
-    if (index >= 0) {
-      _trackedPointersCount++;
+
+    if (index < 0) {
+      continue;
     }
 
-    data[i] = [self extractPointerData:index forTouch:touch];
+    _trackedPointersCount++;
+    data[changedCount++] = [self extractPointerData:index forTouch:touch];
   }
 
-  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  if (changedCount == 0) {
+    return;
+  }
+
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:changedCount];
   // extract all touches last to include the ones that were just added
   [self extractAllTouches];
   [self sendEvent];
@@ -142,14 +161,30 @@
   _eventType = RNGHTouchEventTypePointerMove;
 
   NSDictionary *data[touches.count];
+  int changedCount = 0;
 
   for (int i = 0; i < [touches count]; i++) {
     RNGHUITouch *touch = [[touches allObjects] objectAtIndex:i];
     int index = [self findTouchIndex:touch];
-    data[i] = [self extractPointerData:index forTouch:touch];
+
+    if (index < 0) {
+      continue;
+    }
+
+#if TARGET_OS_OSX
+    // Replace the stored mouse-down event with the latest one so extractAllTouches
+    // reads the pointer's current position, not where the sequence started.
+    _trackedPointers[index] = touch;
+#endif
+
+    data[changedCount++] = [self extractPointerData:index forTouch:touch];
   }
 
-  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  if (changedCount == 0) {
+    return;
+  }
+
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:changedCount];
   [self extractAllTouches];
   [self sendEvent];
 }
@@ -160,24 +195,43 @@
     return;
   }
 
+#if TARGET_OS_OSX
+  // Refresh the tracked slot with the ending event so extractAllTouches below reports
+  // the pointer's final position. On iOS the stored UITouch is a live object that
+  // always reads its current location; a stored NSEvent is a stale snapshot.
+  for (RNGHUITouch *touch in touches) {
+    int index = [self findTouchIndex:touch];
+    if (index >= 0) {
+      _trackedPointers[index] = touch;
+    }
+  }
+#endif
+
   // extract all touches first to include the ones that were just lifted
   [self extractAllTouches];
 
   _eventType = RNGHTouchEventTypePointerUp;
 
   NSDictionary *data[touches.count];
+  int changedCount = 0;
 
   for (int i = 0; i < [touches count]; i++) {
     RNGHUITouch *touch = [[touches allObjects] objectAtIndex:i];
     int index = [self unregisterTouch:touch];
-    if (index >= 0) {
-      _trackedPointersCount--;
+
+    if (index < 0) {
+      continue;
     }
 
-    data[i] = [self extractPointerData:index forTouch:touch];
+    _trackedPointersCount--;
+    data[changedCount++] = [self extractPointerData:index forTouch:touch];
   }
 
-  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  if (changedCount == 0) {
+    return;
+  }
+
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:changedCount];
   [self sendEvent];
 }
 
@@ -242,10 +296,12 @@
   }
 
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
-  // it that recognizer tried to send event, the app would crash because the target of the event
-  // would be nil.
-  if (_gestureHandler.recognizer.view.reactTag == nil &&
-      _gestureHandler.actionType != RNGestureHandlerActionTypeNativeDetector) {
+  // if that recognizer tried to send an event, the app would crash because the target of the event
+  // would be nil. Detector-attached handlers (native and virtual alike) don't route events by
+  // the view's reactTag — they dispatch through the detector view — so a nil tag is not an
+  // obstacle for them. The virtual recognizer's view has no reactTag at all, so without this
+  // exemption virtual handlers would never deliver touch events.
+  if (_gestureHandler.recognizer.view.reactTag == nil && ![_gestureHandler usesNativeOrVirtualDetector]) {
     return;
   }
 

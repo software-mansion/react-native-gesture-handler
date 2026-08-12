@@ -1,0 +1,33 @@
+name: Build Android (expo-example)
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/android.yml
+      - .github/workflows/android-build.yml
+      - packages/react-native-gesture-handler/package.json
+      - packages/react-native-gesture-handler/android/**
+      - packages/react-native-gesture-handler/shared/**
+      - packages/react-native-gesture-handler/src/**
+      - apps/expo-example/**
+      - apps/common-app/**
+      - rnrepo.config.json
+      - yarn.lock
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  expo-example:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    uses: ./.github/workflows/android-build.yml
+    with:
+      app: expo-example
+      artifact-name: android-apk-expo-example
+      abi: x86_64

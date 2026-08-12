@@ -2,6 +2,7 @@
 id: legacy-touchables
 title: Legacy Touchables
 sidebar_label: Legacy Touchables
+sidebar_position: 7
 ---
 
 :::warning

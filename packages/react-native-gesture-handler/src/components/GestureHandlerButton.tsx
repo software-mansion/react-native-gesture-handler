@@ -3,12 +3,14 @@ import type {
   ColorValue,
   HostComponent,
   LayoutChangeEvent,
+  NativeSyntheticEvent,
   StyleProp,
   ViewProps,
   ViewStyle,
 } from 'react-native';
 
 import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
+import type { ButtonEvent } from '../v3/types';
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {
   children?: React.ReactNode;
@@ -18,11 +20,76 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    */
   enabled?: boolean | undefined;
 
+  hasLongPressHandler?: boolean | undefined;
+  moduleId?: number | undefined;
+  handlerTag?: number | undefined;
+  cancelOnLeave?: boolean | undefined;
+  gestureTestID?: string | undefined;
+  gestureHitSlop?:
+    | {
+        top?: number | undefined;
+        left?: number | undefined;
+        bottom?: number | undefined;
+        right?: number | undefined;
+      }
+    | null
+    | undefined;
+
   /**
    * Defines if more than one button could be pressed simultaneously. By default
    * set true.
    */
   exclusive?: boolean | undefined;
+
+  /**
+   * Called when the button gets pressed.
+   */
+  onButtonPress?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when the pointer touches the button.
+   */
+  onButtonPressIn?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when the pointer is released or leaves the button.
+   */
+  onButtonPressOut?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when the button gets pressed and held past `longPressDuration`.
+   */
+  onButtonLongPress?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when a non-touch pointer starts hovering over the button.
+   */
+  onButtonHoverIn?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when a non-touch pointer stops hovering over the button.
+   */
+  onButtonHoverOut?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
+
+  /**
+   * Called when the interaction with the button ends, after any terminal
+   * `onButtonPressOut`/`onButtonPress` events, regardless of how it ended.
+   */
+  onButtonInteractionFinished?:
+    | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
+    | undefined;
 
   /**
    * Android only.
@@ -203,3 +270,4 @@ export const ButtonComponent =
   RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
 export default ButtonComponent;
+export type { ButtonEvent };
