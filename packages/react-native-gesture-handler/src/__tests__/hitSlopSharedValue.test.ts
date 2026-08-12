@@ -69,14 +69,14 @@ describe('bindSharedValues', () => {
     });
   });
 
-  test('passes an explicitly null hitSlop through', () => {
+  test('sends an explicitly null hitSlop as unset slots', () => {
     const hitSlop = fakeSharedValue(-10);
     bind({ hitSlop: hitSlop as unknown as SharedValue });
 
     hitSlop.emit(null);
 
     expect(mockUpdateGestureHandlerConfig).toHaveBeenCalledWith(7, {
-      hitSlop: null,
+      hitSlop: [null, null, null, null, null, null],
     });
   });
 

@@ -10,7 +10,7 @@ describe('hitSlop wiring', () => {
   describe('filterConfig (v1 and v2)', () => {
     test('normalizes hitSlop', () => {
       expect(filterConfig({ hitSlop: -10 }, ['hitSlop'])).toEqual({
-        hitSlop: [-10, -10, -10, -10, null, null],
+        hitSlop: -10,
       });
 
       expect(
@@ -21,7 +21,7 @@ describe('hitSlop wiring', () => {
     test('keeps the difference between an absent and an explicitly null hitSlop', () => {
       // `null` clears the hit slop, a missing key leaves the previous value alone.
       expect(filterConfig({ hitSlop: null }, ['hitSlop'])).toEqual({
-        hitSlop: null,
+        hitSlop: [null, null, null, null, null, null],
       });
 
       expect(filterConfig({}, ['hitSlop'])).toEqual({});
@@ -36,7 +36,7 @@ describe('hitSlop wiring', () => {
       } as Parameters<typeof prepareConfigForNativeSide>[1]).hitSlop;
 
     test('normalizes hitSlop', () => {
-      expect(prepare(-10)).toEqual([-10, -10, -10, -10, null, null]);
+      expect(prepare(-10)).toBe(-10);
       expect(prepare({ horizontal: -10 })).toEqual([
         -10,
         null,
@@ -47,8 +47,8 @@ describe('hitSlop wiring', () => {
       ]);
     });
 
-    test('keeps an explicitly null hitSlop', () => {
-      expect(prepare(null)).toBeNull();
+    test('sends an explicitly null hitSlop as unset slots', () => {
+      expect(prepare(null)).toEqual([null, null, null, null, null, null]);
     });
   });
 });

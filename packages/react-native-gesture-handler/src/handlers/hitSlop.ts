@@ -20,6 +20,16 @@ export type CanonicalHitSlop = [
   height: number | null,
 ];
 
+/**
+ * What actually travels to the platforms: either a plain number, which every
+ * reader expands into four equal edges itself, or the six canonical slots.
+ * A number stays a number on purpose — it avoids the array wrapper the bridge
+ * would otherwise allocate for the far more common uniform case.
+ */
+export type NormalizedHitSlop = number | CanonicalHitSlop;
+
+const CLEARED_HIT_SLOP: CanonicalHitSlop = [null, null, null, null, null, null];
+
 export const HIT_SLOP_LEFT_IDX = 0;
 export const HIT_SLOP_TOP_IDX = 1;
 export const HIT_SLOP_RIGHT_IDX = 2;
@@ -84,8 +94,11 @@ function validateHitSlop(hitSlop: CanonicalHitSlop) {
  *
  * `undefined` is passed through so that the property stays out of partial
  * config updates (the platforms leave the previous value alone when the key is
- * missing), while an explicit `null` is passed through as a request to clear
- * the hit slop.
+ * missing), while an explicit `null` becomes six unset slots, which is how the
+ * platforms already represent a cleared hit slop.
+ *
+ * A plain number is forwarded untouched, so the uniform case never allocates an
+ * array on the way to the platforms.
  *
  * Already normalized values are returned as-is, which keeps the function
  * idempotent.
@@ -93,16 +106,24 @@ function validateHitSlop(hitSlop: CanonicalHitSlop) {
  * Runs on the UI thread as well, since `hitSlop` can be a shared value.
  */
 export function normalizeHitSlop(
-  hitSlop: HitSlop | CanonicalHitSlop
-): CanonicalHitSlop | null | undefined {
+  hitSlop: HitSlop | NormalizedHitSlop
+): NormalizedHitSlop | undefined {
   'worklet';
 
-  if (hitSlop === undefined || hitSlop === null || Array.isArray(hitSlop)) {
-    return hitSlop;
+  if (hitSlop === undefined) {
+    return undefined;
   }
 
-  if (typeof hitSlop === 'number') {
-    return [hitSlop, hitSlop, hitSlop, hitSlop, null, null];
+  // An explicit `null` means "clear it", which is what six unset slots already
+  // describe. It is sent that way rather than as a bare `null` because the iOS
+  // TurboModule bridge drops null-valued keys, making a clear indistinguishable
+  // from an absent one.
+  if (hitSlop === null) {
+    return CLEARED_HIT_SLOP;
+  }
+
+  if (typeof hitSlop === 'number' || Array.isArray(hitSlop)) {
+    return hitSlop;
   }
 
   const slop = hitSlop as HitSlopObject;

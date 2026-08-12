@@ -7,7 +7,7 @@ import type {
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
-import type { CanonicalHitSlop } from '../../handlers/hitSlop';
+import type { NormalizedHitSlop } from '../../handlers/hitSlop';
 import { PointerType } from '../../PointerType';
 import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
@@ -54,7 +54,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _handlerTag!: number;
   private _testID?: string | undefined = undefined;
 
-  private hitSlop?: CanonicalHitSlop | undefined = undefined;
+  private hitSlop?: NormalizedHitSlop | undefined = undefined;
   private manualActivation: boolean = false;
   private mouseButton?: MouseButton | undefined = undefined;
   private needsPointerData: boolean = false;
@@ -876,8 +876,11 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     const { width, height } = this.delegate.measureView();
 
+    // A uniform hit slop stays a plain number on the wire, so expand it here.
     const [slopLeft, slopTop, slopRight, slopBottom, slopWidth, slopHeight] =
-      this.hitSlop;
+      typeof this.hitSlop === 'number'
+        ? [this.hitSlop, this.hitSlop, this.hitSlop, this.hitSlop, null, null]
+        : this.hitSlop;
 
     let left = 0;
     let top = 0;

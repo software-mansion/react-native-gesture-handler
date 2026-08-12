@@ -8,6 +8,7 @@ import android.view.MotionEvent.PointerProperties
 import android.view.View
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
@@ -967,6 +968,13 @@ open class GestureHandler {
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.isNull(KEY_HIT_SLOP)) {
           handler.setHitSlop(null)
+          return
+        }
+
+        // A uniform hit slop stays a plain number on the wire, which spares the bridge the
+        // wrapper it would allocate for an array.
+        if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
+          handler.setHitSlop(PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP)))
           return
         }
 

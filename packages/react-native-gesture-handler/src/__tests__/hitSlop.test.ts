@@ -2,10 +2,18 @@ import type { HitSlop } from '../handlers/gestureHandlerCommon';
 import { normalizeHitSlop } from '../handlers/hitSlop';
 
 describe('normalizeHitSlop', () => {
-  test('passes `undefined` and `null` through', () => {
-    // `undefined` keeps the property out of partial config updates, `null` clears the hit slop.
+  test('keeps `undefined` out of the payload and sends `null` as unset slots', () => {
+    // `undefined` keeps the property out of partial config updates. `null` has to
+    // travel as six unset slots, since the iOS bridge drops null-valued keys.
     expect(normalizeHitSlop(undefined)).toBeUndefined();
-    expect(normalizeHitSlop(null)).toBeNull();
+    expect(normalizeHitSlop(null)).toEqual([
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+    ]);
   });
 
   test('is idempotent', () => {
@@ -20,19 +28,14 @@ describe('normalizeHitSlop', () => {
       null,
       null,
     ]);
-    expect(normalizeHitSlop(normalizeHitSlop(-10))).toEqual([
-      -10,
-      -10,
-      -10,
-      -10,
-      null,
-      null,
-    ]);
+    expect(normalizeHitSlop(normalizeHitSlop(-10))).toBe(-10);
   });
 
-  test('expands a number onto every edge', () => {
-    expect(normalizeHitSlop(-10)).toEqual([-10, -10, -10, -10, null, null]);
-    expect(normalizeHitSlop(0)).toEqual([0, 0, 0, 0, null, null]);
+  test('forwards a uniform hit slop as a plain number', () => {
+    // Left as a number so the bridge does not allocate an array wrapper for it;
+    // every platform expands it into four equal edges itself.
+    expect(normalizeHitSlop(-10)).toBe(-10);
+    expect(normalizeHitSlop(0)).toBe(0);
   });
 
   test('marks unspecified edges as `null`', () => {

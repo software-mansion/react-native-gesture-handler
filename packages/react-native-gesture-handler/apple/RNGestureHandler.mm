@@ -183,8 +183,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _cancelsJSResponder = [RCTConvert BOOL:prop];
   }
 
+  // A cleared hit slop arrives as six unset slots rather than as `null`, because the TurboModule
+  // bridge drops null-valued keys on this platform. A missing key still means the property was not
+  // part of this update, and leaves the previous value alone.
   prop = config[@"hitSlop"];
-  if ([prop isKindOfClass:[NSArray class]]) {
+  if ([prop isKindOfClass:[NSNumber class]]) {
+    // A uniform hit slop stays a plain number on the wire, skipping the array wrapper.
+    _hitSlop = RNGHHitSlopEmpty;
+    _hitSlop.left = _hitSlop.right = _hitSlop.top = _hitSlop.bottom = [prop doubleValue];
+  } else if ([prop isKindOfClass:[NSArray class]]) {
     _hitSlop.left = RNGHHitSlopEdge(prop, RNGHHitSlopIndexLeft);
     _hitSlop.top = RNGHHitSlopEdge(prop, RNGHHitSlopIndexTop);
     _hitSlop.right = RNGHHitSlopEdge(prop, RNGHHitSlopIndexRight);
@@ -192,7 +199,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _hitSlop.width = RNGHHitSlopEdge(prop, RNGHHitSlopIndexWidth);
     _hitSlop.height = RNGHHitSlopEdge(prop, RNGHHitSlopIndexHeight);
   } else if (prop != nil) {
-    // An explicit `null` clears the hit slop; a missing key leaves the previous value alone.
     _hitSlop = RNGHHitSlopEmpty;
   }
 }

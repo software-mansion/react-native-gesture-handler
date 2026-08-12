@@ -9,7 +9,7 @@ import type {
   TouchAction,
   UserSelect,
 } from '../handlers/gestureHandlerCommon';
-import type { CanonicalHitSlop } from '../handlers/hitSlop';
+import type { NormalizedHitSlop } from '../handlers/hitSlop';
 import type { PointerType } from '../PointerType';
 import type { State } from '../State';
 import type {
@@ -25,7 +25,7 @@ type ConfigArgs =
   | number
   | boolean
   | string
-  | CanonicalHitSlop
+  | NormalizedHitSlop
   | UserSelect
   | TouchAction
   | ActiveCursor
@@ -39,7 +39,7 @@ export interface Config extends Record<string, ConfigArgs> {
   simultaneousHandlers?: Handler[] | null | undefined;
   waitFor?: Handler[] | null | undefined;
   blocksHandlers?: Handler[] | null | undefined;
-  hitSlop?: CanonicalHitSlop | null | undefined;
+  hitSlop?: NormalizedHitSlop | null | undefined;
   shouldCancelWhenOutside?: boolean | undefined;
   userSelect?: UserSelect | undefined;
   activeCursor?: ActiveCursor | undefined;
