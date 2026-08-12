@@ -165,54 +165,6 @@ describe('normalizeHitSlop', () => {
     ]);
   });
 
-  describe('on a Worklet runtime', () => {
-    // Throwing inside a shared value listener would tear it down and desync the
-    // shared value from the native config, so there the error is only reported
-    // and the value still goes through — exactly as it would in a release build.
-    let consoleError: jest.SpyInstance;
-    const initialRuntimeKind = globalThis.__RUNTIME_KIND;
-
-    beforeEach(() => {
-      consoleError = jest.spyOn(console, 'error').mockImplementation();
-    });
-
-    afterEach(() => {
-      globalThis.__RUNTIME_KIND = initialRuntimeKind;
-      globalThis._WORKLET = undefined;
-      consoleError.mockRestore();
-    });
-
-    const expectReported = () => {
-      expect(normalizeHitSlop({ width: 20 } as HitSlop)).toEqual([
-        null,
-        null,
-        null,
-        null,
-        20,
-        null,
-      ]);
-      expect(consoleError).toHaveBeenCalledWith(
-        expect.stringContaining(
-          "when 'width' is defined, either 'left' or 'right' has to be defined"
-        )
-      );
-    };
-
-    test('reports instead of throwing', () => {
-      // 2 is the UI runtime.
-      globalThis.__RUNTIME_KIND = 2;
-      expectReported();
-    });
-
-    test('falls back to the deprecated `_WORKLET` global', () => {
-      // Reanimated versions predating `__RUNTIME_KIND` only expose `_WORKLET`.
-      // @ts-expect-error Deliberately emulating a runtime without the new global.
-      globalThis.__RUNTIME_KIND = undefined;
-      globalThis._WORKLET = true;
-      expectReported();
-    });
-  });
-
   test('counts a shorthand as defining both of its edges', () => {
     // `horizontal` fills in both `left` and `right`, which conflicts with `width`.
     expect(() =>

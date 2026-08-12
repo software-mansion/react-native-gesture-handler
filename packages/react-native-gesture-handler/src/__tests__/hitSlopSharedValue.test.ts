@@ -22,10 +22,12 @@ jest.mock('../handlers/gestures/reanimatedWrapper', () => ({
       typeof value === 'object' &&
       value !== null &&
       '__isFakeSharedValue' in value,
-    runOnUI:
-      <TArgs extends unknown[]>(fn: (...args: TArgs) => void) =>
-      (...args: TArgs): void =>
-        fn(...args),
+  },
+  Worklets: {
+    scheduleOnUI: <TArgs extends unknown[]>(
+      fn: (...args: TArgs) => void,
+      ...args: TArgs
+    ): void => fn(...args),
   },
 }));
 
