@@ -5901,8 +5901,8 @@ __metadata:
     react: "npm:19.2.3"
     react-native: "npm:0.87.0"
     react-native-gesture-handler: "workspace:*"
-    react-native-reanimated: "npm:nightly"
-    react-native-worklets: "npm:nightly"
+    react-native-reanimated: "npm:4.6.0-nightly-20260811-248dee712"
+    react-native-worklets: "patch:react-native-worklets@npm%3A0.12.0-nightly-20260810-fb9cb5596#~/.yarn/patches/react-native-worklets-npm-0.12.0-nightly-20260810-fb9cb5596-f08a72b88e.patch"
     react-test-renderer: "npm:19.2.3"
     typescript: "npm:~6.0.3"
   languageName: unknown
@@ -6517,11 +6517,11 @@ __metadata:
     prettier: "npm:3.3.3"
     react-native-gesture-handler: "workspace:*"
     react-native-pager-view: "npm:^8.0.2"
-    react-native-reanimated: "npm:nightly"
+    react-native-reanimated: "npm:4.6.0-nightly-20260811-248dee712"
     react-native-safe-area-context: "npm:~5.7.0"
     react-native-screens: "npm:4.25.2"
     react-native-svg: "npm:15.15.4"
-    react-native-worklets: "npm:nightly"
+    react-native-worklets: "patch:react-native-worklets@npm%3A0.12.0-nightly-20260810-fb9cb5596#~/.yarn/patches/react-native-worklets-npm-0.12.0-nightly-20260810-fb9cb5596-f08a72b88e.patch"
     react-test-renderer: "npm:19.0.0"
     typescript: "npm:~6.0.3"
   peerDependencies:
@@ -8350,12 +8350,12 @@ __metadata:
     react-native: "npm:0.86.2"
     react-native-gesture-handler: "workspace:*"
     react-native-pager-view: "npm:^8.0.2"
-    react-native-reanimated: "npm:nightly"
+    react-native-reanimated: "npm:4.6.0-nightly-20260811-248dee712"
     react-native-safe-area-context: "npm:~5.7.0"
     react-native-screens: "npm:4.25.2"
     react-native-svg: "npm:15.15.4"
     react-native-web: "npm:^0.21.0"
-    react-native-worklets: "npm:nightly"
+    react-native-worklets: "patch:react-native-worklets@npm%3A0.12.0-nightly-20260810-fb9cb5596#~/.yarn/patches/react-native-worklets-npm-0.12.0-nightly-20260810-fb9cb5596-f08a72b88e.patch"
     typescript: "npm:~6.0.3"
   languageName: unknown
   linkType: soft
@@ -13594,8 +13594,8 @@ __metadata:
     react: "npm:19.2.3"
     react-native: "npm:0.87.0"
     react-native-builder-bob: "npm:^0.40.13"
-    react-native-reanimated: "npm:nightly"
-    react-native-worklets: "npm:nightly"
+    react-native-reanimated: "npm:4.6.0-nightly-20260811-248dee712"
+    react-native-worklets: "patch:react-native-worklets@npm%3A0.12.0-nightly-20260810-fb9cb5596#~/.yarn/patches/react-native-worklets-npm-0.12.0-nightly-20260810-fb9cb5596-f08a72b88e.patch"
     react-test-renderer: "npm:19.2.3"
     typescript: "npm:~6.0.3"
   peerDependencies:
@@ -13686,7 +13686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:nightly":
+"react-native-reanimated@npm:4.6.0-nightly-20260811-248dee712":
   version: 4.6.0-nightly-20260811-248dee712
   resolution: "react-native-reanimated@npm:4.6.0-nightly-20260811-248dee712"
   dependencies:
