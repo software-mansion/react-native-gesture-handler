@@ -1,0 +1,38 @@
+diff --git a/lib/module/mock.js b/lib/module/mock.js
+index 767ade60d50c890188fbcacadcb7e024991f12cd..37a0219d8d0d8773e51d5b9af61e4bcded27f476 100644
+--- a/lib/module/mock.js
++++ b/lib/module/mock.js
+@@ -31,6 +31,14 @@ const WorkletAPI = {
+     return {
+       isHost: false,
+       __shareableRef: true,
++      // Host-side Shareable shape (`.value`) so worklets that run on the
++      // hosting runtime in production can use the same object in Jest.
++      get value() {
++        return value;
++      },
++      set value(next) {
++        value = next;
++      },
+       getAsync: () => Promise.resolve(value),
+       getSync: () => value,
+       setAsync: set,
+diff --git a/src/mock.ts b/src/mock.ts
+index e0c99fde0d12eebf94260c6d6cc79329f1f51ede..d2bd7544a49afeec4f03ea36ff8235b291e3bbcc 100644
+--- a/src/mock.ts
++++ b/src/mock.ts
+@@ -38,6 +38,14 @@ const WorkletAPI = {
+     return {
+       isHost: false,
+       __shareableRef: true,
++      // Host-side Shareable shape (`.value`) so worklets that run on the
++      // hosting runtime in production can use the same object in Jest.
++      get value() {
++        return value;
++      },
++      set value(next: TValue) {
++        value = next;
++      },
+       getAsync: () => Promise.resolve(value),
+       getSync: () => value,
+       setAsync: set,

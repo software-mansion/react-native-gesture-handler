@@ -80,7 +80,7 @@ export default class Navigator {
     this.setCurrentRoute = setCurrentRoute;
 
     useEffect(() => {
-      // eslint-disable-next-line @typescript-eslint/unbound-method, @eslint-react/web-api/no-leaked-event-listener
+      // eslint-disable-next-line @eslint-react/web-api/no-leaked-event-listener
       return BackHandler.addEventListener('hardwareBackPress', this.backHandler)
         .remove;
     }, []);
