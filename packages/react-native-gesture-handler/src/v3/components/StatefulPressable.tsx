@@ -400,12 +400,17 @@ const StatefulPressable = (props: PressableProps) => {
   const pointerStyle: StyleProp<ViewStyle> =
     Platform.OS === 'web' ? { cursor: 'pointer' } : {};
 
+  // `testOnly_pressed` forces the pressed state (for snapshots/tests) and can
+  // change after mount, so derive the displayed state from it rather than the
+  // mount-only `pressedState`.
+  const displayPressed = testOnly_pressed ?? pressedState;
+
   const styleProp =
-    typeof style === 'function' ? style({ pressed: pressedState }) : style;
+    typeof style === 'function' ? style({ pressed: displayPressed }) : style;
 
   const childrenProp =
     typeof children === 'function'
-      ? children({ pressed: pressedState })
+      ? children({ pressed: displayPressed })
       : children;
 
   const rippleColor = useMemo(() => {
