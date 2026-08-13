@@ -230,11 +230,22 @@ const PressableWithTouchable = (props: PressableProps) => {
       }
     : undefined;
 
-  const handleHoverIn = onHoverIn
+  // Wire each handler whenever the opposite side can leave a pending timer, so a
+  // delayed hover callback is cancelled once the pointer leaves/re-enters.
+  const needsHoverIn =
+    onHoverIn != null || (onHoverOut != null && !!delayHoverOut);
+  const needsHoverOut =
+    onHoverOut != null || (onHoverIn != null && !!delayHoverIn);
+
+  const handleHoverIn = needsHoverIn
     ? (event: ButtonEvent) => {
         if (timers.current.hoverOut) {
           clearTimeout(timers.current.hoverOut);
           timers.current.hoverOut = null;
+        }
+
+        if (!onHoverIn) {
+          return;
         }
 
         if (delayHoverIn) {
@@ -249,11 +260,15 @@ const PressableWithTouchable = (props: PressableProps) => {
       }
     : undefined;
 
-  const handleHoverOut = onHoverOut
+  const handleHoverOut = needsHoverOut
     ? (event: ButtonEvent) => {
         if (timers.current.hoverIn) {
           clearTimeout(timers.current.hoverIn);
           timers.current.hoverIn = null;
+        }
+
+        if (!onHoverOut) {
+          return;
         }
 
         if (delayHoverOut) {
