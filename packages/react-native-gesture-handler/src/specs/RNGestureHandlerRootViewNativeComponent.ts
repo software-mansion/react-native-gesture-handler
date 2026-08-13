@@ -7,7 +7,7 @@ export interface RootViewNativeProps extends ViewProps {
 }
 
 interface NativeProps extends ViewProps {
-  moduleId: CodegenTypes.Int32;
+  moduleId?: CodegenTypes.WithDefault<CodegenTypes.Int32, -1>;
   unstable_forceActive?: boolean;
 }
 
