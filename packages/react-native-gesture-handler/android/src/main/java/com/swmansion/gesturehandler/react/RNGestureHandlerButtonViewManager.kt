@@ -786,7 +786,8 @@ class RNGestureHandlerButtonViewManager :
 
     private fun dispatchJSEvent(type: EventType, handler: NativeViewGestureHandler) {
       val reactContext = context as? ReactContext ?: return
-      val eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext) ?: return
+      // TODO: deprecated, but its replacement is unavailable before RN 0.85 — drop when possible
+      val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, this.id) ?: return
       eventDispatcher.dispatchEvent(RNGestureHandlerButtonEvent.obtain(this, handler, type))
 
       if (type == EventType.PressIn) {
@@ -1163,7 +1164,8 @@ class RNGestureHandlerButtonViewManager :
     private fun dispatchHoverEvent(type: EventType) {
       val sample = lastHoverSample ?: return
       val reactContext = context as? ReactContext ?: return
-      val eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext) ?: return
+      // TODO: deprecated, but its replacement is unavailable before RN 0.85 — drop when possible
+      val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, this.id) ?: return
 
       eventDispatcher.dispatchEvent(RNGestureHandlerButtonEvent.obtain(this, sample, type))
     }
