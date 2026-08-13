@@ -98,7 +98,7 @@ const PressableWithTouchable = (props: PressableProps) => {
   } = rest;
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
-  const [pressed, setPressed] = useState(testOnly_pressed ?? false);
+  const [pressed, setPressed] = useState(false);
   const timers = useRef<Timers>({ press: null, hoverIn: null, hoverOut: null });
   const dimensions = useRef<PressableDimensions>({ width: 0, height: 0 });
 
@@ -284,11 +284,18 @@ const PressableWithTouchable = (props: PressableProps) => {
       }
     : undefined;
 
+  // `testOnly_pressed` forces the pressed state for snapshots/tests. Derive the
+  // displayed value from it each render, keeping the interactive `pressed` state
+  // independent (seeded to false) so clearing the prop doesn't leave it stuck.
+  const displayPressed = testOnly_pressed ?? pressed;
+
   const resolvedStyle =
-    typeof style === 'function' ? style({ pressed }) : style;
+    typeof style === 'function' ? style({ pressed: displayPressed }) : style;
 
   const resolvedChildren =
-    typeof children === 'function' ? children({ pressed }) : children;
+    typeof children === 'function'
+      ? children({ pressed: displayPressed })
+      : children;
 
   return (
     <Touchable
