@@ -13,6 +13,7 @@ import {
   numberAsInset,
 } from '../../components/Pressable/utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
+import { pointerStyle } from './pointerStyle';
 import { Touchable } from './Touchable/Touchable';
 
 // RN's Pressable default. Touchable's own default is 600ms
@@ -300,7 +301,7 @@ const PressableWithTouchable = (props: PressableProps) => {
       androidRipple={androidRipple}
       touchSoundDisabled={android_disableSound ?? undefined}
       delayLongPress={resolvedDelayLongPress}
-      style={resolvedStyle}
+      style={[pointerStyle, resolvedStyle]}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={handlePress}
