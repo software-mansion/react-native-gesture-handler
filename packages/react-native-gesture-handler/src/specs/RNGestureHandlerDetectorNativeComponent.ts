@@ -67,7 +67,7 @@ export interface NativeProps extends ViewProps {
     | undefined;
 
   handlerTags: CodegenTypes.Int32[];
-  moduleId: CodegenTypes.Int32;
+  moduleId?: CodegenTypes.WithDefault<CodegenTypes.Int32, -1>;
   virtualChildren: VirtualChildrenProps[];
 
   pointerEvents?: CodegenTypes.WithDefault<
