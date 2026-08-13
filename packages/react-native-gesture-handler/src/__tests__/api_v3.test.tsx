@@ -256,14 +256,14 @@ describe('[API v3] Components', () => {
 
       await act(flushImmediate);
 
-      const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
       const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      const button = screen.getByTestId('pressable');
 
       expect(scrollViewResponder).toBeDefined();
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(button.props.onStartShouldSetResponderCapture()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
@@ -281,13 +281,13 @@ describe('[API v3] Components', () => {
 
       await act(flushImmediate);
 
-      const nativeDetector = getNativeDetector(UNSAFE_getAllByType);
       const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      const button = screen.getByTestId('pressable');
 
       // Outside of 'handled' mode the logical responder view is not rendered
       // at all — the responder event can never be claimed on behalf of RNGH.
       expect(scrollViewResponder).toBeUndefined();
-      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(button.props.onStartShouldSetResponderCapture()).toBe(false);
     });
 
     test('handles responder event passed through NativeDetector for keyboardShouldPersistTaps handled', async () => {
