@@ -79,7 +79,7 @@ const Pressable = (props: PressableProps) => {
     blocksExternalGesture,
   };
 
-  const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
+  const [pressedState, setPressedState] = useState(false);
 
   const longPressTimeoutRef = useRef<number | null>(null);
   const pressDelayTimeoutRef = useRef<number | null>(null);
@@ -372,12 +372,17 @@ const Pressable = (props: PressableProps) => {
   const pointerStyle: StyleProp<ViewStyle> =
     Platform.OS === 'web' ? { cursor: 'pointer' } : {};
 
+  // `testOnly_pressed` forces the pressed state for snapshots/tests. Derive the
+  // displayed value from it each render, keeping the interactive `pressedState`
+  // independent (seeded to false) so clearing the prop doesn't leave it stuck.
+  const displayPressed = testOnly_pressed ?? pressedState;
+
   const styleProp =
-    typeof style === 'function' ? style({ pressed: pressedState }) : style;
+    typeof style === 'function' ? style({ pressed: displayPressed }) : style;
 
   const childrenProp =
     typeof children === 'function'
-      ? children({ pressed: pressedState })
+      ? children({ pressed: displayPressed })
       : children;
 
   const rippleColor = useMemo(() => {
