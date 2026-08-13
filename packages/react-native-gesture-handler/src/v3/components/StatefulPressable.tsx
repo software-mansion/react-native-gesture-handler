@@ -234,6 +234,24 @@ const StatefulPressable = (props: PressableProps) => {
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
 
+  useEffect(
+    () => () => {
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+      }
+      if (pressDelayTimeoutRef.current) {
+        clearTimeout(pressDelayTimeoutRef.current);
+      }
+      if (hoverInTimeout.current) {
+        clearTimeout(hoverInTimeout.current);
+      }
+      if (hoverOutTimeout.current) {
+        clearTimeout(hoverOutTimeout.current);
+      }
+    },
+    []
+  );
+
   const hoverGesture = useHoverGesture({
     manualActivation: true, // Prevents Hover blocking Native gesture on web
     cancelsTouchesInView: false,
