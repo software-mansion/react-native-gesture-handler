@@ -284,11 +284,18 @@ const PressableWithTouchable = (props: PressableProps) => {
       }
     : undefined;
 
+  // `testOnly_pressed` forces the pressed state (for snapshots/tests) and can
+  // change after mount, so derive the displayed state from it rather than the
+  // mount-only `pressed`.
+  const displayPressed = testOnly_pressed ?? pressed;
+
   const resolvedStyle =
-    typeof style === 'function' ? style({ pressed }) : style;
+    typeof style === 'function' ? style({ pressed: displayPressed }) : style;
 
   const resolvedChildren =
-    typeof children === 'function' ? children({ pressed }) : children;
+    typeof children === 'function'
+      ? children({ pressed: displayPressed })
+      : children;
 
   return (
     <Touchable
