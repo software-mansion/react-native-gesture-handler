@@ -9,7 +9,7 @@ import {
 import { COLORS, commonStyles, Feedback } from '../../../common';
 
 function Box(props: {
-  ref?: React.Ref<View>;
+  ref?: React.Ref<React.ComponentRef<typeof View>>;
   color: string;
   overlap?: boolean;
   children?: React.ReactNode;

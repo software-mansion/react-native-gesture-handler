@@ -1,10 +1,14 @@
-import type { BaseSyntheticEvent } from 'react';
-
 import type { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import type { PointerType } from '../../PointerType';
 import type { State } from '../../State';
 
-export type NativeEventWrapper<T> = BaseSyntheticEvent<T, unknown, unknown>;
+// Structural stand-in for a synthetic event carrying `nativeEvent`. Kept
+// minimal on purpose: RN 0.87's Strict TS API makes the other synthetic-event
+// fields optional, so any richer shape stops being a superset of the real
+// `NativeSyntheticEvent` across RN versions. We only ever read `nativeEvent`.
+export type NativeEventWrapper<T> = {
+  nativeEvent: T;
+};
 
 // Payload of the managed button's press events. The codegen spec
 // (`specs/RNGestureHandlerButtonNativeComponent`) declares its own

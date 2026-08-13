@@ -67,8 +67,9 @@ export function ListWithHeader<ItemT, SectionT>(
     };
   });
 
-  const contentContainerStyle =
-    StyleSheet.flatten(props.contentContainerStyle) || {};
+  const contentContainerStyle = {
+    ...(StyleSheet.flatten(props.contentContainerStyle) || {}),
+  };
   if (typeof contentContainerStyle.paddingTop !== 'number') {
     contentContainerStyle.paddingTop = 0;
     console.error(
