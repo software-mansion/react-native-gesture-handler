@@ -98,7 +98,7 @@ const PressableWithTouchable = (props: PressableProps) => {
   } = rest;
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
-  const [pressed, setPressed] = useState(testOnly_pressed ?? false);
+  const [pressed, setPressed] = useState(false);
   const timers = useRef<Timers>({ press: null, hoverIn: null, hoverOut: null });
   const dimensions = useRef<PressableDimensions>({ width: 0, height: 0 });
 

@@ -81,7 +81,7 @@ const StatefulPressable = (props: PressableProps) => {
     ...remainingProps
   } = props;
 
-  const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
+  const [pressedState, setPressedState] = useState(false);
 
   const longPressTimeoutRef = useRef<number | null>(null);
   const pressDelayTimeoutRef = useRef<number | null>(null);
