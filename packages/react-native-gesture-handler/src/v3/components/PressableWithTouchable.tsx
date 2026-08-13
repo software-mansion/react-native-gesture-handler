@@ -284,9 +284,9 @@ const PressableWithTouchable = (props: PressableProps) => {
       }
     : undefined;
 
-  // `testOnly_pressed` forces the pressed state (for snapshots/tests) and can
-  // change after mount, so derive the displayed state from it rather than the
-  // mount-only `pressed`.
+  // `testOnly_pressed` forces the pressed state for snapshots/tests. Derive the
+  // displayed value from it each render, keeping the interactive `pressed` state
+  // independent (seeded to false) so clearing the prop doesn't leave it stuck.
   const displayPressed = testOnly_pressed ?? pressed;
 
   const resolvedStyle =
