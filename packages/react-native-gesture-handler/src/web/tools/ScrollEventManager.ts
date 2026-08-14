@@ -19,11 +19,12 @@ export default class ScrollEventManager extends EventManager<HTMLElement> {
   }
 
   protected mapEvent(event: Event): AdaptedEvent {
-    const rect = this.view.getBoundingClientRect();
-
+    // Synthesize a pointer glued to the scrolled content - deltas between
+    // events equal the scrolled distance. getBoundingClientRect would only
+    // add a constant offset at the cost of a layout read on every event.
     return {
-      x: rect.x - this.view.scrollLeft,
-      y: rect.y - this.view.scrollTop,
+      x: -this.view.scrollLeft,
+      y: -this.view.scrollTop,
       offsetX: -this.view.scrollLeft,
       offsetY: -this.view.scrollTop,
       pointerId: -1,

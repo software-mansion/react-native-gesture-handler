@@ -11,17 +11,13 @@ import GestureHandlerOrchestrator from '../web/tools/GestureHandlerOrchestrator'
 import ScrollEventManager from '../web/tools/ScrollEventManager';
 
 // The Jest environment is node — provide the minimal DOM surface the handler
-// touches (canUseDOM, instanceof HTMLElement, getComputedStyle).
+// touches (canUseDOM, instanceof HTMLElement).
 class FakeHTMLElement {
   public style: Record<string, string> = {};
   public scrollLeft = 0;
   public scrollTop = 0;
   private attributes = new Map<string, string>();
   private listeners = new Map<string, Set<(event: unknown) => void>>();
-
-  public getBoundingClientRect() {
-    return { x: 0, y: 0, width: 0, height: 0 };
-  }
 
   public setAttribute(name: string, value: string): void {
     this.attributes.set(name, value);
