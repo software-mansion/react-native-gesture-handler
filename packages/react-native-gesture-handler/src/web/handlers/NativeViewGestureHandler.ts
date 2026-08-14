@@ -205,7 +205,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected override onScroll(_event: AdaptedEvent): void {
-    if (this.tracker.trackedPointersCount === 0) {
+    if (!this.isScrollDriven || this.tracker.trackedPointersCount === 0) {
       return;
     }
 
