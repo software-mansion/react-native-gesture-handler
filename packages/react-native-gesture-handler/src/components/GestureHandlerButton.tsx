@@ -264,6 +264,20 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onLongPress?: Function | null | undefined;
+
+  /**
+   * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  testOnly_onHoverIn?: Function | null | undefined;
+
+  /**
+   * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  testOnly_onHoverOut?: Function | null | undefined;
 }
 
 export const ButtonComponent =
