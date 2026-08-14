@@ -1,35 +1,35 @@
 .moonContainer {
   position: relative;
-  margin-top: 106px;
+  margin-top: 122px;
 }
 
 [class*='footerLanding'] {
-  margin-top: -106px;
+  margin-top: -122px;
 }
 
 @media (max-width: 996px) {
   .moonContainer {
-    margin-top: 121px;
+    margin-top: 138px;
   }
   [class*='footerLanding'] {
-    margin-top: -121px;
+    margin-top: -138px;
   }
 }
 
 @media (max-width: 700px) {
   .moonContainer {
-    margin-top: 147px;
+    margin-top: 164px;
   }
   [class*='footerLanding'] {
-    margin-top: -147px;
+    margin-top: -164px;
   }
 }
 
 @media (max-width: 376px) {
   .moonContainer {
-    margin-top: 173px;
+    margin-top: 189px;
   }
   [class*='footerLanding'] {
-    margin-top: -173px;
+    margin-top: -189px;
   }
 }
