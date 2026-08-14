@@ -143,6 +143,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     manager.setOnPointerMoveOver(this.onPointerMoveOver.bind(this));
     manager.setOnPointerMoveOut(this.onPointerMoveOut.bind(this));
     manager.setOnWheel(this.onWheel.bind(this));
+    manager.setOnScroll(this.onScroll.bind(this));
 
     // The initial config is applied before the handler is attached. Honor an
     // initially disabled handler here because the delegate's enabled-change
@@ -397,6 +398,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   protected onWheel(_event: AdaptedEvent): void {
     // Used only by pan gesture handler
+  }
+  protected onScroll(_event: AdaptedEvent): void {
+    // Used only by native view gesture handler
   }
   protected tryToSendMoveEvent(out: boolean, event: AdaptedEvent): void {
     if ((out && this.shouldCancelWhenOutside) || !this.enabled) {
