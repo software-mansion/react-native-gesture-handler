@@ -200,4 +200,20 @@ describe('NativeViewGestureHandler activation', () => {
     handler.pointerMove(touchEvent(100, 130, EventTypes.MOVE));
     expect(handler.state).toBe(State.ACTIVE);
   });
+
+  test('scroll on a role-less view does not add an activation path', () => {
+    const view = new FakeHTMLElement();
+    view.style.overflowY = 'scroll';
+    const handler = createHandler(view);
+
+    // Below DEFAULT_TOUCH_SLOP, a scroll of the view itself must not activate
+    // a handler that is not scroll-driven (e.g. legacy ScrollView, TextInput).
+    handler.pointerDown(touchEvent(100, 100, EventTypes.DOWN));
+    handler.pointerMove(touchEvent(100, 110, EventTypes.MOVE));
+    view.dispatchEvent('scroll');
+    expect(handler.state).toBe(State.BEGAN);
+
+    handler.pointerMove(touchEvent(100, 130, EventTypes.MOVE));
+    expect(handler.state).toBe(State.ACTIVE);
+  });
 });
