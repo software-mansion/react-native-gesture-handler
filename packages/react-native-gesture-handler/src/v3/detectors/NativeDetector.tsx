@@ -62,8 +62,14 @@ export function NativeDetector<
             gesture.detectorCallbacks.reanimatedEventHandler,
         }
       : {
-          onGestureHandlerReanimatedEvent:
-            gesture.detectorCallbacks.reanimatedEventHandler,
+          // `reanimatedEventHandler` is built whenever `disableReanimated` is unset, but
+          // `shouldUseReanimatedDetector` additionally requires worklet callbacks. When it is
+          // false we render the plain host component, which forwards props verbatim, so passing
+          // the handler would put a non-function on a codegen `DirectEventHandler` prop.
+          onGestureHandlerReanimatedEvent: gesture.config
+            .shouldUseReanimatedDetector
+            ? gesture.detectorCallbacks.reanimatedEventHandler
+            : undefined,
         };
 
   return (
