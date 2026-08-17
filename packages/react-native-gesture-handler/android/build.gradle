@@ -94,7 +94,6 @@ def getExternalLibVersion(project){
     return [Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patchVersion), isPrerelease]
 }
 
-// Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
 def shouldUseCommonInterfaceFromReanimated() {
     def reanimated = rootProject.subprojects.find { it.name == 'react-native-reanimated' }
 
@@ -104,7 +103,7 @@ def shouldUseCommonInterfaceFromReanimated() {
 
     def (major, minor, patch) = getExternalLibVersion(reanimated)
     
-    return (major == 2 && minor >= 3) || major >= 3
+    return major >= 3
 }
 
 def shouldUseCommonInterfaceFromRNSVG() {
