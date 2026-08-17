@@ -94,7 +94,6 @@ def getExternalLibVersion(project){
     return [Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patchVersion), isPrerelease]
 }
 
-// Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
 def shouldUseCommonInterfaceFromReanimated() {
     def reanimated = rootProject.subprojects.find { it.name == 'react-native-reanimated' }
 
@@ -104,7 +103,7 @@ def shouldUseCommonInterfaceFromReanimated() {
 
     def (major, minor, patch) = getExternalLibVersion(reanimated)
     
-    return (major == 2 && minor >= 3) || major >= 3
+    return major >= 3
 }
 
 def shouldUseCommonInterfaceFromRNSVG() {
@@ -146,12 +145,6 @@ def reactNativeArchitectures() {
 
 def REACT_NATIVE_DIR = resolveReactNativeDirectory()
 
-def reactProperties = new Properties()
-file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-
-def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
-def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
-
 repositories {
     mavenCentral()
 }
@@ -177,13 +170,11 @@ android {
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 24)
         targetSdkVersion safeExtGet('targetSdkVersion', 33)
-        buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
 
         externalNativeBuild {
             cmake {
                 cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
                 arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
-                        "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
                         "-DRNGH_USE_WORKLETS=${shouldUseRuntimeFromWorklets()}",
                         "-DANDROID_STL=c++_shared",
                         "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
