@@ -50,7 +50,14 @@ static std::unordered_map<int, RNGestureHandlerManager *> _managers;
 
 + (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId
 {
-  return _managers[moduleId];
+  // Not operator[] - that would insert a null entry on a miss.
+  const auto it = _managers.find(moduleId);
+  return it == _managers.end() ? nil : it->second;
+}
+
++ (BOOL)hasModuleWithId:(int)moduleId
+{
+  return _managers.find(moduleId) != _managers.end();
 }
 
 RCT_EXPORT_MODULE()
