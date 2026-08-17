@@ -42,24 +42,10 @@
   return self;
 }
 
-// TODO: I'm not sure whether this is the correct place for cleanup
-// Possibly allowing recycling and doing this in prepareForRecycle would be better
 - (void)willMoveToWindow:(RNGHWindow *)newWindow
 {
   if (newWindow == nil) {
-    RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-    react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
-
-    [handlerManager.registry cancelAllObservationsForOwner:self];
-
-    for (NSNumber *handlerTag in _attachedHandlers) {
-      [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
-    }
-
-    [_attachedHandlers removeAllObjects];
-    _subscribedVirtualHandlers.clear();
-    [_subscribedHandlers removeAllObjects];
-    [_nativeHandlers removeAllObjects];
+    [self detachAndCleanupHandlers];
   } else {
     const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
     [self attachHandlers:props.handlerTags
@@ -68,6 +54,30 @@
         subscribedHandlers:_subscribedHandlers];
     [self updateVirtualChildren:props.virtualChildren];
   }
+}
+
+// Detaching in `willMoveToWindow:` alone is not enough - a detector unmounted while
+// its ancestor is already off-window (e.g. an inactive screen) never gets that call,
+// and would enter the recycle pool still carrying recognizers of live handlers.
+- (void)detachAndCleanupHandlers
+{
+  if (_moduleId == -1) {
+    return;
+  }
+
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
+
+  [handlerManager.registry cancelAllObservationsForOwner:self];
+
+  for (NSNumber *handlerTag in _attachedHandlers) {
+    [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
+  }
+
+  [_attachedHandlers removeAllObjects];
+  _subscribedVirtualHandlers.clear();
+  [_subscribedHandlers removeAllObjects];
+  [_nativeHandlers removeAllObjects];
 }
 
 - (void)setDefaultProps
@@ -144,6 +154,7 @@
 {
   [super prepareForRecycle];
 
+  [self detachAndCleanupHandlers];
   [self setDefaultProps];
 }
 
