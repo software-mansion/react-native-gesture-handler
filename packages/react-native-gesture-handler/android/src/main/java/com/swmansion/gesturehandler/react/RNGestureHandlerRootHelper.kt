@@ -120,7 +120,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     if (orchestrator != null && !passingTouch) {
       // if we are in the process of delivering touch events via GH orchestrator, we don't want to
       // treat it as a native gesture capturing the lock
-      orchestrator.cancelAllLegacyHandlers()
+      orchestrator.cancelHandlersLosingToNativeGesture()
     }
   }
 

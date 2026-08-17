@@ -366,9 +366,17 @@ class GestureHandlerOrchestrator(
   }
 
   /**
-   * Cancels all handlers created using API v1 and v2
+   * Cancels the handlers that lose to a native view taking the touch lock: the ones created using
+   * API v1 and v2, and the [NativeViewGestureHandler] a button manages for itself.
+   *
+   * The button's handler is attached with [GestureHandler.ACTION_TYPE_NONE] - it dispatches its
+   * events natively rather than through an action - so an action type check alone leaves it
+   * running. It has to be cancelled here as well, or a touch that a native view claims still ends
+   * the button handler and fires a press. The root view's own handler shares that action type and
+   * must keep running, hence the type check rather than a plain [GestureHandler.ACTION_TYPE_NONE]
+   * one.
    */
-  fun cancelAllLegacyHandlers() {
+  fun cancelHandlersLosingToNativeGesture() {
     val handlersToProcess = obtainHandlerList()
     handlersToProcess.addAll(gestureHandlers)
 
@@ -377,7 +385,8 @@ class GestureHandlerOrchestrator(
         if (it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API ||
           it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API ||
           it.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET ||
-          it.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
+          it.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT ||
+          (it is NativeViewGestureHandler && it.actionType == GestureHandler.ACTION_TYPE_NONE)
         ) {
           it.cancel()
         }
