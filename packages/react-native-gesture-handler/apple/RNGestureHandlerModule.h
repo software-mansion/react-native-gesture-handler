@@ -10,9 +10,6 @@
     : RCTEventEmitter <NativeRNGestureHandlerModuleSpec, RCTJSDispatcherModule, RCTInitializing>
 
 + (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId;
-
-// Whether a module with this id was ever registered. The manager may still be nil
-// after the module is invalidated - invalidation nulls the entry without erasing it.
 + (BOOL)hasModuleWithId:(int)moduleId;
 
 @end

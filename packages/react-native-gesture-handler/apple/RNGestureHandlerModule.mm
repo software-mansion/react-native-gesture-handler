@@ -70,6 +70,11 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+
+  // Clear observations before the entry is nulled - the async drop below keeps the registry
+  // alive for one main-queue hop, and dropAllHandlers does not touch them.
+  [handlerManager.registry removeAllObservations];
+
   dispatch_async(dispatch_get_main_queue(), ^{
     [handlerManager dropAllGestureHandlers];
   });
