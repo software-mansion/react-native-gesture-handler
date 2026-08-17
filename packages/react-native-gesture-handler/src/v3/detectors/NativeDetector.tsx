@@ -51,25 +51,24 @@ export function NativeDetector<
   // On native, Reanimated handles routing internally based on the event names
   // passed to the useEvent hook. We only need to pass it once, so that Reanimated
   // can setup its internal listeners.
+  //
+  // `reanimatedEventHandler` is built whenever `disableReanimated` is unset, but
+  // `shouldUseReanimatedDetector` additionally requires worklet callbacks. When it is false we
+  // render the plain host component, which forwards props verbatim, so passing the handler would
+  // put a non-function on a codegen `DirectEventHandler` prop.
+  const reanimatedEventHandler = gesture.config.shouldUseReanimatedDetector
+    ? gesture.detectorCallbacks.reanimatedEventHandler
+    : undefined;
+
   const reanimatedHandlers =
     Platform.OS === 'web'
       ? {
-          onGestureHandlerReanimatedEvent:
-            gesture.detectorCallbacks.reanimatedEventHandler,
-          onGestureHandlerReanimatedStateChange:
-            gesture.detectorCallbacks.reanimatedEventHandler,
-          onGestureHandlerReanimatedTouchEvent:
-            gesture.detectorCallbacks.reanimatedEventHandler,
+          onGestureHandlerReanimatedEvent: reanimatedEventHandler,
+          onGestureHandlerReanimatedStateChange: reanimatedEventHandler,
+          onGestureHandlerReanimatedTouchEvent: reanimatedEventHandler,
         }
       : {
-          // `reanimatedEventHandler` is built whenever `disableReanimated` is unset, but
-          // `shouldUseReanimatedDetector` additionally requires worklet callbacks. When it is
-          // false we render the plain host component, which forwards props verbatim, so passing
-          // the handler would put a non-function on a codegen `DirectEventHandler` prop.
-          onGestureHandlerReanimatedEvent: gesture.config
-            .shouldUseReanimatedDetector
-            ? gesture.detectorCallbacks.reanimatedEventHandler
-            : undefined,
+          onGestureHandlerReanimatedEvent: reanimatedEventHandler,
         };
 
   return (
