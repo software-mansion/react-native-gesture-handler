@@ -511,7 +511,13 @@ describe('[API v3] Components', () => {
       expect(TextInput.State.currentlyFocusedInput()).toBeNull();
       expect(isKeyboardDismissingTap(makeContext('never'))).toBe(false);
 
+      // Focus moving to an RN input while the keyboard stays up makes the
+      // tap dismissible again.
+      const focusSpy = focusInput();
+      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(true);
+
       addListenerSpy.mockRestore();
+      focusSpy.mockRestore();
     });
 
     test('isKeyboardDismissingTap is false for a detached (height 0) keyboard', async () => {
