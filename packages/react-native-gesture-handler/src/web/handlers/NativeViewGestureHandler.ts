@@ -69,6 +69,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     super.init(ref, propsRef, actionType, hostDetector);
 
     this.shouldCancelWhenOutside = true;
+    this.isScrollDriven = false;
 
     const view = this.delegate.view;
 
@@ -90,6 +91,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
         this.role = NativeGestureRole.Switch;
       }
     }
+
+    this.isScrollDriven = this.role === NativeGestureRole.ScrollView;
   }
 
   public override updateGestureConfig(config: Config): void {
@@ -149,7 +152,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
 
     this.scrollDetected = false;
-    this.isScrollDriven = this.computeIsScrollDriven();
 
     this.begin();
 
@@ -198,10 +200,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const dx = this.startX - lastCoords.x;
     const dy = this.startY - lastCoords.y;
     return dx * dx + dy * dy;
-  }
-
-  private computeIsScrollDriven(): boolean {
-    return this.role === NativeGestureRole.ScrollView;
   }
 
   protected override onScroll(_event: AdaptedEvent): void {
@@ -471,7 +469,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.lastEventWasInside = false;
     this.longPressDetected = false;
     this.scrollDetected = false;
-    this.isScrollDriven = false;
   }
 
   public override onDestroy(): void {
