@@ -58,19 +58,19 @@ export interface PressableProps extends CommonPressableProps {
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the Pressable's gesture handlers.
    */
-  simultaneousWith?: AnyGesture;
+  simultaneousWith?: AnyGesture | AnyGesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the Pressable's gesture handlers.
    */
-  requireToFail?: AnyGesture;
+  requireToFail?: AnyGesture | AnyGesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the Pressable's gesture handlers.
    */
-  block?: AnyGesture;
+  block?: AnyGesture | AnyGesture[];
 }
 
 interface CommonPressableProps

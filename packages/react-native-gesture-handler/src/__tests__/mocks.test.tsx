@@ -24,7 +24,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from '../mocks/Touchables';
-import { Touchable } from '../v3/components';
+import { Pressable, Touchable } from '../v3/components';
 
 describe('Jest mocks – legacy components render without crashing', () => {
   test('LegacyRawButton', () => {
@@ -141,4 +141,83 @@ test('Trigger Touchable press', () => {
   });
 
   expect(onPress).toHaveBeenCalled();
+});
+
+test('Pressable exposes its press handlers to testing-library', () => {
+  // `Pressable` renders `PressableWithTouchable` unless a relation prop is
+  // passed. Both engines have to forward the handlers as `testOnly_*` props on
+  // the button, since that is what `fireEvent(element, 'press')` picks up in a
+  // test environment — the press state machine itself runs natively.
+  const onPress = jest.fn();
+  const onPressIn = jest.fn();
+  const onPressOut = jest.fn();
+  const onLongPress = jest.fn();
+
+  render(
+    <GestureHandlerRootView>
+      <Pressable
+        testID="pressable"
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onLongPress={onLongPress}>
+        <Text>Press Me</Text>
+      </Pressable>
+    </GestureHandlerRootView>
+  );
+
+  const button = screen.getByTestId('pressable');
+
+  expect(button.props.testOnly_onPress).toBe(onPress);
+  expect(button.props.testOnly_onPressIn).toBe(onPressIn);
+  expect(button.props.testOnly_onPressOut).toBe(onPressOut);
+  expect(button.props.testOnly_onLongPress).toBe(onLongPress);
+});
+
+test('Pressable exposes its hover handlers to testing-library', () => {
+  const onHoverIn = jest.fn();
+  const onHoverOut = jest.fn();
+
+  render(
+    <GestureHandlerRootView>
+      <Pressable
+        testID="pressable"
+        onHoverIn={onHoverIn}
+        onHoverOut={onHoverOut}>
+        <Text>Hover Me</Text>
+      </Pressable>
+    </GestureHandlerRootView>
+  );
+
+  const button = screen.getByTestId('pressable');
+
+  expect(button.props.testOnly_onHoverIn).toBe(onHoverIn);
+  expect(button.props.testOnly_onHoverOut).toBe(onHoverOut);
+});
+
+test('StatefulPressable exposes its press and hover handlers to testing-library', () => {
+  // A relation prop routes `Pressable` to the `StatefulPressable` engine,
+  // which has to forward the same `testOnly_*` props as the default engine.
+  const onPress = jest.fn();
+  const onHoverIn = jest.fn();
+  const onHoverOut = jest.fn();
+
+  render(
+    <GestureHandlerRootView>
+      <Pressable
+        testID="pressable"
+        simultaneousWith={[]}
+        onPress={onPress}
+        onHoverIn={onHoverIn}
+        onHoverOut={onHoverOut}>
+        <Text>Press Me</Text>
+      </Pressable>
+    </GestureHandlerRootView>
+  );
+
+  const button = screen.getByTestId('pressable');
+
+  expect(button.props.testOnly_onPress).toBe(onPress);
+  expect(button.props.testOnly_onHoverIn).toBe(onHoverIn);
+  expect(button.props.testOnly_onHoverOut).toBe(onHoverOut);
 });
