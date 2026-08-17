@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import {
   GestureDetector,
@@ -14,16 +14,17 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
-import type { FeedbackHandle } from '../../../common';
-import { COLORS, commonStyles, Feedback } from '../../../common';
+import { COLORS, commonStyles, useIndexedLogger } from '../../../common';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 export default function TimerExample() {
-  const feedbackRef = useRef<FeedbackHandle>(null);
+  const [lastPress, setLastPress] = useState('none');
   const duration = useSharedValue(0);
   const colorProgress = useSharedValue(0);
+  const log = useIndexedLogger();
   const animatedProps = useAnimatedProps(() => {
     return {
       text: `Duration: ${duration.value.toFixed(2)}s`,
@@ -42,6 +43,7 @@ export default function TimerExample() {
 
   const longPressGesture = useLongPressGesture({
     onBegin: () => {
+      log('onBegin');
       colorProgress.value = withTiming(1, { duration: 150 });
       duration.value = 0;
       duration.value = withTiming(600, {
@@ -49,7 +51,17 @@ export default function TimerExample() {
         easing: Easing.linear,
       });
     },
+    onActivate: () => {
+      log('onActivate');
+    },
+    onDeactivate: () => {
+      log('onDeactivate');
+    },
     onFinalize: () => {
+      // Rounded, so the summary tolerates press timing jitter.
+      const seconds = Math.round(duration.value);
+      log(`onFinalize (${seconds}s)`);
+      scheduleOnRN(setLastPress, `${seconds}s`);
       colorProgress.value = withTiming(0, { duration: 300 });
       cancelAnimation(duration);
     },
@@ -66,12 +78,18 @@ export default function TimerExample() {
           animatedProps={animatedProps}
         />
         <GestureDetector gesture={longPressGesture}>
-          <Animated.View style={[commonStyles.box, animatedBoxStyle]} />
+          <Animated.View
+            testID="timer-box"
+            style={[commonStyles.box, animatedBoxStyle]}
+          />
         </GestureDetector>
         <Text style={commonStyles.instructions}>
           Hold the box to measure press duration
         </Text>
-        <Feedback ref={feedbackRef} />
+        <Text testID="last-press-duration" style={styles.lastPressText}>
+          Last press: {lastPress}
+        </Text>
+        <Text style={commonStyles.caption}>rounded to whole seconds</Text>
       </View>
     </GestureHandlerRootView>
   );
@@ -89,5 +107,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     fontVariant: ['tabular-nums'],
+  },
+  lastPressText: {
+    marginTop: 8,
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.NAVY,
   },
 });
