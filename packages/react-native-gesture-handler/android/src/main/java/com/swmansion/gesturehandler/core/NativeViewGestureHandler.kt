@@ -366,7 +366,6 @@ class NativeViewGestureHandler : GestureHandler() {
 
     /**
      * Called after a native view grabbed the touch lock; return true to cancel the handler.
-     * [grabbedMidGesture] distinguishes a real take-over from a defensive DOWN-pass disallow.
      */
     fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean) = false
 
