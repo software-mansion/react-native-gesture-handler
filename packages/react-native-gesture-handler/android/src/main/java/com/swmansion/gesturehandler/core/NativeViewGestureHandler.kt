@@ -241,7 +241,8 @@ class NativeViewGestureHandler : GestureHandler() {
 
   override fun wantsToAttachDirectlyToView() = true
 
-  fun shouldCancelOnNativeTouchGrab(): Boolean = hook.shouldCancelOnNativeTouchGrab()
+  fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean): Boolean =
+    hook.shouldCancelOnNativeTouchGrab(grabbedMidGesture)
 
   data class HitSlop(
     val left: Float = HIT_SLOP_NONE,
@@ -364,10 +365,10 @@ class NativeViewGestureHandler : GestureHandler() {
     fun shouldRecognizeSimultaneously(handler: GestureHandler): Boolean? = null
 
     /**
-     * Called after a native view grabbed the touch lock during a native dispatch pass.
-     * Return true to cancel the handler.
+     * Called after a native view grabbed the touch lock; return true to cancel the handler.
+     * [grabbedMidGesture] distinguishes a real take-over from a defensive DOWN-pass disallow.
      */
-    fun shouldCancelOnNativeTouchGrab() = false
+    fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean) = false
 
     /**
      * shouldActivateOnStart and tryIntercept have priority over this method

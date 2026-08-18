@@ -392,8 +392,8 @@ class GestureHandlerOrchestrator(
   /**
    * Cancels handlers whose view opted out of surviving a native view taking over the touch stream.
    */
-  fun cancelHandlersOnNativeTouchGrab() = cancelTrackedHandlers {
-    it is NativeViewGestureHandler && it.shouldCancelOnNativeTouchGrab()
+  fun cancelHandlersOnNativeTouchGrab(grabbedMidGesture: Boolean) = cancelTrackedHandlers {
+    it is NativeViewGestureHandler && it.shouldCancelOnNativeTouchGrab(grabbedMidGesture)
   }
 
   /**

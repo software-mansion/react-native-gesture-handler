@@ -748,8 +748,7 @@ class RNGestureHandlerButtonViewManager :
       val localLastEventWasInside = lastEventWasInside
 
       if (newState == GestureHandler.STATE_BEGAN) {
-        // Reset for the new gesture - BEGAN precedes the native dispatch of DOWN, which
-        // sets the flag.
+        // Reset for the new gesture - BEGAN precedes the native dispatch of DOWN that sets the flag.
         receivedNativeDown = false
         dispatchJSEvent(EventType.PressIn, handler)
         longPressDetected = false
@@ -830,7 +829,7 @@ class RNGestureHandlerButtonViewManager :
       return super.dispatchTouchEvent(event)
     }
 
-    override fun shouldCancelOnNativeTouchGrab() = !receivedNativeDown
+    override fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean) = grabbedMidGesture || !receivedNativeDown
 
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
       if (super.onInterceptTouchEvent(event)) {

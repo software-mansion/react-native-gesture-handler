@@ -131,10 +131,10 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
    * defensive call from a view that lets the event through (e.g. a nested pager). The two can only
    * be told apart after the native dispatch completes, so cancellation runs here, not at request time.
    */
-  fun onNativeDispatchEnd() {
+  fun onNativeDispatchEnd(event: MotionEvent) {
     if (nativeTouchGrabRequested) {
       nativeTouchGrabRequested = false
-      orchestrator?.cancelHandlersOnNativeTouchGrab()
+      orchestrator?.cancelHandlersOnNativeTouchGrab(event.actionMasked != MotionEvent.ACTION_DOWN)
     }
   }
 
