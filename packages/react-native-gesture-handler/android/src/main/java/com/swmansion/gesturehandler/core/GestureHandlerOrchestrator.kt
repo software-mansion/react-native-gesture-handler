@@ -382,9 +382,6 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  /**
-   * Cancels all handlers created using API v1 and v2
-   */
   fun cancelAllLegacyHandlers() = cancelTrackedHandlers {
     it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API ||
       it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API ||
