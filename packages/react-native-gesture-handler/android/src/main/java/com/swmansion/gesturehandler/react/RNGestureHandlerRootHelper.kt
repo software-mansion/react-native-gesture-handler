@@ -134,7 +134,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   fun onNativeDispatchEnd(event: MotionEvent) {
     if (nativeTouchGrabRequested) {
       nativeTouchGrabRequested = false
-      orchestrator?.cancelHandlersOnNativeTouchGrab(event.actionMasked != MotionEvent.ACTION_DOWN)
+
+      val grabbedMidGesture = event.actionMasked != MotionEvent.ACTION_DOWN &&
+        event.actionMasked != MotionEvent.ACTION_POINTER_DOWN
+
+      orchestrator?.cancelHandlersOnNativeTouchGrab(grabbedMidGesture)
     }
   }
 
