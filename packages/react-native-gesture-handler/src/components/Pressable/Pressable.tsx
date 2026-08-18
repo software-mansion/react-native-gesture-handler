@@ -395,6 +395,8 @@ const LegacyPressable = (props: LegacyPressableProps) => {
         touchSoundDisabled={android_disableSound ?? undefined}
         rippleColor={rippleColor}
         rippleRadius={android_ripple?.radius ?? undefined}
+        borderless={android_ripple?.borderless ?? undefined}
+        foreground={android_ripple?.foreground ?? undefined}
         style={[pointerStyle, styleProp]}
         testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
         testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
