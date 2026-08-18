@@ -365,20 +365,13 @@ class GestureHandlerOrchestrator(
     event.recycle()
   }
 
-  /**
-   * Cancels all handlers created using API v1 and v2
-   */
-  fun cancelAllLegacyHandlers() {
+  private inline fun cancelTrackedHandlers(predicate: (GestureHandler) -> Boolean) {
     val handlersToProcess = obtainHandlerList()
     handlersToProcess.addAll(gestureHandlers)
 
     try {
       handlersToProcess.forEach {
-        if (it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API ||
-          it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API ||
-          it.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET ||
-          it.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
-        ) {
+        if (predicate(it)) {
           it.cancel()
         }
       }
@@ -387,6 +380,23 @@ class GestureHandlerOrchestrator(
     } finally {
       recycleHandlerList(handlersToProcess)
     }
+  }
+
+  /**
+   * Cancels all handlers created using API v1 and v2
+   */
+  fun cancelAllLegacyHandlers() = cancelTrackedHandlers {
+    it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API ||
+      it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API ||
+      it.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET ||
+      it.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
+  }
+
+  /**
+   * Cancels handlers whose view opted out of surviving a native view taking over the touch stream.
+   */
+  fun cancelHandlersOnNativeTouchGrab() = cancelTrackedHandlers {
+    it is NativeViewGestureHandler && it.shouldCancelOnNativeTouchGrab()
   }
 
   /**

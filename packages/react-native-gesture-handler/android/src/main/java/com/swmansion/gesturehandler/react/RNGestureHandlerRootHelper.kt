@@ -22,6 +22,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private var shouldIntercept = false
   private var wasIntercepting = false
   private var passingTouch = false
+  private var nativeTouchGrabRequested = false
 
   init {
     val registry =
@@ -120,7 +121,20 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     if (orchestrator != null && !passingTouch) {
       // if we are in the process of delivering touch events via GH orchestrator, we don't want to
       // treat it as a native gesture capturing the lock
+      nativeTouchGrabRequested = true
       orchestrator.cancelAllLegacyHandlers()
+    }
+  }
+
+  /**
+   * A disallow-intercept request may mean a real interception, but it may also be just a
+   * defensive call from a view that lets the event through (e.g. a nested pager). The two can only
+   * be told apart after the native dispatch completes, so cancellation runs here, not at request time.
+   */
+  fun onNativeDispatchEnd() {
+    if (nativeTouchGrabRequested) {
+      nativeTouchGrabRequested = false
+      orchestrator?.cancelHandlersOnNativeTouchGrab()
     }
   }
 

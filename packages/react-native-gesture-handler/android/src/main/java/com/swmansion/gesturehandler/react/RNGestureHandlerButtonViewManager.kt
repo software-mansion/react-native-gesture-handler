@@ -717,6 +717,10 @@ class RNGestureHandlerButtonViewManager :
     // event).
     private var lastEventWasInside = false
 
+    // Whether the native dispatch delivered DOWN for the current gesture. False when a native
+    // ancestor intercepted it — the orchestrator still delivers events then.
+    private var receivedNativeDown = false
+
     override fun onHandlerUpdate(handler: NativeViewGestureHandler) {
       if (managedHandlerTag == null || handler.isWithinBounds == lastEventWasInside) {
         return
@@ -744,6 +748,9 @@ class RNGestureHandlerButtonViewManager :
       val localLastEventWasInside = lastEventWasInside
 
       if (newState == GestureHandler.STATE_BEGAN) {
+        // Reset for the new gesture - BEGAN precedes the native dispatch of DOWN, which
+        // sets the flag.
+        receivedNativeDown = false
         dispatchJSEvent(EventType.PressIn, handler)
         longPressDetected = false
 
@@ -814,6 +821,16 @@ class RNGestureHandlerButtonViewManager :
         handler.cancel()
       }
     }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+      if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+        receivedNativeDown = true
+      }
+
+      return super.dispatchTouchEvent(event)
+    }
+
+    override fun shouldCancelOnNativeTouchGrab() = !receivedNativeDown
 
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
       if (super.onInterceptTouchEvent(event)) {
