@@ -6,12 +6,12 @@
 //
 // Invoked from .github/workflows/issue-triage-comments.yml via actions/github-script.
 
+const greeting = (author) => `Hey @${author}! 👋`;
+
 const RESPONSES = {
   'Missing repro': {
     marker: '<!-- rngh-triage:missing-repro -->',
     body: [
-      'Hey! 👋',
-      '',
       "The issue doesn't seem to contain a [minimal reproduction](https://stackoverflow.com/help/minimal-reproducible-example).",
       '',
       'Could you provide a [snack](https://snack.expo.dev/), a [gist](https://gist.github.com/) or a link to a GitHub repository that reproduces the problem?',
@@ -20,8 +20,6 @@ const RESPONSES = {
   'Missing info': {
     marker: '<!-- rngh-triage:missing-info -->',
     body: [
-      'Hey! 👋',
-      '',
       'Some of the required information in this issue is missing, incomplete or invalid. Could you take another look at the template and make sure each of these is filled in with something we can act on?',
       '',
       '- **Description** - what happens, and what you expected to happen instead',
@@ -82,7 +80,7 @@ module.exports = async ({ github, context, core }) => {
     await github.rest.issues.createComment({
       ...context.repo,
       issue_number: issue.number,
-      body: `${response.marker}\n${response.body}`,
+      body: `${response.marker}\n${greeting(issue.user.login)}\n\n${response.body}`,
     });
 
     core.notice(`Posted "${label.name}" response.`);
