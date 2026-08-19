@@ -54,6 +54,22 @@ module.exports = async ({ github, context, core }) => {
     return;
   }
 
+  // Retraction runs before the checks below: those decide whether to nag, not
+  // whether to clean up. A response must still be removed when the issue was
+  // closed or labelled `Maintainer issue` after it was posted.
+  if (action === 'unlabeled') {
+    const posted = await findResponse({ github, context, issue, marker: response.marker });
+
+    if (!posted) {
+      core.notice('No response to retract. Skipping.');
+      return;
+    }
+
+    await github.rest.issues.deleteComment({ ...context.repo, comment_id: posted.id });
+    core.notice(`Retracted "${label.name}" response.`);
+    return;
+  }
+
   if (issue.state === 'closed') {
     core.notice('Triggered on a closed issue. Skipping.');
     return;
@@ -71,30 +87,18 @@ module.exports = async ({ github, context, core }) => {
 
   const existing = await findResponse({ github, context, issue, marker: response.marker });
 
-  if (action === 'labeled') {
-    if (existing) {
-      core.notice('Response already posted. Skipping.');
-      return;
-    }
-
-    await github.rest.issues.createComment({
-      ...context.repo,
-      issue_number: issue.number,
-      body: `${response.marker}\n${greeting(issue.user.login)}\n\n${response.body}`,
-    });
-
-    core.notice(`Posted "${label.name}" response.`);
+  if (existing) {
+    core.notice('Response already posted. Skipping.');
     return;
   }
 
-  // Label removed - retract the response, as the old bot did.
-  if (!existing) {
-    core.notice('No response to retract. Skipping.');
-    return;
-  }
+  await github.rest.issues.createComment({
+    ...context.repo,
+    issue_number: issue.number,
+    body: `${response.marker}\n${greeting(issue.user.login)}\n\n${response.body}`,
+  });
 
-  await github.rest.issues.deleteComment({ ...context.repo, comment_id: existing.id });
-  core.notice(`Retracted "${label.name}" response.`);
+  core.notice(`Posted "${label.name}" response.`);
 };
 
 async function findResponse({ github, context, issue, marker }) {
