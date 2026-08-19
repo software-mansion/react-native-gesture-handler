@@ -50,7 +50,14 @@ static std::unordered_map<int, RNGestureHandlerManager *> _managers;
 
 + (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId
 {
-  return _managers[moduleId];
+  // Not operator[] - that would insert a null entry on a miss.
+  const auto it = _managers.find(moduleId);
+  return it == _managers.end() ? nil : it->second;
+}
+
++ (BOOL)hasModuleWithId:(int)moduleId
+{
+  return _managers.find(moduleId) != _managers.end();
 }
 
 RCT_EXPORT_MODULE()
@@ -63,6 +70,11 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+
+  // Clear observations before the entry is nulled - the async drop below keeps the registry
+  // alive for one main-queue hop, and dropAllHandlers does not touch them.
+  [handlerManager.registry removeAllObservations];
+
   dispatch_async(dispatch_get_main_queue(), ^{
     [handlerManager dropAllGestureHandlers];
   });

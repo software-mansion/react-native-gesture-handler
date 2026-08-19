@@ -33,6 +33,7 @@ typedef void (^RNGestureHandlerReadyBlock)(RNGestureHandler *_Nonnull handler);
 
 - (void)cancelObservationForTag:(nonnull NSNumber *)handlerTag owner:(nonnull id)owner;
 - (void)cancelAllObservationsForOwner:(nonnull id)owner;
+- (void)removeAllObservations;
 
 @property (nonatomic, readonly, nonnull) NSDictionary<NSNumber *, RNGestureHandler *> *handlers;
 

@@ -97,6 +97,13 @@
   }
 }
 
+- (void)removeAllObservations
+{
+  @synchronized(_handlers) {
+    [_observers removeAllObjects];
+  }
+}
+
 - (void)attachHandlerWithTag:(NSNumber *)handlerTag
                       toView:(RNGHUIView *)view
               withActionType:(RNGestureHandlerActionType)actionType
