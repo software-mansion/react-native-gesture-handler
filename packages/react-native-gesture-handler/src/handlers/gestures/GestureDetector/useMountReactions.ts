@@ -7,14 +7,14 @@ import type { AttachedGestureState } from './types';
 
 function shouldUpdateDetector(
   relation: GestureRef[] | undefined,
-  gesture: { handlerTag: number }
+  mountedHandlerTags: ReadonlySet<number>
 ) {
   if (relation === undefined) {
     return false;
   }
 
   for (const tag of transformIntoHandlerTags(relation)) {
-    if (tag === gesture.handlerTag) {
+    if (mountedHandlerTags.has(tag)) {
       return true;
     }
   }
@@ -27,25 +27,27 @@ export function useMountReactions(
   state: AttachedGestureState
 ) {
   useEffect(() => {
-    return MountRegistry.addMountListener((gesture) => {
+    // The listener receives every handler tag that mounted in this tick, so each relation
+    // is resolved once per batch instead of once per mounted gesture.
+    return MountRegistry.addMountListener((mountedHandlerTags) => {
       // The detector may already be unmounted when this fires; bail out to avoid
       // updating a detached detector.
       if (!state.isMounted) {
         return;
       }
 
-      // At this point the ref in the gesture config should be updated, so we can check if one of the gestures
-      // set in a relation with the gesture got mounted. If so, we need to update the detector to propagate
-      // the changes to the native side.
+      // At this point the refs in the gesture configs should be updated, so we can check if one of
+      // the gestures set in a relation with a just-mounted gesture got mounted. If so, we need to
+      // update the detector to propagate the changes to the native side.
       for (const attachedGesture of state.attachedGestures) {
         const blocksHandlers = attachedGesture.config.blocksHandlers;
         const requireToFail = attachedGesture.config.requireToFail;
         const simultaneousWith = attachedGesture.config.simultaneousWith;
 
         if (
-          shouldUpdateDetector(blocksHandlers, gesture) ||
-          shouldUpdateDetector(requireToFail, gesture) ||
-          shouldUpdateDetector(simultaneousWith, gesture)
+          shouldUpdateDetector(blocksHandlers, mountedHandlerTags) ||
+          shouldUpdateDetector(requireToFail, mountedHandlerTags) ||
+          shouldUpdateDetector(simultaneousWith, mountedHandlerTags)
         ) {
           updateDetector();
 
