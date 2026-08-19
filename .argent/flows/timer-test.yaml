@@ -1,0 +1,73 @@
+steps:
+  - echo: Launching Expo Example
+  - launch: com.example.ExpoExample
+  - await: { visible: { text: "Empty Example" }, timeout: 15000 }
+  - echo: "On the Home list, search for the timer example"
+  - type: { text: "timer", into: { id: "search-examples" } }
+  - echo: "Tap the example to open it"
+  - tap: { text: "Timer" }
+  - await: { idle: true }
+  - await: { visible: { id: "timer-box" } }
+
+  - echo: "Clear console"
+  - await: { visible: { id: "open-console-button" } }
+  - tap: { id: "open-console-button" }
+  - await: { visible: { id: "clear-console-button" } }
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+  - await: { hidden: { id: "close-console-button" } }
+
+  - echo: "Nothing is measured before the first press"
+  - assert: { visible: { text: "Last press: none" } }
+
+  - echo: "Hold for two seconds - the measured duration is rounded to whole seconds"
+  - long-press: { on: { id: "timer-box" }, duration: 2000 }
+  - await: { visible: { text: "Last press: 2s" } }
+
+  - echo: "Check if console logs are printed in order"
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - assert: { visible: { text: "1. onBegin" } }
+  - assert: { visible: { text: "2. onActivate" } }
+  - assert: { visible: { text: "3. onDeactivate" } }
+  - assert: { visible: { text: "4. onFinalize (2s)" } }
+
+  - echo: "Clear console"
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+  - await: { hidden: { id: "close-console-button" } }
+
+  - echo: "A longer hold measures a longer duration"
+  - long-press: { on: { id: "timer-box" }, duration: 4000 }
+  - await: { visible: { text: "Last press: 4s" } }
+
+  - echo: "Check if console logs are printed in order"
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - assert: { visible: { text: "5. onBegin" } }
+  - assert: { visible: { text: "6. onActivate" } }
+  - assert: { visible: { text: "7. onDeactivate" } }
+  - assert: { visible: { text: "8. onFinalize (4s)" } }
+
+  - echo: "Clear console"
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+  - await: { hidden: { id: "close-console-button" } }
+
+  - echo: "A tap is too short to activate the gesture, but it is still measured"
+  - tap: { id: "timer-box" }
+  - await: { visible: { text: "Last press: 0s" } }
+
+  - echo: "The tap begins and finalizes without activating"
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - assert: { visible: { text: "9. onBegin" } }
+  - assert: { visible: { text: "10. onFinalize (0s)" } }
+  - assert: { hidden: { text: "onActivate" } }
+  - assert: { hidden: { text: "onDeactivate" } }

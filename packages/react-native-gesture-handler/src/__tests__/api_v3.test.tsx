@@ -5,7 +5,7 @@ import {
   screen,
 } from '@testing-library/react-native';
 import { act } from 'react';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, TextInput, View } from 'react-native';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
@@ -454,8 +454,17 @@ describe('[API v3] Components', () => {
       keyboardShouldPersistTaps,
     });
 
+    // The drop requires a focused RN TextInput to blur.
+    const focusInput = () =>
+      jest
+        .spyOn(TextInput.State, 'currentlyFocusedInput')
+        .mockReturnValue(
+          {} as ReturnType<typeof TextInput.State.currentlyFocusedInput>
+        );
+
     test('isKeyboardDismissingTap is true only in never mode while the keyboard is visible', async () => {
       const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+      const focusSpy = focusInput();
 
       render(
         <GestureHandlerRootView>
@@ -477,7 +486,38 @@ describe('[API v3] Components', () => {
       // Outside an RNGH ScrollView there is no context, so nothing is dropped.
       expect(isKeyboardDismissingTap(null)).toBe(false);
 
+      // The verdict must survive the dismissal blurring the input mid-tap.
+      focusSpy.mockReturnValue(undefined);
+      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(true);
+
       addListenerSpy.mockRestore();
+      focusSpy.mockRestore();
+    });
+
+    test('isKeyboardDismissingTap is false when no RN TextInput is focused (native field keyboard)', async () => {
+      const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+
+      render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="never" />
+        </GestureHandlerRootView>
+      );
+      await act(flushImmediate);
+
+      // Keyboard up for a native field (e.g. a native-stack search bar) -
+      // no RN TextInput to blur, so the tap must not be dropped.
+      showKeyboard(addListenerSpy);
+
+      expect(TextInput.State.currentlyFocusedInput()).toBeNull();
+      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(false);
+
+      // Focus moving to an RN input while the keyboard stays up makes the
+      // tap dismissible again.
+      const focusSpy = focusInput();
+      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(true);
+
+      addListenerSpy.mockRestore();
+      focusSpy.mockRestore();
     });
 
     test('isKeyboardDismissingTap is false for a detached (height 0) keyboard', async () => {
@@ -500,6 +540,7 @@ describe('[API v3] Components', () => {
 
     test('Touchable does NOT fire any press callback on the keyboard-dismissing tap (never)', async () => {
       const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+      const focusSpy = focusInput();
       const onPress = jest.fn();
       const onPressIn = jest.fn();
       const onPressOut = jest.fn();
@@ -519,6 +560,10 @@ describe('[API v3] Components', () => {
       await act(flushImmediate);
       showKeyboard(addListenerSpy);
 
+      // The 'never' responder blurs the input at touch-down, before the
+      // press events arrive - mirror that ordering.
+      focusSpy.mockReturnValue(undefined);
+
       // Includes a re-entry PressIn (finger dragged out and back in) so the
       // capture-once verdict path is exercised too.
       const button = screen.getByTestId('touchable');
@@ -535,6 +580,7 @@ describe('[API v3] Components', () => {
       expect(onPressIn).not.toHaveBeenCalled();
       expect(onPressOut).not.toHaveBeenCalled();
       addListenerSpy.mockRestore();
+      focusSpy.mockRestore();
     });
 
     test('Touchable fires onPress in never mode when the keyboard is not visible', async () => {

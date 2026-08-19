@@ -1,0 +1,59 @@
+steps:
+  - echo: Launching Expo Example
+  - launch: com.example.ExpoExample
+  - await: { visible: { text: "Empty Example" }, timeout: 15000 }
+  - echo: "On the Home list, search for the shared value example"
+  - type: { text: "shared", into: { id: "search-examples" } }
+  - echo: "Tap the example to open it"
+  - tap: { text: "Shared Value" }
+  - await: { visible: { id: "shared-value-box" } }
+  - await: { idle: true }
+
+  - echo: "Clear console"
+  - await: { visible: { id: "open-console-button" } }
+  - tap: { id: "open-console-button" }
+  - await: { visible: { id: "clear-console-button" } }
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+
+  - echo: "The gesture starts configured for a single tap, so one tap activates it"
+  - tap: { id: "shared-value-box" }
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - assert: { visible: { text: "1. onBegin" } }
+  - assert: { visible: { text: "2. onActivate" } }
+  - assert: { visible: { text: "3. onDeactivate" } }
+  - assert: { visible: { text: "4. onFinalize" } }
+
+  - echo: "Clear console"
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+
+  - echo: "Raise the shared value, then check that a single tap no longer activates"
+  - tap: { id: "increment-taps-button" }
+  - tap: { id: "shared-value-box" }
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - assert: { visible: { text: "5. Required taps: 2" } }
+  - assert: { visible: { text: "6. onBegin" } }
+  - assert: { visible: { text: "7. onFinalize" } }
+  - assert: { hidden: { text: "onActivate" } }
+
+  - echo: "Clear console"
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+
+  - echo: "A double tap matches the new configuration and activates the gesture"
+  - tap: { on: { id: "shared-value-box" }, times: 2 }
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - assert: { visible: { text: "8. onBegin" } }
+  - assert: { visible: { text: "9. onActivate" } }
+  - assert: { visible: { text: "10. onDeactivate" } }
+  - assert: { visible: { text: "11. onFinalize" } }

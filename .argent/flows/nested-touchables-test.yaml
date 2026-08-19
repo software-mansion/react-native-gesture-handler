@@ -1,0 +1,85 @@
+steps:
+  - echo: Launching Expo Example
+  - launch: com.example.ExpoExample
+  - await: { visible: { text: "Empty Example" }, timeout: 15000 }
+  - echo: "On the Home list, search for the nested touchables example"
+  - type: { text: "nested touchables", into: { id: "search-examples" } }
+  - echo: "Tap the example to open it"
+  - tap: { text: "Nested touchables" }
+  - await: { visible: { id: "level-4" } }
+  - await: { idle: true }
+
+  - echo: "Clear console"
+  - await: { visible: { id: "open-console-button" } }
+  - tap: { id: "open-console-button" }
+  - await: { visible: { id: "clear-console-button" } }
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+
+  - echo: "Level 1 - tap the outer tap gesture"
+  - tap: { id: "level-1" }
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - echo: "Level 1 activates and no other level logs"
+  - assert: { visible: { text: "1. L1 onActivate" } }
+  - assert: { hidden: { text: "L2 on" } }
+  - assert: { hidden: { text: "L3 on" } }
+  - assert: { hidden: { text: "L4 on" } }
+  - assert: { hidden: { text: "2. L" } }
+
+  - echo: "Clear console"
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+
+  - echo: "Level 2 - tap the touchable nested in the outer tap gesture"
+  - tap: { id: "level-2" }
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - echo: "Level 2 presses in order and no other level logs"
+  - assert: { visible: { text: "2. L2 onPressIn" } }
+  - assert: { visible: { text: "3. L2 onPressOut" } }
+  - assert: { visible: { text: "4. L2 onPress" } }
+  - assert: { hidden: { text: "L1 on" } }
+  - assert: { hidden: { text: "L3 on" } }
+  - assert: { hidden: { text: "L4 on" } }
+  - assert: { hidden: { text: "5. L" } }
+
+  - echo: "Clear console"
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+
+  - echo: "Level 3 - tap the tap gesture nested in the touchable"
+  - tap: { id: "level-3" }
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - echo: "Level 3 activates and no other level logs"
+  - assert: { visible: { text: "5. L3 onActivate" } }
+  - assert: { hidden: { text: "L1 on" } }
+  - assert: { hidden: { text: "L2 on" } }
+  - assert: { hidden: { text: "L4 on" } }
+  - assert: { hidden: { text: "6. L" } }
+
+  - echo: "Clear console"
+  - tap: { id: "clear-console-button" }
+  - tap: { id: "close-console-button" }
+  - await: { idle: true }
+
+  - echo: "Level 4 - tap the innermost touchable"
+  - tap: { id: "level-4" }
+  - tap: { id: "open-console-button" }
+  - await: { idle: true }
+  - await: { visible: { id: "close-console-button" } }
+  - echo: "Level 4 presses in order and no other level logs"
+  - assert: { visible: { text: "6. L4 onPressIn" } }
+  - assert: { visible: { text: "7. L4 onPressOut" } }
+  - assert: { visible: { text: "8. L4 onPress" } }
+  - assert: { hidden: { text: "L1 on" } }
+  - assert: { hidden: { text: "L2 on" } }
+  - assert: { hidden: { text: "L3 on" } }
+  - assert: { hidden: { text: "9. L" } }
