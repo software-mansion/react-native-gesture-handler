@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkreact_native_gesture_handler_docs||=[]).push([[9647],{7402(e,r,s){s.r(r),s.d(r,{default:()=>l});s(9471);var a=s(4164),t=s(9484),c=s(9439),u=s(952),n=s(2910),d=s(7671);function l(e){return(0,d.jsx)(c.e3,{className:(0,a.A)(t.G.wrapper.docsPages),children:(0,d.jsx)(n.A,{children:(0,u.v)(e.route.routes)})})}}}]);
