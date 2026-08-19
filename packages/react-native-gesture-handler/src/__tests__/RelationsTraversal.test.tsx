@@ -8,7 +8,10 @@ import {
   useSimultaneousGestures,
 } from '../v3/hooks/composition';
 import { useGesture } from '../v3/hooks/useGesture';
-import type { SingleGesture } from '../v3/types';
+import type {
+  GestureHandlerEventWithHandlerData,
+  SingleGesture,
+} from '../v3/types';
 import { SingleGestureName } from '../v3/types';
 
 type AnySingleGesture = SingleGesture<unknown, unknown, unknown>;
@@ -634,6 +637,31 @@ describe('Same-type composition flattening', () => {
     expect(pan4.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
       [pan1.handlerTag, pan2.handlerTag, pan3.handlerTag].sort()
     );
+  });
+
+  test('JS event handler dispatches to inlined leaves in composition order', () => {
+    const inner = renderHook(() => useSimultaneousGestures(pan2, pan3)).result
+      .current;
+    const outer = renderHook(() => useSimultaneousGestures(pan1, inner, pan4))
+      .result.current;
+
+    const order: number[] = [];
+    for (const pan of [pan1, pan2, pan3, pan4]) {
+      pan.detectorCallbacks.jsEventHandler = () => {
+        order.push(pan.handlerTag);
+      };
+    }
+
+    outer.detectorCallbacks.jsEventHandler?.(
+      {} as GestureHandlerEventWithHandlerData<unknown, unknown>
+    );
+
+    expect(order).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+      pan3.handlerTag,
+      pan4.handlerTag,
+    ]);
   });
 
   test('Duplicate gestures are still detected after inlining', () => {
