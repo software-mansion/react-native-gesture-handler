@@ -778,16 +778,15 @@ export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
   _ = _.map(fillMissingDefaultsFor({ handlerTag, handlerType }));
   _ = withPrevAndCurrent(_, fillOldStateChanges);
   _ = withPrevAndCurrent(_, validateStateTransitions);
-  // @ts-ignore TODO
-  _ = _.map(wrapWithNativeEvent);
+  const events = _.map((event) =>
+    wrapWithNativeEvent(event as GestureHandlerTestEvent)
+  );
 
-  const events = _ as unknown as WrappedGestureHandlerTestEvent[];
-
-  const firstEvent = events.shift()!;
+  const [firstEvent, ...restEvents] = events;
 
   emitEvent('onGestureHandlerStateChange', firstEvent);
   let lastSentEvent = firstEvent;
-  for (const event of events) {
+  for (const event of restEvents) {
     const hasChangedState =
       lastSentEvent.nativeEvent.state !== event.nativeEvent.state;
 
