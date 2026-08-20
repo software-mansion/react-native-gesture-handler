@@ -33,3 +33,17 @@ jobs:
       - name: Generate docs
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn build
+
+      - name: Check docs llms.txt
+        run: |
+          file=packages/docs-gesture-handler/build/llms.txt
+          if [ ! -s "$file" ]; then
+            echo "::error::$file is missing or empty"
+            exit 1
+          fi
+          count=$(grep -cE '^- \[[^]]+\]\(https://docs\.swmansion\.com/react-native-gesture-handler/[^)]+\)' "$file" || true)
+          if [ "$count" -eq 0 ]; then
+            echo "::error::$file lists no pages"
+            exit 1
+          fi
+          echo "llms.txt lists $count pages"
