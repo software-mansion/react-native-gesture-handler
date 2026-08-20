@@ -8,7 +8,10 @@ import {
   useSimultaneousGestures,
 } from '../v3/hooks/composition';
 import { useGesture } from '../v3/hooks/useGesture';
-import type { SingleGesture } from '../v3/types';
+import type {
+  GestureHandlerEventWithHandlerData,
+  SingleGesture,
+} from '../v3/types';
 import { SingleGestureName } from '../v3/types';
 
 type AnySingleGesture = SingleGesture<unknown, unknown, unknown>;
@@ -461,6 +464,215 @@ describe('Complex relations with external gestures', () => {
       pan1.handlerTag,
     ]);
     expect(pan5.gestureRelations.waitFor).toStrictEqual([]);
+  });
+});
+
+describe('Same-type composition flattening', () => {
+  let pan1: AnySingleGesture,
+    pan2: AnySingleGesture,
+    pan3: AnySingleGesture,
+    pan4: AnySingleGesture;
+
+  beforeEach(() => {
+    [pan1, pan2, pan3, pan4] = Array.from(
+      { length: 4 },
+      () =>
+        renderHook(() =>
+          useGesture(SingleGestureName.Pan, { disableReanimated: true })
+        ).result.current
+    );
+  });
+
+  test('Nested Simultaneous is inlined', () => {
+    const inner = renderHook(() => useSimultaneousGestures(pan2, pan3)).result
+      .current;
+    const outer = renderHook(() => useSimultaneousGestures(pan1, inner)).result
+      .current;
+
+    expect(outer.gestures).toStrictEqual([pan1, pan2, pan3]);
+
+    configureRelations(outer);
+
+    expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan2.handlerTag, pan3.handlerTag].sort()
+    );
+    expect(pan2.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan1.handlerTag, pan3.handlerTag].sort()
+    );
+    expect(pan3.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan1.handlerTag, pan2.handlerTag].sort()
+    );
+  });
+
+  test('Nested Exclusive is inlined and produces no repeated waitFor entries', () => {
+    const inner = renderHook(() => useExclusiveGestures(pan2, pan3)).result
+      .current;
+    const outer = renderHook(() => useExclusiveGestures(pan1, inner, pan4))
+      .result.current;
+
+    expect(outer.gestures).toStrictEqual([pan1, pan2, pan3, pan4]);
+
+    configureRelations(outer);
+
+    expect(pan1.gestureRelations.waitFor).toStrictEqual([]);
+    expect(pan2.gestureRelations.waitFor).toStrictEqual([pan1.handlerTag]);
+    expect(pan3.gestureRelations.waitFor).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+    ]);
+    expect(pan4.gestureRelations.waitFor).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+      pan3.handlerTag,
+    ]);
+  });
+
+  test('Multiple levels of nesting are inlined', () => {
+    const level1 = renderHook(() => useSimultaneousGestures(pan1, pan2)).result
+      .current;
+    const level2 = renderHook(() => useSimultaneousGestures(level1, pan3))
+      .result.current;
+    const level3 = renderHook(() => useSimultaneousGestures(level2, pan4))
+      .result.current;
+
+    expect(level2.gestures).toStrictEqual([pan1, pan2, pan3]);
+    expect(level3.gestures).toStrictEqual([pan1, pan2, pan3, pan4]);
+  });
+
+  test('Multiple same-type compositions at the same level are inlined', () => {
+    const inner1 = renderHook(() => useExclusiveGestures(pan1, pan2)).result
+      .current;
+    const inner2 = renderHook(() => useExclusiveGestures(pan3, pan4)).result
+      .current;
+    const outer = renderHook(() => useExclusiveGestures(inner1, inner2)).result
+      .current;
+
+    expect(outer.gestures).toStrictEqual([pan1, pan2, pan3, pan4]);
+
+    configureRelations(outer);
+
+    expect(pan1.gestureRelations.waitFor).toStrictEqual([]);
+    expect(pan2.gestureRelations.waitFor).toStrictEqual([pan1.handlerTag]);
+    expect(pan3.gestureRelations.waitFor).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+    ]);
+    expect(pan4.gestureRelations.waitFor).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+      pan3.handlerTag,
+    ]);
+  });
+
+  test('Same-type composition nested under a different type is kept but stays flat', () => {
+    const simultaneous = renderHook(() => useSimultaneousGestures(pan1, pan2))
+      .result.current;
+    const exclusive = renderHook(() => useExclusiveGestures(simultaneous, pan3))
+      .result.current;
+    const outer = renderHook(() => useExclusiveGestures(exclusive, pan4)).result
+      .current;
+
+    // `exclusive` is inlined into `outer`, `simultaneous` is kept as a subtree.
+    expect(outer.gestures).toStrictEqual([simultaneous, pan3, pan4]);
+
+    configureRelations(outer);
+
+    expect(pan1.gestureRelations.simultaneousHandlers).toStrictEqual([
+      pan2.handlerTag,
+    ]);
+    expect(pan3.gestureRelations.waitFor).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+    ]);
+    expect(pan4.gestureRelations.waitFor).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+      pan3.handlerTag,
+    ]);
+  });
+
+  test('Nested composition of a different type is kept', () => {
+    const inner = renderHook(() => useExclusiveGestures(pan2, pan3)).result
+      .current;
+    const outer = renderHook(() => useSimultaneousGestures(pan1, inner)).result
+      .current;
+
+    expect(outer.gestures).toStrictEqual([pan1, inner]);
+  });
+
+  test('Alternating types are kept nested - Sim(Exc(Sim(a, b), c), d)', () => {
+    const innerSimultaneous = renderHook(() =>
+      useSimultaneousGestures(pan1, pan2)
+    ).result.current;
+    const exclusive = renderHook(() =>
+      useExclusiveGestures(innerSimultaneous, pan3)
+    ).result.current;
+    const outer = renderHook(() => useSimultaneousGestures(exclusive, pan4))
+      .result.current;
+
+    expect(outer.gestures).toStrictEqual([exclusive, pan4]);
+    expect(exclusive.gestures).toStrictEqual([innerSimultaneous, pan3]);
+
+    configureRelations(outer);
+
+    expect(pan1.gestureRelations.waitFor).toStrictEqual([]);
+    expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan2.handlerTag, pan4.handlerTag].sort()
+    );
+
+    expect(pan2.gestureRelations.waitFor).toStrictEqual([]);
+    expect(pan2.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan1.handlerTag, pan4.handlerTag].sort()
+    );
+
+    expect(pan3.gestureRelations.waitFor).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+    ]);
+    expect(pan3.gestureRelations.simultaneousHandlers).toStrictEqual([
+      pan4.handlerTag,
+    ]);
+
+    expect(pan4.gestureRelations.waitFor).toStrictEqual([]);
+    expect(pan4.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan1.handlerTag, pan2.handlerTag, pan3.handlerTag].sort()
+    );
+  });
+
+  test('JS event handler dispatches to inlined leaves in composition order', () => {
+    const inner = renderHook(() => useSimultaneousGestures(pan2, pan3)).result
+      .current;
+    const outer = renderHook(() => useSimultaneousGestures(pan1, inner, pan4))
+      .result.current;
+
+    const order: number[] = [];
+    for (const pan of [pan1, pan2, pan3, pan4]) {
+      pan.detectorCallbacks.jsEventHandler = () => {
+        order.push(pan.handlerTag);
+      };
+    }
+
+    outer.detectorCallbacks.jsEventHandler?.(
+      {} as GestureHandlerEventWithHandlerData<unknown, unknown>
+    );
+
+    expect(order).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+      pan3.handlerTag,
+      pan4.handlerTag,
+    ]);
+  });
+
+  test('Duplicate gestures are still detected after inlining', () => {
+    const inner = renderHook(() => useSimultaneousGestures(pan1, pan2)).result
+      .current;
+
+    expect(() => useSimultaneousGestures(pan1, inner)).toThrow(
+      tagMessage(
+        'Each gesture can be used only once in the gesture composition.'
+      )
+    );
   });
 });
 
