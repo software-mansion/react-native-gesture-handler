@@ -95,19 +95,3 @@ If you've build something with this library you'd like to share, please contact 
 
 </div>
 
-### Sponsors
-
-We really appreciate our sponsors! Thanks to them we can develop our library and make the react-native world a better place. Special thanks for:
-
-<div className="community-holder-container">
-
-  <div className="community-holder-container-item">
-    <a href="https://expo.dev">
-      <div className="community-imageHolder">
-        <img className="community-imageHolder" src="https://avatars2.githubusercontent.com/u/12504344?v=3&s=100" />
-      </div>
-      <div>Expo</div>
-    </a>
-  </div>
-
-</div>
