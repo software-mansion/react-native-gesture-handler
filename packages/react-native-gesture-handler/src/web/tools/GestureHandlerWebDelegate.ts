@@ -19,6 +19,7 @@ import type {
 } from './GestureHandlerDelegate';
 import KeyboardEventManager from './KeyboardEventManager';
 import PointerEventManager from './PointerEventManager';
+import ScrollEventManager from './ScrollEventManager';
 import WheelEventManager from './WheelEventManager';
 
 interface DefaultViewStyles {
@@ -69,6 +70,7 @@ export class GestureHandlerWebDelegate
     );
     this.eventManagers.push(new KeyboardEventManager(this.view));
     this.eventManagers.push(new WheelEventManager(this.view));
+    this.eventManagers.push(new ScrollEventManager(this.view));
 
     this.eventManagers.forEach((manager) =>
       this.gestureHandler.attachEventManager(manager)

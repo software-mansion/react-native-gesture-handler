@@ -41,6 +41,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private startY = 0;
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
+  private readonly scrollActivationThresholdSq = 2 * 2;
+  private isScrollDriven = false;
+  private scrollDetected = false;
+
   private lastActiveHandlerData: HandlerData<NativeHandlerData> | null = null;
 
   private hasLongPressHandler = false;
@@ -65,6 +69,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     super.init(ref, propsRef, actionType, hostDetector);
 
     this.shouldCancelWhenOutside = true;
+    this.isScrollDriven = false;
 
     const view = this.delegate.view;
 
@@ -86,6 +91,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
         this.role = NativeGestureRole.Switch;
       }
     }
+
+    this.isScrollDriven = this.role === NativeGestureRole.ScrollView;
   }
 
   public override updateGestureConfig(config: Config): void {
@@ -144,6 +151,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
       return;
     }
 
+    this.scrollDetected = false;
+
     this.begin();
 
     dispatchGestureLifecycleEvent(
@@ -166,11 +175,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
   protected override onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    const dx = this.startX - lastCoords.x;
-    const dy = this.startY - lastCoords.y;
-    const distSq = dx * dx + dy * dy;
-
     if (
       this.role === NativeGestureRole.Switch ||
       this.role === NativeGestureRole.Button
@@ -178,7 +182,44 @@ export default class NativeViewGestureHandler extends GestureHandler {
       return;
     }
 
-    if (distSq >= this.minDistSq && this.state === State.BEGAN) {
+    if (this.isScrollDriven) {
+      this.tryScrollDrivenActivation();
+      return;
+    }
+
+    if (
+      this.pointerTravelSq() >= this.minDistSq &&
+      this.state === State.BEGAN
+    ) {
+      this.activate();
+    }
+  }
+
+  private pointerTravelSq(): number {
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const dx = this.startX - lastCoords.x;
+    const dy = this.startY - lastCoords.y;
+    return dx * dx + dy * dy;
+  }
+
+  protected override onScroll(_event: AdaptedEvent): void {
+    if (!this.isScrollDriven || this.tracker.trackedPointersCount === 0) {
+      return;
+    }
+
+    this.scrollDetected = true;
+    this.tryScrollDrivenActivation();
+  }
+
+  private tryScrollDrivenActivation(): void {
+    if (!this.scrollDetected || this.state !== State.BEGAN) {
+      return;
+    }
+
+    // Require some pointer travel on top of the scroll event — momentum
+    // scrolling keeps emitting `scroll` events after a touch that was only
+    // meant to stop it, and that touch must not activate the handler.
+    if (this.pointerTravelSq() >= this.scrollActivationThresholdSq) {
       this.activate();
     }
   }
@@ -427,6 +468,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.lastActiveHandlerData = null;
     this.lastEventWasInside = false;
     this.longPressDetected = false;
+    this.scrollDetected = false;
   }
 
   public override onDestroy(): void {
