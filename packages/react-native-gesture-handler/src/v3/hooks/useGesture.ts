@@ -40,7 +40,6 @@ export function useGesture<
     );
   }
 
-  // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const { jsEventHandler, reanimatedEventHandler, animatedEventHandler } =
     useGestureCallbacks(handlerTag, config);
 
