@@ -17,7 +17,6 @@
 #import "RNGHRuntimeDecorator.h"
 
 #import "RNGestureHandler.h"
-#import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerState.h"
 
 #import "RNGestureHandlerButton.h"
@@ -276,28 +275,6 @@ RCT_EXPORT_MODULE()
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[ @"onGestureHandlerEvent", @"onGestureHandlerStateChange" ];
-}
-
-#pragma mark Module Constants
-
-- (NSDictionary *)constantsToExport
-{
-  return @{
-    @"State" : @{
-      @"UNDETERMINED" : @(RNGestureHandlerStateUndetermined),
-      @"BEGAN" : @(RNGestureHandlerStateBegan),
-      @"ACTIVE" : @(RNGestureHandlerStateActive),
-      @"CANCELLED" : @(RNGestureHandlerStateCancelled),
-      @"FAILED" : @(RNGestureHandlerStateFailed),
-      @"END" : @(RNGestureHandlerStateEnd)
-    },
-    @"Direction" : @{
-      @"RIGHT" : @(RNGestureHandlerDirectionRight),
-      @"LEFT" : @(RNGestureHandlerDirectionLeft),
-      @"UP" : @(RNGestureHandlerDirectionUp),
-      @"DOWN" : @(RNGestureHandlerDirectionDown)
-    }
-  };
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
