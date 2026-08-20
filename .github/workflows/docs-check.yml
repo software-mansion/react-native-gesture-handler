@@ -46,4 +46,3 @@ jobs:
             echo "::error::$file lists no pages"
             exit 1
           fi
-          echo "llms.txt lists $count pages"
