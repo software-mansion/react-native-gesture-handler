@@ -137,9 +137,13 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   /**
-   * A disallow-intercept request may mean a real interception, but it may also be just a
-   * defensive call from a view that lets the event through (e.g. a nested pager). The two can only
-   * be told apart after the native dispatch completes, so cancellation runs here, not at request time.
+   * Deferred handling of a disallow-intercept request recorded during this dispatch pass. The
+   * request alone doesn't say what the caller did with the event: a scrollable calls it when it
+   * takes over the touch, but e.g. a nested pager calls it already on DOWN, just to keep its
+   * ancestors from stealing a swipe it may recognize later, and the event still reaches the
+   * button - at request time both calls look identical. They only become
+   * distinguishable once the native dispatch completes (did the button receive the DOWN?), which
+   * is why cancellation runs here instead of in `requestDisallowInterceptTouchEvent`.
    */
   fun onNativeDispatchEnd(event: MotionEvent) {
     passingNativeTouch = false
