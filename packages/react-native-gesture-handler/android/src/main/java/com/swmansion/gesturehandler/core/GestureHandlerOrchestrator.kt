@@ -365,7 +365,7 @@ class GestureHandlerOrchestrator(
     event.recycle()
   }
 
-  private inline fun cancelTrackedHandlers(predicate: (GestureHandler) -> Boolean) {
+  private inline fun cancelHandlersMatching(predicate: (GestureHandler) -> Boolean) {
     val handlersToProcess = obtainHandlerList()
     handlersToProcess.addAll(gestureHandlers)
 
@@ -382,7 +382,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  fun cancelAllLegacyHandlers() = cancelTrackedHandlers {
+  fun cancelAllLegacyHandlers() = cancelHandlersMatching {
     it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API ||
       it.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API ||
       it.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET ||
@@ -392,7 +392,7 @@ class GestureHandlerOrchestrator(
   /**
    * Cancels handlers whose view opted out of surviving a native view taking over the touch stream.
    */
-  fun cancelHandlersOnNativeTouchGrab(grabbedMidGesture: Boolean) = cancelTrackedHandlers {
+  fun cancelHandlersOnNativeTouchGrab(grabbedMidGesture: Boolean) = cancelHandlersMatching {
     it is NativeViewGestureHandler && it.shouldCancelOnNativeTouchGrab(grabbedMidGesture)
   }
 
