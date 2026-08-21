@@ -20,7 +20,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
   private var startY = 0f
   private var startTime: Long = 0
   private var previousTime: Long = 0
-  private var handler: Handler? = null
+  private val handler = Handler(Looper.getMainLooper())
   private var currentPointers = 0
 
   init {
@@ -112,9 +112,9 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
           sourceEvent.actionMasked == MotionEvent.ACTION_BUTTON_PRESS
         )
     ) {
-      handler = Handler(Looper.getMainLooper())
+      handler.removeCallbacksAndMessages(null)
       if (minDurationMs > 0) {
-        handler!!.postDelayed({ activate() }, minDurationMs)
+        handler.postDelayed({ activate() }, minDurationMs)
       } else if (minDurationMs == 0L) {
         activate()
       }
@@ -124,10 +124,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
     ) {
       currentPointers--
 
-      handler?.let {
-        it.removeCallbacksAndMessages(null)
-        handler = null
-      }
+      handler.removeCallbacksAndMessages(null)
 
       if (state == STATE_ACTIVE) {
         end()
@@ -164,10 +161,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
   }
 
   override fun onStateChange(newState: Int, previousState: Int) {
-    handler?.let {
-      it.removeCallbacksAndMessages(null)
-      handler = null
-    }
+    handler.removeCallbacksAndMessages(null)
   }
 
   override fun dispatchStateChange(newState: Int, prevState: Int) {
