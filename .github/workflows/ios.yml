@@ -3,8 +3,11 @@ name: Build iOS (expo-example)
 on:
   pull_request:
     paths:
+      - .argent/flows/*
+      - .github/actions/argent-server/action.yml
       - .github/workflows/ios.yml
       - .github/workflows/ios-build.yml
+      - .github/workflows/ios-e2e.yml
       - packages/react-native-gesture-handler/package.json
       - packages/react-native-gesture-handler/RNGestureHandler.podspec
       - packages/react-native-gesture-handler/apple/**
@@ -24,12 +27,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Single source of truth for versions shared by the build and e2e workflows.
+  # A job output is the only way to reach them both: `jobs.<id>.with` resolves
+  # `needs`, `matrix` and `vars`, but not a workflow-level `env`.
+  config:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    runs-on: ubuntu-latest
+    outputs:
+      xcode-version: ${{ steps.versions.outputs.xcode }}
+
+    steps:
+      # The e2e job has to run the same Xcode the app was built with, so its
+      # simulator runtime matches the SDK.
+      - name: Pin versions
+        id: versions
+        run: echo "xcode=26.6" >> "$GITHUB_OUTPUT"
+
   expo-example:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
+    needs: config
 
     uses: ./.github/workflows/ios-build.yml
     with:
       app: expo-example
       scheme: ExpoExample
       artifact-name: ios-app-expo-example
-      xcode-version: '26.4.1'
+      xcode-version: ${{ needs.config.outputs.xcode-version }}
+
+  e2e:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    needs: [config, expo-example]
+
+    uses: ./.github/workflows/ios-e2e.yml
+    with:
+      artifact-name: ios-app-expo-example
+      xcode-version: ${{ needs.config.outputs.xcode-version }}
