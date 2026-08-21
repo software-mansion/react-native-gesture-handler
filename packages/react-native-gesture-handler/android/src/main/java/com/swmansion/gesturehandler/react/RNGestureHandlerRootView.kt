@@ -18,7 +18,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var moduleId: Int = -1
   private var rootViewEnabled = false
   private var unstableForceActive = false
-  private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+  private var rootHelper: RNGestureHandlerRootHelper? = null
 
   val orchestrator: GestureHandlerOrchestrator?
     get() = rootHelper?.orchestrator
