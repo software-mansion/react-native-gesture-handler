@@ -22,6 +22,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private var shouldIntercept = false
   private var wasIntercepting = false
   private var passingTouch = false
+  private var passingNativeTouch = false
   private var nativeTouchGrabRequested = false
 
   init {
@@ -122,9 +123,17 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     if (orchestrator != null && !passingTouch) {
       // if we are in the process of delivering touch events via GH orchestrator, we don't want to
       // treat it as a native gesture capturing the lock
-      nativeTouchGrabRequested = true
+      if (passingNativeTouch) {
+        // Requests may also arrive outside any dispatch pass (e.g. RN's JS responder). Those have
+        // no pass to classify against and must not arm the sweep for a future gesture.
+        nativeTouchGrabRequested = true
+      }
       orchestrator.cancelAllLegacyHandlers()
     }
+  }
+
+  fun onNativeDispatchStart() {
+    passingNativeTouch = true
   }
 
   /**
@@ -133,6 +142,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
    * be told apart after the native dispatch completes, so cancellation runs here, not at request time.
    */
   fun onNativeDispatchEnd(event: MotionEvent) {
+    passingNativeTouch = false
+
     if (nativeTouchGrabRequested) {
       nativeTouchGrabRequested = false
 
