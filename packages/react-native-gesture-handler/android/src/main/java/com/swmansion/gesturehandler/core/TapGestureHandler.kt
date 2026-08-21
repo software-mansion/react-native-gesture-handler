@@ -26,7 +26,7 @@ class TapGestureHandler : GestureHandler() {
   private var offsetY = 0f
   private var lastX = 0f
   private var lastY = 0f
-  private var handler: Handler? = null
+  private val handler = Handler(Looper.getMainLooper())
   private var tapsSoFar = 0
   private val failDelayed = Runnable { fail() }
 
@@ -47,24 +47,16 @@ class TapGestureHandler : GestureHandler() {
   }
 
   private fun startTap() {
-    if (handler == null) {
-      handler = Handler(Looper.getMainLooper()) // TODO: lazy init (handle else branch correctly)
-    } else {
-      handler!!.removeCallbacksAndMessages(null)
-    }
-    handler!!.postDelayed(failDelayed, maxDurationMs)
+    handler.removeCallbacksAndMessages(null)
+    handler.postDelayed(failDelayed, maxDurationMs)
   }
 
   private fun endTap() {
-    if (handler == null) {
-      handler = Handler(Looper.getMainLooper())
-    } else {
-      handler!!.removeCallbacksAndMessages(null)
-    }
+    handler.removeCallbacksAndMessages(null)
     if (++tapsSoFar == numberOfTaps && currentMaxNumberOfPointers >= minNumberOfPointers) {
       activate()
     } else {
-      handler!!.postDelayed(failDelayed, maxDelayMs)
+      handler.postDelayed(failDelayed, maxDelayMs)
     }
   }
 
@@ -139,13 +131,13 @@ class TapGestureHandler : GestureHandler() {
   }
 
   override fun onCancel() {
-    handler?.removeCallbacksAndMessages(null)
+    handler.removeCallbacksAndMessages(null)
   }
 
   override fun onReset() {
     tapsSoFar = 0
     currentMaxNumberOfPointers = 0
-    handler?.removeCallbacksAndMessages(null)
+    handler.removeCallbacksAndMessages(null)
   }
 
   class Factory : GestureHandler.Factory<TapGestureHandler>() {
