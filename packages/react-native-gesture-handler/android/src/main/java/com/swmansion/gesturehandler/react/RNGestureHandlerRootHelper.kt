@@ -117,7 +117,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
   fun requestDisallowInterceptTouchEvent() {
     // If this method gets called it means that some native view is attempting to grab lock for
-    // touch event delivery. In that case we cancel all gesture recognizers
+    // touch event delivery. Legacy handlers are cancelled right away; handlers opting into
+    // native-touch-grab cancellation are deferred to `onNativeDispatchEnd`.
     if (orchestrator != null && !passingTouch) {
       // if we are in the process of delivering touch events via GH orchestrator, we don't want to
       // treat it as a native gesture capturing the lock
