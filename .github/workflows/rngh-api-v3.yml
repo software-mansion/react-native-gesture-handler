@@ -5,7 +5,7 @@ on:
     paths:
       - packages/react-native-gesture-handler/src/v3/**
       - packages/react-native-gesture-handler/src/__tests__/RelationsTraversal.test.tsx
-      - packages/react-native-gesture-handler/src/__tests__/API_V3.test.tsx
+      - packages/react-native-gesture-handler/src/__tests__/api_v3.test.tsx
   push:
     branches:
       - main
@@ -35,4 +35,4 @@ jobs:
 
       - name: Run tests
         working-directory: packages/react-native-gesture-handler
-        run: yarn test RelationsTraversal API_V3
+        run: yarn test RelationsTraversal api_v3
