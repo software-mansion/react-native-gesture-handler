@@ -116,7 +116,9 @@ module.exports = function swmGeoPlugin(context) {
           {
             tagName: 'script',
             attributes: { type: 'application/ld+json' },
-            innerHTML: JSON.stringify(buildStructuredData(context.siteConfig)),
+            innerHTML: JSON.stringify(
+              buildStructuredData(context.siteConfig),
+            ).replace(/</g, '\\u003c'),
           },
         ],
       };
