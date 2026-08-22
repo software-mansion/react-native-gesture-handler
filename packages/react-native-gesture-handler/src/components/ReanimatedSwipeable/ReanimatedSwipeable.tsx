@@ -48,13 +48,17 @@ const DEFAULT_ENABLE_TRACKING_TWO_FINGER_GESTURE = false;
 
 function useEventCallback<Args extends unknown[]>(
   callback: ((...args: Args) => void) | undefined
-) {
+): ((...args: Args) => void) | undefined {
   const callbackRef = useRef(callback);
   callbackRef.current = callback;
 
-  return useCallback((...args: Args) => {
+  const stableCallback = useCallback((...args: Args) => {
     callbackRef.current?.(...args);
   }, []);
+
+  // Keep a stable wrapper only while a user callback exists, so the existing
+  // truthiness checks can still skip `scheduleOnRN` when the prop is absent.
+  return callback ? stableCallback : undefined;
 }
 
 const Swipeable = (props: SwipeableProps) => {

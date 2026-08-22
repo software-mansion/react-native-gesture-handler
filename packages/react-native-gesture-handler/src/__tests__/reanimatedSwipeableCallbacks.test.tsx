@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
+import { scheduleOnRN } from 'react-native-worklets';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import type {
@@ -45,9 +46,10 @@ jest.mock('react-native-reanimated', () => {
 
 jest.mock('react-native-worklets', () => ({
   isWorkletRuntime: () => false,
-  scheduleOnRN: (fn: (...args: unknown[]) => void, ...args: unknown[]) =>
-    fn(...args),
-  scheduleOnUI: (fn: () => void) => fn(),
+  scheduleOnRN: jest.fn(
+    (fn: (...args: unknown[]) => void, ...args: unknown[]) => fn(...args)
+  ),
+  scheduleOnUI: jest.fn((fn: () => void) => fn()),
 }));
 
 async function flushNativeOps() {
@@ -116,6 +118,7 @@ describe('ReanimatedSwipeable callback identity', () => {
       RNGestureHandlerModule,
       'setGestureHandlerConfig'
     );
+    jest.mocked(scheduleOnRN).mockClear();
   });
 
   afterEach(() => {
@@ -159,5 +162,22 @@ describe('ReanimatedSwipeable callback identity', () => {
     swipeableRef.current?.close();
     expect(first.onSwipeableWillClose).toHaveBeenCalledTimes(1);
     expect(second.onSwipeableWillClose).toHaveBeenCalledTimes(1);
+  });
+
+  test('does not schedule JS work when event callbacks are absent', () => {
+    const swipeableRef = React.createRef<SwipeableMethods>();
+
+    render(
+      <GestureHandlerRootView>
+        <ReanimatedSwipeable
+          ref={swipeableRef}
+          renderRightActions={() => <Text>Delete</Text>}>
+          <Text>Row</Text>
+        </ReanimatedSwipeable>
+      </GestureHandlerRootView>
+    );
+
+    swipeableRef.current?.close();
+    expect(scheduleOnRN).not.toHaveBeenCalled();
   });
 });
