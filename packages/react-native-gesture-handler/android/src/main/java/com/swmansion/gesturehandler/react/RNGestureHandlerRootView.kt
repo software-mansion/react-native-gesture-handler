@@ -62,7 +62,10 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     return if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
       true
     } else {
-      super.dispatchTouchEvent(event)
+      rootHelper?.onNativeDispatchStart()
+      val handled = super.dispatchTouchEvent(event)
+      rootHelper?.onNativeDispatchEnd(event)
+      handled
     }
   }
 

@@ -22,6 +22,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private var shouldIntercept = false
   private var wasIntercepting = false
   private var passingTouch = false
+  private var passingNativeTouch = false
+  private var nativeTouchGrabRequested = false
 
   init {
     val registry =
@@ -116,11 +118,43 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
   fun requestDisallowInterceptTouchEvent() {
     // If this method gets called it means that some native view is attempting to grab lock for
-    // touch event delivery. In that case we cancel all gesture recognizers
+    // touch event delivery. Legacy handlers are cancelled right away; handlers opting into
+    // native-touch-grab cancellation are deferred to `onNativeDispatchEnd`.
     if (orchestrator != null && !passingTouch) {
       // if we are in the process of delivering touch events via GH orchestrator, we don't want to
       // treat it as a native gesture capturing the lock
+      if (passingNativeTouch) {
+        // Requests may also arrive outside any dispatch pass (e.g. RN's JS responder). Those have
+        // no pass to classify against and must not arm the sweep for a future gesture.
+        nativeTouchGrabRequested = true
+      }
       orchestrator.cancelAllLegacyHandlers()
+    }
+  }
+
+  fun onNativeDispatchStart() {
+    passingNativeTouch = true
+  }
+
+  /**
+   * Deferred handling of a disallow-intercept request recorded during this dispatch pass. The
+   * request alone doesn't say what the caller did with the event: a scrollable calls it when it
+   * takes over the touch, but e.g. a nested pager calls it already on DOWN, just to keep its
+   * ancestors from stealing a swipe it may recognize later, and the event still reaches the
+   * button - at request time both calls look identical. They only become
+   * distinguishable once the native dispatch completes (did the button receive the DOWN?), which
+   * is why cancellation runs here instead of in `requestDisallowInterceptTouchEvent`.
+   */
+  fun onNativeDispatchEnd(event: MotionEvent) {
+    passingNativeTouch = false
+
+    if (nativeTouchGrabRequested) {
+      nativeTouchGrabRequested = false
+
+      val grabbedMidGesture = event.actionMasked != MotionEvent.ACTION_DOWN &&
+        event.actionMasked != MotionEvent.ACTION_POINTER_DOWN
+
+      orchestrator?.cancelHandlersOnNativeTouchGrab(grabbedMidGesture)
     }
   }
 
