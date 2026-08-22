@@ -279,7 +279,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (BOOL)canCoalesce
 {
-  // TODO: event coalescing
   return NO;
 }
 
