@@ -4,6 +4,7 @@ import {
   useImperativeHandle,
   ForwardedRef,
   useState,
+  useRef,
 } from 'react';
 import { LayoutChangeEvent, View, I18nManager, StyleSheet } from 'react-native';
 import Animated, {
@@ -42,6 +43,21 @@ const DEFAULT_OVERSHOOT_FRICTION = 1;
 const DEFAULT_DRAG_OFFSET = 10;
 const DEFAULT_ENABLE_TRACKING_TWO_FINGER_GESTURE = false;
 
+function useEventCallback<Args extends unknown[]>(
+  callback: ((...args: Args) => void) | undefined
+): ((...args: Args) => void) | undefined {
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+
+  const stableCallback = useCallback((...args: Args) => {
+    callbackRef.current?.(...args);
+  }, []);
+
+  // Keep a stable wrapper only while a user callback exists, so the existing
+  // truthiness checks can still skip `runOnJS` when the prop is absent.
+  return callback ? stableCallback : undefined;
+}
+
 const Swipeable = (props: SwipeableProps) => {
   const {
     ref,
@@ -60,12 +76,12 @@ const Swipeable = (props: SwipeableProps) => {
     dragOffsetFromRightEdge = DEFAULT_DRAG_OFFSET,
     friction = DEFAULT_FRICTION,
     overshootFriction = DEFAULT_OVERSHOOT_FRICTION,
-    onSwipeableOpenStartDrag,
-    onSwipeableCloseStartDrag,
-    onSwipeableWillOpen,
-    onSwipeableWillClose,
-    onSwipeableOpen,
-    onSwipeableClose,
+    onSwipeableOpenStartDrag: onSwipeableOpenStartDragProp,
+    onSwipeableCloseStartDrag: onSwipeableCloseStartDragProp,
+    onSwipeableWillOpen: onSwipeableWillOpenProp,
+    onSwipeableWillClose: onSwipeableWillCloseProp,
+    onSwipeableOpen: onSwipeableOpenProp,
+    onSwipeableClose: onSwipeableCloseProp,
     renderLeftActions,
     renderRightActions,
     simultaneousWithExternalGesture,
@@ -87,6 +103,17 @@ const Swipeable = (props: SwipeableProps) => {
       simultaneousWithExternalGesture,
     ]
   );
+
+  const onSwipeableOpenStartDrag = useEventCallback(
+    onSwipeableOpenStartDragProp
+  );
+  const onSwipeableCloseStartDrag = useEventCallback(
+    onSwipeableCloseStartDragProp
+  );
+  const onSwipeableWillOpen = useEventCallback(onSwipeableWillOpenProp);
+  const onSwipeableWillClose = useEventCallback(onSwipeableWillCloseProp);
+  const onSwipeableOpen = useEventCallback(onSwipeableOpenProp);
+  const onSwipeableClose = useEventCallback(onSwipeableCloseProp);
 
   const [shouldEnableTap, setShouldEnableTap] = useState(false);
   const rowState = useSharedValue<number>(0);
