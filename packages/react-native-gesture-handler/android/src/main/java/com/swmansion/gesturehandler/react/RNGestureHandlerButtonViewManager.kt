@@ -748,7 +748,10 @@ class RNGestureHandlerButtonViewManager :
       val localLastEventWasInside = lastEventWasInside
 
       if (newState == GestureHandler.STATE_BEGAN) {
-        // Reset for the new gesture - BEGAN precedes the native dispatch of DOWN that sets the flag.
+        // Reset here, not on gesture end: the native DOWN sets the flag even when the orchestrator
+        // never tracks the handler (disabled button, alpha below the traversal threshold), so a
+        // terminal state may never come and the stale value would survive. BEGAN precedes both the
+        // native dispatch of the same DOWN and the sweep that reads the flag.
         receivedNativeDown = false
         dispatchJSEvent(EventType.PressIn, handler)
         longPressDetected = false
