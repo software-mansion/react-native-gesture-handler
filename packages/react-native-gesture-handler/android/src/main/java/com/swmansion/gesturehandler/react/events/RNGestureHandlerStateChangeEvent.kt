@@ -47,10 +47,8 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     EVENT_NAME
   }
 
-  // TODO: coalescing
   override fun canCoalesce() = false
 
-  // TODO: coalescing
   override fun getCoalescingKey(): Short = 0
 
   override fun getEventData(): WritableMap = if (GestureHandler.usesNativeOrVirtualDetector(actionType)) {

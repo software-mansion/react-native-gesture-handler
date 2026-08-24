@@ -32,7 +32,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public override readonly isContinuous = true;
   private role: NativeGestureRole | null = null;
 
-  // TODO: Implement logic for activation on start properly
+  // Documented as Android-only; on web it's used internally for the Button
+  // role, while other roles intentionally activate on real interaction.
   private shouldActivateOnStart = false;
   private disallowInterruption = false;
   private yieldsToContinuousGestures = false;
