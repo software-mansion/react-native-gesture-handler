@@ -44,15 +44,24 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-jest.mock('react-native-worklets', () => ({
-  isWorkletRuntime: () => false,
-  scheduleOnRN: jest.fn(
-    (fn: (...args: unknown[]) => void, ...args: unknown[]) => fn(...args)
-  ),
-  scheduleOnUI: jest.fn((fn: () => void) => fn()),
-}));
+jest.mock('react-native-worklets', () => {
+  const WorkletsMock = jest.requireActual<
+    Record<string, unknown> & { scheduleOnRN: typeof scheduleOnRN }
+  >('react-native-worklets/src/mock');
+
+  return {
+    ...WorkletsMock,
+    scheduleOnRN: jest.fn(WorkletsMock.scheduleOnRN),
+  };
+});
 
 async function flushNativeOps() {
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, 0);
+  });
+  await new Promise<void>((resolve) => {
+    queueMicrotask(resolve);
+  });
   await new Promise<void>((resolve) => {
     setImmediate(resolve);
   });
@@ -138,7 +147,7 @@ describe('ReanimatedSwipeable callback identity', () => {
     expect(setConfigSpy.mock.calls.length).toBe(callsAfterMount);
   });
 
-  test('invokes the latest event callbacks after a callback-only rerender', () => {
+  test('invokes the latest event callbacks after a callback-only rerender', async () => {
     const first = {
       ...inlineCallbacks(),
       onSwipeableWillClose: jest.fn(),
@@ -154,17 +163,19 @@ describe('ReanimatedSwipeable callback identity', () => {
     );
 
     swipeableRef.current?.close();
+    await flushNativeOps();
     expect(first.onSwipeableWillClose).toHaveBeenCalledTimes(1);
     expect(second.onSwipeableWillClose).not.toHaveBeenCalled();
 
     rerender(<SwipeableRow {...second} swipeableRef={swipeableRef} />);
 
     swipeableRef.current?.close();
+    await flushNativeOps();
     expect(first.onSwipeableWillClose).toHaveBeenCalledTimes(1);
     expect(second.onSwipeableWillClose).toHaveBeenCalledTimes(1);
   });
 
-  test('does not schedule JS work when event callbacks are absent', () => {
+  test('does not schedule JS work when event callbacks are absent', async () => {
     const swipeableRef = React.createRef<SwipeableMethods>();
 
     render(
@@ -178,6 +189,7 @@ describe('ReanimatedSwipeable callback identity', () => {
     );
 
     swipeableRef.current?.close();
+    await flushNativeOps();
     expect(scheduleOnRN).not.toHaveBeenCalled();
   });
 });
