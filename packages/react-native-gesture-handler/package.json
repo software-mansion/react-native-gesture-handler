@@ -35,7 +35,6 @@
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
     "android/src/main/jni/",
-    "android/common/src/main/java/",
     "android/reanimated/src/main/java/",
     "android/noreanimated/src/main/java/",
     "android/svg",
