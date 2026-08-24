@@ -24,6 +24,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { execSync } = require('node:child_process');
 
+const { walk } = require('./fs-walk');
+
 const repoRoot = path.resolve(__dirname, '..');
 // npm runs lifecycle scripts with cwd set to the package being packed.
 const pkgDir = process.cwd();
@@ -59,17 +61,6 @@ function copyTree(from, to, filter = () => true) {
       copyTree(src, dst, filter);
     } else {
       fs.copyFileSync(src, dst);
-    }
-  }
-}
-
-function walk(dir, fn) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const p = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      walk(p, fn);
-    } else {
-      fn(p);
     }
   }
 }

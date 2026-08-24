@@ -1,3 +1,1 @@
-import React from 'react';
-
-export default React.createContext(false);
+export { default } from '@swmansion/gesture-handler-core/src/GestureHandlerRootViewContext';

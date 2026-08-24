@@ -1,1 +1,1 @@
-export type ValueOf<T> = T[keyof T];
+export * from '@swmansion/gesture-handler-core/src/typeUtils';

@@ -4383,6 +4383,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swmansion/gesture-handler-core@workspace:packages/gesture-handler-core, @swmansion/gesture-handler-core@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@swmansion/gesture-handler-core@workspace:packages/gesture-handler-core"
+  dependencies:
+    typescript: "npm:~6.0.3"
+  peerDependencies:
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@swmansion/icons@npm:^0.0.1":
   version: 0.0.1
   resolution: "@swmansion/icons@npm:0.0.1"
@@ -13570,6 +13580,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.12.7"
     "@react-native/babel-preset": "npm:0.87.0"
     "@react-native/jest-preset": "npm:0.87.0"
+    "@swmansion/gesture-handler-core": "workspace:~"
     "@testing-library/react-native": "npm:^12.5.1"
     "@types/invariant": "npm:^2.2.37"
     "@types/jest": "npm:^29.5.12"

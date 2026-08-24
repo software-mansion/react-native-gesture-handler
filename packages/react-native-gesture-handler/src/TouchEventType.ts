@@ -1,11 +1,1 @@
-export const TouchEventType = {
-  UNDETERMINED: 0,
-  TOUCHES_DOWN: 1,
-  TOUCHES_MOVE: 2,
-  TOUCHES_UP: 3,
-  TOUCHES_CANCEL: 4,
-} as const;
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; it can be used as a type and as a value
-export type TouchEventType =
-  (typeof TouchEventType)[keyof typeof TouchEventType];
+export * from '@swmansion/gesture-handler-core/src/TouchEventType';

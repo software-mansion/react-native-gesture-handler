@@ -9,6 +9,8 @@ const os = require('node:os');
 const path = require('node:path');
 const { execSync } = require('node:child_process');
 
+const { walk } = require('./fs-walk');
+
 const repoRoot = path.resolve(__dirname, '..');
 const SCOPE_PREFIX = '@swmansion/gesture-handler-';
 
@@ -95,29 +97,18 @@ for (const name of internal) {
 
 // 3. Leak gate over every file in the artifact (manifest included).
 let files = 0;
-function walk(dir) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const p = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      walk(p);
-    } else {
-      files++;
-      const content = fs.readFileSync(p, 'utf8');
-      if (content.includes(SCOPE_PREFIX)) {
-        failures.push(
-          `leaked ${SCOPE_PREFIX}* specifier in ${path.relative(root, p)}`
-        );
-      }
-      if (
-        p.endsWith(`${path.sep}package.json`) &&
-        content.includes('workspace:')
-      ) {
-        failures.push(`workspace: protocol in ${path.relative(root, p)}`);
-      }
-    }
+walk(root, (p) => {
+  files++;
+  const content = fs.readFileSync(p, 'utf8');
+  if (content.includes(SCOPE_PREFIX)) {
+    failures.push(
+      `leaked ${SCOPE_PREFIX}* specifier in ${path.relative(root, p)}`
+    );
   }
-}
-walk(root);
+  if (p.endsWith(`${path.sep}package.json`) && content.includes('workspace:')) {
+    failures.push(`workspace: protocol in ${path.relative(root, p)}`);
+  }
+});
 
 fs.rmSync(tmp, { recursive: true, force: true });
 

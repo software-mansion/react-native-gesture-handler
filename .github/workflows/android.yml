@@ -9,6 +9,7 @@ on:
       - packages/react-native-gesture-handler/android/**
       - packages/react-native-gesture-handler/shared/**
       - packages/react-native-gesture-handler/src/**
+      - packages/gesture-handler-core/src/**
       - apps/expo-example/**
       - apps/common-app/**
       - rnrepo.config.json
