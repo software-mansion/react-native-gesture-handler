@@ -40,12 +40,9 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-jest.mock('react-native-worklets', () => ({
-  scheduleOnRN: jest.fn(
-    (callback: (...args: unknown[]) => void, ...args: unknown[]) =>
-      callback(...args)
-  ),
-}));
+jest.mock('react-native-worklets', () =>
+  jest.requireActual<Record<string, unknown>>('react-native-worklets/src/mock')
+);
 
 jest.mock('../v3/detectors', () => ({
   InterceptingGestureDetector: ({ children }: { children: React.ReactNode }) =>
@@ -78,6 +75,17 @@ function Drawer({
   );
 }
 
+async function openDrawer(
+  drawerRef: React.RefObject<DrawerLayoutMethods | null>
+) {
+  await act(async () => {
+    drawerRef.current?.openDrawer();
+    await new Promise<void>((resolve) => {
+      queueMicrotask(resolve);
+    });
+  });
+}
+
 describe('ReanimatedDrawerLayout animation speed', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -89,7 +97,7 @@ describe('ReanimatedDrawerLayout animation speed', () => {
       <Drawer animationSpeed={2} drawerRef={drawerRef} />
     );
 
-    await act(() => drawerRef.current?.openDrawer());
+    await openDrawer(drawerRef);
     expect(jest.mocked(withSpring).mock.calls.at(-1)?.[1]).toEqual(
       expect.objectContaining({ mass: 0.5 })
     );
@@ -97,7 +105,7 @@ describe('ReanimatedDrawerLayout animation speed', () => {
     jest.mocked(withSpring).mockClear();
     rerender(<Drawer animationSpeed={4} drawerRef={drawerRef} />);
 
-    await act(() => drawerRef.current?.openDrawer());
+    await openDrawer(drawerRef);
     expect(jest.mocked(withSpring).mock.calls.at(-1)?.[1]).toEqual(
       expect.objectContaining({ mass: 0.25 })
     );
