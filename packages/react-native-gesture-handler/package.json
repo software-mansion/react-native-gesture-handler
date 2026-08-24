@@ -16,8 +16,8 @@
     "lint:android": "./android/gradlew -p android spotlessCheck -q",
     "circular-dependency-check": "yarn madge --extensions js,ts,tsx --circular src",
     "clean": "rm -rf node_modules android/build android/.cxx",
-    "prepack": "cp ../../README.md ./README.md",
-    "postpack": "rm ./README.md"
+    "prepack": "node ../../scripts/vendor-for-pack.js prepack",
+    "postpack": "node ../../scripts/vendor-for-pack.js postpack"
   },
   "react-native": "src/index.ts",
   "main": "lib/module/index.js",
