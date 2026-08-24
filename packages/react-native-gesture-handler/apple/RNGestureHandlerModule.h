@@ -10,5 +10,6 @@
     : RCTEventEmitter <NativeRNGestureHandlerModuleSpec, RCTJSDispatcherModule, RCTInitializing>
 
 + (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId;
++ (BOOL)hasModuleWithId:(int)moduleId;
 
 @end

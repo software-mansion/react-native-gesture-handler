@@ -1,0 +1,33 @@
+name: Issue triage comments
+
+on:
+  issues:
+    types: [labeled, unlabeled]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  comment:
+    if: >-
+      ${{ github.repository == 'software-mansion/react-native-gesture-handler'
+      && contains(fromJSON('["Missing repro", "Missing info"]'), github.event.label.name) }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: triage-comment-${{ github.event.issue.number }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout triage script
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: Post or retract triage response
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const triage = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/issue-triage-comments.js`);
+            await triage({ github, context, core });

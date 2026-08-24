@@ -10,7 +10,6 @@ import Playground from '@site/src/components/Playground';
 import TouchableShowcase from '@site/src/components/TouchableShowcase';
 import GestureFeatures from '@site/src/components/GestureFeatures';
 import Testimonials from '@site/src/components/Testimonials';
-import Sponsors from '@site/src/components/Sponsors';
 import { HireUsSection } from '@swmansion/t-rex-ui';
 
 function Home() {
@@ -33,7 +32,6 @@ function Home() {
       <div className={styles.container}>
         <GestureFeatures />
         <Testimonials />
-        <Sponsors />
         <HireUsSection
           href={
             'https://swmansion.com/contact/projects?utm_source=gesture-handler&utm_medium=docs'

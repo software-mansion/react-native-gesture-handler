@@ -1,0 +1,51 @@
+steps:
+  - echo: Launching Expo Example
+  - launch: com.example.ExpoExample
+  - await: { visible: { text: "Empty Example" }, timeout: 15000 }
+  - echo: "On the Home list, search for long press example"
+  - type: { text: "long", into: { id: "search-examples" } }
+  - echo: "Tap the example to open it"
+  - tap: "Basic LongPress"
+  - echo: "Clear console"
+  - await: { visible: "open-console-button" }
+  - await: { idle: true }
+  - tap: "open-console-button"
+  - await: { visible: "clear-console-button" }
+  - tap: "clear-console-button"
+  - tap: "close-console-button"
+  - await: { idle: true }
+  - echo: "Long press the box and check if long press count is updated"
+  - await: { visible: "Long press count: 0" }
+  - assert: { visible: "long-press-box" }
+  - long-press: "long-press-box"
+  - assert: { visible: "Long press count: 1" }
+  - echo: "Check if console logs are printed in order"
+  - tap: "open-console-button"
+  - await: { idle: true }
+  - await: { visible: "close-console-button" }
+  - assert: { visible: "1. onBegin" }
+  - assert: { visible: "2. onActivate" }
+  - assert: { visible: "3. onDeactivate" }
+  - assert: { visible: "4. onFinalize" }
+  - tap: "close-console-button"
+  - await: { idle: true }
+  - await: { visible: "Long press count: 1" }
+  - echo: "Long press the box again and check if long press count is updated"
+  - long-press: "long-press-box"
+  - assert: { visible: "Long press count: 2" }
+  - echo: "Clear console"
+  - await: { visible: "open-console-button" }
+  - tap: "open-console-button"
+  - await: { visible: "clear-console-button" }
+  - tap: "clear-console-button"
+  - tap: "close-console-button"
+  - await: { idle: true }
+  - echo: "Tap the box and check if long press count is not updated"
+  - tap: "long-press-box"
+  - assert: { visible: "Long press count: 2" }
+  - echo: "Check if console logs are printed in order"
+  - tap: "open-console-button"
+  - await: { idle: true }
+  - await: { visible: "close-console-button" }
+  - assert: { visible: "9. onBegin" }
+  - assert: { visible: "10. onFinalize" }

@@ -60,7 +60,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
   private var averageTouches = false
   private var activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
   private val activateDelayed = Runnable { activate() }
-  private var handler: Handler? = null
+  private val handler = Handler(Looper.getMainLooper())
   var stylusData: StylusData = StylusData()
     private set
 
@@ -140,7 +140,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     val dy = lastY - startY + offsetY
 
     if (activateAfterLongPress > 0 && dx * dx + dy * dy > defaultMinDist * defaultMinDist) {
-      handler?.removeCallbacksAndMessages(null)
+      handler.removeCallbacksAndMessages(null)
       return true
     }
     if (failOffsetXStart != MAX_VALUE_IGNORE && dx < failOffsetXStart) {
@@ -200,10 +200,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
       begin()
 
       if (activateAfterLongPress > 0) {
-        if (handler == null) {
-          handler = Handler(Looper.getMainLooper())
-        }
-        handler!!.postDelayed(activateDelayed, activateAfterLongPress)
+        handler.postDelayed(activateDelayed, activateAfterLongPress)
       }
     } else if (velocityTracker != null) {
       addVelocityMovement(velocityTracker, sourceEvent)
@@ -252,11 +249,11 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
   }
 
   override fun onCancel() {
-    handler?.removeCallbacksAndMessages(null)
+    handler.removeCallbacksAndMessages(null)
   }
 
   override fun onReset() {
-    handler?.removeCallbacksAndMessages(null)
+    handler.removeCallbacksAndMessages(null)
     velocityTracker?.let {
       it.recycle()
       velocityTracker = null

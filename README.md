@@ -67,13 +67,6 @@ Read more on that here <https://github.com/mikehardy/jetifier#to-reverse-jetify-
 
 Gesture handler library is licensed under [The MIT License](LICENSE).
 
-## Credits
-
-This project has been build and is maintained thanks to the support from [Expo.io](https://expo.io) and [Software Mansion](https://swmansion.com)
-
-[![expo](https://avatars2.githubusercontent.com/u/12504344?v=3&s=100 'Expo.io')](https://expo.io)
-[![swm](https://logo.swmansion.com/logo?color=white&variant=desktop&width=150&tag=react-native-reanimated-github 'Software Mansion')](https://swmansion.com)
-
 ## Community Discord
 
 [Join the Software Mansion Community Discord](https://discord.swmansion.com) to chat about Gesture Handler or other Software Mansion libraries.

@@ -9,12 +9,20 @@ import type {
 } from '../../types';
 import { containsDuplicates, isComposedGesture } from '../utils';
 
-// TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(
   type: ComposedGestureName,
   ...gestures: AnyGesture[]
 ): ComposedGesture {
-  const handlerTags = gestures.flatMap((gesture) =>
+  // Nesting compositions of the same type is redundant, e.g. Simultaneous(a, Simultaneous(b, c))
+  // is equivalent to Simultaneous(a, b, c). Same-type children are inlined to keep the tree shallow.
+  // They come from this hook, so they are already flattened themselves.
+  const flattenedGestures = gestures.flatMap((gesture) =>
+    isComposedGesture(gesture) && gesture.type === type
+      ? gesture.gestures
+      : [gesture]
+  );
+
+  const handlerTags = flattenedGestures.flatMap((gesture) =>
     isComposedGesture(gesture) ? gesture.handlerTags : [gesture.handlerTag]
   );
 
@@ -27,10 +35,10 @@ export function useComposedGesture(
   }
 
   const config: ComposedGestureConfig = {
-    shouldUseReanimatedDetector: gestures.some(
+    shouldUseReanimatedDetector: flattenedGestures.some(
       (gesture) => gesture.config.shouldUseReanimatedDetector
     ),
-    dispatchesAnimatedEvents: gestures.some(
+    dispatchesAnimatedEvents: flattenedGestures.some(
       (gesture) => gesture.config.dispatchesAnimatedEvents
     ),
   };
@@ -46,7 +54,7 @@ export function useComposedGesture(
   const jsEventHandler = (
     event: GestureHandlerEventWithHandlerData<unknown, unknown>
   ) => {
-    for (const gesture of gestures) {
+    for (const gesture of flattenedGestures) {
       if (gesture.detectorCallbacks.jsEventHandler) {
         gesture.detectorCallbacks.jsEventHandler(event);
       }
@@ -54,14 +62,14 @@ export function useComposedGesture(
   };
 
   const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
-    gestures.map(
+    flattenedGestures.map(
       (gesture) => gesture.detectorCallbacks.reanimatedEventHandler || null
     )
   );
 
   let animatedEventHandler;
 
-  const gesturesWithAnimatedEvent = gestures.filter(
+  const gesturesWithAnimatedEvent = flattenedGestures.filter(
     (gesture) => gesture.detectorCallbacks.animatedEventHandler !== undefined
   );
 
@@ -88,6 +96,6 @@ export function useComposedGesture(
       animatedEventHandler,
     },
     externalSimultaneousHandlers: [],
-    gestures,
+    gestures: flattenedGestures,
   };
 }

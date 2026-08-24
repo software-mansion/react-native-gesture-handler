@@ -1,5 +1,3 @@
-// TODO use State from RNModule
-
 export const State = {
   UNDETERMINED: 0,
   FAILED: 1,

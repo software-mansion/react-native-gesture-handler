@@ -208,3 +208,49 @@ button[class*='DocSearch-Button'] {
 [data-theme='light'] [class*='_badge_'][class*='_deprecated_'] {
   border-color: rgba(90, 100, 134, 0.26);
 }
+
+footer.footer {
+  --ifm-footer-padding-vertical: 35px;
+}
+
+@media (max-width: 996px) {
+  footer.footer {
+    --ifm-footer-padding-vertical: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  footer.footer {
+    --ifm-footer-padding-vertical: 15px;
+  }
+}
+
+footer .footer__bottom [class*='footer__copyright'] {
+  justify-content: center;
+  padding-bottom: var(--swm-footer-copyright-padding-bottom);
+}
+
+footer .footer__bottom [class*='footer__copyright'] p {
+  text-align: center;
+}
+
+footer .footer__bottom [class*='footer__copyright'] p a[data-privacy-policy] {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+footer
+  .footer__bottom
+  [class*='footer__copyright']
+  p
+  a[data-privacy-policy]:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (max-width: 996px) {
+  footer .footer__bottom [class*='footer__copyright'] {
+    align-items: center;
+  }
+}

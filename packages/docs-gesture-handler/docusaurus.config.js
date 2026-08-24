@@ -153,6 +153,7 @@ const config = {
       },
     }),
   plugins: [
+    require('./plugins/swm-geo'),
     ...[
       process.env.NODE_ENV === 'production' && '@docusaurus/plugin-debug',
       process.env.NODE_ENV === 'production' && [
