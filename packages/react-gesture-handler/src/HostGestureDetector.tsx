@@ -250,13 +250,19 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     propsRef.current = props;
 
     if (shouldUpdateDOMProps) {
-      const claimedByVirtual = Array.from(
-        refs.subscribedVirtualHandlers.values()
-      ).reduce((acc, current) => acc.union(current), new Set<number>());
+      const claimedByVirtual = new Set<number>();
+      for (const handlers of refs.subscribedVirtualHandlers.values()) {
+        for (const tag of handlers) {
+          claimedByVirtual.add(tag);
+        }
+      }
 
-      const handlersToUpdate = refs.subscribedHandlers
-        .intersection(refs.attachedHandlers)
-        .difference(claimedByVirtual);
+      const handlersToUpdate = new Set<number>();
+      for (const tag of refs.subscribedHandlers) {
+        if (refs.attachedHandlers.has(tag) && !claimedByVirtual.has(tag)) {
+          handlersToUpdate.add(tag);
+        }
+      }
 
       for (const tag of handlersToUpdate) {
         WebModule.updateGestureHandlerConfig(tag, {
