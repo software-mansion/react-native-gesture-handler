@@ -57,6 +57,10 @@ In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbac
 
 ## Migrating relations
 
+> **Danger**
+>
+> Gesture relations cannot be set between hook-based API and previous APIs.
+
 ### Composed gestures
 
 Previously, composed gestures were created using `Gesture` object. In Gesture Handler 3, relations are set up using relation hooks.
