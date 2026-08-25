@@ -1,8 +1,8 @@
+import type { Gestures as WebGestures } from '@swmansion/gesture-handler-dom-engine/src/Gestures';
+import type { Config } from '@swmansion/gesture-handler-dom-engine/src/interfaces';
 import type React from 'react';
 
 import type { ActionType } from './ActionType';
-import type { Gestures as WebGestures } from './web/Gestures';
-import type { Config } from './web/interfaces';
 
 export const Gestures = {
   NativeViewGestureHandler: undefined,

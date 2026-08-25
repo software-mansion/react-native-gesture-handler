@@ -1,8 +1,8 @@
+import { isRNSVGNode } from '@swmansion/gesture-handler-dom-engine/src/utils';
 import type { LegacyRef, PropsWithChildren } from 'react';
 import React from 'react';
 
 import { tagMessage } from '../../../utils';
-import { isRNSVGNode } from '../../../web/utils';
 
 export const Wrap = ({
   ref,

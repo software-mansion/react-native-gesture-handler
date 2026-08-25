@@ -1,3 +1,12 @@
+import type { PropsRef } from '@swmansion/gesture-handler-dom-engine/src/interfaces';
+import { NativeGestureRole } from '@swmansion/gesture-handler-dom-engine/src/interfaces';
+import { ButtonEventName } from '@swmansion/gesture-handler-dom-engine/src/tools/ButtonEvents';
+import { GestureLifecycleEvent } from '@swmansion/gesture-handler-dom-engine/src/tools/GestureLifecycleEvents';
+import {
+  calculateViewScale,
+  getEffectiveBoundingRect,
+  PointerTypeMapping,
+} from '@swmansion/gesture-handler-dom-engine/src/utils';
 import * as React from 'react';
 import type { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 import { View } from 'react-native';
@@ -8,15 +17,6 @@ import { PointerType } from '../PointerType';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
 import type { ButtonEvent } from '../v3/types';
-import type { PropsRef } from '../web/interfaces';
-import { NativeGestureRole } from '../web/interfaces';
-import { ButtonEventName } from '../web/tools/ButtonEvents';
-import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
-import {
-  calculateViewScale,
-  getEffectiveBoundingRect,
-  PointerTypeMapping,
-} from '../web/utils';
 
 const prefersReducedMotion = (): boolean =>
   typeof window !== 'undefined' &&

@@ -1,8 +1,7 @@
+import { NATIVE_GESTURE_ROLE_ATTRIBUTE } from '@swmansion/gesture-handler-dom-engine/src/constants';
+import { NativeGestureRole } from '@swmansion/gesture-handler-dom-engine/src/interfaces';
 import type { ReactNode, RefObject } from 'react';
 import { useEffect } from 'react';
-
-import { NATIVE_GESTURE_ROLE_ATTRIBUTE } from '../../web/constants';
-import { NativeGestureRole } from '../../web/interfaces';
 
 export function useNativeGestureRole(
   viewRef: RefObject<Element | null>,

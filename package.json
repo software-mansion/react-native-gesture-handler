@@ -4,6 +4,7 @@
   "private": true,
   "workspaces": [
     "packages/gesture-handler-core",
+    "packages/gesture-handler-dom-engine",
     "packages/react-native-gesture-handler",
     "apps/basic-example",
     "apps/expo-example",

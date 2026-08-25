@@ -1,3 +1,4 @@
+import type { PropsRef } from '@swmansion/gesture-handler-dom-engine/src/interfaces';
 import type React from 'react';
 import { Platform } from 'react-native';
 
@@ -6,7 +7,6 @@ import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { MountRegistry } from '../../../mountRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../../../RNGestureHandlerModule.web';
-import type { PropsRef } from '../../../web/interfaces';
 import { registerHandler } from '../../handlersRegistry';
 import { filterConfig, scheduleFlushOperations } from '../../utils';
 import type { GestureType, HandlerCallbacks } from '../gesture';

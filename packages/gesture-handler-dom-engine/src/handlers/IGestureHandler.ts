@@ -1,0 +1,78 @@
+import type { ActionType } from '@swmansion/gesture-handler-core/src/ActionType';
+import type {
+  ActiveCursor,
+  MouseButton,
+  TouchAction,
+  UserSelect,
+} from '@swmansion/gesture-handler-core/src/handlers/gestureHandlerCommon';
+import type { PointerType } from '@swmansion/gesture-handler-core/src/PointerType';
+import type { State } from '@swmansion/gesture-handler-core/src/State';
+import type { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+import type { RefObject } from 'react';
+
+import type { Config, HostDetector, PropsRef } from '../interfaces';
+import type EventManager from '../tools/EventManager';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import type PointerTracker from '../tools/PointerTracker';
+
+export default interface IGestureHandler {
+  attached: boolean;
+  hostDetectorView: HostDetector | null;
+  active: boolean;
+  activationIndex: number;
+  awaiting: boolean;
+  handlerTag: number;
+  readonly testID?: string | undefined;
+  readonly delegate: GestureHandlerDelegate<unknown, this>;
+  readonly tracker: PointerTracker;
+  readonly name: SingleGestureName;
+  readonly isContinuous: boolean;
+  state: State;
+  shouldCancelWhenOutside: boolean;
+  shouldResetProgress: boolean;
+  readonly enabled: boolean | null;
+  readonly pointerType: PointerType;
+  enableContextMenu: boolean;
+  readonly activeCursor?: ActiveCursor | undefined;
+  readonly touchAction?: TouchAction | undefined;
+  readonly userSelect?: UserSelect | undefined;
+
+  usesNativeOrVirtualDetector: () => boolean;
+
+  attachEventManager: (manager: EventManager<unknown>) => void;
+
+  isButtonInConfig: (
+    mouseButton: MouseButton | undefined
+  ) => boolean | number | undefined;
+
+  getTrackedPointersID: () => number[];
+
+  begin: () => void;
+  activate: (force: boolean) => void;
+  end: () => void;
+  fail: () => void;
+  cancel: () => void;
+
+  init: (
+    viewRef: number,
+    propsRef: RefObject<PropsRef>,
+    actionType: ActionType,
+    hostDetector?: HostDetector | null
+  ) => void;
+  reset: () => void;
+  detach: () => void;
+
+  shouldWaitForHandlerFailure: (handler: IGestureHandler) => boolean;
+  shouldRequireToWaitForFailure: (handler: IGestureHandler) => boolean;
+  shouldRecognizeSimultaneously: (handler: IGestureHandler) => boolean;
+  shouldBeCancelledByOther: (handler: IGestureHandler) => boolean;
+  shouldBeginWithRecordedHandlers: (recorded: IGestureHandler[]) => boolean;
+  shouldAttachGestureToChildView: () => boolean;
+
+  sendEvent: (newState: State, oldState: State) => void;
+
+  setGestureConfig: (config: Config) => void;
+  updateGestureConfig: (config: Partial<Config>) => void;
+
+  isButton?: () => boolean;
+}

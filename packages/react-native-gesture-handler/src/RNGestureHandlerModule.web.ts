@@ -1,12 +1,17 @@
+import { Gestures } from '@swmansion/gesture-handler-dom-engine/src/Gestures';
+import type {
+  Config,
+  HostDetector,
+  PropsRef,
+} from '@swmansion/gesture-handler-dom-engine/src/interfaces';
+import { GestureHandlerWebDelegate } from '@swmansion/gesture-handler-dom-engine/src/tools/GestureHandlerWebDelegate';
+import InteractionManager from '@swmansion/gesture-handler-dom-engine/src/tools/InteractionManager';
+import NodeManager from '@swmansion/gesture-handler-dom-engine/src/tools/NodeManager';
 import React from 'react';
 
 import type { ActionType } from './ActionType';
+import findNodeHandle from './findNodeHandle.web';
 import type { GestureRelations } from './v3/types';
-import { Gestures } from './web/Gestures';
-import type { Config, HostDetector, PropsRef } from './web/interfaces';
-import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
-import InteractionManager from './web/tools/InteractionManager';
-import NodeManager from './web/tools/NodeManager';
 
 // init method is called inside attachGestureHandler function. However, this function may
 // fail when received view is not valid HTML element. On the other hand, dropGestureHandler
@@ -30,7 +35,11 @@ export default {
     const GestureClass = Gestures[handlerName];
     NodeManager.createGestureHandler(
       handlerTag,
-      new GestureClass(new GestureHandlerWebDelegate())
+      new GestureClass(
+        // rngh's findNodeHandle handles host-framework refs (the RNW FlatList
+        // branch) before falling back to the engine's generic resolution.
+        new GestureHandlerWebDelegate(findNodeHandle)
+      )
     );
     this.setGestureHandlerConfig(handlerTag, config as unknown as Config);
   },

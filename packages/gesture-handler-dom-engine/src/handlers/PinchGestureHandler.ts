@@ -1,0 +1,167 @@
+import type { ActionType } from '@swmansion/gesture-handler-core/src/ActionType';
+import { State } from '@swmansion/gesture-handler-core/src/State';
+import { SingleGestureName } from '@swmansion/gesture-handler-core/src/v3/types';
+
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import type { ScaleGestureListener } from '../detectors/ScaleGestureDetector';
+import ScaleGestureDetector from '../detectors/ScaleGestureDetector';
+import type { AdaptedEvent, HostDetector, PropsRef } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
+
+export default class PinchGestureHandler extends GestureHandler {
+  public override readonly isContinuous = true;
+
+  private scale = 1;
+  private velocity = 0;
+
+  private startingSpan = 0;
+  private spanSlop = DEFAULT_TOUCH_SLOP;
+
+  private scaleDetectorListener: ScaleGestureListener = {
+    onScaleBegin: (detector: ScaleGestureDetector): boolean => {
+      this.startingSpan = detector.currentSpan;
+      return true;
+    },
+    onScale: (detector: ScaleGestureDetector): boolean => {
+      const prevScaleFactor: number = this.scale;
+      this.scale *= detector.calculateScaleFactor(
+        this.tracker.trackedPointersCount
+      );
+
+      const delta = detector.timeDelta;
+      if (delta > 0) {
+        this.velocity = (this.scale - prevScaleFactor) / delta;
+      }
+
+      if (
+        Math.abs(this.startingSpan - detector.currentSpan) >= this.spanSlop &&
+        this.state === State.BEGAN
+      ) {
+        this.activate();
+      }
+      return true;
+    },
+    onScaleEnd: (
+      _detector: ScaleGestureDetector
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+    ): void => {},
+  };
+
+  private scaleGestureDetector: ScaleGestureDetector = new ScaleGestureDetector(
+    this.scaleDetectorListener
+  );
+
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+    this.name = SingleGestureName.Pinch;
+  }
+
+  public override init(
+    ref: number,
+    propsRef: React.RefObject<PropsRef>,
+    actionType: ActionType,
+    hostDetector: HostDetector | null = null
+  ) {
+    super.init(ref, propsRef, actionType, hostDetector);
+
+    this.shouldCancelWhenOutside = false;
+  }
+
+  protected override transformNativeEvent() {
+    const focal = this.delegate.absoluteToLocal(
+      this.scaleGestureDetector.focusX,
+      this.scaleGestureDetector.focusY
+    );
+
+    return {
+      focalX: focal.x,
+      focalY: focal.y,
+      velocity: this.velocity,
+      scale: this.scale,
+    };
+  }
+
+  protected override onPointerDown(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+    super.onPointerDown(event);
+  }
+
+  protected override onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+    super.onPointerAdd(event);
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.tryBegin();
+  }
+
+  protected override onPointerUp(event: AdaptedEvent): void {
+    super.onPointerUp(event);
+    this.tracker.removeFromTracker(event.pointerId);
+
+    if (this.state === State.ACTIVE) {
+      // We don't have to call it in the else branch as it would simply return `true`.
+      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+
+      this.end();
+    } else {
+      this.fail();
+    }
+  }
+
+  protected override onPointerRemove(event: AdaptedEvent): void {
+    super.onPointerRemove(event);
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.tracker.removeFromTracker(event.pointerId);
+  }
+
+  protected override onPointerMove(event: AdaptedEvent): void {
+    this.tracker.track(event);
+    if (this.tracker.trackedPointersCount < 2) {
+      return;
+    }
+
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    super.onPointerMove(event);
+  }
+  protected override onPointerOutOfBounds(event: AdaptedEvent): void {
+    this.tracker.track(event);
+    if (this.tracker.trackedPointersCount < 2) {
+      return;
+    }
+
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    super.onPointerOutOfBounds(event);
+  }
+
+  private tryBegin(): void {
+    if (this.state !== State.UNDETERMINED) {
+      return;
+    }
+
+    this.resetProgress();
+    this.begin();
+  }
+
+  public override activate(force?: boolean): void {
+    if (this.state !== State.ACTIVE) {
+      this.resetProgress();
+    }
+
+    super.activate(force);
+  }
+
+  protected override onReset(): void {
+    this.resetProgress();
+  }
+
+  protected override resetProgress(): void {
+    if (this.state === State.ACTIVE) {
+      return;
+    }
+    this.velocity = 0;
+    this.scale = 1;
+  }
+}
