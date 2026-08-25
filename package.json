@@ -12,7 +12,8 @@
     "apps/macos-example",
     "apps/common-app",
     "apps/web-example",
-    "apps/next-example"
+    "apps/next-example",
+    "apps/common-web"
   ],
   "scripts": {
     "postinstall": "yarn build",

@@ -12,6 +12,7 @@
     "shake:full": "SHAKE_ENTRY=full vite build --config shake/vite.config.mts"
   },
   "dependencies": {
+    "common-web": "workspace:*",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-gesture-handler": "workspace:*"

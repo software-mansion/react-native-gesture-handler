@@ -9,7 +9,9 @@ import {
   useTapGesture,
 } from 'react-gesture-handler';
 
-export function Gestures() {
+// The shared demo surface of the web example apps (Vite + Next). The element
+// ids double as targets for the CDP sweep scripts — keep them stable.
+export function GestureShowcase() {
   const [taps, setTaps] = useState(0);
   const [longPresses, setLongPresses] = useState(0);
   const [presses, setPresses] = useState(0);

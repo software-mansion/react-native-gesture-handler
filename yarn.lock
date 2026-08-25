@@ -7285,6 +7285,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"common-web@workspace:*, common-web@workspace:apps/common-web":
+  version: 0.0.0-use.local
+  resolution: "common-web@workspace:apps/common-web"
+  dependencies:
+    react-gesture-handler: "workspace:*"
+  peerDependencies:
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "commondir@npm:^1.0.1":
   version: 1.0.1
   resolution: "commondir@npm:1.0.1"
@@ -13314,6 +13324,7 @@ __metadata:
     "@types/node": "npm:^24.0.0"
     "@types/react": "npm:^19.2.0"
     "@types/react-dom": "npm:^19.0.0"
+    common-web: "workspace:*"
     next: "npm:^15.5.0"
     react: "npm:19.2.3"
     react-dom: "npm:19.2.3"
@@ -17043,6 +17054,7 @@ __metadata:
   dependencies:
     "@types/react-dom": "npm:^19.0.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
+    common-web: "workspace:*"
     react: "npm:19.2.3"
     react-dom: "npm:19.2.3"
     react-gesture-handler: "workspace:*"
