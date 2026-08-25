@@ -43,6 +43,7 @@ export type {
   SharedValueOrT,
   WithSharedValue,
 } from './ReanimatedTypes';
+export type { AnimationDuration } from './TouchableTypes';
 export type {
   ExcludeInternalConfigProps,
   FilterNeverProperties,

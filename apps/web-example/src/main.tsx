@@ -2,6 +2,7 @@ import React, { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   GestureDetector,
+  Touchable,
   useLongPressGesture,
   usePanGesture,
   useTapGesture,
@@ -10,6 +11,9 @@ import {
 function App() {
   const [taps, setTaps] = useState(0);
   const [longPresses, setLongPresses] = useState(0);
+  const [presses, setPresses] = useState(0);
+  const [touchableLongPresses, setTouchableLongPresses] = useState(0);
+  const [hovers, setHovers] = useState(0);
   const [drag, setDrag] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
 
@@ -45,7 +49,7 @@ function App() {
     <main style={{ fontFamily: 'sans-serif', padding: 24 }}>
       <h1>react-gesture-handler web example</h1>
       <p id="status">
-        {`taps: ${taps} | dragging: ${dragging} | dx: ${Math.round(drag.x)} | dy: ${Math.round(drag.y)} | longPresses: ${longPresses}`}
+        {`taps: ${taps} | dragging: ${dragging} | dx: ${Math.round(drag.x)} | dy: ${Math.round(drag.y)} | longPresses: ${longPresses} | presses: ${presses} | tlp: ${touchableLongPresses} | hovers: ${hovers}`}
       </p>
       <GestureDetector gesture={tap}>
         <button
@@ -70,6 +74,27 @@ function App() {
           Long-press target
         </div>
       </GestureDetector>
+      <Touchable
+        id="touchable-target"
+        underlayColor="rebeccapurple"
+        activeUnderlayOpacity={0.4}
+        hoverUnderlayOpacity={0.15}
+        hoverScale={1.04}
+        delayLongPress={400}
+        onPress={() => setPresses((c) => c + 1)}
+        onLongPress={() => setTouchableLongPresses((c) => c + 1)}
+        onHoverIn={() => setHovers((c) => c + 1)}
+        style={{
+          display: 'inline-block',
+          padding: 16,
+          fontSize: 18,
+          marginLeft: 12,
+          border: '1px solid rebeccapurple',
+          borderRadius: 8,
+          userSelect: 'none',
+        }}>
+        Touchable target
+      </Touchable>
       <GestureDetector gesture={pan}>
         <div
           id="pan-target"

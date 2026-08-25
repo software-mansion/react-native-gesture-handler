@@ -35,6 +35,8 @@ export type { TapGestureConfig } from './gestures/useTapGesture';
 export { useTapGesture } from './gestures/useTapGesture';
 export { GestureStateManager } from './gestureStateManager';
 export { InterceptingGestureDetector } from './InterceptingGestureDetector';
+export type { TouchableProps } from './Touchable';
+export { Touchable } from './Touchable';
 export { VirtualGestureDetector } from './VirtualGestureDetector';
 export {
   ActionType,
