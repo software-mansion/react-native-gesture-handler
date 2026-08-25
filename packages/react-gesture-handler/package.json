@@ -8,7 +8,8 @@
   "scripts": {
     "ts-check": "yarn tsc --noEmit",
     "lint:rn-free": "node ../../scripts/check-rn-free.js src",
-    "build": "yarn tsc -p tsconfig.build.json --noEmit && bob build"
+    "build": "yarn tsc -p tsconfig.build.json --noEmit && bob build",
+    "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
     "@swmansion/gesture-handler-core": "workspace:~",
@@ -19,6 +20,8 @@
     "react-dom": "*"
   },
   "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "3.3.3",
     "react-native-builder-bob": "^0.40.13",
     "typescript": "~6.0.3"
   },

@@ -5066,6 +5066,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@swmansion/gesture-handler-core@workspace:packages/gesture-handler-core"
   dependencies:
+    eslint: "npm:^8.57.0"
+    prettier: "npm:3.3.3"
     react-native-builder-bob: "npm:^0.40.13"
     typescript: "npm:~6.0.3"
   peerDependencies:
@@ -5078,6 +5080,8 @@ __metadata:
   resolution: "@swmansion/gesture-handler-dom-engine@workspace:packages/gesture-handler-dom-engine"
   dependencies:
     "@swmansion/gesture-handler-core": "workspace:~"
+    eslint: "npm:^8.57.0"
+    prettier: "npm:3.3.3"
     react-native-builder-bob: "npm:^0.40.13"
     typescript: "npm:~6.0.3"
   languageName: unknown
@@ -7289,6 +7293,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "common-web@workspace:apps/common-web"
   dependencies:
+    eslint: "npm:^8.57.0"
+    prettier: "npm:3.3.3"
     react-gesture-handler: "workspace:*"
   peerDependencies:
     react: "*"
@@ -14424,6 +14430,8 @@ __metadata:
   dependencies:
     "@swmansion/gesture-handler-core": "workspace:~"
     "@swmansion/gesture-handler-dom-engine": "workspace:*"
+    eslint: "npm:^8.57.0"
+    prettier: "npm:3.3.3"
     react-native-builder-bob: "npm:^0.40.13"
     typescript: "npm:~6.0.3"
   peerDependencies:
