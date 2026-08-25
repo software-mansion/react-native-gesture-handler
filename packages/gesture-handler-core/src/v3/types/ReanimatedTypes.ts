@@ -57,3 +57,22 @@ type Simplify<T> =
           // For a generic object, retain the original structure while forcing an object type
           [K in keyof T]: T[K];
         } & NonNullable<unknown>;
+
+// Inverse of WithSharedValue: removes the SharedValue arms from a config
+// type, recursively. A platform binding without reanimated (the plain-DOM
+// package) overlays this on the shared config types at its re-export
+// boundary, so its public API does not advertise reanimated concepts that
+// cannot exist on the platform. Functions pass through untouched.
+// NOTE: must probe `extends SharedValue<any>` — SharedValue<unknown> breaks
+// on property-function variance.
+export type WithoutSharedValues<T> =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends SharedValue<any>
+    ? never
+    : T extends (...args: never[]) => unknown
+      ? T
+      : T extends readonly unknown[]
+        ? { [K in keyof T]: WithoutSharedValues<T[K]> }
+        : T extends object
+          ? { [K in keyof T]: WithoutSharedValues<T[K]> }
+          : T;
