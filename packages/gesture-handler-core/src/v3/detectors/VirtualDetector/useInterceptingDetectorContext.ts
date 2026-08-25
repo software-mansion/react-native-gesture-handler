@@ -2,11 +2,14 @@ import { createContext, use } from 'react';
 
 import type { VirtualChild } from '../../types';
 
-export enum InterceptingDetectorMode {
-  DEFAULT,
-  ANIMATED,
-  REANIMATED,
-}
+export const InterceptingDetectorMode = {
+  DEFAULT: 0,
+  ANIMATED: 1,
+  REANIMATED: 2,
+} as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type InterceptingDetectorMode =
+  (typeof InterceptingDetectorMode)[keyof typeof InterceptingDetectorMode];
 
 export type InterceptingDetectorContextValue = {
   mode: InterceptingDetectorMode;

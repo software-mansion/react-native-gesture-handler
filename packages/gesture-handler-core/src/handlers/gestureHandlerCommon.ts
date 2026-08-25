@@ -110,14 +110,18 @@ export type ActiveCursor =
   | 'zoom-in'
   | 'zoom-out';
 
-export enum MouseButton {
-  LEFT = 1,
-  RIGHT = 2,
-  MIDDLE = 4,
-  BUTTON_4 = 8,
-  BUTTON_5 = 16,
-  ALL = 31,
-}
+export const MouseButton = {
+  LEFT: 1,
+  RIGHT: 2,
+  MIDDLE: 4,
+  BUTTON_4: 8,
+  BUTTON_5: 16,
+  ALL: 31,
+} as const;
+// A bitmask — members combine with `|` (e.g. LEFT | RIGHT), so the type
+// accepts any combination rather than only the named members.
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type MouseButton = number;
 
 export type TouchAction =
   | 'auto'

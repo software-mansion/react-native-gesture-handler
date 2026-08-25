@@ -53,7 +53,7 @@ export default class PanGestureHandler extends GestureHandler {
 
   private enableTrackpadTwoFingerGesture = false;
   private endWheelTimeout: ReturnType<typeof setTimeout> | undefined;
-  private wheelDevice = WheelDevice.UNDETERMINED;
+  private wheelDevice: WheelDevice = WheelDevice.UNDETERMINED;
 
   private hasCustomActivationCriteria = false;
 

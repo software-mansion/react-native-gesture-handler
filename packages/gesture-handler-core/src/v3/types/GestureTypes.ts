@@ -84,20 +84,26 @@ export type Gesture<
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyGesture = Gesture<unknown, any>;
 
-export enum SingleGestureName {
-  Tap = 'TapGestureHandler',
-  LongPress = 'LongPressGestureHandler',
-  Pan = 'PanGestureHandler',
-  Pinch = 'PinchGestureHandler',
-  Rotation = 'RotationGestureHandler',
-  Fling = 'FlingGestureHandler',
-  Manual = 'ManualGestureHandler',
-  Native = 'NativeViewGestureHandler',
-  Hover = 'HoverGestureHandler',
-}
+export const SingleGestureName = {
+  Tap: 'TapGestureHandler',
+  LongPress: 'LongPressGestureHandler',
+  Pan: 'PanGestureHandler',
+  Pinch: 'PinchGestureHandler',
+  Rotation: 'RotationGestureHandler',
+  Fling: 'FlingGestureHandler',
+  Manual: 'ManualGestureHandler',
+  Native: 'NativeViewGestureHandler',
+  Hover: 'HoverGestureHandler',
+} as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type SingleGestureName =
+  (typeof SingleGestureName)[keyof typeof SingleGestureName];
 
-export enum ComposedGestureName {
-  Simultaneous = 'SimultaneousGesture',
-  Exclusive = 'ExclusiveGesture',
-  Race = 'RaceGesture',
-}
+export const ComposedGestureName = {
+  Simultaneous: 'SimultaneousGesture',
+  Exclusive: 'ExclusiveGesture',
+  Race: 'RaceGesture',
+} as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type ComposedGestureName =
+  (typeof ComposedGestureName)[keyof typeof ComposedGestureName];

@@ -146,22 +146,26 @@ export interface AdaptedEvent {
   wheelDeltaY?: number | undefined;
 }
 
-export enum EventTypes {
-  DOWN,
-  ADDITIONAL_POINTER_DOWN,
-  UP,
-  ADDITIONAL_POINTER_UP,
-  MOVE,
-  ENTER,
-  LEAVE,
-  CANCEL,
-}
+export const EventTypes = {
+  DOWN: 0,
+  ADDITIONAL_POINTER_DOWN: 1,
+  UP: 2,
+  ADDITIONAL_POINTER_UP: 3,
+  MOVE: 4,
+  ENTER: 5,
+  LEAVE: 6,
+  CANCEL: 7,
+} as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type EventTypes = (typeof EventTypes)[keyof typeof EventTypes];
 
-export enum WheelDevice {
-  UNDETERMINED,
-  MOUSE,
-  TOUCHPAD,
-}
+export const WheelDevice = {
+  UNDETERMINED: 0,
+  MOUSE: 1,
+  TOUCHPAD: 2,
+} as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type WheelDevice = (typeof WheelDevice)[keyof typeof WheelDevice];
 
 export type GestureHandlerRef = {
   viewTag: GestureHandlerRef;
@@ -174,8 +178,11 @@ export type SVGRef = {
 
 export type HostDetector = RefObject<Element | null>;
 
-export enum NativeGestureRole {
-  Button = 'GestureHandlerButton',
-  Switch = 'Switch',
-  ScrollView = 'ScrollView',
-}
+export const NativeGestureRole = {
+  Button: 'GestureHandlerButton',
+  Switch: 'Switch',
+  ScrollView: 'ScrollView',
+} as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type NativeGestureRole =
+  (typeof NativeGestureRole)[keyof typeof NativeGestureRole];

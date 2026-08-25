@@ -6,11 +6,14 @@ import type {
 } from '../../handlers/gestureHandlerCommon';
 import type { Gesture } from '../types';
 
-export enum GestureDetectorType {
-  Native,
-  Virtual,
-  Intercepting,
-}
+export const GestureDetectorType = {
+  Native: 0,
+  Virtual: 1,
+  Intercepting: 2,
+} as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type GestureDetectorType =
+  (typeof GestureDetectorType)[keyof typeof GestureDetectorType];
 
 interface CommonGestureDetectorProps {
   children?: React.ReactNode;
