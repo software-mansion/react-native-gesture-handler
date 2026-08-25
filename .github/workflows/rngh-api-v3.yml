@@ -5,6 +5,7 @@ on:
     paths:
       - packages/react-native-gesture-handler/src/v3/**
       - packages/gesture-handler-core/src/**
+      - packages/gesture-handler-dom-engine/src/**
       - packages/react-native-gesture-handler/src/__tests__/RelationsTraversal.test.tsx
       - packages/react-native-gesture-handler/src/__tests__/api_v3.test.tsx
   push:

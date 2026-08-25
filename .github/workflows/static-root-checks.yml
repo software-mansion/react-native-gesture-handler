@@ -5,6 +5,8 @@ on:
     paths:
       - packages/react-native-gesture-handler/src/**
       - packages/gesture-handler-core/src/**
+      - packages/gesture-handler-dom-engine/src/**
+      - packages/react-gesture-handler/src/**
       - packages/react-native-gesture-handler/*
   push:
     branches:
