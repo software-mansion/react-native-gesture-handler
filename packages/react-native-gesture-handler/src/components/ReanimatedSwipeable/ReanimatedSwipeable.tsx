@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
 } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 import { I18nManager, StyleSheet, View } from 'react-native';
@@ -45,6 +46,21 @@ const DEFAULT_OVERSHOOT_FRICTION = 1;
 const DEFAULT_DRAG_OFFSET = 10;
 const DEFAULT_ENABLE_TRACKING_TWO_FINGER_GESTURE = false;
 
+function useEventCallback<Args extends unknown[]>(
+  callback: ((...args: Args) => void) | undefined
+): ((...args: Args) => void) | undefined {
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+
+  const stableCallback = useCallback((...args: Args) => {
+    callbackRef.current?.(...args);
+  }, []);
+
+  // Keep a stable wrapper only while a user callback exists, so the existing
+  // truthiness checks can still skip `scheduleOnRN` when the prop is absent.
+  return callback ? stableCallback : undefined;
+}
+
 const Swipeable = (props: SwipeableProps) => {
   const {
     ref,
@@ -63,12 +79,12 @@ const Swipeable = (props: SwipeableProps) => {
     dragOffsetFromRight = -DEFAULT_DRAG_OFFSET,
     friction = DEFAULT_FRICTION,
     overshootFriction = DEFAULT_OVERSHOOT_FRICTION,
-    onSwipeableOpenStartDrag,
-    onSwipeableCloseStartDrag,
-    onSwipeableWillOpen,
-    onSwipeableWillClose,
-    onSwipeableOpen,
-    onSwipeableClose,
+    onSwipeableOpenStartDrag: onSwipeableOpenStartDragProp,
+    onSwipeableCloseStartDrag: onSwipeableCloseStartDragProp,
+    onSwipeableWillOpen: onSwipeableWillOpenProp,
+    onSwipeableWillClose: onSwipeableWillCloseProp,
+    onSwipeableOpen: onSwipeableOpenProp,
+    onSwipeableClose: onSwipeableCloseProp,
     renderLeftActions,
     renderRightActions,
     simultaneousWith,
@@ -77,6 +93,17 @@ const Swipeable = (props: SwipeableProps) => {
     hitSlop,
     ...remainingProps
   } = props;
+
+  const onSwipeableOpenStartDrag = useEventCallback(
+    onSwipeableOpenStartDragProp
+  );
+  const onSwipeableCloseStartDrag = useEventCallback(
+    onSwipeableCloseStartDragProp
+  );
+  const onSwipeableWillOpen = useEventCallback(onSwipeableWillOpenProp);
+  const onSwipeableWillClose = useEventCallback(onSwipeableWillCloseProp);
+  const onSwipeableOpen = useEventCallback(onSwipeableOpenProp);
+  const onSwipeableClose = useEventCallback(onSwipeableCloseProp);
 
   if (__DEV__) {
     const checkValue = (value: SharedValueOrT<number>) => {
@@ -512,30 +539,13 @@ const Swipeable = (props: SwipeableProps) => {
 
   const dragStarted = useSharedValue<boolean>(false);
 
-  const tapGesture = useTapGesture({
-    shouldCancelWhenOutside: true,
-    enabled: shouldEnableTap,
-    simultaneousWith,
-    requireToFail,
-    block,
-    onActivate: () => {
-      'worklet';
-      if (rowState.value !== 0) {
-        close();
-      }
-    },
-  });
+  const handleFinalize = useCallback(() => {
+    'worklet';
+    dragStarted.value = false;
+  }, [dragStarted]);
 
-  const panGesture = usePanGesture({
-    enabled: enabled ?? true,
-    enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
-    activeOffsetX: [dragOffsetFromRight, dragOffsetFromLeft],
-    simultaneousWith,
-    requireToFail,
-    block,
-    hitSlop: hitSlop,
-    onActivate: updateElementWidths,
-    onUpdate: (event: PanGestureActiveEvent) => {
+  const handleUpdate = useCallback(
+    (event: PanGestureActiveEvent) => {
       'worklet';
       userDrag.value = event.translationX;
 
@@ -559,15 +569,69 @@ const Swipeable = (props: SwipeableProps) => {
 
       updateAnimatedEvent();
     },
-    onDeactivate: (event: PanGestureActiveEvent) => {
-      'worklet';
-      handleRelease(event);
-    },
-    onFinalize: () => {
-      'worklet';
-      dragStarted.value = false;
-    },
-  });
+    [
+      dragStarted,
+      onSwipeableCloseStartDrag,
+      onSwipeableOpenStartDrag,
+      rowState,
+      updateAnimatedEvent,
+      userDrag,
+    ]
+  );
+
+  const tapConfig = useMemo(
+    () => ({
+      shouldCancelWhenOutside: true,
+      enabled: shouldEnableTap,
+      simultaneousWith,
+      requireToFail,
+      block,
+      onActivate: () => {
+        'worklet';
+        if (rowState.value !== 0) {
+          close();
+        }
+      },
+    }),
+    [block, close, requireToFail, rowState, shouldEnableTap, simultaneousWith]
+  );
+
+  const tapGesture = useTapGesture(tapConfig);
+
+  const panConfig = useMemo(
+    () => ({
+      enabled: enabled ?? true,
+      enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
+      activeOffsetX: [dragOffsetFromRight, dragOffsetFromLeft] as [
+        typeof dragOffsetFromRight,
+        typeof dragOffsetFromLeft,
+      ],
+      simultaneousWith,
+      requireToFail,
+      block,
+      hitSlop: hitSlop,
+      onActivate: updateElementWidths,
+      onUpdate: handleUpdate,
+      onDeactivate: handleRelease,
+      onFinalize: handleFinalize,
+    }),
+    [
+      block,
+      dragOffsetFromLeft,
+      dragOffsetFromRight,
+      enableTrackpadTwoFingerGesture,
+      enabled,
+      handleFinalize,
+      handleRelease,
+      handleUpdate,
+      hitSlop,
+      requireToFail,
+      simultaneousWith,
+      updateElementWidths,
+    ]
+  );
+
+  const panGesture = usePanGesture(panConfig);
 
   useImperativeHandle(ref, () => swipeableMethods, [swipeableMethods]);
 
