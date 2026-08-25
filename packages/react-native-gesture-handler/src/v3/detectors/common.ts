@@ -1,71 +1,18 @@
-import type React from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import type { GestureDetectorProps as CoreGestureDetectorProps } from '@swmansion/gesture-handler-core/src/v3/detectors/common';
 
-import type {
-  TouchAction,
-  UserSelect,
-} from '../../handlers/gestureHandlerCommon';
 import type { GestureDetectorProps as LegacyDetectorProps } from '../../handlers/gestures/GestureDetector';
-import type { Gesture } from '../types';
-import HostGestureDetector, {
-  type RNGestureHandlerDetectorNativeComponentProps,
-} from './HostGestureDetector';
 
-export enum GestureDetectorType {
-  Native,
-  Virtual,
-  Intercepting,
-}
-
-interface CommonGestureDetectorProps {
-  children?: React.ReactNode;
-  userSelect?: UserSelect | undefined;
-  touchAction?: TouchAction | undefined;
-  enableContextMenu?: boolean | undefined;
-}
-
-export interface NativeDetectorProps<
-  TConfig,
-  THandlerData,
-  TExtendedHandlerData extends THandlerData,
-> extends CommonGestureDetectorProps {
-  gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>;
-}
-
-export interface InterceptingGestureDetectorProps<
-  TConfig,
-  THandlerData,
-  TExtendedHandlerData extends THandlerData,
-> extends CommonGestureDetectorProps {
-  gesture?: Gesture<TConfig, THandlerData, TExtendedHandlerData>;
-}
-
-export interface VirtualDetectorProps<
-  TConfig,
-  THandlerData,
-  TExtendedHandlerData extends THandlerData,
-> extends CommonGestureDetectorProps {
-  gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>;
-}
+export type {
+  InterceptingGestureDetectorProps,
+  NativeDetectorProps,
+  VirtualDetectorProps,
+} from '@swmansion/gesture-handler-core/src/v3/detectors/common';
+export { GestureDetectorType } from '@swmansion/gesture-handler-core/src/v3/detectors/common';
 
 export type GestureDetectorProps<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
 > =
-  | NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>
-  | InterceptingGestureDetectorProps<
-      TConfig,
-      THandlerData,
-      TExtendedHandlerData
-    >
+  | CoreGestureDetectorProps<TConfig, THandlerData, TExtendedHandlerData>
   | LegacyDetectorProps;
-
-export const AnimatedNativeDetector: React.ComponentType<RNGestureHandlerDetectorNativeComponentProps> =
-  Animated.createAnimatedComponent(HostGestureDetector);
-
-export const nativeDetectorStyles = StyleSheet.create({
-  detector: {
-    display: 'contents',
-  },
-});

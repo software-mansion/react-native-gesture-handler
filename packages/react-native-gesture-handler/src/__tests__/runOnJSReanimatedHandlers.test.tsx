@@ -5,6 +5,11 @@ import type { SharedValue } from '../v3/types';
 
 jest.mock('../handlers/gestures/reanimatedWrapper', () => {
   const Reanimated = {
+    // The binding runtime builds its detector kit at module scope, so the
+    // mock must carry the members touched during module initialization.
+    default: {
+      createAnimatedComponent: <T,>(component: T) => component,
+    },
     useHandler: jest.fn(() => ({
       doDependenciesDiffer: false,
       context: { lastUpdateEvent: undefined },

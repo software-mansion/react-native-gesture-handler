@@ -4,6 +4,27 @@ export { ActionType } from './ActionType';
 export { CallbackType } from './CallbackType';
 export * from './Directions';
 export { default as GestureHandlerRootViewContext } from './GestureHandlerRootViewContext';
+export * from './v3/jsResponderContext';
+export { isSharedValue } from './v3/platform/isSharedValue';
+export type {
+  CoreRuntime,
+  DetectorKitPort,
+  GestureHandlerPlatformPort,
+  GestureHandlerProxyPort,
+  HostDetectorComponent,
+  LastUpdateEventMap,
+  PlatformCapabilities,
+} from './v3/platform/Port';
+export type {
+  NativeEventsManager,
+  ReanimatedContext,
+  ReanimatedHandler,
+  ReanimatedIntegration,
+  SimplifiedShareableHost,
+  WorkletFunction,
+  WorkletsIntegration,
+} from './v3/platform/ReanimatedIntegration';
+export { validatePort } from './v3/platform/validatePort';
 // NOTE: no `export *` from gestureHandlerCommon — its legacy GestureEvent /
 // CommonGestureConfig names collide with v3/types; explicit list instead.
 export { MouseButton } from './handlers/gestureHandlerCommon';

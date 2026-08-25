@@ -1,3 +1,5 @@
+import type { CoreRuntime } from '@swmansion/gesture-handler-core';
+
 import { bindSharedValues } from '../v3/hooks/utils/reanimatedUtils';
 import type { BaseGestureConfig, SharedValue } from '../v3/types';
 
@@ -6,30 +8,22 @@ const mockUpdateGestureHandlerConfig = jest.fn();
 // `bindSharedValues` pushes updates straight to the native side from the UI
 // thread, bypassing `prepareConfigForNativeSide` entirely. It is the one
 // producer that is easy to forget when touching the config pipeline, so it gets
-// its own test with the surrounding modules stubbed out.
-jest.mock('../v3/NativeProxy', () => ({
-  NativeProxy: {
-    // Forwarded lazily — the mocked module is required (imports and `jest.mock`
-    // calls are both hoisted) before the `jest.fn()` has been initialized.
-    updateGestureHandlerConfig: (...args: unknown[]) =>
-      mockUpdateGestureHandlerConfig(...args),
+// its own test with a hand-built runtime standing in for the platform port.
+const runtime = {
+  port: {
+    proxy: {
+      updateGestureHandlerConfig: (...args: unknown[]) =>
+        mockUpdateGestureHandlerConfig(...args),
+    },
+    reanimated: {},
+    worklets: {
+      scheduleOnUI: <TArgs extends unknown[]>(
+        fn: (...args: TArgs) => void,
+        ...args: TArgs
+      ): void => fn(...args),
+    },
   },
-}));
-
-jest.mock('../handlers/gestures/reanimatedWrapper', () => ({
-  Reanimated: {
-    isSharedValue: (value: unknown) =>
-      typeof value === 'object' &&
-      value !== null &&
-      '__isFakeSharedValue' in value,
-  },
-  Worklets: {
-    scheduleOnUI: <TArgs extends unknown[]>(
-      fn: (...args: TArgs) => void,
-      ...args: TArgs
-    ): void => fn(...args),
-  },
-}));
+} as unknown as CoreRuntime;
 
 type Listener = (value: unknown) => void;
 
@@ -37,7 +31,8 @@ function fakeSharedValue(value: unknown) {
   const listeners = new Map<number, Listener>();
 
   return {
-    __isFakeSharedValue: true,
+    // The marker core's structural `isSharedValue` checks for.
+    _isReanimatedSharedValue: true,
     value,
     addListener: (id: number, listener: Listener) =>
       listeners.set(id, listener),
@@ -48,6 +43,7 @@ function fakeSharedValue(value: unknown) {
 
 const bind = (config: object) =>
   bindSharedValues(
+    runtime,
     config as BaseGestureConfig<object, unknown, unknown>,
     // Arbitrary handler tag.
     7

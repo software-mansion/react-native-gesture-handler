@@ -1,31 +1,10 @@
-import * as React from 'react';
+import type { JSResponderContextValue } from '@swmansion/gesture-handler-core/src/v3/jsResponderContext';
 import { TextInput } from 'react-native';
 
-export type KeyboardShouldPersistTaps =
-  | boolean
-  | 'always'
-  | 'never'
-  | 'handled'
-  | undefined;
-
-export type JSResponderContextValue = {
-  isRNGHResponderEvent: React.MutableRefObject<boolean>;
-  keyboardShouldPersistTaps: KeyboardShouldPersistTaps;
-};
-
-export const JSResponderContext =
-  React.createContext<JSResponderContextValue | null>(null);
-
-export function updateResponderEventValue(
-  jsResponderContext: JSResponderContextValue | null | undefined,
-  value: boolean
-) {
-  const responderEventRef = jsResponderContext?.isRNGHResponderEvent;
-
-  if (responderEventRef) {
-    responderEventRef.current = value;
-  }
-}
+// The responder context itself is platform-free and lives in core; the
+// keyboard-dismissal machinery below stays here — it reads RN TextInput focus
+// state and is only consumed by the product-side press components.
+export * from '@swmansion/gesture-handler-core/src/v3/jsResponderContext';
 
 let isKeyboardVisible = false;
 let keyboardOpenedForRNInput = false;
