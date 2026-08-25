@@ -7,7 +7,8 @@
   "types": "src/index.ts",
   "scripts": {
     "ts-check": "yarn tsc --noEmit",
-    "lint:rn-free": "node ../../scripts/check-rn-free.js src"
+    "lint:rn-free": "node ../../scripts/check-rn-free.js src",
+    "build": "yarn tsc -p tsconfig.build.json --noEmit && bob build"
   },
   "dependencies": {
     "@swmansion/gesture-handler-core": "workspace:~",
@@ -18,12 +19,29 @@
     "react-dom": "*"
   },
   "devDependencies": {
+    "react-native-builder-bob": "^0.40.13",
     "typescript": "~6.0.3"
   },
   "sideEffects": [
     "src/ensureDevGlobal.ts"
   ],
   "files": [
-    "src"
-  ]
+    "src",
+    "lib",
+    "!**/__tests__",
+    "README.md"
+  ],
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
 }

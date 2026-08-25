@@ -5066,6 +5066,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@swmansion/gesture-handler-core@workspace:packages/gesture-handler-core"
   dependencies:
+    react-native-builder-bob: "npm:^0.40.13"
     typescript: "npm:~6.0.3"
   peerDependencies:
     react: "*"
@@ -5077,6 +5078,7 @@ __metadata:
   resolution: "@swmansion/gesture-handler-dom-engine@workspace:packages/gesture-handler-dom-engine"
   dependencies:
     "@swmansion/gesture-handler-core": "workspace:~"
+    react-native-builder-bob: "npm:^0.40.13"
     typescript: "npm:~6.0.3"
   languageName: unknown
   linkType: soft
@@ -14411,6 +14413,7 @@ __metadata:
   dependencies:
     "@swmansion/gesture-handler-core": "workspace:~"
     "@swmansion/gesture-handler-dom-engine": "workspace:*"
+    react-native-builder-bob: "npm:^0.40.13"
     typescript: "npm:~6.0.3"
   peerDependencies:
     react: "*"
