@@ -24,11 +24,11 @@
     "@swmansion/icons": "^0.0.1",
     "react-native-gesture-handler": "workspace:*",
     "react-native-pager-view": "^8.0.2",
-    "react-native-reanimated": "4.6.0-nightly-20260811-248dee712",
+    "react-native-reanimated": "4.6.0",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
     "react-native-svg": "15.15.4",
-    "react-native-worklets": "patch:react-native-worklets@npm%3A0.12.0-nightly-20260810-fb9cb5596#~/.yarn/patches/react-native-worklets-npm-0.12.0-nightly-20260810-fb9cb5596-f08a72b88e.patch"
+    "react-native-worklets": "0.12.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
