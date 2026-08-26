@@ -15,6 +15,28 @@ jest.mock('react-native-worklets', () =>
   require('react-native-worklets/src/mock')
 );
 
+// Reanimated 4.6.0 throws on import under Jest (`setCSSEventHandler` is not
+// available in JSReanimated), which reanimatedWrapper silently turns into
+// `Reanimated = undefined`. Mock the wrapper so gestures with worklet
+// callbacks still take the Reanimated detector path these tests rely on.
+//
+// TODO: Remove after fixed in Reanimated
+jest.mock('../handlers/gestures/reanimatedWrapper', () => ({
+  Reanimated: {
+    useHandler: jest.fn(() => ({
+      doDependenciesDiffer: false,
+      context: { lastUpdateEvent: undefined },
+    })),
+    useEvent: jest.fn(() => jest.fn()),
+    useComposedEventHandler: jest.fn(() => jest.fn()),
+    isSharedValue: (value: unknown): boolean =>
+      value !== null && typeof value === 'object' && 'value' in value,
+    useSharedValue: <T,>(value: T) => ({ value }),
+    setGestureState: jest.fn(),
+  },
+  Worklets: undefined,
+}));
+
 beforeEach(() => cleanup());
 jest.mock('react-native/Libraries/ReactNative/RendererProxy', () => ({
   findNodeHandle: jest.fn(),
