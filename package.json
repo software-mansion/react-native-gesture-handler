@@ -37,6 +37,6 @@
   },
   "packageManager": "yarn@4.13.0",
   "resolutions": {
-    "expo-modules-core@npm:~57.0.10": "patch:expo-modules-core@npm%3A57.0.10#~/.yarn/patches/expo-modules-core-npm-57.0.10-1d55439aaa.patch"
+    "expo-modules-core@npm:~57.0.13": "patch:expo-modules-core@npm%3A57.0.13#~/.yarn/patches/expo-modules-core-npm-57.0.13-a9a5cb7828.patch"
   }
 }
