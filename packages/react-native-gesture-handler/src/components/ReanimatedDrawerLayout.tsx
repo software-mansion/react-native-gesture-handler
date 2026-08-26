@@ -322,7 +322,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     useDerivedValue(() => {
       onDrawerSlide && runOnJS(onDrawerSlide)(openValue.value);
-    }, []);
+    });
 
     const isDrawerOpen = useSharedValue(false);
 
