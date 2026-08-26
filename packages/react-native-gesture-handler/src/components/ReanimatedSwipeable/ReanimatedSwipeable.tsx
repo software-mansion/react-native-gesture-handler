@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
-import { I18nManager, StyleSheet, View } from 'react-native';
+import { I18nManager, Platform, StyleSheet, View } from 'react-native';
 import Animated, {
   interpolate,
   isSharedValue,
@@ -576,7 +576,7 @@ const Swipeable = (props: SwipeableProps) => {
       transform: [{ translateX: appliedTranslation.value }],
       pointerEvents: rowState.value === 0 ? 'auto' : 'box-only',
     }),
-    [appliedTranslation, rowState]
+    Platform.OS === 'web' ? [appliedTranslation, rowState] : undefined
   );
 
   const swipeableComponent = (

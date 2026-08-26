@@ -343,7 +343,7 @@ const DrawerLayout = function DrawerLayout(
 
   useDerivedValue(() => {
     onDrawerSlide && scheduleOnRN(onDrawerSlide, openValue.value);
-  }, []);
+  });
 
   const isDrawerOpen = useSharedValue(false);
 
