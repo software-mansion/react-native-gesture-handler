@@ -422,6 +422,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         );
       },
       [
+        animationSpeedProp,
         openValue,
         emitStateChanged,
         isDrawerOpen,
