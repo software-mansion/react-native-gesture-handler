@@ -441,6 +441,7 @@ const DrawerLayout = function DrawerLayout(
       );
     },
     [
+      animationSpeedProp,
       openValue,
       emitStateChanged,
       isDrawerOpen,
