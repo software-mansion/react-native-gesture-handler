@@ -1,0 +1,151 @@
+name: Run iOS e2e tests
+
+# Reusable: runs the Argent flows against a prebuilt app bundle. Called by `ios.yml`.
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: Artifact holding the packaged .app bundle to test.
+        required: true
+        type: string
+      xcode-version:
+        description: >-
+          Xcode to run on. Must match the version the app was built with, so the
+          simulator runtime matches the SDK.
+        required: true
+        type: string
+
+jobs:
+  e2e:
+    runs-on: macos-26
+    timeout-minutes: 60
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        env:
+          XCODE_VERSION: ${{ inputs.xcode-version }}
+        run: |
+          XCODE_APP="/Applications/Xcode_${XCODE_VERSION}.app"
+          if [ ! -d "$XCODE_APP" ]; then
+            echo "Xcode ${XCODE_VERSION} is not installed on this runner. Available:" >&2
+            ls -d /Applications/Xcode*.app >&2
+            exit 1
+          fi
+          echo "Using $XCODE_APP"
+          echo "DEVELOPER_DIR=$XCODE_APP/Contents/Developer" >> "$GITHUB_ENV"
+          DEVELOPER_DIR="$XCODE_APP/Contents/Developer" xcodebuild -version
+
+      # Only needed to run the Argent CLI — the app is downloaded, not built.
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Download app built by the build workflow
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ runner.temp }}/app
+
+      - name: Unpack app bundle
+        run: |
+          tar -xzf "$RUNNER_TEMP/app/app.tar.gz" -C "$RUNNER_TEMP/app"
+          APP_PATH=$(find "$RUNNER_TEMP/app" -maxdepth 1 -name '*.app' -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "Downloaded artifact does not contain an .app" >&2
+            ls -la "$RUNNER_TEMP/app" >&2
+            exit 1
+          fi
+          echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
+
+      - name: Set up iPhone 17 Pro simulator
+        run: |
+          UDID=$(xcrun simctl list devices available | grep -E "iPhone 17 Pro \(" | head -1 | grep -oE "[0-9A-Fa-f-]{36}" || true)
+          if [ -z "$UDID" ]; then
+            echo "iPhone 17 Pro not found, creating one"
+            RUNTIME=$(xcrun simctl list runtimes ios -j | jq -r '.runtimes | map(select(.isAvailable)) | last | .identifier')
+            UDID=$(xcrun simctl create "iPhone 17 Pro" "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro" "$RUNTIME")
+          fi
+          echo "Using simulator $UDID"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID"
+          echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
+
+      - name: Disable keyboard intelligence on the simulator
+        run: |
+          KEYS=(
+            KeyboardPrediction
+            KeyboardAutocorrection
+            KeyboardCheckSpelling
+            KeyboardAutocapitalization
+            KeyboardPeriodShortcut
+            KeyboardCapsLock
+            KeyboardContinuousPathEnabled
+          )
+          for key in "${KEYS[@]}"; do
+            xcrun simctl spawn "$SIMULATOR_UDID" defaults write "Apple Global Domain" "$key" -bool false
+            xcrun simctl spawn "$SIMULATOR_UDID" defaults write com.apple.Preferences "$key" -bool false
+          done
+          # Suppress the slide-to-type intro overlay a fresh sim shows on first keyboard use
+          xcrun simctl spawn "$SIMULATOR_UDID" defaults write com.apple.keyboard.preferences \
+            DidShowContinuousPathIntroduction -bool true
+          xcrun simctl spawn "$SIMULATOR_UDID" defaults read "Apple Global Domain" | grep Keyboard || true
+
+      - name: Install app on simulator
+        run: |
+          echo "Installing $APP_PATH on $SIMULATOR_UDID"
+          xcrun simctl install "$SIMULATOR_UDID" "$APP_PATH"
+
+      - name: Install Argent and start the tool-server
+        uses: ./.github/actions/argent-server
+
+      # h264 rather than the default hevc, which most browsers cannot play.
+      - name: Start screen recording
+        run: |
+          mkdir -p "$RUNNER_TEMP/e2e-debug/recordings"
+          nohup xcrun simctl io "$SIMULATOR_UDID" recordVideo --codec h264 --force \
+            "$RUNNER_TEMP/e2e-debug/recordings/rec.mp4" > recordvideo.log 2>&1 &
+          echo "RECORDING_PID=$!" >> "$GITHUB_ENV"
+          # simctl only records from the first processed frame, which it
+          # announces; without the wait the tests start before the recording.
+          for _ in $(seq 1 30); do
+            if grep -q "Recording started" recordvideo.log 2>/dev/null; then break; fi
+            sleep 1
+          done
+
+      - name: Run E2E tests
+        run: argent flow run ./.argent/flows --device $SIMULATOR_UDID
+
+      - name: Stop screen recording
+        if: ${{ always() }}
+        run: |
+          # SIGINT is what makes recordVideo write the mp4 trailer; killed any
+          # other way, the file is unplayable.
+          kill -INT "${RECORDING_PID:-}" 2>/dev/null || true
+          for _ in $(seq 1 15); do
+            kill -0 "${RECORDING_PID:-}" 2>/dev/null || break
+            sleep 1
+          done
+
+      # The tool-server log also carries the device backend's stderr
+      # (`[sim <udid>]` lines), where a failed connection to the simulator is
+      # explained.
+      - name: Collect logs
+        if: ${{ always() }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/e2e-debug/logs"
+          for f in recordvideo.log "${ARGENT_SERVER_LOG:-}"; do
+            cp "$f" "$RUNNER_TEMP/e2e-debug/logs" 2>/dev/null || true
+          done
+          ls -lR "$RUNNER_TEMP/e2e-debug"
+
+      - name: Upload logs and screen recording
+        if: ${{ !success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-ios-debug-${{ inputs.artifact-name }}
+          path: ${{ runner.temp }}/e2e-debug/
+          if-no-files-found: ignore

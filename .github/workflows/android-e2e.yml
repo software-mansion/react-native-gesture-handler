@@ -1,0 +1,197 @@
+name: Run Android e2e tests
+
+# Reusable: runs the Argent flows against a prebuilt APK. Called by `android.yml`.
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: Artifact holding the APK to test.
+        required: true
+        type: string
+      abi:
+        description: Emulator ABI. Must match the ABI the APK was built for.
+        required: true
+        type: string
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      # The emulator advertises its gRPC console in
+      # $XDG_RUNTIME_DIR/avd/running/pid_*.ini, which is where Argent's Android
+      # backend looks for it. The variable is unset on runners and the two fall
+      # back to different dirs, so pin it to a path they both check first.
+      XDG_RUNTIME_DIR: /tmp/xdg-runtime
+      AVD_NAME: test
+      SYSTEM_IMAGE: system-images;android-34;google_apis;${{ inputs.abi }}
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: oracle
+          java-version: 17
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Download APK built by the build workflow
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ runner.temp }}/apk
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # The emulator ignores XDG_RUNTIME_DIR if it does not exist, so create it
+      # before booting. 0700 per the XDG spec.
+      - name: Prepare shared XDG_RUNTIME_DIR
+        run: |
+          mkdir -p "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
+
+      # The runner's preinstalled SDK has neither the emulator nor a system
+      # image (asking for platform-tools on top of it is a no-op).
+      - name: Install Android emulator and system image
+        run: |
+          CMDLINE_BIN=$(dirname "$(command -v sdkmanager || echo "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager")")
+          yes | "$CMDLINE_BIN/sdkmanager" --licenses > /dev/null || true
+          "$CMDLINE_BIN/sdkmanager" --install "emulator" "platform-tools" "$SYSTEM_IMAGE" > /dev/null
+          {
+            echo "$CMDLINE_BIN"
+            echo "$ANDROID_HOME/emulator"
+            echo "$ANDROID_HOME/platform-tools"
+          } >> "$GITHUB_PATH"
+          # By default avdmanager writes to $ANDROID_SDK_HOME/.android/avd while
+          # the emulator looks in $ANDROID_SDK_HOME/avd, which fails the boot
+          # with "Unknown AVD name". Both check $ANDROID_AVD_HOME first.
+          echo "ANDROID_AVD_HOME=$HOME/.android/avd" >> "$GITHUB_ENV"
+
+      - name: Create AVD
+        run: |
+          mkdir -p "$ANDROID_AVD_HOME"
+          echo no | avdmanager create avd --name "$AVD_NAME" --package "$SYSTEM_IMAGE" --force
+          test -f "$ANDROID_AVD_HOME/$AVD_NAME.ini" || {
+            echo "avdmanager did not create $AVD_NAME.ini in $ANDROID_AVD_HOME; found instead:" >&2
+            find "$HOME" "$ANDROID_HOME" -name "$AVD_NAME.ini" 2>/dev/null >&2
+            exit 1
+          }
+
+      # `-grpc` makes the emulator write grpc.port to the discovery ini Argent
+      # reads. `-accel on` fails the boot when KVM didn't take, instead of
+      # falling back to a software boot slow enough to hit the job timeout.
+      - name: Boot emulator
+        run: |
+          nohup emulator -avd "$AVD_NAME" -no-snapshot -accel on \
+            -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim \
+            -grpc 8554 -camera-back none > emulator.log 2>&1 &
+          EMULATOR_PID=$!
+          adb start-server
+          # Poll boot state and process liveness (10 min budget): a backgrounded
+          # emulator that dies cannot fail the step on its own, and
+          # `adb wait-for-device` would just hang without saying why.
+          for _ in $(seq 1 120); do
+            if ! kill -0 "$EMULATOR_PID" 2>/dev/null; then
+              echo "Emulator process exited during boot:" >&2
+              cat emulator.log >&2
+              exit 1
+            fi
+            if [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; then
+              BOOTED=1
+              break
+            fi
+            sleep 5
+          done
+          if [ -z "${BOOTED:-}" ]; then
+            echo "Emulator did not finish booting within 10 minutes" >&2
+            adb devices >&2
+            cat emulator.log >&2
+            exit 1
+          fi
+          adb shell input keyevent 82
+          adb shell settings put global window_animation_scale 0.0
+          adb shell settings put global animator_duration_scale 0.0
+          # transition_animation_scale is left alone on purpose: Reanimated
+          # reports reduced motion when it is 0, which finishes every withTiming
+          # in a single frame.
+          adb shell settings put system show_touches 1
+          SERIAL=$(adb devices | awk 'NR>1 && $2=="device"{print $1; exit}')
+          echo "Emulator ready: $SERIAL"
+          echo "ANDROID_SERIAL=$SERIAL" >> "$GITHUB_ENV"
+
+      - name: Install app on emulator
+        run: |
+          APK=$(find "$RUNNER_TEMP/apk" -name '*.apk' | head -1)
+          if [ -z "$APK" ]; then
+            echo "Downloaded artifact does not contain an APK" >&2
+            ls -la "$RUNNER_TEMP/apk" >&2
+            exit 1
+          fi
+          echo "Installing $APK on $ANDROID_SERIAL"
+          adb install -r "$APK"
+
+      - name: Install Argent and start the tool-server
+        uses: ./.github/actions/argent-server
+        with:
+          simulator-server-log: debug
+
+      # `screenrecord` stops on its own after 3 minutes, so record in segments
+      # until the stop step interrupts it.
+      - name: Start screen recording
+        run: |
+          adb shell 'rm -f /sdcard/rec-*.mp4'
+          nohup bash -c '
+            i=0
+            while adb shell screenrecord --bit-rate 2000000 --time-limit 180 \
+              "/sdcard/rec-$(printf %03d "$i").mp4"; do
+              i=$((i + 1))
+            done
+          ' > screenrecord.log 2>&1 &
+          echo "SCREENRECORD_PID=$!" >> "$GITHUB_ENV"
+
+      - name: Run E2E tests
+        run: argent flow run ./.argent/flows --device "$ANDROID_SERIAL"
+
+      - name: Stop screen recording
+        if: ${{ always() }}
+        run: |
+          kill "${SCREENRECORD_PID:-}" 2>/dev/null || true
+          # SIGINT is what makes screenrecord write the mp4 trailer; killed any
+          # other way, the last segment is unplayable.
+          adb shell pkill -INT screenrecord || true
+          for _ in $(seq 1 15); do
+            adb shell pgrep screenrecord > /dev/null 2>&1 || break
+            sleep 1
+          done
+          mkdir -p "$RUNNER_TEMP/e2e-debug/recordings"
+          for f in $(adb shell 'ls /sdcard/rec-*.mp4' 2>/dev/null | tr -d '\r'); do
+            adb pull "$f" "$RUNNER_TEMP/e2e-debug/recordings" || true
+          done
+
+      - name: Collect logs
+        if: ${{ always() }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/e2e-debug/logs"
+          for f in emulator.log screenrecord.log "${ARGENT_SERVER_LOG:-}"; do
+            cp "$f" "$RUNNER_TEMP/e2e-debug/logs" 2>/dev/null || true
+          done
+          ls -lR "$RUNNER_TEMP/e2e-debug"
+
+      - name: Upload logs and screen recording
+        if: ${{ !success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-android-debug-${{ inputs.artifact-name }}
+          path: ${{ runner.temp }}/e2e-debug/
+          if-no-files-found: ignore

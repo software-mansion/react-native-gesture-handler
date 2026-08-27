@@ -3,8 +3,11 @@ name: Build Android (expo-example)
 on:
   pull_request:
     paths:
+      - .argent/flows/*
+      - .github/actions/argent-server/action.yml
       - .github/workflows/android.yml
       - .github/workflows/android-build.yml
+      - .github/workflows/android-e2e.yml
       - packages/react-native-gesture-handler/package.json
       - packages/react-native-gesture-handler/android/**
       - packages/react-native-gesture-handler/shared/**
@@ -13,6 +16,7 @@ on:
       - apps/common-app/**
       - rnrepo.config.json
       - yarn.lock
+      - '!packages/react-native-gesture-handler/src/**/*.test.*'
   push:
     branches:
       - main
@@ -29,5 +33,14 @@ jobs:
     uses: ./.github/workflows/android-build.yml
     with:
       app: expo-example
+      artifact-name: android-apk-expo-example
+      abi: x86_64
+
+  e2e:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    needs: expo-example
+
+    uses: ./.github/workflows/android-e2e.yml
+    with:
       artifact-name: android-apk-expo-example
       abi: x86_64

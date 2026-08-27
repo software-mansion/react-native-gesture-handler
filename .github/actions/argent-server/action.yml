@@ -1,0 +1,68 @@
+name: Start Argent tool-server
+description: >-
+  Installs the Argent CLI and starts a tool-server for later steps and
+  ARGENT_SERVER_LOG for the caller to collect on failure.
+
+inputs:
+  port:
+    description: Port to serve the tool-server on.
+    required: false
+    default: '3001'
+  simulator-server-log:
+    description: >-
+      SIMSERVER_LOG level for the simulator-server backend the tool-server
+      spawns, e.g. `debug`. Left unset when empty.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Install Argent
+      shell: bash
+      run: npx @swmansion/argent init --yes
+
+    # Start the server here and export its URL, so `flow run` reuses it instead
+    # of starting one in-process, which has to come up within a fixed window a
+    # cold runner can miss - the first run downloads the simulator-server binary.
+    #
+    # Not `--detach`: it gives the server a hard 15s to come up and then kills
+    # its whole process group, and backgrounding the CLI does not help because
+    # the timeout lives in the process we backgrounded. In the foreground there
+    # is no deadline and the server's own output lands in our log.
+    - name: Start tool-server
+      shell: bash
+      env:
+        TOOL_SERVER_PORT: ${{ inputs.port }}
+        SIMULATOR_SERVER_LOG: ${{ inputs.simulator-server-log }}
+      run: |
+        LOG="$RUNNER_TEMP/argent-server.log"
+        # Exported before anything can fail, so the caller's log-collecting step
+        # can find it even when startup is what went wrong.
+        echo "ARGENT_SERVER_LOG=$LOG" >> "$GITHUB_ENV"
+
+        if [ -n "$SIMULATOR_SERVER_LOG" ]; then
+          export SIMSERVER_LOG="$SIMULATOR_SERVER_LOG"
+        fi
+
+        nohup argent server start --no-auth --port "$TOOL_SERVER_PORT" > "$LOG" 2>&1 &
+        SERVER_PID=$!
+
+        echo "Waiting for Argent tool-server on :$TOOL_SERVER_PORT..."
+        # 3 min budget. Poll liveness too, so a server that dies on startup
+        # fails right away with its log instead of at the end of the budget.
+        for _ in $(seq 1 90); do
+          if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+            echo "Argent tool-server exited during startup" >&2
+            cat "$LOG" >&2
+            exit 1
+          fi
+          if curl -fsS "http://127.0.0.1:$TOOL_SERVER_PORT/tools" >/dev/null 2>&1; then
+            echo "tool-server is ready"
+            exit 0
+          fi
+          sleep 2
+        done
+        echo "Argent tool-server failed to become ready in time" >&2
+        cat "$LOG" >&2
+        exit 1
