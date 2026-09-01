@@ -13,7 +13,11 @@ import { State } from '../State';
 import { Pressable, RectButton, ScrollView, Touchable } from '../v3/components';
 import { GestureDetector } from '../v3/detectors';
 import { useSimultaneousGestures } from '../v3/hooks';
-import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
+import {
+  useLongPressGesture,
+  usePanGesture,
+  useTapGesture,
+} from '../v3/hooks/gestures';
 import {
   isKeyboardDismissingTap,
   type JSResponderContextValue,
@@ -151,6 +155,25 @@ describe('[API v3] Hooks', () => {
     expect(onUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ changeX: 10, changeY: 5 })
     );
+  });
+
+  // Apple and web leave `shouldCancelWhenOutside` off unless the config carries
+  // it, so the default has to come from here to match the documented behavior.
+  test('Tap and long press gestures cancel when outside by default', () => {
+    const tapGesture = renderHook(() => useTapGesture()).result.current;
+    const longPressGesture = renderHook(() => useLongPressGesture()).result
+      .current;
+
+    expect(tapGesture.config.shouldCancelWhenOutside).toBe(true);
+    expect(longPressGesture.config.shouldCancelWhenOutside).toBe(true);
+  });
+
+  test('Tap gesture keeps an explicitly configured shouldCancelWhenOutside', () => {
+    const tapGesture = renderHook(() =>
+      useTapGesture({ shouldCancelWhenOutside: false })
+    ).result.current;
+
+    expect(tapGesture.config.shouldCancelWhenOutside).toBe(false);
   });
 });
 

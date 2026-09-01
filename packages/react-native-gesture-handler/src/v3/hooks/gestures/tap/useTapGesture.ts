@@ -4,6 +4,7 @@ import { useClonedAndRemappedConfig } from '../../utils';
 import type {
   TapGesture,
   TapGestureConfig,
+  TapGestureInternalConfig,
   TapGestureInternalProperties,
   TapGestureProperties,
   TapHandlerData,
@@ -18,6 +19,16 @@ const TapPropsMapping = new Map<
   ['maxDelay', 'maxDelayMs'],
 ]);
 
+function transformTapProps(
+  config: TapGestureConfig & TapGestureInternalConfig
+) {
+  if (config.shouldCancelWhenOutside === undefined) {
+    config.shouldCancelWhenOutside = true;
+  }
+
+  return config;
+}
+
 const EMPTY_TAP_CONFIG: TapGestureConfig = {};
 
 export function useTapGesture(
@@ -27,7 +38,7 @@ export function useTapGesture(
     TapGestureProperties,
     TapHandlerData,
     TapGestureInternalProperties
-  >(config, TapPropsMapping);
+  >(config, TapPropsMapping, transformTapProps);
 
   return useGesture<TapGestureInternalProperties, TapHandlerData>(
     SingleGestureName.Tap,
