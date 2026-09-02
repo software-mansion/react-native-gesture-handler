@@ -124,7 +124,7 @@ class GestureHandlerOrchestrator(
 
   private fun shouldBeCancelledByActiveHandler(handler: GestureHandler) = gestureHandlers.any {
     handler.hasCommonPointers(it) &&
-      it.state == GestureHandler.STATE_ACTIVE &&
+      it.isActive &&
       !canRunSimultaneously(handler, it) &&
       handler.isDescendantOf(it)
   }
