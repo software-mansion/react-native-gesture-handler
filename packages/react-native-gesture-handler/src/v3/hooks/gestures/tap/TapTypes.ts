@@ -91,6 +91,11 @@ export type TapGestureConfig = ExcludeInternalConfigProps<
   BaseDiscreteGestureConfig<TapGestureProperties, TapHandlerData>
 >;
 
+export type TapGestureInternalConfig = BaseDiscreteGestureConfig<
+  TapGestureInternalProperties,
+  TapHandlerData
+>;
+
 export type TapGestureEvent = GestureEvent<TapHandlerData>;
 export type TapGestureActiveEvent = TapGestureEvent;
 
