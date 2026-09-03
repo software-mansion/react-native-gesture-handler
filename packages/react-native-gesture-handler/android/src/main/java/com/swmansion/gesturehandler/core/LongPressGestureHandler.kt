@@ -29,13 +29,14 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
     val systemDefaultMaxDist = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
     defaultMaxDist = systemDefaultMaxDist
     maxDist = defaultMaxDist
-    numberOfPointersRequired = 1
+    numberOfPointersRequired = DEFAULT_NUMBER_OF_POINTERS_REQUIRED
   }
 
   override fun resetConfig() {
     super.resetConfig()
     minDurationMs = DEFAULT_MIN_DURATION_MS
     maxDist = defaultMaxDist
+    numberOfPointersRequired = DEFAULT_NUMBER_OF_POINTERS_REQUIRED
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
   }
 
@@ -211,5 +212,6 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
     private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = true
     private const val DEFAULT_MIN_DURATION_MS: Long = 500
     private const val DEFAULT_MAX_DIST_DP = 10f
+    private const val DEFAULT_NUMBER_OF_POINTERS_REQUIRED = 1
   }
 }

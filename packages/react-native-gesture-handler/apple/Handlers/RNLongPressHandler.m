@@ -236,6 +236,10 @@
 
   recognizer.minimumPressDuration = 0.5;
   recognizer.allowableMovement = 10;
+
+#if !TARGET_OS_TV
+  recognizer.numberOfTouchesRequired = 1;
+#endif
 }
 
 - (void)updateConfig:(NSDictionary *)config
