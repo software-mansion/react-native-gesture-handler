@@ -76,9 +76,9 @@ export class GestureHandlerWebDelegate
       this.gestureHandler.attachEventManager(manager)
     );
 
-    this.updateDOM();
-
     this.isInitialized = true;
+
+    this.updateDOM();
   }
 
   detach(): void {
@@ -110,6 +110,10 @@ export class GestureHandlerWebDelegate
   }
 
   updateDOM(): void {
+    if (!this.isInitialized) {
+      return;
+    }
+
     this.setUserSelect();
     this.setTouchAction();
     this.setContextMenu();

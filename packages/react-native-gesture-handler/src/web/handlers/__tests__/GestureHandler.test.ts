@@ -1,6 +1,7 @@
 import type { Config } from '../../interfaces';
 import EventManager from '../../tools/EventManager';
 import type { GestureHandlerDelegate } from '../../tools/GestureHandlerDelegate';
+import { GestureHandlerWebDelegate } from '../../tools/GestureHandlerWebDelegate';
 import GestureHandler from '../GestureHandler';
 import type IGestureHandler from '../IGestureHandler';
 
@@ -33,6 +34,26 @@ describe('GestureHandler web config reset', () => {
     handler.setGestureConfig({} as Config);
 
     expect(handler.enabled).toBe(true);
+  });
+
+  test('a config without touchAction refreshes the DOM', () => {
+    const delegate = {
+      onEnabledChange: jest.fn(),
+      updateDOM: jest.fn(),
+    };
+    const handler = new TestGestureHandler(
+      delegate as unknown as GestureHandlerDelegate<unknown, IGestureHandler>
+    );
+    handler.setGestureConfig({ enabled: true, touchAction: 'pan-y' });
+
+    handler.setGestureConfig({ enabled: true });
+
+    expect(handler.touchAction).toBeUndefined();
+    expect(delegate.updateDOM).toHaveBeenCalledTimes(1);
+  });
+
+  test('the web delegate ignores DOM updates before init', () => {
+    expect(() => new GestureHandlerWebDelegate().updateDOM()).not.toThrow();
   });
 });
 
