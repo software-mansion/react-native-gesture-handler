@@ -190,6 +190,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.maxPointers = DEFAULT_MAX_POINTERS;
 
     this.activateAfterLongPress = 0;
+    this.enableTrackpadTwoFingerGesture = false;
   }
 
   protected transformNativeEvent() {
