@@ -4,6 +4,7 @@ steps:
   - await: { visible: { text: "Empty Example" }, timeout: 15000 }
   - echo: "On the Home list, search for the shared value example"
   - type: { text: "shared", into: { id: "search-examples" } }
+  - await: { visible: { text: "Shared Value" } }
   - echo: "Tap the example to open it"
   - tap: { text: "Shared Value" }
   - await: { visible: { id: "shared-value-box" } }
