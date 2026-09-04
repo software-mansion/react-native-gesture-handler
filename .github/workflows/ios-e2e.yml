@@ -102,6 +102,14 @@ jobs:
       - name: Install Argent and start the tool-server
         uses: ./.github/actions/argent-server
 
+      - name: Start app log capture
+        run: |
+          APP_PROCESS=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Info.plist")
+          nohup xcrun simctl spawn "$SIMULATOR_UDID" log stream --level debug --style compact \
+            --predicate "process == \"$APP_PROCESS\"" > app.log 2>&1 &
+          echo "APP_LOG_PID=$!" >> "$GITHUB_ENV"
+          echo "APP_PROCESS=$APP_PROCESS" >> "$GITHUB_ENV"
+
       # h264 rather than the default hevc, which most browsers cannot play.
       - name: Start screen recording
         run: |
@@ -136,10 +144,18 @@ jobs:
       - name: Collect logs
         if: ${{ always() }}
         run: |
+          kill -INT "${APP_LOG_PID:-}" 2>/dev/null || true
+          for _ in $(seq 1 10); do
+            kill -0 "${APP_LOG_PID:-}" 2>/dev/null || break
+            sleep 1
+          done
           mkdir -p "$RUNNER_TEMP/e2e-debug/logs"
-          for f in recordvideo.log "${ARGENT_SERVER_LOG:-}"; do
+          for f in recordvideo.log app.log "${ARGENT_SERVER_LOG:-}"; do
             cp "$f" "$RUNNER_TEMP/e2e-debug/logs" 2>/dev/null || true
           done
+          # Simulator crash reports are written on the host, not in the sim.
+          mkdir -p "$RUNNER_TEMP/e2e-debug/crashes"
+          cp "$HOME/Library/Logs/DiagnosticReports/${APP_PROCESS:-}"*.ips "$RUNNER_TEMP/e2e-debug/crashes" 2>/dev/null || true
           ls -lR "$RUNNER_TEMP/e2e-debug"
 
       - name: Upload logs and screen recording

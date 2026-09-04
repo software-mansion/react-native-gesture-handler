@@ -146,6 +146,12 @@ jobs:
         with:
           simulator-server-log: debug
 
+      - name: Start logcat capture
+        run: |
+          adb logcat -c
+          nohup adb logcat > logcat.log 2>&1 &
+          echo "LOGCAT_PID=$!" >> "$GITHUB_ENV"
+
       # `screenrecord` stops on its own after 3 minutes, so record in segments
       # until the stop step interrupts it.
       - name: Start screen recording
@@ -182,8 +188,13 @@ jobs:
       - name: Collect logs
         if: ${{ always() }}
         run: |
+          kill "${LOGCAT_PID:-}" 2>/dev/null || true
+          for _ in $(seq 1 10); do
+            kill -0 "${LOGCAT_PID:-}" 2>/dev/null || break
+            sleep 1
+          done
           mkdir -p "$RUNNER_TEMP/e2e-debug/logs"
-          for f in emulator.log screenrecord.log "${ARGENT_SERVER_LOG:-}"; do
+          for f in emulator.log screenrecord.log logcat.log "${ARGENT_SERVER_LOG:-}"; do
             cp "$f" "$RUNNER_TEMP/e2e-debug/logs" 2>/dev/null || true
           done
           ls -lR "$RUNNER_TEMP/e2e-debug"
