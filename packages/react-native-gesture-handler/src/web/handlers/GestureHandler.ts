@@ -789,7 +789,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public setGestureConfig(config: Config) {
     this.resetConfig();
-    this.updateGestureConfig(config);
+    this.updateGestureConfig({ ...config, enabled: config.enabled ?? true });
   }
 
   public updateGestureConfig(config: Partial<Config>): void {
