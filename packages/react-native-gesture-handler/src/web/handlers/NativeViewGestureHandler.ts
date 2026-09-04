@@ -69,7 +69,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
   ): void {
     super.init(ref, propsRef, actionType, hostDetector);
 
-    this.shouldCancelWhenOutside = true;
     this.isScrollDriven = false;
 
     const view = this.delegate.view;
@@ -119,6 +118,17 @@ export default class NativeViewGestureHandler extends GestureHandler {
     if (isStylableElement(view)) {
       this.restoreViewStyles(view);
     }
+  }
+
+  protected override resetConfig(): void {
+    super.resetConfig();
+
+    this.shouldCancelWhenOutside = true;
+    this.shouldActivateOnStart = false;
+    this.disallowInterruption = false;
+    this.yieldsToContinuousGestures = false;
+    this.hasLongPressHandler = false;
+    this.longPressDuration = -1;
   }
 
   private restoreViewStyles(view: HTMLElement | SVGElement) {

@@ -4,7 +4,7 @@ import { State } from '../State';
 import { NATIVE_GESTURE_ROLE_ATTRIBUTE } from '../web/constants';
 import type IGestureHandler from '../web/handlers/IGestureHandler';
 import NativeViewGestureHandler from '../web/handlers/NativeViewGestureHandler';
-import type { AdaptedEvent } from '../web/interfaces';
+import type { AdaptedEvent, Config } from '../web/interfaces';
 import { EventTypes, NativeGestureRole } from '../web/interfaces';
 import type { GestureHandlerDelegate } from '../web/tools/GestureHandlerDelegate';
 import GestureHandlerOrchestrator from '../web/tools/GestureHandlerOrchestrator';
@@ -78,7 +78,10 @@ function touchEvent(x: number, y: number, eventType: EventTypes): AdaptedEvent {
   };
 }
 
-function createHandler(view: FakeHTMLElement) {
+function createHandler(
+  view: FakeHTMLElement,
+  config: Config = { enabled: true }
+) {
   const delegate = {
     view,
     init: jest.fn(),
@@ -93,7 +96,7 @@ function createHandler(view: FakeHTMLElement) {
   } as unknown as GestureHandlerDelegate<unknown, IGestureHandler>;
 
   const handler = new TestNativeViewGestureHandler(delegate);
-  handler.setGestureConfig({ enabled: true });
+  handler.setGestureConfig(config);
   handler.init(1, { current: {} } as never, ActionType.NATIVE_DETECTOR);
 
   // Route scroll events the same way the real delegate does.
@@ -211,5 +214,71 @@ describe('NativeViewGestureHandler activation', () => {
 
     handler.pointerMove(touchEvent(100, 130, EventTypes.MOVE));
     expect(handler.state).toBe(State.ACTIVE);
+  });
+});
+
+describe('NativeViewGestureHandler config reset', () => {
+  afterEach(() => {
+    (
+      GestureHandlerOrchestrator.instance as unknown as {
+        gestureHandlers: IGestureHandler[];
+      }
+    ).gestureHandlers = [];
+  });
+
+  function createButtonHandler(config?: Config) {
+    const view = new FakeHTMLElement();
+    view.setAttribute(NATIVE_GESTURE_ROLE_ATTRIBUTE, NativeGestureRole.Button);
+    return createHandler(view, config);
+  }
+
+  test('shouldActivateOnStart activates a button on pointer down', () => {
+    const handler = createButtonHandler({
+      enabled: true,
+      shouldActivateOnStart: true,
+    });
+
+    handler.pointerDown(touchEvent(100, 100, EventTypes.DOWN));
+    expect(handler.state).toBe(State.ACTIVE);
+  });
+
+  test('a config without shouldActivateOnStart restores the default', () => {
+    const handler = createButtonHandler({
+      enabled: true,
+      shouldActivateOnStart: true,
+    });
+    handler.setGestureConfig({ enabled: true });
+
+    handler.pointerDown(touchEvent(100, 100, EventTypes.DOWN));
+    expect(handler.state).toBe(State.BEGAN);
+  });
+
+  test('a config without disallowInterruption restores the default', () => {
+    const handler = createButtonHandler({
+      enabled: true,
+      disallowInterruption: true,
+    });
+    handler.setGestureConfig({ enabled: true });
+
+    expect(handler.disallowsInterruption()).toBe(false);
+  });
+
+  test('a config without shouldCancelWhenOutside restores the native view default', () => {
+    const handler = createButtonHandler({
+      enabled: true,
+      shouldCancelWhenOutside: false,
+    });
+    handler.setGestureConfig({ enabled: true });
+
+    expect(handler.shouldCancelWhenOutside).toBe(true);
+  });
+
+  test('an explicit shouldCancelWhenOutside survives init', () => {
+    const handler = createButtonHandler({
+      enabled: true,
+      shouldCancelWhenOutside: false,
+    });
+
+    expect(handler.shouldCancelWhenOutside).toBe(false);
   });
 });
