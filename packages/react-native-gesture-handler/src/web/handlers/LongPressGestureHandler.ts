@@ -5,6 +5,7 @@ import GestureHandler from './GestureHandler';
 
 const DEFAULT_MIN_DURATION_MS = 500;
 const DEFAULT_MAX_DIST_DP = 10;
+const DEFAULT_NUMBER_OF_POINTERS = 1;
 const SCALING_FACTOR = 10;
 
 export default class LongPressGestureHandler extends GestureHandler {
@@ -12,7 +13,7 @@ export default class LongPressGestureHandler extends GestureHandler {
   private defaultMaxDistSq = DEFAULT_MAX_DIST_DP * SCALING_FACTOR;
 
   private maxDistSq = this.defaultMaxDistSq;
-  private numberOfPointers = 1;
+  private numberOfPointers = DEFAULT_NUMBER_OF_POINTERS;
   private startX = 0;
   private startY = 0;
 
@@ -56,6 +57,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     super.resetConfig();
     this.minDurationMs = DEFAULT_MIN_DURATION_MS;
     this.maxDistSq = this.defaultMaxDistSq;
+    this.numberOfPointers = DEFAULT_NUMBER_OF_POINTERS;
   }
 
   protected onStateChange(_newState: State, _oldState: State): void {
