@@ -4,6 +4,7 @@ steps:
   - await: { visible: { text: "Empty Example" }, timeout: 15000 }
   - echo: "On the Home list, search for the nested touchables example"
   - type: { text: "nested touchables", into: { id: "search-examples" } }
+  - await: { visible: { text: "Nested touchables" } }
   - echo: "Tap the example to open it"
   - tap: { text: "Nested touchables" }
   - await: { visible: { id: "level-4" } }
