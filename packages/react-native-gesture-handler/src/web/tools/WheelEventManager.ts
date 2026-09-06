@@ -45,5 +45,6 @@ export default class WheelEventManager extends EventManager<HTMLElement> {
 
   public override resetManager(): void {
     super.resetManager();
+    this.wheelDelta = { x: 0, y: 0 };
   }
 }
