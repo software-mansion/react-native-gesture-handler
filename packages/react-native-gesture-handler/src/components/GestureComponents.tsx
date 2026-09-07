@@ -97,19 +97,24 @@ export const LegacyTextInput =
 export type LegacyTextInput = typeof LegacyTextInput & RNTextInput;
 
 // RN's `DrawerLayoutAndroid` export is a getter that logs a deprecation
-// warning on access, so resolve it at render time instead of module load.
+// warning on access, so resolve it on first render instead of module load.
 // `require` is used on purpose: `import * as RN` would read every export
 // eagerly under Metro's `experimentalImportSupport`.
+let DrawerLayoutAndroidImpl: typeof RNDrawerLayoutAndroid | undefined;
+
 const LazyDrawerLayoutAndroid = (
   props: PropsWithChildren<RNDrawerLayoutAndroidProps> & {
     ref?: React.Ref<React.ComponentRef<typeof RNDrawerLayoutAndroid> | null>;
   }
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { DrawerLayoutAndroid } = require('react-native') as {
-    DrawerLayoutAndroid: typeof RNDrawerLayoutAndroid;
-  };
-  return <DrawerLayoutAndroid {...props} />;
+  if (!DrawerLayoutAndroidImpl) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { DrawerLayoutAndroid } = require('react-native') as {
+      DrawerLayoutAndroid: typeof RNDrawerLayoutAndroid;
+    };
+    DrawerLayoutAndroidImpl = DrawerLayoutAndroid;
+  }
+  return <DrawerLayoutAndroidImpl {...props} />;
 };
 LazyDrawerLayoutAndroid.displayName = 'DrawerLayoutAndroid';
 
