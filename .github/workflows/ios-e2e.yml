@@ -154,8 +154,10 @@ jobs:
             cp "$f" "$RUNNER_TEMP/e2e-debug/logs" 2>/dev/null || true
           done
           # Simulator crash reports are written on the host, not in the sim.
-          mkdir -p "$RUNNER_TEMP/e2e-debug/crashes"
-          cp "$HOME/Library/Logs/DiagnosticReports/${APP_PROCESS:-}"*.ips "$RUNNER_TEMP/e2e-debug/crashes" 2>/dev/null || true
+          if [ -n "${APP_PROCESS:-}" ]; then
+            mkdir -p "$RUNNER_TEMP/e2e-debug/crashes"
+            cp "$HOME/Library/Logs/DiagnosticReports/${APP_PROCESS}"*.ips "$RUNNER_TEMP/e2e-debug/crashes" 2>/dev/null || true
+          fi
           ls -lR "$RUNNER_TEMP/e2e-debug"
 
       - name: Upload logs and screen recording
