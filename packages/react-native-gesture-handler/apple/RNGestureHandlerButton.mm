@@ -1470,6 +1470,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   RNGHUIView *inner = [super hitTest:point withEvent:event];
   while (inner && ![self shouldHandleTouch:inner atPoint:point]) {
+    if (inner == self) {
+      return nil;
+    }
     inner = inner.superview;
   }
   return inner;
