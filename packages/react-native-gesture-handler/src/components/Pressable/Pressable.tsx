@@ -69,6 +69,7 @@ const Pressable = (props: PressableProps) => {
     simultaneousWithExternalGesture,
     requireExternalGestureToFail,
     blocksExternalGesture,
+    ref,
     ...remainingProps
   } = props;
 
@@ -385,6 +386,7 @@ const Pressable = (props: PressableProps) => {
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
+        ref={ref as React.Ref<React.ComponentRef<typeof NativeButton>>}
         onLayout={setDimensions}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}

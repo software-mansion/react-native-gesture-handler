@@ -43,7 +43,7 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   }
 );
 export const ScrollView = React.forwardRef<
-  RNScrollView,
+  React.ComponentRef<typeof RNScrollView>,
   RNScrollViewProps & NativeViewGestureHandlerProps
 >((props, ref) => {
   const refreshControlGestureRef = React.useRef<RefreshControl>(null);
@@ -70,7 +70,8 @@ export const ScrollView = React.forwardRef<
 // Backward type compatibility with https://github.com/software-mansion/react-native-gesture-handler/blob/db78d3ca7d48e8ba57482d3fe9b0a15aa79d9932/react-native-gesture-handler.d.ts#L440-L457
 // include methods of wrapped components by creating an intersection type with the RN component instead of duplicating them.
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type ScrollView = typeof GHScrollView & RNScrollView;
+export type ScrollView = typeof GHScrollView &
+  React.ComponentRef<typeof RNScrollView>;
 
 export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,
@@ -84,9 +85,12 @@ export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;
 
-export const DrawerLayoutAndroid = createNativeWrapper<
-  PropsWithChildren<RNDrawerLayoutAndroidProps>
->(RNDrawerLayoutAndroid, { disallowInterruption: true });
+export const DrawerLayoutAndroid: React.ComponentType<
+  PropsWithChildren<RNDrawerLayoutAndroidProps> & NativeViewGestureHandlerProps
+> = createNativeWrapper<PropsWithChildren<RNDrawerLayoutAndroidProps>>(
+  RNDrawerLayoutAndroid,
+  { disallowInterruption: true }
+);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
   RNDrawerLayoutAndroid;
