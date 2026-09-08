@@ -109,6 +109,9 @@ class NativeViewGestureHandler : GestureHandler() {
         cancel()
       } else {
         hook.sendTouchEvent(view, event)
+        if (shouldStopNestedScroll()) {
+          view.stopNestedScroll()
+        }
 
         if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && hook.canActivate(view)) {
           activate()
@@ -156,8 +159,18 @@ class NativeViewGestureHandler : GestureHandler() {
       action = MotionEvent.ACTION_CANCEL
     }
     hook.sendTouchEvent(view, event)
+    if (shouldStopNestedScroll()) {
+      view?.stopNestedScroll()
+    }
     event.recycle()
   }
+
+  // Once the handler is active, it delivers touches straight to the view's `onTouchEvent`. Normally
+  // touches arrive through `View.dispatchTouchEvent`, which also ends the nested scroll when the finger
+  // goes up. Because we skip it, the nested scroll stays open and the parent never finds out that the
+  // gesture is over - e.g. SwipeRefreshLayout never fires refresh (#4485). While the handler is not
+  // active, the view still receives touches the regular way, so Android takes care of it.
+  private fun shouldStopNestedScroll() = state == STATE_ACTIVE && hook.shouldStopNestedScroll()
 
   override fun onCancel() = dispatchCancelEventToView()
 
@@ -210,6 +223,12 @@ class NativeViewGestureHandler : GestureHandler() {
      * the gesture will be cancelled.
      */
     fun canBegin(event: MotionEvent) = true
+
+    /**
+     * Whether the view's nested scroll should be stopped when the active gesture ends. Touches
+     * are fed through `onTouchEvent`, so `View.dispatchTouchEvent` never gets to do it.
+     */
+    fun shouldStopNestedScroll() = false
 
     /**
      * Checks whether handler can activate. Used by TextViewHook.
@@ -336,6 +355,10 @@ class NativeViewGestureHandler : GestureHandler() {
 
   private class ScrollViewHook : NativeViewGestureHandlerHook {
     override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
+
+    // ScrollView starts a nested scroll on DOWN but never stops it itself. Without this the
+    // parent's `onStopNestedScroll` never runs, e.g. SwipeRefreshLayout never triggers refresh.
+    override fun shouldStopNestedScroll() = true
   }
 
   private class ReactViewGroupHook : NativeViewGestureHandlerHook {
