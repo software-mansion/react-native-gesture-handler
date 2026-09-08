@@ -5,6 +5,8 @@ import {
   RefAttributes,
   ReactElement,
 } from 'react';
+// Type-only: the value export is a deprecation-warning getter on RN 0.87+ (see below).
+import type { DrawerLayoutAndroid as RNDrawerLayoutAndroid } from 'react-native';
 import {
   ScrollView as RNScrollView,
   ScrollViewProps as RNScrollViewProps,
@@ -12,7 +14,6 @@ import {
   SwitchProps as RNSwitchProps,
   TextInput as RNTextInput,
   TextInputProps as RNTextInputProps,
-  DrawerLayoutAndroid as RNDrawerLayoutAndroid,
   DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
@@ -85,15 +86,41 @@ export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;
 
+// RN's `DrawerLayoutAndroid` export is a getter that logs a deprecation
+// warning on access, so resolve it on first render instead of module load.
+// `require` is used on purpose: `import * as RN` would read every export
+// eagerly under Metro's `experimentalImportSupport`.
+let DrawerLayoutAndroidImpl: typeof RNDrawerLayoutAndroid | undefined;
+
+const LazyDrawerLayoutAndroid = (
+  props: PropsWithChildren<RNDrawerLayoutAndroidProps> & {
+    ref?: React.Ref<React.ComponentRef<typeof RNDrawerLayoutAndroid> | null>;
+  }
+) => {
+  if (!DrawerLayoutAndroidImpl) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { DrawerLayoutAndroid } = require('react-native') as {
+      DrawerLayoutAndroid: typeof RNDrawerLayoutAndroid;
+    };
+    DrawerLayoutAndroidImpl = DrawerLayoutAndroid;
+  }
+  return <DrawerLayoutAndroidImpl {...props} />;
+};
+LazyDrawerLayoutAndroid.displayName = 'DrawerLayoutAndroid';
+
 export const DrawerLayoutAndroid: React.ComponentType<
-  PropsWithChildren<RNDrawerLayoutAndroidProps> & NativeViewGestureHandlerProps
+  PropsWithChildren<RNDrawerLayoutAndroidProps> &
+    NativeViewGestureHandlerProps & {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref?: React.Ref<React.ComponentType<any> | null>;
+    }
 > = createNativeWrapper<PropsWithChildren<RNDrawerLayoutAndroidProps>>(
-  RNDrawerLayoutAndroid,
+  LazyDrawerLayoutAndroid,
   { disallowInterruption: true }
 );
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
-  RNDrawerLayoutAndroid;
+  React.ComponentRef<typeof RNDrawerLayoutAndroid>;
 
 export const FlatList = React.forwardRef((props, ref) => {
   const refreshControlGestureRef = React.useRef<RefreshControl>(null);
