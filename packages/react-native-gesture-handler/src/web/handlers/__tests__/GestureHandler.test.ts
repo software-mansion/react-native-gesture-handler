@@ -1,3 +1,4 @@
+import type { Config } from '../../interfaces';
 import EventManager from '../../tools/EventManager';
 import type { GestureHandlerDelegate } from '../../tools/GestureHandlerDelegate';
 import GestureHandler from '../GestureHandler';
@@ -24,6 +25,16 @@ function createHandler(enabled: boolean) {
 
   return handler;
 }
+
+describe('GestureHandler web config reset', () => {
+  test('a config without enabled restores the enabled default', () => {
+    const handler = createHandler(false);
+
+    handler.setGestureConfig({} as Config);
+
+    expect(handler.enabled).toBe(true);
+  });
+});
 
 describe('GestureHandler web event manager attachment', () => {
   test('registers listeners for an initially enabled handler', () => {
