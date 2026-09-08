@@ -8,7 +8,9 @@ import {
   FlatList,
   Switch,
   TextInput,
+  TextInputProps,
   DrawerLayoutAndroid,
+  DrawerLayoutAndroidProps,
   View,
 } from 'react-native';
 import { State } from '../State';
@@ -48,8 +50,10 @@ export default {
   ScrollView,
   FlatList,
   Switch,
-  TextInput,
-  DrawerLayoutAndroid,
+  // Explicit types keep the emitted declaration portable under TS 6.
+  TextInput: TextInput as React.ComponentType<TextInputProps>,
+  DrawerLayoutAndroid:
+    DrawerLayoutAndroid as React.ComponentType<DrawerLayoutAndroidProps>,
   NativeViewGestureHandler,
   TapGestureHandler,
   ForceTouchGestureHandler,
