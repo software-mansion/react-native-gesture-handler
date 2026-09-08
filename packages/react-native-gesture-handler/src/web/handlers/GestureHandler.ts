@@ -64,6 +64,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _activeCursor?: ActiveCursor | undefined = undefined;
   private _touchAction?: TouchAction | undefined = undefined;
   private _userSelect?: UserSelect | undefined = undefined;
+  private needsDOMUpdate = false;
 
   // Orchestrator properties
   private _activationIndex = 0;
@@ -833,28 +834,28 @@ export default abstract class GestureHandler implements IGestureHandler {
       this._activeCursor = config.activeCursor;
     }
 
-    let shouldUpdateDOM = false;
-
     if (config.enableContextMenu !== undefined) {
       this.enableContextMenu = config.enableContextMenu;
-      shouldUpdateDOM = true;
+      this.needsDOMUpdate = true;
     }
 
     if (config.touchAction !== undefined) {
       this._touchAction = config.touchAction;
-      shouldUpdateDOM = true;
+      this.needsDOMUpdate = true;
     }
 
     if (config.userSelect !== undefined) {
       this._userSelect = config.userSelect;
-      shouldUpdateDOM = true;
+      this.needsDOMUpdate = true;
     }
 
     if (enabledChanged) {
       this.delegate.onEnabledChange();
-    } else if (shouldUpdateDOM) {
+    } else if (this.needsDOMUpdate) {
       this.delegate.updateDOM();
     }
+
+    this.needsDOMUpdate = false;
 
     if (this.enabled) {
       return;
@@ -960,6 +961,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this._activeCursor = undefined;
     this._touchAction = undefined;
     this._userSelect = undefined;
+    this.needsDOMUpdate = true;
   }
 
   public onDestroy(): void {
