@@ -4,7 +4,6 @@
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTModalHostViewController.h>
-#import <React/RCTRootContentView.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
