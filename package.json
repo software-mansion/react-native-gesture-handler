@@ -35,5 +35,8 @@
     "prettier": "3.3.3",
     "typescript": "~5.8.3"
   },
-  "packageManager": "yarn@4.7.0"
+  "packageManager": "yarn@4.7.0",
+  "resolutions": {
+    "expo-modules-core@npm:~56.0.25": "patch:expo-modules-core@npm%3A56.0.25#~/.yarn/patches/expo-modules-core-npm-56.0.25-a715438de2.patch"
+  }
 }
