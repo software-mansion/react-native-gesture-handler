@@ -222,7 +222,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   public fail(sendIfDisabled?: boolean): void {
     if (this.state === State.ACTIVE || this.state === State.BEGAN) {
       // Here the order of calling the delegate and moveToState is important.
-      // At this point we can use currentState as previuos state, because immediately after changing cursor we call moveToState method.
+      // At this point we can use currentState as previous state, because immediately after changing cursor we call moveToState method.
       this.delegate.onFail();
 
       this.moveToState(State.FAILED, sendIfDisabled);
@@ -754,7 +754,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected transformNativeEvent(): Record<string, unknown> {
-    // Those properties are shared by most handlers and if not this method will be overriden
+    // Those properties are shared by most handlers and if not this method will be overridden
     const lastCoords = this.tracker.getAbsoluteCoordsAverage();
     const lastRelativeCoords = this.tracker.getRelativeCoordsAverage();
 
