@@ -6,7 +6,7 @@
     "lib": ["esnext", "dom"],
     "types": ["jest"],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
