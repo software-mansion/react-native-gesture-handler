@@ -354,14 +354,13 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  private scheduleWheelEnd(event: AdaptedEvent) {
+  private scheduleWheelEnd() {
     clearTimeout(this.endWheelTimeout);
 
     this.endWheelTimeout = setTimeout(() => {
       if (this.state === State.ACTIVE) {
         this.end();
-        this.tracker.removeFromTracker(event.pointerId);
-        this.state = State.UNDETERMINED;
+        this.reset();
       }
 
       this.wheelDevice = WheelDevice.UNDETERMINED;
@@ -383,7 +382,7 @@ export default class PanGestureHandler extends GestureHandler {
           : WheelDevice.MOUSE;
 
       if (this.wheelDevice === WheelDevice.MOUSE) {
-        this.scheduleWheelEnd(event);
+        this.scheduleWheelEnd();
         return;
       }
 
@@ -403,7 +402,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.updateVelocity(event.pointerId);
 
     this.tryToSendMoveEvent(false, event);
-    this.scheduleWheelEnd(event);
+    this.scheduleWheelEnd();
   }
 
   private shouldActivate(): boolean {
