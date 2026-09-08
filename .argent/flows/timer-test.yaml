@@ -4,6 +4,7 @@ steps:
   - await: { visible: { text: "Empty Example" }, timeout: 15000 }
   - echo: "On the Home list, search for the timer example"
   - type: { text: "timer", into: { id: "search-examples" } }
+  - await: { visible: { text: "Timer" } }
   - echo: "Tap the example to open it"
   - tap: { text: "Timer" }
   - await: { idle: true }

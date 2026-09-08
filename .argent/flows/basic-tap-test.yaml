@@ -4,6 +4,7 @@ steps:
   - await: { visible: { text: "Empty Example" }, timeout: 15000 }
   - echo: "On the Home list, search for tap example"
   - type: { text: "tap", into: { id: "search-examples" } }
+  - await: { visible: { text: "Basic Tap" } }
   - echo: "Tap the example to open it"
   - tap: "Basic Tap"
   - echo: "Clear console"

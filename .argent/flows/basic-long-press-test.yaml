@@ -4,6 +4,7 @@ steps:
   - await: { visible: { text: "Empty Example" }, timeout: 15000 }
   - echo: "On the Home list, search for long press example"
   - type: { text: "long", into: { id: "search-examples" } }
+  - await: { visible: { text: "Basic LongPress" } }
   - echo: "Tap the example to open it"
   - tap: "Basic LongPress"
   - echo: "Clear console"
