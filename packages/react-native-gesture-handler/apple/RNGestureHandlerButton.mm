@@ -1193,6 +1193,11 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)mouseDown:(NSEvent *)event
 {
+  if (!_userEnabled) {
+    return;
+  }
+
+  
   _isTouchInsideBounds = YES;
   [self handleAnimatePressIn];
   [super mouseDown:event];
@@ -1200,6 +1205,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)mouseUp:(NSEvent *)event
 {
+  if (!_userEnabled) {
+    return;
+  }
+  
   NSPoint locationInView = [self convertPoint:[event locationInWindow] fromView:nil];
   _isHovered = NSPointInRect(locationInView, self.bounds);
   [self recordHoverSampleForMouseEvent:event];
@@ -1212,6 +1221,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)mouseDragged:(NSEvent *)event
 {
+  if (!_userEnabled) {
+    return;
+  }
+  
   NSPoint locationInWindow = [event locationInWindow];
   NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
   BOOL currentlyInside = NSPointInRect(locationInView, self.bounds);
@@ -1244,6 +1257,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
+  if (!_userEnabled) {
+    return NO;
+  }
+  
   _isTouchInsideBounds = YES;
   // A pencil's hover-out arrives just before touch-down but only schedules the
   // clear, so `_isHovered` still reflects the open hover. Under Reduce Motion
@@ -1469,10 +1486,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   RNGHUIView *inner = [super hitTest:point withEvent:event];
-  while (inner && ![self shouldHandleTouch:inner atPoint:point]) {
-    if (inner == self) {
-      return nil;
-    }
+  while (inner && inner != self && ![self shouldHandleTouch:inner atPoint:point]) {
     inner = inner.superview;
   }
   return inner;
