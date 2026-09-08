@@ -20,8 +20,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
 
-    this.shouldCancelWhenOutside = true;
-
     if (Platform.OS !== 'web') {
       return;
     }
@@ -44,6 +42,14 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     const view = this.delegate.view as HTMLElement;
     this.restoreViewStyles(view);
+  }
+
+  protected override resetConfig(): void {
+    super.resetConfig();
+
+    this.shouldCancelWhenOutside = true;
+    this.shouldActivateOnStart = false;
+    this.disallowInterruption = false;
   }
 
   private restoreViewStyles(view: HTMLElement) {
