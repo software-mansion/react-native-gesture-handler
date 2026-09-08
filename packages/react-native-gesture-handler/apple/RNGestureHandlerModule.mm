@@ -13,6 +13,9 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
+#if REACT_NATIVE_MINOR_VERSION >= 87
+#import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
+#endif
 
 #import <react/renderer/components/text/ParagraphShadowNode.h>
 #import <react/renderer/components/text/TextShadowNode.h>
@@ -35,7 +38,11 @@ using namespace react;
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
+#if REACT_NATIVE_MINOR_VERSION >= 87
+@interface RNGestureHandlerModule () <RNGestureHandlerStateManager, RCTTurboModule, RCTTurboModuleWithJSIBindings>
+#else
 @interface RNGestureHandlerModule () <RNGestureHandlerStateManager, RCTTurboModule>
+#endif
 
 @end
 #else
@@ -122,6 +129,14 @@ void decorateRuntime(jsi::Runtime &runtime)
       });
   runtime.global().setProperty(runtime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
 }
+
+#if REACT_NATIVE_MINOR_VERSION >= 87
+- (void)installJSIBindingsWithRuntime:(jsi::Runtime &)runtime
+                          callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callInvoker
+{
+  decorateRuntime(runtime);
+}
+#endif
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -147,6 +162,10 @@ void decorateRuntime(jsi::Runtime &runtime)
 #ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
+#if REACT_NATIVE_MINOR_VERSION >= 87
+  // RCTCxxBridge was removed in RN 0.87; bindings are installed in installJSIBindingsWithRuntime:callInvoker:.
+  return @true;
+#else
   dispatch_block_t block = ^{
     RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
     auto runtime = (jsi::Runtime *)cxxBridge.runtime;
@@ -159,6 +178,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
   }
 
   return @true;
+#endif
 }
 #endif // RCT_NEW_ARCH_ENABLED
 

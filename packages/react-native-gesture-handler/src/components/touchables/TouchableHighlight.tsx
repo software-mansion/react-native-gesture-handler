@@ -3,11 +3,11 @@ import { Component } from 'react';
 import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
 import type { GenericTouchableProps } from './GenericTouchableProps';
 import {
-  StyleSheet,
   View,
   TouchableHighlightProps as RNTouchableHighlightProps,
   ColorValue,
   ViewProps,
+  ViewStyle,
 } from 'react-native';
 
 interface State {
@@ -88,7 +88,9 @@ export default class TouchableHighlight extends Component<
       this.props.children
     ) as React.ReactElement<ViewProps>; // TODO: not sure if OK but fixes error
     return React.cloneElement(child, {
-      style: StyleSheet.compose(child.props.style, this.state.extraChildStyle),
+      style: this.state.extraChildStyle
+        ? [child.props.style, this.state.extraChildStyle as ViewStyle]
+        : child.props.style,
     });
   }
 

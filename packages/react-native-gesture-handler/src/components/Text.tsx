@@ -11,16 +11,16 @@ import { GestureDetector } from '../handlers/gestures/GestureDetector';
 type TextProps = RNTextProps & {
   ref?: Ref<ComponentRef<typeof RNText> | null>;
 };
-type RNGHTextRef = Ref<RNText | null> & { rngh?: boolean };
+type RNGHTextRef = Ref<ComponentRef<typeof RNText> | null> & { rngh?: boolean };
 
 export const Text = (props: TextProps) => {
   const { onPress, onLongPress, ref, ...rest } = props;
 
-  const textRef = useRef<RNText | null>(null);
+  const textRef = useRef<ComponentRef<typeof RNText> | null>(null);
   const native = useMemo(() => Gesture.Native().runOnJS(true), []);
 
   const refHandler = useMemo(() => {
-    const handler: RNGHTextRef = (node: RNText | null) => {
+    const handler: RNGHTextRef = (node: ComponentRef<typeof RNText> | null) => {
       textRef.current = node;
 
       if (!ref) {

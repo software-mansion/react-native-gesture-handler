@@ -1,5 +1,5 @@
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import type { ViewProps } from 'react-native';
+import { codegenNativeComponent } from 'react-native';
+import type { HostComponent, ViewProps } from 'react-native';
 
 export interface RootViewNativeProps extends ViewProps {
   unstable_forceActive?: boolean;
@@ -7,4 +7,4 @@ export interface RootViewNativeProps extends ViewProps {
 
 export default codegenNativeComponent<RootViewNativeProps>(
   'RNGestureHandlerRootView'
-);
+) as HostComponent<RootViewNativeProps>;

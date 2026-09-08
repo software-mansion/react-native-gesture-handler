@@ -78,7 +78,6 @@ export default class Navigator {
     this.setCurrentRoute = setCurrentRoute;
 
     useEffect(() => {
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       return BackHandler.addEventListener('hardwareBackPress', this.backHandler)
         .remove;
     }, []);

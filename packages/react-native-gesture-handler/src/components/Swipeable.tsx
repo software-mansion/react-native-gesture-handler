@@ -317,7 +317,9 @@ export default class Swipeable extends Component<
             outputRange: [0, 0, 1],
           })
         : new Animated.Value(0);
-    this.leftActionTranslate = this.showLeftAction.interpolate({
+    this.leftActionTranslate = (
+      this.showLeftAction as Animated.Value
+    ).interpolate({
       inputRange: [0, Number.MIN_VALUE],
       outputRange: [-10000, 0],
       extrapolate: 'clamp',
@@ -329,7 +331,9 @@ export default class Swipeable extends Component<
             outputRange: [1, 0, 0],
           })
         : new Animated.Value(0);
-    this.rightActionTranslate = this.showRightAction.interpolate({
+    this.rightActionTranslate = (
+      this.showRightAction as Animated.Value
+    ).interpolate({
       inputRange: [0, Number.MIN_VALUE],
       outputRange: [-10000, 0],
       extrapolate: 'clamp',

@@ -1,5 +1,4 @@
 import {
-  BackgroundPropType,
   FlatList,
   TouchableHighlight as RNTouchableHighlight,
   TouchableNativeFeedback as RNTouchableNativeFeedback,
@@ -57,7 +56,9 @@ type Touchables = {
   color?: string;
   renderChild: (color?: string) => React.ReactNode;
   text: string;
-  background?: (A: typeof TouchableNativeFeedback) => BackgroundPropType;
+  background?: (
+    A: typeof TouchableNativeFeedback
+  ) => React.ComponentProps<typeof TouchableNativeFeedback>['background'];
 };
 
 const TOUCHABLES: Touchables[] = [

@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "baseUrl": ".",
     "paths": {
       "react-native-gesture-handler": [
         "../../packages/react-native-gesture-handler/src"
@@ -16,8 +15,7 @@
       "react-native-gesture-handler/jest-utils": [
         "../../packages/react-native-gesture-handler/src/jestUtils/index.ts"
       ]
-    },
-    "types": ["jest"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

@@ -1,24 +1,30 @@
-import { TurboModuleRegistry, TurboModule } from 'react-native';
-import { Double } from 'react-native/Libraries/Types/CodegenTypes';
+import type { CodegenTypes, TurboModule } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
-  handleSetJSResponder: (tag: Double, blockNativeResponder: boolean) => void;
+  handleSetJSResponder: (
+    tag: CodegenTypes.Double,
+    blockNativeResponder: boolean
+  ) => void;
   handleClearJSResponder: () => void;
   createGestureHandler: (
     handlerName: string,
-    handlerTag: Double,
+    handlerTag: CodegenTypes.Double,
     // Record<> is not supported by codegen
     // eslint-disable-next-line @typescript-eslint/ban-types
     config: Object
   ) => void;
   attachGestureHandler: (
-    handlerTag: Double,
-    newView: Double,
-    actionType: Double
+    handlerTag: CodegenTypes.Double,
+    newView: CodegenTypes.Double,
+    actionType: CodegenTypes.Double
   ) => void;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  updateGestureHandler: (handlerTag: Double, newConfig: Object) => void;
-  dropGestureHandler: (handlerTag: Double) => void;
+  updateGestureHandler: (
+    handlerTag: CodegenTypes.Double,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    newConfig: Object
+  ) => void;
+  dropGestureHandler: (handlerTag: CodegenTypes.Double) => void;
   install: () => boolean;
   flushOperations: () => void;
 }

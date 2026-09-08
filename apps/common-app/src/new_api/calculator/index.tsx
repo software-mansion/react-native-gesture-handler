@@ -6,6 +6,7 @@ import {
   Dimensions,
   LayoutChangeEvent,
   LayoutRectangle,
+  ScrollView as RNScrollView,
 } from 'react-native';
 import {
   GestureDetector,
@@ -61,7 +62,7 @@ interface OutputProps {
 
 function Output({ offset, expression, history }: OutputProps) {
   const layout = useRef({});
-  const scrollView = useRef<ScrollView>(null);
+  const scrollView = useRef<React.ComponentRef<typeof RNScrollView>>(null);
   const drag = useSharedValue(0);
   const dragOffset = useSharedValue(0);
   const [opened, setOpened] = useState(false);
@@ -132,7 +133,7 @@ function Output({ offset, expression, history }: OutputProps) {
         style={[styles.output, translationStyle]}
         onLayout={measure}>
         <ScrollView
-          ref={(ref: ScrollView) => {
+          ref={(ref: React.ComponentRef<typeof RNScrollView> | null) => {
             if (!opened) {
               ref?.scrollToEnd({ animated: false });
             }
