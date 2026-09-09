@@ -861,17 +861,20 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    switch (this.state) {
-      case State.ACTIVE:
-        this.fail(true);
-        break;
-      case State.UNDETERMINED:
-        GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
-        break;
-      default:
-        this.cancel(true);
-        break;
+    if (this.state === State.ACTIVE) {
+      this.fail(true);
+    } else if (this.state !== State.UNDETERMINED) {
+      // `cancel` also fires from UNDETERMINED. Most disables hit a handler
+      // that never began (e.g. a button created disabled), and running the
+      // cancel pipeline for those only produces cancel side effects.
+      this.cancel(true);
     }
+
+    // The cancel/fail above lands in `moveToState`, which resets a disabled
+    // handler to UNDETERMINED right away. The orchestrator's finished-handler
+    // cleanup would then skip it and leave it recorded, so clean up here.
+    this.reset();
+    GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
   }
 
   private checkHitSlop(): boolean {

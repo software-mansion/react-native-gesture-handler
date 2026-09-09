@@ -230,6 +230,12 @@ export const ButtonComponent = ({
         pressOutTimer.current = null;
       }
       pressInTimestamp.current = 0;
+      // A cancel on a disabled button is the disable itself, not a lifted
+      // pointer: snap instead of fading, so the restyle that usually comes with
+      // disabling doesn't show as a flash.
+      if (!managedGestureConfigRef.current.enabled) {
+        setCurrentDuration(0);
+      }
       setPressed(false);
     };
 
