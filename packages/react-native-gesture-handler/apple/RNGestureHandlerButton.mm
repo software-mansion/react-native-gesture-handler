@@ -1473,7 +1473,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       if (!subview.isHidden && subview.alpha > 0) {
         CGPoint convertedPoint = [subview convertPoint:point fromView:self];
         UIView *hitView = [subview hitTest:convertedPoint withEvent:event];
-        if (hitView != nil && [self shouldHandleTouch:hitView atPoint:point]) {
+        if (hitView != nil &&
+            ([hitView isKindOfClass:[RNGestureHandlerButton class]] ||
+             [self shouldHandleTouch:hitView atPoint:point])) {
           return hitView;
         }
       }
