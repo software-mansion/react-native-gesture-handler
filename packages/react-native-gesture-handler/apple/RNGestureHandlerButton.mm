@@ -118,7 +118,7 @@
   }
 
   RNGHUIView *inner = [super hitTest:point withEvent:event];
-  while (inner && ![self shouldHandleTouch:inner]) {
+  while (inner && inner != self && ![self shouldHandleTouch:inner]) {
     inner = inner.superview;
   }
   return inner;
