@@ -872,9 +872,8 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     // The cancel/fail above lands in `moveToState`, which resets a disabled
     // handler to UNDETERMINED right away. The orchestrator's finished-handler
-    // cleanup would then skip it and leave it recorded, so clean up here.
-    this.reset();
-    GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
+    // cleanup would then skip it and leave it recorded, so drop it now.
+    GestureHandlerOrchestrator.instance.dropHandler(this);
   }
 
   private checkHitSlop(): boolean {

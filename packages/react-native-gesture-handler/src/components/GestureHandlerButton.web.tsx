@@ -230,12 +230,6 @@ export const ButtonComponent = ({
         pressOutTimer.current = null;
       }
       pressInTimestamp.current = 0;
-      // A cancel on a disabled button is the disable itself, not a lifted
-      // pointer: snap instead of fading, so the restyle that usually comes with
-      // disabling doesn't show as a flash.
-      if (!managedGestureConfigRef.current.enabled) {
-        setCurrentDuration(0);
-      }
       setPressed(false);
     };
 
@@ -564,7 +558,12 @@ export const ButtonComponent = ({
       : defaultScale;
 
   const easing = 'cubic-bezier(0.5, 1, 0.89, 1)';
-  const effectiveDuration = prefersReducedMotion() ? 0 : currentDuration;
+  // A disabled button snaps: a cancel that comes from the disable itself is not
+  // a lifted pointer, and fading it would overlap the restyle that usually
+  // comes with disabling and show as a flash. Re-enabling keeps the last
+  // duration, so a hover that resumes still animates.
+  const effectiveDuration =
+    prefersReducedMotion() || !enabled ? 0 : currentDuration;
   const transitionProps: string[] = [];
   if (hasOpacity) {
     transitionProps.push(`opacity ${effectiveDuration}ms ${easing}`);
