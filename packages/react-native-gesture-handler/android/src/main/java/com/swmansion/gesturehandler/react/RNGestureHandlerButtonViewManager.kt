@@ -1494,6 +1494,16 @@ class RNGestureHandlerButtonViewManager :
         return
       }
 
+      if (!enabled && isPressed) {
+        setPressed(false)
+
+        // No finger lifted, so skip the press-out fade: it would overlap the
+        // restyle that usually comes with disabling and show as a flash.
+        pendingPressOut?.let { handler?.removeCallbacks(it) }
+        pendingPressOut = null
+        animateTo(restingOpacity, restingScale, restingUnderlayOpacity, 0)
+      }
+
       // The managed handler mirrors the button's enabled state.
       managedHandlerNeedsUpdate = true
 
