@@ -31,6 +31,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
+    // Config updates are full replaces, so restore the defaults first - the
+    // module never calls `resetConfig` on its own.
+    this.resetConfig();
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     if (this.config.shouldActivateOnStart !== undefined) {
