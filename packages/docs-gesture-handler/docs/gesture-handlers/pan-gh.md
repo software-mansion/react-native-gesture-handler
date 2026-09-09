@@ -54,15 +54,15 @@ Minimum distance the finger (or multiple finger) need to travel before the handl
 
 ### `minVelocity`
 
-Minimum speed the pointer has to reach in order for the handler to [activate](/docs/2.x/under-the-hood/state#active). Expressed in points per second.
+Minimum speed the pointer has to reach in order for the handler to [activate](/docs/under-the-hood/state#active). Expressed in points per second.
 
 ### `minVelocityX`
 
-Minimum speed along X axis the pointer has to reach in order for the handler to [activate](/docs/2.x/under-the-hood/state#active). Expressed in points per second.
+Minimum speed along X axis the pointer has to reach in order for the handler to [activate](/docs/under-the-hood/state#active). Expressed in points per second.
 
 ### `minVelocityY`
 
-Minimum speed along Y axis the pointer has to reach in order for the handler to [activate](/docs/2.x/under-the-hood/state#active). Expressed in points per second.
+Minimum speed along Y axis the pointer has to reach in order for the handler to [activate](/docs/under-the-hood/state#active). Expressed in points per second.
 
 ### `minPointers`
 

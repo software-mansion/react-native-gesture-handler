@@ -132,15 +132,15 @@ Minimum distance the finger (or multiple finger) need to travel before the gestu
 
 ### `minVelocity(value: number)`
 
-Minimum speed the pointer has to reach in order for the gesture to [activate](/docs/2.x/fundamentals/states-events#active). Expressed in points per second.
+Minimum speed the pointer has to reach in order for the gesture to [activate](/docs/fundamentals/states-events#active). Expressed in points per second.
 
 ### `minVelocityX(value: number)`
 
-Minimum speed along X axis the pointer has to reach in order for the gesture to [activate](/docs/2.x/fundamentals/states-events#active). Expressed in points per second.
+Minimum speed along X axis the pointer has to reach in order for the gesture to [activate](/docs/fundamentals/states-events#active). Expressed in points per second.
 
 ### `minVelocityY(value: number)`
 
-Minimum speed along Y axis the pointer has to reach in order for the gesture to [activate](/docs/2.x/fundamentals/states-events#active). Expressed in points per second.
+Minimum speed along Y axis the pointer has to reach in order for the gesture to [activate](/docs/fundamentals/states-events#active). Expressed in points per second.
 
 ### `minPointers(value: number)`
 
