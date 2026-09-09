@@ -330,12 +330,41 @@
   }
 
   _userEnabled = userEnabled;
+
+#if !TARGET_OS_OSX
+  if (!userEnabled) {
+    [self cancelActivePress];
+  }
+#endif
+
   [self dispatchHoverEventIfNeeded];
 
   if (_isHovered && !_isPressed) {
     [self animateHoverState];
   }
 }
+
+#if !TARGET_OS_OSX
+// Ends a press that is in progress when the button gets disabled underneath
+// it, so JS receives the press-out
+- (void)cancelActivePress
+{
+  if (!self.tracking) {
+    return;
+  }
+
+  [self cancelTrackingWithEvent:nil];
+  [self rngh_sendActionsForControlEvents:UIControlEventTouchCancel withEvent:nil];
+
+  // No finger lifted, so skip the press-out fade: it would overlap the restyle
+  // that usually comes with disabling and show as a flash.
+  [self cancelPendingPressOutAnimation];
+  [self animateToOpacity:self.restingOpacity
+                   scale:self.restingScale
+         underlayOpacity:self.restingUnderlayOpacity
+                duration:0];
+}
+#endif
 
 - (void)setUnderlayColor:(RNGHColor *)underlayColor
 {
@@ -1197,7 +1226,6 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     return;
   }
 
-  
   _isTouchInsideBounds = YES;
   [self handleAnimatePressIn];
   [super mouseDown:event];
@@ -1208,7 +1236,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   if (!_userEnabled) {
     return;
   }
-  
+
   NSPoint locationInView = [self convertPoint:[event locationInWindow] fromView:nil];
   _isHovered = NSPointInRect(locationInView, self.bounds);
   [self recordHoverSampleForMouseEvent:event];
@@ -1224,7 +1252,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   if (!_userEnabled) {
     return;
   }
-  
+
   NSPoint locationInWindow = [event locationInWindow];
   NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
   BOOL currentlyInside = NSPointInRect(locationInView, self.bounds);
@@ -1260,7 +1288,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   if (!_userEnabled) {
     return NO;
   }
-  
+
   _isTouchInsideBounds = YES;
   // A pencil's hover-out arrives just before touch-down but only schedules the
   // clear, so `_isHovered` still reflects the open hover. Under Reduce Motion
