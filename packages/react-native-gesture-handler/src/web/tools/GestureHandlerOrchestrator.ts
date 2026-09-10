@@ -264,7 +264,26 @@ export default class GestureHandlerOrchestrator {
     handler.activationIndex = this.activationIndex++;
   }
 
+  // A handler whose pointer sequence ended before it began (e.g. a press
+  // outside a negative hit slop) never reaches a finished state, so
+  // `cleanupFinishedHandlers` never drops it and it would block or park every
+  // later gesture. Drop such idle entries before a new gesture consults them.
+  private dropIdleHandlers(): void {
+    for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
+      const handler = this.gestureHandlers[i];
+
+      if (
+        handler.state === State.UNDETERMINED &&
+        handler.tracker.trackedPointersCount === 0
+      ) {
+        this.removeHandlerFromOrchestrator(handler);
+      }
+    }
+  }
+
   public recordHandlerIfNotPresent(handler: IGestureHandler): void {
+    this.dropIdleHandlers();
+
     if (this.gestureHandlers.includes(handler)) {
       return;
     }
