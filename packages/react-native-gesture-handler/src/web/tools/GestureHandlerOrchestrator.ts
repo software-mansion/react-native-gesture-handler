@@ -32,6 +32,11 @@ export default class GestureHandlerOrchestrator {
     handler.activationIndex = Number.MAX_VALUE;
   }
 
+  public dropHandler(handler: IGestureHandler): void {
+    this.cleanHandler(handler);
+    this.removeHandlerFromOrchestrator(handler);
+  }
+
   public isHandlerRecorded(handler: IGestureHandler): boolean {
     return this.gestureHandlers.includes(handler);
   }

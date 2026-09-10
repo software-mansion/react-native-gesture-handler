@@ -1,4 +1,5 @@
 import { PointerType } from '../../../PointerType';
+import { State } from '../../../State';
 import type { AdaptedEvent, Config } from '../../interfaces';
 import { EventTypes } from '../../interfaces';
 import EventManager from '../../tools/EventManager';
@@ -22,6 +23,7 @@ class TestEventManager extends EventManager<unknown> {
 function createHandler(enabled: boolean) {
   const delegate = {
     onEnabledChange: jest.fn(),
+    reset: jest.fn(),
   } as unknown as GestureHandlerDelegate<unknown, IGestureHandler>;
   const handler = new TestGestureHandler(delegate);
 
@@ -43,6 +45,7 @@ describe('GestureHandler web config reset', () => {
     const delegate = {
       onEnabledChange: jest.fn(),
       updateDOM: jest.fn(),
+      reset: jest.fn(),
     };
     const handler = new TestGestureHandler(
       delegate as unknown as GestureHandlerDelegate<unknown, IGestureHandler>
@@ -75,6 +78,40 @@ describe('GestureHandler web event manager attachment', () => {
     createHandler(false).attachEventManager(manager);
 
     expect(manager.registerListeners).not.toHaveBeenCalled();
+  });
+});
+
+describe('GestureHandler web disable mid-gesture', () => {
+  afterEach(() => {
+    // The orchestrator is a singleton, drop handlers recorded by the test.
+    (
+      GestureHandlerOrchestrator.instance as unknown as {
+        gestureHandlers: IGestureHandler[];
+      }
+    ).gestureHandlers = [];
+  });
+
+  test('a handler disabled while begun is dropped from the orchestrator', () => {
+    const delegate = {
+      onEnabledChange: jest.fn(),
+      onCancel: jest.fn(),
+      reset: jest.fn(),
+    } as unknown as GestureHandlerDelegate<unknown, IGestureHandler>;
+    const handler = new TestGestureHandler(delegate);
+    handler.setGestureConfig({ enabled: true });
+    // The full event pipeline is not under test, silence event emission.
+    handler.sendEvent = jest.fn();
+
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(handler);
+    handler.begin();
+    expect(handler.state).toBe(State.BEGAN);
+
+    handler.setGestureConfig({ enabled: false });
+
+    expect(handler.state).toBe(State.UNDETERMINED);
+    expect(GestureHandlerOrchestrator.instance.isHandlerRecorded(handler)).toBe(
+      false
+    );
   });
 });
 
