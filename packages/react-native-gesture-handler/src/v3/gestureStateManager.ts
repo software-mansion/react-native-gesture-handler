@@ -1,6 +1,6 @@
 import { State } from '../State';
 import { tagMessage } from '../utils';
-import type { GestureStateManagerType } from './types/GestureStateManager';
+import type { GestureStateManagerType } from './types/GestureStateManagerTypes';
 
 const setGestureState = (handlerTag: number, state: State) => {
   'worklet';
