@@ -62,7 +62,8 @@
 {
   if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
     RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
-    return button.userEnabled;
+    return button.userEnabled && button.pointerEvents != RNGestureHandlerPointerEventsBoxNone &&
+        button.pointerEvents != RNGestureHandlerPointerEventsNone;
   }
 
   // Certain subviews such as RCTViewComponentView have been observed to have disabled
@@ -105,7 +106,8 @@
       if (!subview.isHidden && subview.alpha > 0) {
         CGPoint convertedPoint = [subview convertPoint:point fromView:self];
         UIView *hitView = [subview hitTest:convertedPoint withEvent:event];
-        if (hitView != nil && [self shouldHandleTouch:hitView]) {
+        if (hitView != nil &&
+            ([hitView isKindOfClass:[RNGestureHandlerButton class]] || [self shouldHandleTouch:hitView])) {
           return hitView;
         }
       }
