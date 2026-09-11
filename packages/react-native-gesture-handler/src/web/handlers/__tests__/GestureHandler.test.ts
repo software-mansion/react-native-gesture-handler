@@ -1,5 +1,7 @@
+import { PointerType } from '../../../PointerType';
 import { State } from '../../../State';
-import type { Config } from '../../interfaces';
+import type { AdaptedEvent, Config } from '../../interfaces';
+import { EventTypes } from '../../interfaces';
 import EventManager from '../../tools/EventManager';
 import type { GestureHandlerDelegate } from '../../tools/GestureHandlerDelegate';
 import GestureHandlerOrchestrator from '../../tools/GestureHandlerOrchestrator';
@@ -109,6 +111,62 @@ describe('GestureHandler web disable mid-gesture', () => {
     expect(handler.state).toBe(State.UNDETERMINED);
     expect(GestureHandlerOrchestrator.instance.isHandlerRecorded(handler)).toBe(
       false
+    );
+  });
+});
+
+describe('GestureHandlerOrchestrator idle handlers', () => {
+  const delegate = {
+    onEnabledChange: jest.fn(),
+  } as unknown as GestureHandlerDelegate<unknown, IGestureHandler>;
+  const pointerDown: AdaptedEvent = {
+    x: 10,
+    y: 10,
+    offsetX: 10,
+    offsetY: 10,
+    pointerId: 1,
+    eventType: EventTypes.DOWN,
+    pointerType: PointerType.MOUSE,
+    time: 0,
+  };
+
+  afterEach(() => {
+    (
+      GestureHandlerOrchestrator.instance as unknown as {
+        gestureHandlers: IGestureHandler[];
+      }
+    ).gestureHandlers = [];
+  });
+
+  test('a recorded handler that never began is dropped once its pointers are gone', () => {
+    const stale = new TestGestureHandler(delegate);
+    const next = new TestGestureHandler(delegate);
+    stale.setGestureConfig({ enabled: true });
+    next.setGestureConfig({ enabled: true });
+
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(stale);
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(next);
+
+    expect(GestureHandlerOrchestrator.instance.isHandlerRecorded(stale)).toBe(
+      false
+    );
+    expect(GestureHandlerOrchestrator.instance.isHandlerRecorded(next)).toBe(
+      true
+    );
+  });
+
+  test('a recorded handler that still tracks a pointer is kept', () => {
+    const pressed = new TestGestureHandler(delegate);
+    const next = new TestGestureHandler(delegate);
+    pressed.setGestureConfig({ enabled: true });
+    next.setGestureConfig({ enabled: true });
+
+    pressed.tracker.addToTracker(pointerDown);
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(pressed);
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(next);
+
+    expect(GestureHandlerOrchestrator.instance.isHandlerRecorded(pressed)).toBe(
+      true
     );
   });
 });
