@@ -66,6 +66,11 @@ jsconfig.json
 !.yarn/versions
 
 
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
 # TS
 dist/
 
