@@ -24,6 +24,7 @@
   "module": "lib/module/index.js",
   "types": "lib/typescript/index.d.ts",
   "files": [
+    "Package.swift",
     "src",
     "lib",
     "!**/__tests__",

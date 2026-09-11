@@ -1,4 +1,7 @@
 module.exports = {
+  spm: {
+    name: 'RNGestureHandler',
+  },
   dependency: {
     platforms: {
       android: {
