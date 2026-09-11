@@ -1,0 +1,97 @@
+name: Build iOS (SPM)
+
+on:
+  pull_request:
+    paths:
+      - packages/react-native-gesture-handler/Package.swift
+      - packages/react-native-gesture-handler/package.json
+      - packages/react-native-gesture-handler/react-native.config.js
+      - packages/react-native-gesture-handler/package.json
+      - packages/react-native-gesture-handler/RNGestureHandler.podspec
+      - packages/react-native-gesture-handler/apple/**
+      - packages/react-native-gesture-handler/shared/**
+      - packages/react-native-gesture-handler/src/**
+      - rnrepo.config.json
+      - yarn.lock
+      - '!packages/react-native-gesture-handler/src/**/*.test.*'
+      - .github/workflows/ios-spm-build-test.yml
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ios-spm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios-spm-isolated:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    runs-on: macos-26-xlarge
+    timeout-minutes: 60
+
+    env:
+      APP_NAME: GHSpmTest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          XCODE_APP="/Applications/Xcode_26.4.1.app"
+          if [ ! -d "$XCODE_APP" ]; then
+            echo "Xcode 26.4.1 is not installed on this runner. Available:" >&2
+            ls -d /Applications/Xcode*.app >&2
+          fi
+          echo "Using $XCODE_APP"
+          echo "DEVELOPER_DIR=$XCODE_APP/Contents/Developer" >> "$GITHUB_ENV"
+          DEVELOPER_DIR="$XCODE_APP/Contents/Developer" xcodebuild -version
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Read React Native version
+        id: rn-version
+        run: |
+          RN_VERSION=$(node -p "require('./packages/react-native-gesture-handler/package.json').devDependencies['react-native']")
+          echo "version=$RN_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install monorepo dependencies
+        run: yarn --immutable
+
+      - name: Build and pack library
+        working-directory: packages/react-native-gesture-handler
+        run: |
+          yarn build
+          mkdir -p /tmp/packs
+          npm pack --pack-destination /tmp/packs
+          echo "GH_TARBALL=$(ls /tmp/packs/react-native-gesture-handler-*.tgz)" >> "$GITHUB_ENV"
+
+      - name: Create blank RN app
+        run: |
+          npx @react-native-community/cli@latest init "${{ env.APP_NAME }}" \
+            --version "${{ steps.rn-version.outputs.version }}"
+
+      - name: Install GH from tarball
+        working-directory: ${{ env.APP_NAME }}
+        run: npm install "${{ env.GH_TARBALL }}"
+
+      - name: SPM scaffold
+        working-directory: ${{ env.APP_NAME }}
+        run: npx react-native spm scaffold --deintegrate --yes
+
+      - name: Build iOS (SPM)
+        working-directory: ${{ env.APP_NAME }}/ios
+        run: |
+          xcodebuild build \
+            -project "${{ env.APP_NAME }}.xcodeproj" \
+            -scheme "${{ env.APP_NAME }}" \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -quiet
