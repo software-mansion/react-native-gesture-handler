@@ -1,5 +1,13 @@
 import NodeManager from '../../web/tools/NodeManager';
-import { GestureStateManagerType } from './gestureStateManager';
+
+export interface GestureStateManagerType {
+  begin: () => void;
+  activate: () => void;
+  fail: () => void;
+  end: () => void;
+  /** @internal */
+  handlerTag: number;
+}
 
 export const GestureStateManager = {
   create(handlerTag: number): GestureStateManagerType {
