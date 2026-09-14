@@ -20,6 +20,7 @@ export interface RawButtonProps
       | 'onButtonHoverIn'
       | 'onButtonHoverOut'
       | 'onButtonInteractionFinished'
+      | 'onButtonVisualPressChange'
       | 'defaultOpacity'
       | 'defaultScale'
       | 'defaultUnderlayOpacity'

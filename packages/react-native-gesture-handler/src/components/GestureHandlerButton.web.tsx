@@ -6,6 +6,7 @@ import { ActionType } from '../ActionType';
 import { normalizeHitSlop } from '../handlers/hitSlop';
 import { PointerType } from '../PointerType';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
+import type { ButtonVisualPressEvent } from '../specs/RNGestureHandlerButtonNativeComponent';
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect';
 import type { ButtonEvent } from '../v3/types';
 import type { PropsRef } from '../web/interfaces';
@@ -92,6 +93,9 @@ type ButtonProps = ViewProps & {
       }
     | null
     | undefined;
+  onButtonVisualPressChange?:
+    | ((event: NativeSyntheticEvent<ButtonVisualPressEvent>) => void)
+    | undefined;
   onButtonPress?:
     | ((event: NativeSyntheticEvent<ButtonEvent>) => void)
     | undefined;
@@ -141,6 +145,7 @@ export const ButtonComponent = ({
   gestureTestID,
   gestureHitSlop,
   onButtonPress,
+  onButtonVisualPressChange,
   onButtonPressIn,
   onButtonPressOut,
   onButtonLongPress,
@@ -157,6 +162,30 @@ export const ButtonComponent = ({
     hoverUnderlayOpacityProp ?? defaultUnderlayOpacity;
 
   const [pressed, setPressed] = React.useState(false);
+  if (!enabled && pressed) {
+    setPressed(false);
+  }
+  const visualPressedRef = React.useRef(false);
+  const visualPressCallbackRef = React.useRef(onButtonVisualPressChange);
+  useIsomorphicLayoutEffect(() => {
+    visualPressCallbackRef.current = onButtonVisualPressChange;
+  });
+  const reportVisualPressed = React.useCallback((nextPressed: boolean) => {
+    if (visualPressedRef.current === nextPressed) {
+      return;
+    }
+    visualPressedRef.current = nextPressed;
+    visualPressCallbackRef.current?.({
+      nativeEvent: { pressed: nextPressed },
+    } as NativeSyntheticEvent<ButtonVisualPressEvent>);
+  }, []);
+  const setVisualPressed = React.useCallback(
+    (nextPressed: boolean) => {
+      setPressed(nextPressed);
+      reportVisualPressed(nextPressed);
+    },
+    [reportVisualPressed]
+  );
   const [hovered, setHovered] = React.useState(false);
   const [currentDuration, setCurrentDuration] = React.useState(
     tapAnimationInDuration
@@ -230,7 +259,7 @@ export const ButtonComponent = ({
         pressOutTimer.current = null;
       }
       pressInTimestamp.current = 0;
-      setPressed(false);
+      setVisualPressed(false);
     };
 
     node?.addEventListener(GestureLifecycleEvent.Began, handleGestureBegan);
@@ -252,7 +281,18 @@ export const ButtonComponent = ({
         clearTimeout(pressOutTimer.current);
       }
     };
-  }, []);
+  }, [setVisualPressed]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (!enabled) {
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+        pressOutTimer.current = null;
+      }
+      pressInTimestamp.current = 0;
+      reportVisualPressed(false);
+    }
+  }, [enabled, reportVisualPressed]);
 
   const pressIn = React.useCallback(
     (event?: NativeSyntheticEvent<unknown>) => {
@@ -277,9 +317,9 @@ export const ButtonComponent = ({
       }
       pressInTimestamp.current = performance.now();
       setCurrentDuration(tapAnimationInDuration);
-      setPressed(true);
+      setVisualPressed(true);
     },
-    [enabled, tapAnimationInDuration]
+    [enabled, tapAnimationInDuration, setVisualPressed]
   );
 
   const pressOut = React.useCallback(
@@ -303,15 +343,15 @@ export const ButtonComponent = ({
       if (longPressDuration >= 0 && elapsed >= longPressDuration) {
         // Long-press release — use the configured long-press out duration.
         setCurrentDuration(longPressAnimationOutDuration);
-        setPressed(false);
+        setVisualPressed(false);
       } else if (elapsed >= tapAnimationInDuration) {
         // Press-in animation fully finished - release with the configured out duration.
         setCurrentDuration(tapAnimationOutDuration);
-        setPressed(false);
+        setVisualPressed(false);
         // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
       } else if (elapsed * 2 >= tapAnimationOutDuration) {
         setCurrentDuration(elapsed);
-        setPressed(false);
+        setVisualPressed(false);
       } else {
         // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time.
         const remaining = tapAnimationInDuration - elapsed;
@@ -319,13 +359,14 @@ export const ButtonComponent = ({
           () => {
             pressOutTimer.current = null;
             setCurrentDuration(tapAnimationOutDuration);
-            setPressed(false);
+            setVisualPressed(false);
           },
           prefersReducedMotion() ? 0 : remaining
         );
       }
     },
     [
+      setVisualPressed,
       longPressDuration,
       longPressAnimationOutDuration,
       tapAnimationInDuration,

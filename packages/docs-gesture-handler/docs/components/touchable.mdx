@@ -396,6 +396,26 @@ enum PointerType {
 
 Triggered when the button gets pressed (analogous to `onPressIn` in `Pressable` from RN core).
 
+### onVisualPressChange
+
+```tsx
+onVisualPressChange?: (pressed: boolean) => void;
+```
+
+Called when Touchable selects its built-in pressed (`true`) or resting (`false`) feedback target. Native scroll views can defer `true` while deciding whether a touch starts a scroll. For quick taps, `false` follows the built-in press-in hold and can arrive after `onPressOut` and `onPress`.
+
+Use this callback for custom feedback when `activeOpacity`, `activeScale`, and `activeUnderlayOpacity` are insufficient. Initialize custom state to `false`. The callback emits changes only, with no initial value or replay when the callback changes. A final callback after unmount is not guaranteed.
+
+```tsx
+const [pressed, setPressed] = useState(false);
+
+<Touchable onVisualPressChange={setPressed} onPress={selectItem}>
+  <Text style={{ color: pressed ? 'purple' : 'black' }}>Select item</Text>
+</Touchable>
+```
+
+This callback runs in JavaScript. It reports animation targets, not animation completion, and does not guarantee UI-thread execution or frame synchronization. Existing `onPressIn`, `onPressOut`, and `onPress` callbacks keep their interaction semantics. Hover feedback can remain active after `false`.
+
 ### onPressOut
 
 <CollapsibleCode 

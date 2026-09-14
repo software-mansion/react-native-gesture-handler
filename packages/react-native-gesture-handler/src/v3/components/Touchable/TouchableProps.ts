@@ -30,7 +30,8 @@ type InteractionProps =
   | 'onButtonLongPress'
   | 'onButtonHoverIn'
   | 'onButtonHoverOut'
-  | 'onButtonInteractionFinished';
+  | 'onButtonInteractionFinished'
+  | 'onButtonVisualPressChange';
 
 type DurationProps =
   | 'tapAnimationInDuration'
@@ -109,6 +110,13 @@ export type TouchableProps = Omit<
      * Called when pointer is released from the component.
      */
     onPressOut?: ((event: ButtonEvent) => void) | undefined;
+
+    /**
+     * Called when the platform selects its pressed or resting feedback target.
+     * Respects native scroll deferral and the built-in hold for quick taps.
+     * Reports target changes, not animation completion. Runs in JavaScript.
+     */
+    onVisualPressChange?: ((pressed: boolean) => void) | undefined;
 
     /**
      * Called when a non-touch pointer starts hovering over the component.

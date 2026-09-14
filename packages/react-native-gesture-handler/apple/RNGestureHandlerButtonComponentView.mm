@@ -361,6 +361,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
     return;
   }
 
+  [_buttonView resetVisualPressState];
   RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   [manager dropGestureHandler:_managedHandlerTag];
 
@@ -375,6 +376,17 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 }
 
 #pragma mark - RNGHButtonEventDelegate
+
+- (void)dispatchVisualPressChange:(BOOL)pressed
+{
+  if (_eventEmitter == nullptr) {
+    return;
+  }
+  const auto &eventEmitter = static_cast<const RNGestureHandlerButtonEventEmitter &>(*_eventEmitter);
+  RNGestureHandlerButtonEventEmitter::OnButtonVisualPressChange event{};
+  event.pressed = pressed;
+  eventEmitter.onButtonVisualPressChange(event);
+}
 
 - (void)dispatchButtonEvent:(RNGHButtonEventType)type withExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
