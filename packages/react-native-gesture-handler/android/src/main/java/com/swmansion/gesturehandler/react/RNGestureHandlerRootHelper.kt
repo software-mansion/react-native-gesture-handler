@@ -185,7 +185,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   companion object {
-    private const val MIN_ALPHA_FOR_TOUCH = 0.1f
+    // Same threshold as UIKit / RCTViewComponentView hit testing on iOS.
+    private const val MIN_ALPHA_FOR_TOUCH = 0.01f
     private fun findRootViewTag(viewGroup: ViewGroup): ViewGroup {
       UiThreadUtil.assertOnUiThread()
       var parent: ViewParent? = viewGroup
