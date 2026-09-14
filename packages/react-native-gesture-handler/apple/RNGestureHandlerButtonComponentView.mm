@@ -613,8 +613,14 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 // This is necessary because RCTViewComponentView's hitTest might handle pointerEvents
 // from ViewProps and prevent touches from reaching _buttonView (which is the contentView).
 // Since _buttonView has its own pointerEvents handling, we always forward to it.
+// Keep the visibility checks RCTViewComponentView applies, so a hidden or
+// (nearly) transparent button is skipped like any other RN view.
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+  if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
+    return nil;
+  }
+
   if (![self pointInside:point withEvent:event]) {
     return nil;
   }
