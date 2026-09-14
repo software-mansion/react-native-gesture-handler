@@ -7,7 +7,8 @@ let packageDirectory = Context.packageDirectory
 
 func rnWorkletsPackageExists() -> Bool {
     let url = URL(fileURLWithPath: packageDirectory)
-        .appendingPathComponent("../RNWorklets/Package.swift")
+        .deletingLastPathComponent()
+        .appendingPathComponent("RNWorklets/Package.swift")
     return FileManager.default.fileExists(atPath: url.path)
 }
 
