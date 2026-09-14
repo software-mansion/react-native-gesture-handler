@@ -7,8 +7,13 @@ import NativeDetector from './NativeDetector';
 import Navigator from './Navigator';
 import RuntimeDecoration from './RuntimeDecoration';
 import Text from './Text';
+import VisualPress from './VisualPress';
 
 const EXAMPLES = [
+  {
+    name: 'Visual Press',
+    component: VisualPress,
+  },
   {
     name: 'Text',
     component: Text,
