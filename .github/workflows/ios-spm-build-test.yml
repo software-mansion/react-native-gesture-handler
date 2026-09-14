@@ -28,7 +28,7 @@ jobs:
   ios-spm-isolated:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
 
-    runs-on: macos-26-xlarge
+    runs-on: macos-26
     timeout-minutes: 60
 
     env:
@@ -99,7 +99,7 @@ jobs:
   ios-spm-with-worklets:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
 
-    runs-on: macos-26-xlarge
+    runs-on: macos-26
     timeout-minutes: 60
 
     env:
