@@ -70,12 +70,12 @@ let package = Package(
             path: ".",
             exclude: ["apple/RNGestureHandler.xcodeproj"],
             sources: ["apple", "shared"],
-            publicHeadersPath: "apple",
             cSettings: cSettings,
             cxxSettings: cxxSettings,
             linkerSettings: [
                 .linkedFramework("UIKit"),
                 .linkedFramework("Foundation"),
+                .linkedFramework("CoreGraphics"),
             ]
         ),
     ],

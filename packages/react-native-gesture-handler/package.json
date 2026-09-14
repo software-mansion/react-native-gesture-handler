@@ -25,6 +25,7 @@
   "types": "lib/typescript/index.d.ts",
   "files": [
     "Package.swift",
+    "include/",
     "src",
     "lib",
     "!**/__tests__",
