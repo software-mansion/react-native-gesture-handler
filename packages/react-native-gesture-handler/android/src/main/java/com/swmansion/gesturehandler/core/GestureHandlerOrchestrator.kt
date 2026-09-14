@@ -871,9 +871,11 @@ class GestureHandlerOrchestrator(
                 // A child view is handling touch, also extract handlers attached to this view
                 if (found) {
                   recordViewHandlersForPointer(view, coords, pointerId, event)
-                } else if (view is RNGestureHandlerDetectorView) {
+                } else if (view is RNGestureHandlerDetectorView && !allChildrenHidden(view)) {
                   // No child consumed the touch, but we still record the detector's own handlers so
-                  // that `hitSlop` expansion keeps working. The detector's frame ignores
+                  // that `hitSlop` expansion keeps working. Skipped when every child is hidden or
+                  // below the alpha gate, otherwise the detector would stay tappable while its
+                  // content is invisible. The detector's frame ignores
                   // child transforms, so for a single-child detector we check bounds in the child's
                   // transform-aware coordinate space - otherwise the detector would steal presses over
                   // areas its content has been moved away from.
@@ -910,6 +912,10 @@ class GestureHandlerOrchestrator(
     }
 
   private fun canReceiveEvents(view: View) = view.visibility == View.VISIBLE && view.alpha >= minimumAlphaForTraversal
+
+  // True when the group has children and none of them can receive events (hidden or below the alpha gate).
+  private fun allChildrenHidden(viewGroup: ViewGroup) =
+    viewGroup.childCount > 0 && (0 until viewGroup.childCount).none { canReceiveEvents(viewGroup.getChildAt(it)) }
 
   // if view is not a view group it is clipping, otherwise we check for `getClipChildren` flag to
   // be turned on and also confirm with the ViewConfigHelper implementation
