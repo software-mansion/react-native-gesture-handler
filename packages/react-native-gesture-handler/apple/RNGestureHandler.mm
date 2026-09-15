@@ -116,7 +116,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   self.enabled = YES;
   self.testID = nil;
-  self.manualActivation = NO;
+  _manualActivation = NO;
   _shouldCancelWhenOutside = NO;
   _cancelsJSResponder = YES;
   _hitSlop = RNGHHitSlopEmpty;
@@ -132,6 +132,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   [self resetConfig];
   [self updateConfig:config];
+  [self syncManualActivationRecognizer];
 }
 
 - (void)updateConfig:(NSDictionary *)config
@@ -665,14 +666,24 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)setManualActivation:(BOOL)manualActivation
 {
   _manualActivation = manualActivation;
+  [self syncManualActivationRecognizer];
+}
 
-  if (manualActivation) {
+- (void)syncManualActivationRecognizer
+{
+  BOOL hasRecognizer = _manualActivationRecognizer != nil;
+
+  if (hasRecognizer == _manualActivation) {
+    return;
+  }
+
+  if (_manualActivation) {
     _manualActivationRecognizer = [[RNManualActivationRecognizer alloc] initWithGestureHandler:self];
 
     if (_recognizer.view != nil) {
       [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
     }
-  } else if (_manualActivationRecognizer != nil) {
+  } else {
     [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
     _manualActivationRecognizer = nil;
   }
