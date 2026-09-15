@@ -1,4 +1,4 @@
-import type { CodegenTypes, HostComponent, ViewProps } from 'react-native';
+import type { CodegenTypes, ViewProps } from 'react-native';
 import { codegenNativeComponent } from 'react-native';
 
 // Publicly accessible type, moduleId is set internally
@@ -11,6 +11,4 @@ interface NativeProps extends ViewProps {
   unstable_forceActive?: boolean;
 }
 
-export default codegenNativeComponent<NativeProps>(
-  'RNGestureHandlerRootView'
-) as HostComponent<NativeProps>;
+export default codegenNativeComponent<NativeProps>('RNGestureHandlerRootView');
