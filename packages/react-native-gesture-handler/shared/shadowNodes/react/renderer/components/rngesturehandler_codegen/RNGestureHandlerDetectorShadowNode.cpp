@@ -72,9 +72,8 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
   // Default layout will reset the flag on child nodes.
   YogaLayoutableShadowNode::layout(layoutContext);
 
-  // No child had its layout changed, we can reuse previous values
-  if (!anyChildHasNewLayout) {
-    react_native_assert(previousLayoutMetrics_.has_value());
+  // No child had its layout changed, we can reuse previous values if available
+  if (!anyChildHasNewLayout && previousLayoutMetrics_.has_value()) {
     setLayoutMetrics(previousLayoutMetrics_.value());
     return;
   }
@@ -101,6 +100,7 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
   metrics.frame.origin = Point{minX, minY};
   metrics.frame.size = Size{maxX - minX, maxY - minY};
   setLayoutMetrics(metrics);
+  previousLayoutMetrics_ = metrics;
 
   // Shift all children so their positions are relative to the detector's origin
   for (const auto &child : children) {
