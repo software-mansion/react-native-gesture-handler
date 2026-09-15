@@ -8,6 +8,10 @@
 #ifndef RNGHStylusData_h
 #define RNGHStylusData_h
 
+#import <CoreGraphics/CoreGraphics.h>
+#import <Foundation/Foundation.h>
+#import <math.h>
+
 @interface RNGHStylusData : NSObject
 
 @property (atomic, assign) double tiltX;
