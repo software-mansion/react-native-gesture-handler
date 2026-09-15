@@ -6,7 +6,7 @@ import EventManager from './EventManager';
 export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private static activationKeys = ['Enter', ' '];
   private static cancelationKeys = ['Tab'];
-  private isPressed = false;
+  private pressedKeys = new Set<string>();
   private static registeredStaticListeners = false;
   private static instances: Set<KeyboardEventManager> = new Set();
 
@@ -27,7 +27,7 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private keyDownCallback = (event: KeyboardEvent): void => {
     if (
       KeyboardEventManager.cancelationKeys.indexOf(event.key) !== -1 &&
-      this.isPressed
+      this.pressedKeys.size > 0
     ) {
       this.dispatchEvent(event, EventTypes.CANCEL);
       return;
@@ -37,14 +37,19 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
       return;
     }
 
+    // Browsers repeat `keydown` while a key is held, and another activation key
+    // may go down during the press. The synthetic pointer stays down until every
+    // held activation key is released, so only the first one opens the gesture.
+    if (this.pressedKeys.size > 0) {
+      this.pressedKeys.add(event.key);
+      return;
+    }
+
     this.dispatchEvent(event, EventTypes.DOWN);
   };
 
   private onKeyUp = (event: KeyboardEvent): void => {
-    if (
-      KeyboardEventManager.activationKeys.indexOf(event.key) === -1 ||
-      !this.isPressed
-    ) {
+    if (!this.pressedKeys.delete(event.key) || this.pressedKeys.size > 0) {
       return;
     }
 
@@ -60,15 +65,15 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
 
     switch (eventType) {
       case EventTypes.UP:
-        this.isPressed = false;
+        this.pressedKeys.clear();
         this.onPointerUp(adaptedEvent);
         break;
       case EventTypes.DOWN:
-        this.isPressed = true;
+        this.pressedKeys.add(event.key);
         this.onPointerDown(adaptedEvent);
         break;
       case EventTypes.CANCEL:
-        this.isPressed = false;
+        this.pressedKeys.clear();
         this.onPointerCancel(adaptedEvent);
         break;
     }
@@ -102,6 +107,11 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
       );
       KeyboardEventManager.registeredStaticListeners = false;
     }
+  }
+
+  public override resetManager(): void {
+    super.resetManager();
+    this.pressedKeys.clear();
   }
 
   protected mapEvent(
