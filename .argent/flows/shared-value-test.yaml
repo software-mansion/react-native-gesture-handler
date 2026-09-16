@@ -16,6 +16,7 @@ steps:
   - await: { visible: { id: "clear-console-button" } }
   - tap: { id: "clear-console-button" }
   - tap: { id: "close-console-button" }
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
 
   - echo: "The gesture starts configured for a single tap, so one tap activates it"
@@ -31,6 +32,7 @@ steps:
   - echo: "Clear console"
   - tap: { id: "clear-console-button" }
   - tap: { id: "close-console-button" }
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
 
   - echo: "Raise the shared value, then check that a single tap no longer activates"
@@ -47,6 +49,7 @@ steps:
   - echo: "Clear console"
   - tap: { id: "clear-console-button" }
   - tap: { id: "close-console-button" }
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
 
   - echo: "A double tap matches the new configuration and activates the gesture"
