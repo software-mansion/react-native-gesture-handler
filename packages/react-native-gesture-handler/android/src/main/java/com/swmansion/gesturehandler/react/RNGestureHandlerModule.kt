@@ -170,6 +170,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   override fun getBindingsInstaller() = getBindingsInstallerCxx()
 
+  override fun getModuleId(): Double = moduleId.toDouble()
+
   override fun invalidate() {
     registry.dropAllHandlers()
     interactionManager.reset()

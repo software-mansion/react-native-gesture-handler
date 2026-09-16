@@ -1,7 +1,6 @@
 #pragma once
 #include <ReactCommon/BindingsInstallerHolder.h>
 #include <fbjni/fbjni.h>
-#include <string>
 
 namespace gesturehandler {
 using namespace facebook;
@@ -29,6 +28,5 @@ class RNGestureHandlerModule : public jni::HybridClass<RNGestureHandlerModule> {
   void setGestureState(const int handlerTag, const int state);
   bool installUIRuntimeBindings();
   void invalidateNative();
-  int getModuleId();
 };
 } // namespace gesturehandler

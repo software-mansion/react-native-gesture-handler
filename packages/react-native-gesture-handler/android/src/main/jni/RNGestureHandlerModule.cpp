@@ -37,7 +37,7 @@ RNGestureHandlerModule::getBindingsInstallerCxx() {
       [&, this](jsi::Runtime &runtime) {
         this->rnRuntime_ = &runtime;
         RNGHRuntimeDecorator::installRNRuntimeBindings(
-            runtime, getModuleId(), [&](int handlerTag, int state) {
+            runtime, [&](int handlerTag, int state) {
               setGestureState(handlerTag, state);
             });
       }));
@@ -71,16 +71,6 @@ void RNGestureHandlerModule::invalidateNative() {
   // This is called when the module is being destroyed, so we need to clear
   // the reference to the java part to avoid memory leaks.
   javaPart_ = nullptr;
-}
-
-int RNGestureHandlerModule::getModuleId() {
-  auto jthis = javaPart_;
-
-  auto cls = jthis->getClass();
-  auto fieldId = cls->getField<jint>("moduleId");
-
-  jint value = jthis->getFieldValue(fieldId);
-  return value;
 }
 
 } // namespace gesturehandler
