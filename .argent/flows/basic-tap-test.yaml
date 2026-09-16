@@ -14,6 +14,7 @@ steps:
   - await: { visible: "clear-console-button" }
   - tap: "clear-console-button"
   - tap: "close-console-button"
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
   - echo: "Tap the box and check if tap count is updated"
   - await: { visible: "Tap count: 0" }
@@ -29,6 +30,7 @@ steps:
   - assert: { visible: "3. onDeactivate" }
   - assert: { visible: "4. onFinalize" }
   - tap: "close-console-button"
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
   - await: { visible: "Tap count: 1" }
   - echo: "Tap the box again and check if tap count is updated"
@@ -40,6 +42,7 @@ steps:
   - await: { visible: "clear-console-button" }
   - tap: "clear-console-button"
   - tap: "close-console-button"
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
   - echo: "Long press the box and check if tap count is not updated"
   - long-press: "tap-box"
