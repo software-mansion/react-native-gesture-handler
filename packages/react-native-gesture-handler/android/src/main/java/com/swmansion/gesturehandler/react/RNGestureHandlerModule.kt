@@ -170,6 +170,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   override fun getBindingsInstaller() = getBindingsInstallerCxx()
 
+  @ReactMethod(isBlockingSynchronousMethod = true)
   override fun getModuleId(): Double = moduleId.toDouble()
 
   override fun invalidate() {
