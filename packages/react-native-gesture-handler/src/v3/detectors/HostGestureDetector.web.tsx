@@ -350,11 +350,10 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       // applied in `attachReadyHandler`, so this is a no-op for them.
       for (const tag of subs) {
         if (refs.attachedHandlers.has(tag)) {
-          RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
-            userSelect: child.userSelect,
-            touchAction: child.touchAction,
-            enableContextMenu: child.enableContextMenu,
-          });
+          RNGestureHandlerModule.updateGestureHandlerConfig(
+            tag,
+            unpackDOMProps(child)
+          );
         }
       }
     });

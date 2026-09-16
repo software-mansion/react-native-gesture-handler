@@ -286,16 +286,13 @@ export class GestureHandlerWebDelegate
   }
 
   private setContextMenu() {
-    if (!this.gestureHandler.enabled) {
-      this.removeContextMenuListeners();
-      return;
-    }
+    // Enabling and disabling the context menu use different listeners, so
+    // drop the current one before attaching the right one.
+    this.removeContextMenuListeners();
 
-    if (!this.wasContextMenuEnabled) {
-      this.removeContextMenuListeners();
+    if (this.gestureHandler.enabled) {
+      this.addContextMenuListeners();
     }
-
-    this.addContextMenuListeners();
   }
 
   onEnabledChange(): void {

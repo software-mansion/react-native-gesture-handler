@@ -1,3 +1,4 @@
+import { ActionType } from '../../../ActionType';
 import { PointerType } from '../../../PointerType';
 import { State } from '../../../State';
 import {
@@ -14,7 +15,11 @@ import { GestureHandlerWebDelegate } from '../../tools/GestureHandlerWebDelegate
 import GestureHandler from '../GestureHandler';
 import type IGestureHandler from '../IGestureHandler';
 
-class TestGestureHandler extends GestureHandler {}
+class TestGestureHandler extends GestureHandler {
+  public markAsNativeDetector() {
+    this.actionType = ActionType.NATIVE_DETECTOR;
+  }
+}
 
 class TestEventManager extends EventManager<unknown> {
   public registerListeners = jest.fn();
@@ -55,6 +60,7 @@ describe('GestureHandler web config reset', () => {
     const handler = new TestGestureHandler(
       delegate as unknown as GestureHandlerDelegate<unknown, IGestureHandler>
     );
+    handler.markAsNativeDetector();
     // The detector sends its props once, as a partial update.
     handler.updateGestureConfig({
       touchAction: 'pan-y',
@@ -83,6 +89,7 @@ describe('GestureHandler web config reset', () => {
     const handler = new TestGestureHandler(
       delegate as unknown as GestureHandlerDelegate<unknown, IGestureHandler>
     );
+    handler.markAsNativeDetector();
     handler.setGestureConfig({ enabled: true });
     handler.updateGestureConfig({
       touchAction: 'pan-y',

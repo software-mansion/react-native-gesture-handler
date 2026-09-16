@@ -950,9 +950,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     );
   }
 
-  // `enableContextMenu`, `touchAction` and `userSelect` are owned by the
-  // detector, which sends them (or their defaults) through partial updates
-  // only, so a full config replace must not clear them.
   protected resetConfig(): void {
     this._testID = undefined;
     this.manualActivation = false;
@@ -963,6 +960,16 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.forAnimated = false;
     this.forReanimated = false;
     this._activeCursor = undefined;
+
+    // On the v3 path these belong to the detector, which sends them (or their
+    // defaults) through partial updates only. Legacy handlers carry them in the
+    // full config and still get the reset.
+    if (!this.usesNativeOrVirtualDetector()) {
+      this.enableContextMenu = false;
+      this._touchAction = undefined;
+      this._userSelect = undefined;
+    }
+
     this.needsDOMUpdate = true;
   }
 
