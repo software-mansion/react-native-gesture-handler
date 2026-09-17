@@ -225,7 +225,15 @@ function teardown(refs: DetectorRefs) {
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
-  const handlerTagsSet = useMemo(() => new Set(handlerTags), [...handlerTags]);
+  // Spreading the array into the deps does not work: React compares
+  // deps only up to the shorter length, so a tag appended or removed at the end
+  // was never picked up.
+  const handlerTagsKey = handlerTags.join(',');
+  const handlerTagsSet = useMemo(
+    () => new Set(handlerTags),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [handlerTagsKey]
+  );
 
   const viewRef = useRef<Element>(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
