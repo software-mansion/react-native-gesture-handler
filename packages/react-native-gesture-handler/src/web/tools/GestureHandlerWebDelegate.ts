@@ -3,6 +3,7 @@ import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { State } from '../../State';
 import { tagMessage } from '../../utils';
 import { SingleGestureName } from '../../v3/types';
+import { DEFAULT_TOUCH_ACTION, DEFAULT_USER_SELECT } from '../constants';
 import type IGestureHandler from '../handlers/IGestureHandler';
 import type { SVGRef } from '../interfaces';
 import {
@@ -264,7 +265,7 @@ export class GestureHandlerWebDelegate
     this.ensureView(this.view);
 
     const value = this.gestureHandler.enabled
-      ? (userSelect ?? 'none')
+      ? (userSelect ?? DEFAULT_USER_SELECT)
       : this.defaultViewStyles.userSelect;
 
     this.setViewStyle('userSelect', value);
@@ -277,7 +278,7 @@ export class GestureHandlerWebDelegate
     this.ensureView(this.view);
 
     const value = this.gestureHandler.enabled
-      ? (touchAction ?? 'none')
+      ? (touchAction ?? DEFAULT_TOUCH_ACTION)
       : this.defaultViewStyles.touchAction;
 
     this.setViewStyle('touchAction', value);
@@ -285,16 +286,13 @@ export class GestureHandlerWebDelegate
   }
 
   private setContextMenu() {
-    if (!this.gestureHandler.enabled) {
-      this.removeContextMenuListeners();
-      return;
-    }
+    // Enabling and disabling the context menu use different listeners, so
+    // drop the current one before attaching the right one.
+    this.removeContextMenuListeners();
 
-    if (!this.wasContextMenuEnabled) {
-      this.removeContextMenuListeners();
+    if (this.gestureHandler.enabled) {
+      this.addContextMenuListeners();
     }
-
-    this.addContextMenuListeners();
   }
 
   onEnabledChange(): void {

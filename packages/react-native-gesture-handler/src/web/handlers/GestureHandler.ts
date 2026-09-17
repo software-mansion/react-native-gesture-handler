@@ -959,10 +959,17 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.needsPointerData = false;
     this.forAnimated = false;
     this.forReanimated = false;
-    this.enableContextMenu = false;
     this._activeCursor = undefined;
-    this._touchAction = undefined;
-    this._userSelect = undefined;
+
+    // On the v3 path these belong to the detector, which sends them (or their
+    // defaults) through partial updates only. Legacy handlers carry them in the
+    // full config and still get the reset.
+    if (!this.usesNativeOrVirtualDetector()) {
+      this.enableContextMenu = false;
+      this._touchAction = undefined;
+      this._userSelect = undefined;
+    }
+
     this.needsDOMUpdate = true;
   }
 

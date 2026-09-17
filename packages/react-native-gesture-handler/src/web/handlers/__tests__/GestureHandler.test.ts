@@ -1,5 +1,11 @@
+import { ActionType } from '../../../ActionType';
 import { PointerType } from '../../../PointerType';
 import { State } from '../../../State';
+import {
+  DEFAULT_ENABLE_CONTEXT_MENU,
+  DEFAULT_TOUCH_ACTION,
+  DEFAULT_USER_SELECT,
+} from '../../constants';
 import type { AdaptedEvent, Config } from '../../interfaces';
 import { EventTypes } from '../../interfaces';
 import EventManager from '../../tools/EventManager';
@@ -9,7 +15,11 @@ import { GestureHandlerWebDelegate } from '../../tools/GestureHandlerWebDelegate
 import GestureHandler from '../GestureHandler';
 import type IGestureHandler from '../IGestureHandler';
 
-class TestGestureHandler extends GestureHandler {}
+class TestGestureHandler extends GestureHandler {
+  public markAsNativeDetector() {
+    this.actionType = ActionType.NATIVE_DETECTOR;
+  }
+}
 
 class TestEventManager extends EventManager<unknown> {
   public registerListeners = jest.fn();
@@ -41,7 +51,7 @@ describe('GestureHandler web config reset', () => {
     expect(handler.enabled).toBe(true);
   });
 
-  test('a config without touchAction refreshes the DOM', () => {
+  test('a full config replace keeps the detector props and refreshes the DOM', () => {
     const delegate = {
       onEnabledChange: jest.fn(),
       updateDOM: jest.fn(),
@@ -50,12 +60,57 @@ describe('GestureHandler web config reset', () => {
     const handler = new TestGestureHandler(
       delegate as unknown as GestureHandlerDelegate<unknown, IGestureHandler>
     );
-    handler.setGestureConfig({ enabled: true, touchAction: 'pan-y' });
+    handler.markAsNativeDetector();
+    // The detector sends its props once, as a partial update.
+    handler.updateGestureConfig({
+      touchAction: 'pan-y',
+      userSelect: 'text',
+      enableContextMenu: true,
+    });
 
+    // The owner re-sends the full gesture config, which never carries them.
     handler.setGestureConfig({ enabled: true });
 
-    expect(handler.touchAction).toBeUndefined();
+    expect(handler.touchAction).toBe('pan-y');
+    expect(handler.userSelect).toBe('text');
+    expect(handler.enableContextMenu).toBe(true);
+    // The partial update also enabled the handler, so it went through
+    // `onEnabledChange`; only the full replace refreshes the DOM directly.
+    expect(delegate.onEnabledChange).toHaveBeenCalledTimes(1);
     expect(delegate.updateDOM).toHaveBeenCalledTimes(1);
+  });
+
+  test('the detector resets the props it set by sending the defaults', () => {
+    const delegate = {
+      onEnabledChange: jest.fn(),
+      updateDOM: jest.fn(),
+      reset: jest.fn(),
+    };
+    const handler = new TestGestureHandler(
+      delegate as unknown as GestureHandlerDelegate<unknown, IGestureHandler>
+    );
+    handler.markAsNativeDetector();
+    handler.setGestureConfig({ enabled: true });
+    handler.updateGestureConfig({
+      touchAction: 'pan-y',
+      userSelect: 'text',
+      enableContextMenu: true,
+    });
+
+    // The detector re-sends all three whenever one of them changes, with the
+    // defaults standing in for props that are no longer set.
+    handler.updateGestureConfig({
+      touchAction: DEFAULT_TOUCH_ACTION,
+      userSelect: DEFAULT_USER_SELECT,
+      enableContextMenu: DEFAULT_ENABLE_CONTEXT_MENU,
+    });
+
+    expect(handler.touchAction).toBe('none');
+    expect(handler.userSelect).toBe('none');
+    expect(handler.enableContextMenu).toBe(false);
+    // The initial full set enabled the handler (`onEnabledChange`); the two
+    // partial updates refresh the DOM directly.
+    expect(delegate.updateDOM).toHaveBeenCalledTimes(2);
   });
 
   test('the web delegate ignores DOM updates before init', () => {
