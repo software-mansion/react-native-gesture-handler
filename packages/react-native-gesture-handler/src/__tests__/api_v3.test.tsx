@@ -11,10 +11,15 @@ import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
 import { Pressable, RectButton, ScrollView, Touchable } from '../v3/components';
-import { GestureDetector } from '../v3/detectors';
+import {
+  GestureDetector,
+  InterceptingGestureDetector,
+  VirtualGestureDetector,
+} from '../v3/detectors';
 import { useSimultaneousGestures } from '../v3/hooks';
 import {
   useLongPressGesture,
+  useNativeGesture,
   usePanGesture,
   useTapGesture,
 } from '../v3/hooks/gestures';
@@ -189,12 +194,22 @@ describe('[API v3] Components', () => {
     );
   };
 
+  // Detector host views in document order (outer first).
+  const getNativeDetectors = (
+    views: ReturnType<typeof render>['UNSAFE_getAllByType']
+  ) => {
+    return views(View).filter(
+      ({ props }) => props.handlerTags && props.onStartShouldSetResponder
+    );
+  };
+
+  // The innermost detector: the GH ScrollView is a detector too, and it is
+  // rendered above the example's one.
   const getNativeDetector = (
     views: ReturnType<typeof render>['UNSAFE_getAllByType']
   ) => {
-    return views(View).find(
-      ({ props }) => props.handlerTags && props.onStartShouldSetResponder
-    );
+    const detectors = getNativeDetectors(views);
+    return detectors[detectors.length - 1];
   };
 
   const TapGestureDetectorExample = () => {
@@ -214,6 +229,46 @@ describe('[API v3] Components', () => {
       <GestureDetector gesture={pan}>
         <View />
       </GestureDetector>
+    );
+  };
+
+  const VirtualTapDetectorExample = () => {
+    const tap = useTapGesture({ disableReanimated: true });
+
+    return (
+      <VirtualGestureDetector gesture={tap}>
+        <View testID="virtual-child" />
+      </VirtualGestureDetector>
+    );
+  };
+
+  const VirtualPanDetectorExample = () => {
+    const pan = usePanGesture({ disableReanimated: true });
+
+    return (
+      <VirtualGestureDetector gesture={pan}>
+        <View testID="virtual-child" />
+      </VirtualGestureDetector>
+    );
+  };
+
+  const InterceptingTapDetectorExample = () => {
+    const tap = useTapGesture({ disableReanimated: true });
+
+    return (
+      <InterceptingGestureDetector gesture={tap}>
+        <View />
+      </InterceptingGestureDetector>
+    );
+  };
+
+  const InterceptingNativeDetectorExample = () => {
+    const native = useNativeGesture({ disableReanimated: true });
+
+    return (
+      <InterceptingGestureDetector gesture={native}>
+        <View />
+      </InterceptingGestureDetector>
     );
   };
 
@@ -334,6 +389,107 @@ describe('[API v3] Components', () => {
       ).toBe(false);
       expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+    });
+
+    test('handles responder event passed through VirtualDetector for supported gestures', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <VirtualTapDetectorExample />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      const virtualChild = screen.getByTestId('virtual-child');
+
+      expect(scrollViewResponder).toBeDefined();
+      expect(
+        scrollViewResponder?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
+      expect(virtualChild.props.onStartShouldSetResponder()).toBe(false);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+    });
+
+    test('does not handle responder event passed through VirtualDetector for unsupported gestures', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <VirtualPanDetectorExample />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      const virtualChild = screen.getByTestId('virtual-child');
+
+      expect(scrollViewResponder).toBeDefined();
+      expect(
+        scrollViewResponder?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
+      expect(virtualChild.props.onStartShouldSetResponder()).toBe(false);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
+        false
+      );
+    });
+
+    test('handles responder event passed through InterceptingGestureDetector for supported gestures', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <InterceptingTapDetectorExample />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const detectors = getNativeDetectors(UNSAFE_getAllByType);
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      // The GH ScrollView is the outer intercepting detector, the example is the inner one.
+      const interceptingDetector = detectors[detectors.length - 1];
+
+      expect(interceptingDetector).toBeDefined();
+      expect(scrollViewResponder).toBeDefined();
+      expect(
+        scrollViewResponder?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
+      expect(interceptingDetector?.props.onStartShouldSetResponder()).toBe(
+        false
+      );
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+    });
+
+    test('does not handle responder event passed through InterceptingGestureDetector for native gestures', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <InterceptingNativeDetectorExample />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const detectors = getNativeDetectors(UNSAFE_getAllByType);
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      const interceptingDetector = detectors[detectors.length - 1];
+
+      expect(interceptingDetector).toBeDefined();
+      expect(scrollViewResponder).toBeDefined();
+      expect(
+        scrollViewResponder?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
+      expect(interceptingDetector?.props.onStartShouldSetResponder()).toBe(
+        false
+      );
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
+        false
+      );
     });
 
     test('does not handle responder event passed through NativeDetector for unsupported gestures', async () => {

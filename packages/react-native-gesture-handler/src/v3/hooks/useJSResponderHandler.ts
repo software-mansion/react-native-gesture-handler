@@ -19,18 +19,24 @@ function isSupportedGesture<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
->(gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>): boolean {
+>(
+  gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>,
+  allowNative: boolean
+): boolean {
   if (isComposedGesture(gesture)) {
-    return gesture.gestures.some(isSupportedGesture);
+    return gesture.gestures.some((child) =>
+      isSupportedGesture(child, allowNative)
+    );
   }
 
   switch (gesture.type) {
     case SingleGestureName.Tap:
     case SingleGestureName.LongPress:
     case SingleGestureName.Fling:
-    case SingleGestureName.Native:
     case SingleGestureName.Hover:
       return true;
+    case SingleGestureName.Native:
+      return allowNative;
     default:
       return false;
   }
@@ -40,7 +46,14 @@ export function useJSResponderHandler<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
->(gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>) {
+>(
+  gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData> | undefined,
+  // Whether a Native gesture counts as handling the tap. True for buttons and
+  // other wrapped controls. InterceptingGestureDetector passes false, since
+  // ScrollView and FlatList are intercepting detectors with a Native gesture
+  // and a touch on a scroller should not keep the keyboard open.
+  allowNative = true
+) {
   const jsResponderContext = use(JSResponderContext);
   const [enabledSharedValueRevision, setEnabledSharedValueRevision] =
     useState(0);
@@ -51,6 +64,10 @@ export function useJSResponderHandler<
   }
 
   useEffect(() => {
+    if (gesture === undefined) {
+      return;
+    }
+
     const enabledSharedValues = getEnabledSharedValues(gesture);
 
     if (Worklets === undefined || enabledSharedValues.length === 0) {
@@ -107,8 +124,12 @@ export function useJSResponderHandler<
 
   const shouldHandleJSResponderEvent = useCallback(() => {
     void enabledSharedValueRevision;
-    return isGestureEnabled(gesture) && isSupportedGesture(gesture);
-  }, [enabledSharedValueRevision, gesture]);
+    return (
+      gesture !== undefined &&
+      isGestureEnabled(gesture) &&
+      isSupportedGesture(gesture, allowNative)
+    );
+  }, [enabledSharedValueRevision, gesture, allowNative]);
 
   const handleStartShouldSetResponder = useCallback(() => {
     if (shouldHandleJSResponderEvent()) {
