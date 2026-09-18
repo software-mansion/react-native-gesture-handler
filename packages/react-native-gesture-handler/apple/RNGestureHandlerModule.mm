@@ -98,7 +98,7 @@ RCT_EXPORT_MODULE()
   _rnRuntime = &rnRuntime;
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
+  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
@@ -207,6 +207,11 @@ RCT_EXPORT_MODULE()
   }
 
   return _uiRuntimeDecorated ? @1 : @0;
+}
+
+- (nonnull NSNumber *)getModuleId
+{
+  return @(_moduleId);
 }
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag

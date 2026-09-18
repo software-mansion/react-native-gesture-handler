@@ -35,6 +35,7 @@ export interface Spec extends TurboModule {
   dropGestureHandler: (handlerTag: CodegenTypes.Double) => void;
   flushOperations: () => void;
   installUIRuntimeBindings: () => boolean;
+  getModuleId: () => CodegenTypes.Int32;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNGestureHandlerModule');

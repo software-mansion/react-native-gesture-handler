@@ -7,6 +7,7 @@ import GestureHandlerButton, {
 } from '../../../components/GestureHandlerButton';
 import { getTVProps } from '../../../components/utils';
 import { getNextHandlerTag } from '../../../handlers/getNextHandlerTag';
+import { getModuleId } from '../../../moduleId';
 import {
   isKeyboardDismissingTap,
   JSResponderContext,
@@ -214,7 +215,7 @@ export const Touchable = (props: TouchableProps) => {
       ref={ref ?? null}
       enabled={!disabled}
       onStartShouldSetResponderCapture={handleStartShouldSetResponderCapture}
-      moduleId={globalThis._RNGH_MODULE_ID}
+      moduleId={getModuleId()}
       handlerTag={handlerTag}
       cancelOnLeave={cancelOnLeave}
       gestureTestID={props.testID}

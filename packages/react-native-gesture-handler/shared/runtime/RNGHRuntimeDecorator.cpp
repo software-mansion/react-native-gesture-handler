@@ -18,7 +18,6 @@ using namespace facebook::react;
 
 void RNGHRuntimeDecorator::installRNRuntimeBindings(
     jsi::Runtime &rnRuntime,
-    int moduleId,
     std::function<void(int, int)> &&setGestureState) {
   const auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
       rnRuntime,
@@ -83,10 +82,6 @@ void RNGHRuntimeDecorator::installRNRuntimeBindings(
 
   rnRuntime.global().setProperty(
       rnRuntime, "_setGestureStateAsync", std::move(setGestureStateAsync));
-
-  auto moduleIdValue = jsi::Value(moduleId);
-  rnRuntime.global().setProperty(
-      rnRuntime, "_RNGH_MODULE_ID", std::move(moduleIdValue));
 }
 
 void RNGHRuntimeDecorator::installUIRuntimeBindings(
