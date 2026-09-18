@@ -33,6 +33,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
+    RNGestureHandlerDetectorTouchForwarder.register(this)
     if (moduleId != -1) {
       attachHandlers(handlersToAttach)
       attachVirtualChildren(virtualChildrenToAttach)
@@ -40,6 +41,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   override fun onDetachedFromWindow() {
+    RNGestureHandlerDetectorTouchForwarder.unregister(this)
     detachAllHandlers()
     super.onDetachedFromWindow()
   }
