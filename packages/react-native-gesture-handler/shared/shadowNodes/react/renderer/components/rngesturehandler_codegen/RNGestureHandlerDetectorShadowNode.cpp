@@ -11,6 +11,8 @@
 
 #include "RNGestureHandlerDetectorShadowNode.h"
 
+#include <react/renderer/graphics/Transform.h>
+
 #include <limits>
 
 namespace facebook::react {
@@ -79,28 +81,35 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
     return;
   }
 
-  // Calculate bounding box of all children
+  // Calculate bounding box of all children.
   Float minX = std::numeric_limits<Float>::infinity();
   Float minY = std::numeric_limits<Float>::infinity();
   Float maxX = -std::numeric_limits<Float>::infinity();
   Float maxY = -std::numeric_limits<Float>::infinity();
 
+  const auto extend = [&](const Rect &rect) {
+    minX = std::min(minX, rect.getMinX());
+    minY = std::min(minY, rect.getMinY());
+    maxX = std::max(maxX, rect.getMaxX());
+    maxY = std::max(maxY, rect.getMaxY());
+  };
+
   for (const auto &child : children) {
     auto yogaChild =
         std::static_pointer_cast<const YogaLayoutableShadowNode>(child);
     const auto &frame = yogaChild->getLayoutMetrics().frame;
+    extend(frame);
 
-    minX = std::min(minX, frame.origin.x);
-    minY = std::min(minY, frame.origin.y);
-    maxX = std::max(maxX, frame.origin.x + frame.size.width);
-    maxY = std::max(maxY, frame.origin.y + frame.size.height);
+#ifdef ANDROID
+    // Android's ViewGroup only dispatches touches inside a child's bounds, so
+    // the frame also covers the transformed content. iOS hit-tests outside the
+    // bounds through the overflowInset override in RNGestureHandlerDetector.mm.
+    const auto transform = yogaChild->getTransform();
+    if (transform != Transform::Identity()) {
+      extend(frame * transform);
+    }
+#endif
   }
-
-  // Set detector's metrics to the bounding box of all children
-  auto metrics = getLayoutMetrics();
-  metrics.frame.origin = Point{minX, minY};
-  metrics.frame.size = Size{maxX - minX, maxY - minY};
-  setLayoutMetrics(metrics);
 
   // Shift all children so their positions are relative to the detector's origin
   for (const auto &child : children) {
@@ -115,6 +124,27 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
     childMetrics.frame.origin.y -= minY;
     mutableChild->setLayoutMetrics(childMetrics);
   }
+
+  // Set detector's metrics to the bounding box of all children
+  auto metrics = getLayoutMetrics();
+  metrics.frame.origin = Point{minX, minY};
+  metrics.frame.size = Size{maxX - minX, maxY - minY};
+
+#ifdef ANDROID
+  // The default layout computed the overflow inset against the zero-sized
+  // frame Yoga gives a `display: contents` node. Recompute it against the
+  // real frame; children are already shifted, so their bounds are relative.
+  const auto contentBounds = getContentBounds();
+  metrics.overflowInset = EdgeInsets{
+      .left = std::min(contentBounds.getMinX(), Float{0}),
+      .top = std::min(contentBounds.getMinY(), Float{0}),
+      .right = -std::max(
+          contentBounds.getMaxX() - metrics.frame.size.width, Float{0}),
+      .bottom = -std::max(
+          contentBounds.getMaxY() - metrics.frame.size.height, Float{0}),
+  };
+#endif
+  setLayoutMetrics(metrics);
 }
 
 std::shared_ptr<const ShadowNode>
