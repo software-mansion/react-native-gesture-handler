@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ButtonEvent as SpecButtonEvent } from '../src/specs/RNGestureHandlerButtonNativeComponent';
+import type { TouchableProps } from '../src/v3/components/Touchable/TouchableProps';
 import type { ButtonEvent } from '../src/v3/types';
 
 // Instantiate with a conditional type that resolves to `true` — a `false`
@@ -15,4 +16,16 @@ type ButtonEventMatchesSpec = StaticAssert<
       ? true
       : false
     : false
+>;
+
+type TouchableHasVisualPressCallback = StaticAssert<
+  TouchableProps['onVisualPressChange'] extends
+    | ((pressed: boolean) => void)
+    | undefined
+    ? true
+    : false
+>;
+
+type TouchableHidesVisualPressTransport = StaticAssert<
+  'onButtonVisualPressChange' extends keyof TouchableProps ? false : true
 >;

@@ -53,6 +53,7 @@
   dispatch_block_t _pendingPressOutBlock;
   BOOL _isHovered;
   BOOL _isPressed;
+  BOOL _visualPressed;
   dispatch_block_t _pendingHoverOutBlock;
 
   // Whether a hover was already open at press-start. The touch stream may only
@@ -186,6 +187,7 @@
   // prior use leaks into the recycled view, and `updateProps:` won't undo it
   // when defaults are unchanged between mounts.
   [self cancelPendingPressOutAnimation];
+  [self setVisualPressed:NO];
   [self cancelPendingHoverOut];
   [self cancelPendingLongPress];
   _lastEventWasInside = NO;
@@ -220,6 +222,7 @@
   [super viewWillMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self setVisualPressed:NO];
     [self cancelPendingHoverOut];
     [self cancelPendingLongPress];
     [self applyStartAnimationState];
@@ -244,6 +247,7 @@
   [super willMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self cancelPendingPressOutAnimation];
+    [self setVisualPressed:NO];
     [self cancelPendingHoverOut];
     [self cancelPendingLongPress];
     [self applyStartAnimationState];
@@ -336,6 +340,10 @@
     [self cancelActivePress];
   }
 #endif
+
+  if (!userEnabled && _visualPressed) {
+    [self resetVisualPressState];
+  }
 
   [self dispatchHoverEventIfNeeded];
 
@@ -592,6 +600,29 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 }
 
+- (void)setVisualPressed:(BOOL)pressed
+{
+  if (_visualPressed == pressed) {
+    return;
+  }
+  _visualPressed = pressed;
+  if (_managedHandlerTag != nil) {
+    [self.eventDelegate dispatchVisualPressChange:pressed];
+  }
+}
+
+- (void)resetVisualPressState
+{
+  [self cancelPendingPressOutAnimation];
+  _isPressed = NO;
+  _pressInTimestamp = 0;
+  [self setVisualPressed:NO];
+  [self animateToOpacity:self.restingOpacity
+                   scale:self.restingScale
+         underlayOpacity:self.restingUnderlayOpacity
+                duration:0];
+}
+
 - (void)handleAnimatePressIn
 {
   if (_pendingPressOutBlock) {
@@ -603,6 +634,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   [self cancelPendingHoverOut];
   _isPressed = YES;
   _pressInTimestamp = CACurrentMediaTime();
+  [self setVisualPressed:YES];
   [self animateToOpacity:_activeOpacity
                    scale:_activeScale
          underlayOpacity:_activeUnderlayOpacity
@@ -614,6 +646,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   _isPressed = NO;
   if (_pendingPressOutBlock) {
     dispatch_block_cancel(_pendingPressOutBlock);
+    _pendingPressOutBlock = nil;
   }
 
   NSTimeInterval elapsed = (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
@@ -621,12 +654,14 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   if (_longPressDuration >= 0 && elapsed >= _longPressDuration) {
     // Long-press release - use the configured long-press out duration.
     NSInteger longPressOut = self.longPressAnimationOutDuration;
+    [self setVisualPressed:NO];
     [self animateToOpacity:self.restingOpacity
                      scale:self.restingScale
            underlayOpacity:self.restingUnderlayOpacity
                   duration:longPressOut];
   } else if (elapsed >= _tapAnimationInDuration) {
     // Press-in animation fully finished - release with the configured out duration.
+    [self setVisualPressed:NO];
     [self animateToOpacity:self.restingOpacity
                      scale:self.restingScale
            underlayOpacity:self.restingUnderlayOpacity
@@ -634,6 +669,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
   } else if (elapsed * 2 >= _tapAnimationOutDuration) {
     // Past minimum but press-in animation still playing, animate out in elapsed time
+    [self setVisualPressed:NO];
     [self animateToOpacity:self.restingOpacity
                      scale:self.restingScale
            underlayOpacity:self.restingUnderlayOpacity
@@ -649,6 +685,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       __strong auto strongSelf = weakSelf;
       if (strongSelf) {
         strongSelf->_pendingPressOutBlock = nil;
+        [strongSelf setVisualPressed:NO];
         [strongSelf animateToOpacity:strongSelf.restingOpacity
                                scale:strongSelf.restingScale
                      underlayOpacity:strongSelf.restingUnderlayOpacity
@@ -888,6 +925,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     return;
   }
 
+  [self setVisualPressed:NO];
   if ([self effectiveHover]) {
     [self animateToOpacity:self.hoverOpacity
                      scale:self.hoverScale

@@ -7,6 +7,7 @@ import GestureHandlerButton, {
 } from '../../../components/GestureHandlerButton';
 import { getTVProps } from '../../../components/utils';
 import { getNextHandlerTag } from '../../../handlers/getNextHandlerTag';
+import type { ButtonVisualPressEvent } from '../../../specs/RNGestureHandlerButtonNativeComponent';
 import {
   isKeyboardDismissingTap,
   JSResponderContext,
@@ -79,6 +80,7 @@ export const Touchable = (props: TouchableProps) => {
     onPress,
     onPressIn,
     onPressOut,
+    onVisualPressChange,
     onHoverIn,
     onHoverOut,
     children,
@@ -108,6 +110,15 @@ export const Touchable = (props: TouchableProps) => {
 
     return false;
   }, [disabled, jsResponderContext]);
+
+  const internalOnVisualPressChange = useMemo(
+    () =>
+      onVisualPressChange
+        ? (event: NativeSyntheticEvent<ButtonVisualPressEvent>) =>
+            onVisualPressChange(event.nativeEvent.pressed)
+        : undefined,
+    [onVisualPressChange]
+  );
 
   const internalOnPress = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
@@ -225,6 +236,7 @@ export const Touchable = (props: TouchableProps) => {
       underlayColor={underlayColor}
       longPressDuration={resolvedDelayLongPress}
       hasLongPressHandler={onLongPress !== undefined}
+      onButtonVisualPressChange={internalOnVisualPressChange}
       onButtonPress={internalOnPress}
       onButtonPressIn={internalOnPressIn}
       onButtonPressOut={internalOnPressOut}

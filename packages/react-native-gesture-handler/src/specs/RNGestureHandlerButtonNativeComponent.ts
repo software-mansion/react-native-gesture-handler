@@ -6,6 +6,8 @@ import type {
 } from 'react-native';
 import { codegenNativeComponent } from 'react-native';
 
+export type ButtonVisualPressEvent = Readonly<{ pressed: boolean }>;
+
 export type ButtonEvent = Readonly<{
   pointerInside: boolean;
   x: CodegenTypes.Double;
@@ -21,6 +23,9 @@ interface NativeProps extends ViewProps {
   // The events are namespaced with `Button` because the base view config on iOS
   // already registers `topPress` as a bubbling event — a direct event with the
   // same top-level name would fail view config validation in dev.
+  onButtonVisualPressChange?:
+    | CodegenTypes.DirectEventHandler<ButtonVisualPressEvent>
+    | undefined;
   onButtonPress?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
   onButtonPressIn?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;
   onButtonPressOut?: CodegenTypes.DirectEventHandler<ButtonEvent> | undefined;

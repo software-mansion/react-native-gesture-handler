@@ -9,6 +9,7 @@ import type {
   ViewStyle,
 } from 'react-native';
 
+import type { ButtonVisualPressEvent } from '../specs/RNGestureHandlerButtonNativeComponent';
 import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
 import type { ButtonEvent } from '../v3/types';
 
@@ -19,6 +20,10 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    * Defines if buttons should respond to touches. By default set to true.
    */
   enabled?: boolean | undefined;
+
+  onButtonVisualPressChange?:
+    | ((event: NativeSyntheticEvent<ButtonVisualPressEvent>) => void)
+    | undefined;
 
   hasLongPressHandler?: boolean | undefined;
   moduleId?: number | undefined;

@@ -53,6 +53,7 @@ import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerButtonEvent
+import com.swmansion.gesturehandler.react.events.RNGestureHandlerButtonVisualPressEvent
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager :
@@ -489,6 +490,7 @@ class RNGestureHandlerButtonViewManager :
 
   private fun dropManagedHandler(view: ButtonViewGroup) {
     val tag = view.managedHandlerTag ?: return
+    view.resetVisualPressState()
     // Cleared even if the drop below doesn't go through — the view must not keep a dangling tag.
     view.managedHandlerTag = null
 
@@ -606,6 +608,7 @@ class RNGestureHandlerButtonViewManager :
     private var receivedKeyEvent = false
     private var currentAnimator: AnimatorSet? = null
     private var underlayDrawable: PaintDrawable? = null
+    private var visualPressed = false
     private var pressInTimestamp = 0L
     private var pendingPressOut: Runnable? = null
     private var pendingLongPress: Runnable? = null
@@ -1042,12 +1045,35 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
+    private fun setVisualPressed(pressed: Boolean) {
+      if (visualPressed == pressed) {
+        return
+      }
+      visualPressed = pressed
+      if (managedHandlerTag == null) {
+        return
+      }
+      val reactContext = context as ReactContext
+      // TODO: deprecated, but its replacement is unavailable before RN 0.85 — drop when possible
+      val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id) ?: return
+      eventDispatcher.dispatchEvent(RNGestureHandlerButtonVisualPressEvent(this, pressed))
+    }
+
+    fun resetVisualPressState() {
+      pendingPressOut?.let { handler?.removeCallbacks(it) }
+      pendingPressOut = null
+      pressInTimestamp = 0L
+      setVisualPressed(false)
+      animateTo(restingOpacity, restingScale, restingUnderlayOpacity, 0)
+    }
+
     private fun animatePressIn() {
       pendingPressOut?.let {
         handler?.removeCallbacks(it)
         pendingPressOut = null
       }
       pressInTimestamp = SystemClock.uptimeMillis()
+      setVisualPressed(true)
       animateTo(activeOpacity, activeScale, activeUnderlayOpacity, tapAnimationInDuration.toLong())
     }
 
@@ -1056,6 +1082,7 @@ class RNGestureHandlerButtonViewManager :
         return
       }
 
+      setVisualPressed(false)
       if (effectiveHover) {
         animateTo(hoverOpacity, hoverScale, hoverUnderlayOpacity, hoverAnimationInDuration.toLong())
       } else {
@@ -1194,6 +1221,7 @@ class RNGestureHandlerButtonViewManager :
 
     private fun animatePressOut() {
       pendingPressOut?.let { handler?.removeCallbacks(it) }
+      pendingPressOut = null
       val tapInMs = tapAnimationInDuration.toLong()
       val tapOutMs = tapAnimationOutDuration.toLong()
       val longPressMs = longPressDuration.toLong()
@@ -1202,12 +1230,15 @@ class RNGestureHandlerButtonViewManager :
 
       if (longPressMs >= 0 && elapsed >= longPressMs) {
         // Long-press release - use the configured long-press out duration.
+        setVisualPressed(false)
         animateTo(restingOpacity, restingScale, restingUnderlayOpacity, longPressOutMs)
       } else if (elapsed >= tapInMs) {
         // Press-in animation fully finished — release with the configured out duration.
+        setVisualPressed(false)
         animateTo(restingOpacity, restingScale, restingUnderlayOpacity, tapOutMs)
         // elapsed * 2 to ensure there is at least half of the tapAnimationOutDuration left for the animation to play
       } else if (elapsed * 2 >= tapOutMs) {
+        setVisualPressed(false)
         animateTo(restingOpacity, restingScale, restingUnderlayOpacity, elapsed)
       } else {
         val remaining = tapInMs - elapsed
@@ -1215,6 +1246,7 @@ class RNGestureHandlerButtonViewManager :
 
         val runnable = Runnable {
           pendingPressOut = null
+          setVisualPressed(false)
           animateTo(restingOpacity, restingScale, restingUnderlayOpacity, tapOutMs)
         }
         pendingPressOut = runnable
@@ -1356,6 +1388,8 @@ class RNGestureHandlerButtonViewManager :
       // and re-inserting, so detaching is not proof the pointer left. A genuine
       // teardown clears it in `onDropViewInstance` instead.
       isHovered = false
+      pressInTimestamp = 0L
+      setVisualPressed(false)
       applyStartAnimationState()
 
       if (touchResponder === this) {
@@ -1494,14 +1528,12 @@ class RNGestureHandlerButtonViewManager :
         return
       }
 
-      if (!enabled && isPressed) {
-        setPressed(false)
+      if (!enabled && (isPressed || visualPressed)) {
+        if (isPressed) {
+          setPressed(false)
+        }
 
-        // No finger lifted, so skip the press-out fade: it would overlap the
-        // restyle that usually comes with disabling and show as a flash.
-        pendingPressOut?.let { handler?.removeCallbacks(it) }
-        pendingPressOut = null
-        animateTo(restingOpacity, restingScale, restingUnderlayOpacity, 0)
+        resetVisualPressState()
       }
 
       // The managed handler mirrors the button's enabled state.

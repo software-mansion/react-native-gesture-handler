@@ -27,6 +27,8 @@ typedef NS_ENUM(NSInteger, RNGHButtonEventType) {
 - (void)dispatchButtonEvent:(RNGHButtonEventType)type
               withExtraData:(nullable RNGestureHandlerEventExtraData *)extraData;
 
+- (void)dispatchVisualPressChange:(BOOL)pressed;
+
 @end
 
 #if TARGET_OS_OSX
@@ -100,6 +102,7 @@ typedef NS_ENUM(NSInteger, RNGHButtonEventType) {
  * and the underlay opacity to neutral values.
  */
 - (void)prepareForRecycle;
+- (void)resetVisualPressState;
 
 /**
  * Updates the underlay layer's corner radii with separate horizontal/vertical
