@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import React, { useCallback } from 'react';
+import type { GestureResponderEvent } from 'react-native';
 
 import type { WrapRef } from '../../../hostInstance';
 import { assignRef, preferHostInstance } from '../../../hostInstance';
@@ -7,9 +8,16 @@ import { tagMessage } from '../../../utils';
 
 export type { WrapRef };
 
-export type WrapProps = PropsWithChildren<{ ref?: WrapRef }>;
+export type WrapProps = PropsWithChildren<{
+  ref?: WrapRef;
+  onStartShouldSetResponder?: (event: GestureResponderEvent) => boolean;
+}>;
 
-export const Wrap: React.FunctionComponent<WrapProps> = ({ ref, children }) => {
+export const Wrap: React.FunctionComponent<WrapProps> = ({
+  ref,
+  children,
+  onStartShouldSetResponder,
+}) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let child: any;
   try {
@@ -53,9 +61,29 @@ export const Wrap: React.FunctionComponent<WrapProps> = ({ ref, children }) => {
     [childRef, ref]
   );
 
+  const childOnStartShouldSetResponder =
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    child.props.onStartShouldSetResponder as
+      | ((event: GestureResponderEvent) => boolean)
+      | undefined;
+
+  // Marks the responder event for the scroll view interop, then defers to the
+  // child's own handler.
+  const handleStartShouldSetResponder = useCallback(
+    (event: GestureResponderEvent) => {
+      onStartShouldSetResponder?.(event);
+      return childOnStartShouldSetResponder?.(event) ?? false;
+    },
+    [onStartShouldSetResponder, childOnStartShouldSetResponder]
+  );
+
   return React.cloneElement(
     child,
-    { collapsable: false, ref: attachRef },
+    {
+      collapsable: false,
+      ref: attachRef,
+      onStartShouldSetResponder: handleStartShouldSetResponder,
+    },
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     child.props.children
   );
