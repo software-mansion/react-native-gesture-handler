@@ -32,8 +32,8 @@ export default class WheelEventManager extends EventManager<HTMLElement> {
     return {
       x: event.clientX + this.wheelDelta.x,
       y: event.clientY + this.wheelDelta.y,
-      offsetX: event.offsetX - event.deltaX,
-      offsetY: event.offsetY - event.deltaY,
+      offsetX: event.offsetX + this.wheelDelta.x,
+      offsetY: event.offsetY + this.wheelDelta.y,
       pointerId: -1,
       eventType: EventTypes.MOVE,
       pointerType: PointerType.OTHER,
