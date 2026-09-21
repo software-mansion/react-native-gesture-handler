@@ -1,5 +1,5 @@
 import type { Ref, RefObject } from 'react';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View } from 'react-native';
 
 import { ActionType } from '../../ActionType';
@@ -229,11 +229,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   // deps only up to the shorter length, so a tag appended or removed at the end
   // was never picked up.
   const handlerTagsKey = handlerTags.join(',');
-  const handlerTagsSet = useMemo(
-    () => new Set(handlerTags),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [handlerTagsKey]
-  );
 
   const viewRef = useRef<Element>(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
@@ -290,11 +285,12 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   useEffect(() => {
     syncSubscriptions(
       refs,
-      handlerTagsSet,
+      new Set(handlerTags),
       refs.subscribedHandlers,
       ActionType.NATIVE_DETECTOR
     );
-  }, [handlerTagsSet, refs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handlerTagsKey, refs]);
 
   useEffect(() => {
     // Refresh the snapshot used by the ready callback so re-fires read current child props.
