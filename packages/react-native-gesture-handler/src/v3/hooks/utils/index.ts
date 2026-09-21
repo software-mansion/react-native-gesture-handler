@@ -29,6 +29,7 @@ export {
   bindSharedValues,
   hasWorkletEventHandlers,
   maybeUnpackValue,
+  splitSingleOffset,
   unbindSharedValues,
 } from './reanimatedUtils';
 export {
