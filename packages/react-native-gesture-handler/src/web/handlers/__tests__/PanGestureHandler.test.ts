@@ -17,6 +17,10 @@ class TestPanGestureHandler extends PanGestureHandler {
     this.onWheel(event);
   }
 
+  public nativeEvent() {
+    return this.transformNativeEvent();
+  }
+
   protected override onWheel(event: AdaptedEvent): void {
     this.wheelEvents.push(event);
     super.onWheel(event);
@@ -95,14 +99,14 @@ class FakeView {
     this.listeners.get(type)?.delete(listener);
   }
 
-  public wheel(deltaY: number): void {
+  public wheel(deltaY: number, deltaX = 0): void {
     this.listeners.get('wheel')?.forEach((listener) =>
       listener({
         clientX: 0,
         clientY: 0,
         offsetX: 0,
         offsetY: 0,
-        deltaX: 0,
+        deltaX,
         deltaY,
         timeStamp: 0,
         // Not a multiple of 120, so the wheel is recognized as a touchpad.
@@ -175,5 +179,41 @@ describe('PanGestureHandler trackpad gesture end', () => {
     // A wheel does not move the cursor, so the manager synthesizes coordinates
     // by accumulating deltas. The gesture that just ended must not contribute.
     expect(handler.wheelEvents[1].y).toBe(30);
+  });
+});
+
+describe('PanGestureHandler trackpad coordinates', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  test('the view relative position follows the page position', () => {
+    const view = new FakeView();
+    const manager = new WheelEventManager(view as unknown as HTMLElement);
+    const handler = createHandler([manager]);
+
+    handler.setGestureConfig({
+      enabled: true,
+      enableTrackpadTwoFingerGesture: true,
+    });
+    handler.attachEventManager(manager);
+
+    view.wheel(10, 5);
+    view.wheel(10, 5);
+    view.wheel(10, 5);
+
+    // The delegate places the view at the page origin, so the view relative
+    // coordinates have to match the page ones.
+    expect(handler.nativeEvent()).toMatchObject({
+      x: 15,
+      y: 30,
+      absoluteX: 15,
+      absoluteY: 30,
+    });
   });
 });
