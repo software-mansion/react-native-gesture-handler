@@ -81,7 +81,7 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
     return;
   }
 
-  // Calculate bounding box of all children.
+  // Calculate bounding box of all children
   Float minX = std::numeric_limits<Float>::infinity();
   Float minY = std::numeric_limits<Float>::infinity();
   Float maxX = -std::numeric_limits<Float>::infinity();
