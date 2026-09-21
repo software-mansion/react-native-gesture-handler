@@ -102,4 +102,7 @@ export default {
     // No-op on web
     return true;
   },
+  getModuleId() {
+    return -1;
+  },
 };
