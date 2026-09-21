@@ -6,7 +6,7 @@ import {
   updateResponderEventValue,
 } from '../scrollViewInterop';
 import { type Gesture, type SharedValue, SingleGestureName } from '../types';
-import { isComposedGesture, isGestureEnabled } from './utils';
+import { isComposedGesture, maybeUnpackValue } from './utils';
 import {
   getEnabledSharedValues,
   SHARED_VALUE_OFFSET,
@@ -27,6 +27,10 @@ function isSupportedGesture<
     return gesture.gestures.some((child) =>
       isSupportedGesture(child, allowNative)
     );
+  }
+
+  if (maybeUnpackValue(gesture.config.enabled) === false) {
+    return false;
   }
 
   switch (gesture.type) {
@@ -124,11 +128,7 @@ export function useJSResponderHandler<
 
   const shouldHandleJSResponderEvent = useCallback(() => {
     void enabledSharedValueRevision;
-    return (
-      gesture !== undefined &&
-      isGestureEnabled(gesture) &&
-      isSupportedGesture(gesture, allowNative)
-    );
+    return gesture !== undefined && isSupportedGesture(gesture, allowNative);
   }, [enabledSharedValueRevision, gesture, allowNative]);
 
   const handleStartShouldSetResponder = useCallback(() => {
