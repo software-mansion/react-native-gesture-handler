@@ -101,13 +101,23 @@ export function useGesture<
     NativeProxy.setGestureHandlerConfig(handlerTag, preparedConfig);
 
     // Bind in the same batch, right after the full config is sent, so the
-    // value the listeners send on attach always lands after it.
-    scheduleOperationToBeFlushed(() => bindSharedValues(config, handlerTag));
+    // value the listeners send on attach always lands after it. Skip it if the
+    // effect was cleaned up before the batch ran, the listeners would outlive
+    // the unbind below.
+    let cleanedUp = false;
+
+    scheduleOperationToBeFlushed(() => {
+      if (!cleanedUp) {
+        bindSharedValues(config, handlerTag);
+      }
+    });
     scheduleFlushOperations();
 
     registerGesture(handlerTag, gesture);
 
     return () => {
+      cleanedUp = true;
+
       unbindSharedValues(config, handlerTag);
       unregisterGesture(handlerTag);
     };
