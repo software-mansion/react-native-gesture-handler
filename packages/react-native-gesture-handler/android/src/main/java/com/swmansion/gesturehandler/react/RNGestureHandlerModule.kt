@@ -146,10 +146,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
     registry.getHandler(handlerTag)?.let { handler ->
       if (newState == GestureHandler.STATE_ACTIVE) {
-        if (handler.state != GestureHandler.STATE_BEGAN) {
-          // We don't allow activation of gestures which haven't received any touches
+        if (!handler.hasTrackedPointers ||
+          (handler.state != GestureHandler.STATE_UNDETERMINED && handler.state != GestureHandler.STATE_BEGAN)
+        ) {
           return
         }
+        handler.begin()
         handler.recordHandlerIfNotPresent()
       }
 

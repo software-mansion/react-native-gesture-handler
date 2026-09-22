@@ -237,6 +237,9 @@ open class GestureHandler {
     return localPointerId
   }
 
+  val hasTrackedPointers: Boolean
+    get() = trackedPointersIDsCount > 0
+
   fun startTrackingPointer(pointerId: Int) {
     if (isTrackingPointer(pointerId)) {
       return
