@@ -1,3 +1,4 @@
+import { State } from '../State';
 import { tagMessage } from '../utils';
 import type IGestureHandler from '../web/handlers/IGestureHandler';
 import GestureHandlerOrchestrator from '../web/tools/GestureHandlerOrchestrator';
@@ -20,7 +21,15 @@ export const GestureStateManager: GestureStateManagerType = {
     const handler = NodeManager.getHandler(handlerTag);
     ensureHandlerAttached(handler);
 
+    if (
+      handler.tracker.trackedPointersCount === 0 ||
+      (handler.state !== State.UNDETERMINED && handler.state !== State.BEGAN)
+    ) {
+      return;
+    }
+
     GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(handler);
+    handler.begin();
     handler.activate(true);
   },
 
