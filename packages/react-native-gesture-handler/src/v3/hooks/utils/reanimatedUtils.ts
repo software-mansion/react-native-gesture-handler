@@ -49,12 +49,15 @@ export function bindSharedValues<
   const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
   const { shouldUseReanimatedDetector } = config;
 
-  const attachListener = (sharedValue: SharedValue, configKey: string) => {
+  const attachListener = <T>(
+    sharedValue: SharedValue<T>,
+    configKey: string
+  ) => {
     'worklet';
     const keyHash = hash(configKey);
     const listenerId = baseListenerId + keyHash;
 
-    sharedValue.addListener(listenerId, (value) => {
+    const sendUpdate = (value: T) => {
       if (configKey === 'runOnJS') {
         updateGestureHandlerConfig(handlerTag, {
           dispatchesReanimatedEvents: shouldUseReanimatedDetector && !value,
@@ -70,7 +73,15 @@ export function bindSharedValues<
       }
 
       updateGestureHandlerConfig(handlerTag, { [configKey]: value });
-    });
+    };
+
+    sharedValue.addListener(listenerId, sendUpdate);
+
+    // The full config carries the value read on the JS thread, which can be
+    // stale by the time it lands. Re-send the current value from here so it is
+    // the last write for this key and a change made before the listener
+    // existed is not lost.
+    sendUpdate(sharedValue.value);
   };
 
   for (const [key, maybeSharedValue] of Object.entries(config)) {
