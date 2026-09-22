@@ -5,7 +5,10 @@ import {
   registerGesture,
   unregisterGesture,
 } from '../../handlers/handlersRegistry';
-import { scheduleFlushOperations } from '../../handlers/utils';
+import {
+  scheduleFlushOperations,
+  scheduleOperationToBeFlushed,
+} from '../../handlers/utils';
 import { tagMessage } from '../../utils';
 import { NativeProxy } from '../NativeProxy';
 import type {
@@ -96,9 +99,12 @@ export function useGesture<
   useEffect(() => {
     const preparedConfig = prepareConfigForNativeSide(type, config);
     NativeProxy.setGestureHandlerConfig(handlerTag, preparedConfig);
+
+    // Bind in the same batch, right after the full config is sent, so the
+    // value the listeners send on attach always lands after it.
+    scheduleOperationToBeFlushed(() => bindSharedValues(config, handlerTag));
     scheduleFlushOperations();
 
-    bindSharedValues(config, handlerTag);
     registerGesture(handlerTag, gesture);
 
     return () => {
