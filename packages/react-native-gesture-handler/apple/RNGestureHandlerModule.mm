@@ -225,21 +225,6 @@ RCT_EXPORT_MODULE()
   }
 }
 
-- (BOOL)hasTrackedPointers:(RNGestureHandler *)handler
-{
-  if (handler.pointerTracker.trackedPointersCount > 0) {
-    return YES;
-  }
-
-#if !TARGET_OS_OSX
-  // The pointer tracker only counts touches for handlers that requested pointer
-  // data, so fall back to the recognizer's own count. macOS has no equivalent.
-  return handler.recognizer.numberOfTouches > 0;
-#else
-  return NO;
-#endif
-}
-
 - (void)setGestureStateSync:(int)state forHandler:(int)handlerTag
 {
   RCTAssertMainQueue();
@@ -260,13 +245,14 @@ RCT_EXPORT_MODULE()
     } else if (state == 3) { // CANCELLED
       handler.recognizer.state = RNGHGestureRecognizerStateCancelled;
     } else if (state == 4) { // ACTIVE
-      if (![self hasTrackedPointers:handler] ||
-          (handler.lastState != RNGestureHandlerStateUndetermined && handler.lastState != RNGestureHandlerStateBegan)) {
-        return;
-      }
-      if (handler.lastState == RNGestureHandlerStateUndetermined) {
+      if (handler.lastState == RNGestureHandlerStateUndetermined && handler.pointerTracker.trackedPointersCount > 0) {
         [handler handleGesture:handler.recognizer inState:RNGestureHandlerStateBegan fromManualStateChange:YES];
       }
+
+      if (handler.lastState != RNGestureHandlerStateBegan) {
+        return;
+      }
+
       [handler stopActivationBlocker];
       handler.recognizer.state = RNGHGestureRecognizerStateBegan;
       // Don't wait for the next touch move to report ACTIVE.
