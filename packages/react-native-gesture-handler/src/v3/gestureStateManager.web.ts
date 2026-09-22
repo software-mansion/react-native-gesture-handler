@@ -21,15 +21,19 @@ export const GestureStateManager: GestureStateManagerType = {
     const handler = NodeManager.getHandler(handlerTag);
     ensureHandlerAttached(handler);
 
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(handler);
+
     if (
-      handler.tracker.trackedPointersCount === 0 ||
-      (handler.state !== State.UNDETERMINED && handler.state !== State.BEGAN)
+      handler.state === State.UNDETERMINED &&
+      handler.tracker.trackedPointersCount > 0
     ) {
+      handler.begin();
+    }
+
+    if (handler.state !== State.BEGAN) {
       return;
     }
 
-    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(handler);
-    handler.begin();
     handler.activate(true);
   },
 
