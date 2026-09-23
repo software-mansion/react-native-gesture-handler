@@ -1,7 +1,6 @@
 import { State } from '../State';
 import { tagMessage } from '../utils';
 import type IGestureHandler from '../web/handlers/IGestureHandler';
-import GestureHandlerOrchestrator from '../web/tools/GestureHandlerOrchestrator';
 import NodeManager from '../web/tools/NodeManager';
 import type { GestureStateManagerType } from './types/GestureStateManagerTypes';
 
@@ -20,8 +19,6 @@ export const GestureStateManager: GestureStateManagerType = {
     'worklet';
     const handler = NodeManager.getHandler(handlerTag);
     ensureHandlerAttached(handler);
-
-    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(handler);
 
     if (
       handler.state === State.UNDETERMINED &&
