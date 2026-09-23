@@ -237,6 +237,9 @@ open class GestureHandler {
     return localPointerId
   }
 
+  val hasTrackedPointers: Boolean
+    get() = trackedPointersIDsCount > 0
+
   fun startTrackingPointer(pointerId: Int) {
     if (isTrackingPointer(pointerId)) {
       return
@@ -800,10 +803,6 @@ open class GestureHandler {
   protected open fun onReset() {}
   protected open fun onCancel() {}
   protected open fun onFail() {}
-
-  fun recordHandlerIfNotPresent() {
-    hostDetectorView?.recordHandlerIfNotPresent(this)
-  }
 
   private fun isButtonInConfig(clickedButton: Int): Boolean {
     if (mouseButton == 0) {
