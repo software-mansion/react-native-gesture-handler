@@ -160,15 +160,23 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     NSTimeInterval delay = counter.intValue > NEW_ARCH_NUMBER_OF_ATTACH_RETRIES ? 1.0 : 0.1;
     [_attachRetryCounter setObject:counter forKey:viewTag];
 
+    __weak RNGestureHandlerManager *weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-      if ([_droppedHandlers containsObject:handlerTag]) {
-        [_attachRetryCounter removeObjectForKey:viewTag];
+      RNGestureHandlerManager *strongSelf = weakSelf;
+      if (strongSelf == nil) {
         return;
       }
-      [self attachGestureHandler:handlerTag
-                   toViewWithTag:viewTag
-                  withActionType:actionType
-                withHostDetector:hostDetector];
+      // Nothing left to attach once JS dropped the handler (`_droppedHandlers`) or the module was torn down
+      // (`dropAllGestureHandlers` empties the registry without marking the tags).
+      if ([strongSelf->_droppedHandlers containsObject:handlerTag] ||
+          [strongSelf->_registry handlerWithTag:handlerTag] == nil) {
+        [strongSelf->_attachRetryCounter removeObjectForKey:viewTag];
+        return;
+      }
+      [strongSelf attachGestureHandler:handlerTag
+                         toViewWithTag:viewTag
+                        withActionType:actionType
+                      withHostDetector:hostDetector];
     });
 
     return;
