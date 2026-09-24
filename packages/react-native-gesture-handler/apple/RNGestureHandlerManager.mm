@@ -138,9 +138,9 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     // - the native view corresponding to the viewtag hasn't yet been created
     // - the native view has been created, but it's not attached to window
     // - the native view will not exist because it got flattened
-    // In the first two cases we just want to wait until the view gets created or gets attached to its superview
-    // In the third case we don't want to do anything but we cannot easily distinguish it here, hece the abomination
-    // below
+    // In the first two cases we just want to wait until the view gets created or gets attached to its superview.
+    // In the third case there is nothing to attach to, but we cannot distinguish it here, so we keep waiting and
+    // rely on JS dropping the handler when its detector unmounts (`_droppedHandlers` ends the loop below).
     // TODO: would be great to have a better solution, although it might require migration to the shadow nodes from
     // viewTags
 
@@ -151,20 +151,25 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
       counter = [NSNumber numberWithInt:counter.intValue + 1];
     }
 
-    if (counter.intValue > NEW_ARCH_NUMBER_OF_ATTACH_RETRIES) {
-      [_attachRetryCounter removeObjectForKey:viewTag];
-    } else {
-      [_attachRetryCounter setObject:counter forKey:viewTag];
+    // Poll quickly at first, then back off — but never stop while the handler is alive. The counter is keyed by
+    // view and every handler attached to that view advances it, so a view with several handlers (a Pressable has
+    // three) runs through the fast retries in a fraction of the nominal 2.5 s. Giving up at that point left the
+    // handler registered but never bound whenever the view was mounted later: on Fabric a commit's mount is
+    // dispatched from the runtime scheduler's rendering step and can land after the attach under load, and the
+    // button then stayed dead for the rest of its life.
+    NSTimeInterval delay = counter.intValue > NEW_ARCH_NUMBER_OF_ATTACH_RETRIES ? 1.0 : 0.1;
+    [_attachRetryCounter setObject:counter forKey:viewTag];
 
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        if (![_droppedHandlers containsObject:handlerTag]) {
-          [self attachGestureHandler:handlerTag
-                       toViewWithTag:viewTag
-                      withActionType:actionType
-                    withHostDetector:hostDetector];
-        }
-      });
-    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      if ([_droppedHandlers containsObject:handlerTag]) {
+        [_attachRetryCounter removeObjectForKey:viewTag];
+        return;
+      }
+      [self attachGestureHandler:handlerTag
+                   toViewWithTag:viewTag
+                  withActionType:actionType
+                withHostDetector:hostDetector];
+    });
 
     return;
   }
