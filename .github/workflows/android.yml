@@ -3,6 +3,7 @@ name: Build Android (expo-example)
 on:
   pull_request:
     paths:
+      - .nvmrc
       - .argent/flows/*
       - .github/actions/argent-server/action.yml
       - .github/workflows/android.yml
