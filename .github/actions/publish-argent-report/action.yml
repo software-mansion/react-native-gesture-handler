@@ -1,0 +1,141 @@
+name: Publish the Argent Cloud report
+description: Publish a reproduction report as an issue in the reports repository and announce it on Slack. Expects Node set up and .github/workflows/helper checked out in the workspace
+
+inputs:
+  reports-repo:
+    description: Reports repository as 'owner/name' or a github.com repository URL
+    required: true
+  app-id:
+    description: App ID of the GitHub App that may open issues in the reports repository
+    required: true
+  private-key:
+    description: Private key of that GitHub App
+    required: true
+  slack-webhook:
+    description: Slack incoming webhook URL
+    required: true
+  report-file:
+    description: Path to the report to publish
+    required: true
+  stage:
+    description: Which stage the report is about; one of plan-infeasible, build-failed, reproduce
+    required: true
+  status:
+    description: Status of the job that produced the report
+    required: true
+  issue-number:
+    description: Number of the issue being reproduced
+    required: true
+  issue-title:
+    description: Title of the issue being reproduced
+    required: true
+  issue-url:
+    description: URL of the issue being reproduced
+    required: true
+  run-url:
+    description: URL of this workflow run
+    required: true
+  plan-file:
+    description: Path to plan.json
+    required: false
+    default: ''
+  plan-cost-usd:
+    description: Cost of the planning agent in USD
+    required: false
+    default: ''
+  repro-cost-usd:
+    description: Cost of the reproduction agent in USD
+    required: false
+    default: ''
+  brief-file:
+    description: Path to the reproduction brief
+    required: false
+    default: ''
+  output-file:
+    description: Path to the reproduction output
+    required: false
+    default: ''
+  stream-file:
+    description: Path to the reproduction stream log
+    required: false
+    default: ''
+  failed-step:
+    description: Name of the step that failed, when one did
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Resolve the reports repository
+      id: reports-repo
+      shell: bash
+      env:
+        REPO: ${{ inputs.reports-repo }}
+      run: |
+        repo="${REPO#https://github.com/}"
+        repo="${repo%.git}"
+        repo="${repo%/}"
+        if [ -z "$repo" ] || [ "${repo#*/}" = "$repo" ]; then
+          echo "::error::the reports repository must be 'owner/name' or a github.com repository URL"
+          exit 1
+        fi
+        {
+          echo "repo=$repo"
+          echo "owner=${repo%%/*}"
+          echo "name=${repo#*/}"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Mint a token for the reports repository
+      id: reports-token
+      uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.private-key }}
+        owner: ${{ steps.reports-repo.outputs.owner }}
+        repositories: ${{ steps.reports-repo.outputs.name }}
+        permission-issues: write
+
+    - name: Publish the report
+      id: publish
+      shell: bash
+      env:
+        REPORTS_REPO: ${{ steps.reports-repo.outputs.repo }}
+        REPORTS_TOKEN: ${{ steps.reports-token.outputs.token }}
+        RUN_ID: ${{ github.run_id }}
+        REPORT_FILE: ${{ inputs.report-file }}
+        STAGE: ${{ inputs.stage }}
+        STATUS: ${{ inputs.status }}
+        ISSUE_NUMBER: ${{ inputs.issue-number }}
+        ISSUE_TITLE: ${{ inputs.issue-title }}
+        ISSUE_URL: ${{ inputs.issue-url }}
+        RUN_URL: ${{ inputs.run-url }}
+        PLAN_FILE: ${{ inputs.plan-file }}
+        PLAN_COST_USD: ${{ inputs.plan-cost-usd }}
+        REPRO_COST_USD: ${{ inputs.repro-cost-usd }}
+        BRIEF_FILE: ${{ inputs.brief-file }}
+        OUTPUT_FILE: ${{ inputs.output-file }}
+        STREAM_FILE: ${{ inputs.stream-file }}
+        FAILED_STEP: ${{ inputs.failed-step }}
+      run: node --experimental-strip-types .github/workflows/helper/argent-cloud-issue-repro-report.ts publish
+
+    - name: Report to Slack
+      if: always()
+      shell: bash
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.slack-webhook }}
+        REPORT_URL: ${{ steps.publish.outputs.url }}
+        STAGE: ${{ inputs.stage }}
+        STATUS: ${{ inputs.status }}
+        ISSUE_NUMBER: ${{ inputs.issue-number }}
+        ISSUE_TITLE: ${{ inputs.issue-title }}
+        ISSUE_URL: ${{ inputs.issue-url }}
+        RUN_URL: ${{ inputs.run-url }}
+        PLAN_FILE: ${{ inputs.plan-file }}
+        PLAN_COST_USD: ${{ inputs.plan-cost-usd }}
+        REPRO_COST_USD: ${{ inputs.repro-cost-usd }}
+        BRIEF_FILE: ${{ inputs.brief-file }}
+        OUTPUT_FILE: ${{ inputs.output-file }}
+        STREAM_FILE: ${{ inputs.stream-file }}
+        FAILED_STEP: ${{ inputs.failed-step }}
+      run: node --experimental-strip-types .github/workflows/helper/argent-cloud-issue-repro-report.ts notify
