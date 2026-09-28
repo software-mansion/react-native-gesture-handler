@@ -72,6 +72,7 @@ export function useReanimatedEventHandler<
     // The only difference is whether we will send events to Reanimated or not.
     // The problem here is that if someone passes `Animated.event` as `onUpdate` prop,
     // it won't be workletized and therefore `useHandler` will throw. In that case we override it to empty `worklet`.
+
     if (!Worklets?.isWorkletFunction(handlers.onUpdate)) {
       return {
         ...handlers,
@@ -95,6 +96,7 @@ export function useReanimatedEventHandler<
     'worklet';
     // Undefined only when Worklets is absent — and then this callback is
     // never registered (`Reanimated?.useEvent` below short-circuits).
+
     if (updateEventMap === undefined) {
       return;
     }

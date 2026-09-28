@@ -7,6 +7,8 @@ import type {
   SharedValue,
 } from '../../v3/types';
 import { installUIRuntimeBindings } from './installUIRuntimeBindings';
+import type { RegisterCustomSerializable } from './registerGestureSerializable';
+import { registerGestureSerializable } from './registerGestureSerializable';
 
 export type ReanimatedContext<THandlerData> = {
   lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
@@ -56,6 +58,7 @@ type WorkletsPackage = {
   >(
     value: unknown
   ) => value is WorkletFunction<Args, ReturnValue>;
+  registerCustomSerializable?: RegisterCustomSerializable;
 };
 
 export type NativeEventsManager = new (component: {
@@ -118,6 +121,7 @@ try {
 
 if (Worklets !== undefined) {
   installUIRuntimeBindings(Worklets.getUIRuntimeHolder);
+  registerGestureSerializable(Worklets.registerCustomSerializable);
 }
 
 if (Reanimated !== undefined && !Reanimated.setGestureState) {

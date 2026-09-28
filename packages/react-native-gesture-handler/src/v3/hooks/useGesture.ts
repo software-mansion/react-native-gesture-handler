@@ -10,6 +10,8 @@ import { tagMessage } from '../../utils';
 import { NativeProxy } from '../NativeProxy';
 import type {
   BaseGestureConfig,
+  DetectorCallbacks,
+  GestureRelations,
   SingleGesture,
   SingleGestureName,
 } from '../types';
@@ -20,6 +22,33 @@ import {
   prepareRelations,
   unbindSharedValues,
 } from './utils';
+
+class SingleGestureObject<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> implements SingleGesture<TConfig, THandlerData, TExtendedHandlerData>
+{
+  handlerTag: number;
+  type: SingleGestureName;
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>;
+  detectorCallbacks: DetectorCallbacks<THandlerData, TExtendedHandlerData>;
+  gestureRelations: GestureRelations;
+
+  constructor(
+    handlerTag: number,
+    type: SingleGestureName,
+    config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>,
+    detectorCallbacks: DetectorCallbacks<THandlerData, TExtendedHandlerData>,
+    gestureRelations: GestureRelations
+  ) {
+    this.handlerTag = handlerTag;
+    this.type = type;
+    this.config = config;
+    this.detectorCallbacks = detectorCallbacks;
+    this.gestureRelations = gestureRelations;
+  }
+}
 
 export function useGesture<
   TConfig,
@@ -61,17 +90,18 @@ export function useGesture<
   );
 
   const gesture = useMemo(
-    () => ({
-      handlerTag,
-      type,
-      config,
-      detectorCallbacks: {
-        jsEventHandler,
-        animatedEventHandler,
-        reanimatedEventHandler,
-      },
-      gestureRelations,
-    }),
+    () =>
+      new SingleGestureObject(
+        handlerTag,
+        type,
+        config,
+        {
+          jsEventHandler,
+          animatedEventHandler,
+          reanimatedEventHandler,
+        },
+        gestureRelations
+      ),
     [
       handlerTag,
       type,
