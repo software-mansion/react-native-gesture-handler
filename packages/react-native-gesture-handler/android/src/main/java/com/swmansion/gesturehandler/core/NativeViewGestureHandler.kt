@@ -340,7 +340,16 @@ class NativeViewGestureHandler : GestureHandler() {
       }
     }
 
-    private fun tryIntercept(view: View, event: MotionEvent) = view is ViewGroup && view.onInterceptTouchEvent(event)
+    private fun tryIntercept(view: View, event: MotionEvent): Boolean {
+      if (event.actionMasked == MotionEvent.ACTION_DOWN &&
+        (view is ReactScrollView || view is ReactHorizontalScrollView)
+      ) {
+        // ReactScrollView must receive DOWN through native dispatch first; calling onInterceptTouchEvent
+        // here consumes its fling-catch decision before the child button can be cancelled.
+        return false
+      }
+      return view is ViewGroup && view.onInterceptTouchEvent(event)
+    }
 
     private val defaultHook = object : NativeViewGestureHandlerHook {}
 
