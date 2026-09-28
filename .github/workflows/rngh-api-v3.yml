@@ -3,6 +3,7 @@ name: Test Gesture Handler 3 API
 on:
   pull_request:
     paths:
+      - .nvmrc
       - packages/react-native-gesture-handler/src/v3/**
       - packages/react-native-gesture-handler/src/__tests__/RelationsTraversal.test.tsx
       - packages/react-native-gesture-handler/src/__tests__/api_v3.test.tsx
@@ -24,10 +25,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js 24
+      - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: '.nvmrc'
           cache: yarn
 
       - name: Install node dependencies
