@@ -167,7 +167,7 @@ jobs:
           echo "SCREENRECORD_PID=$!" >> "$GITHUB_ENV"
 
       - name: Run E2E tests
-        run: argent flow run ./.argent/flows --device "$ANDROID_SERIAL"
+        run: node ./.github/scripts/retry-flows.mjs ./.argent/flows --attempts 3 --device "$ANDROID_SERIAL"
 
       - name: Stop screen recording
         if: ${{ always() }}
