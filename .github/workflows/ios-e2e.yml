@@ -125,7 +125,7 @@ jobs:
           done
 
       - name: Run E2E tests
-        run: argent flow run ./.argent/flows --device $SIMULATOR_UDID
+        run: node ./.github/scripts/retry-flows.mjs ./.argent/flows --attempts 3 --device "$SIMULATOR_UDID"
 
       - name: Stop screen recording
         if: ${{ always() }}

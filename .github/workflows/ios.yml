@@ -6,6 +6,7 @@ on:
       - .nvmrc
       - .argent/flows/*
       - .github/actions/argent-server/action.yml
+      - .github/scripts/retry-flows.mjs
       - .github/workflows/ios.yml
       - .github/workflows/ios-build.yml
       - .github/workflows/ios-e2e.yml
