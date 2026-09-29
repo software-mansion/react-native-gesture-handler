@@ -5,6 +5,7 @@ import {
   assignRef,
   isHostInstance,
   preferHostInstance,
+  resolveHostInstance,
 } from '../../../hostInstance';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../reanimatedWrapper';
@@ -23,6 +24,14 @@ export class Wrap extends React.Component<{
   // eslint-disable-next-line @eslint-react/no-unused-class-component-members
   public getHostInstance() {
     return this.hostInstance;
+  }
+
+  // Used by Reanimated's `createAnimatedComponent` (`AnimatedWrap`). Without it,
+  // Reanimated calls `findHostInstance_DEPRECATED` on this class instance, which
+  // warns under StrictMode.
+  // eslint-disable-next-line @eslint-react/no-unused-class-component-members
+  public getAnimatableRef() {
+    return resolveHostInstance(this);
   }
 
   private detachChildRef() {

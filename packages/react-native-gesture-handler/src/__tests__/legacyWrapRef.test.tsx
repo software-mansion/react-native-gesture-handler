@@ -2,6 +2,7 @@ import { cleanup, render } from '@testing-library/react-native';
 import React from 'react';
 import { findNodeHandle, View } from 'react-native';
 
+import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 import { Gesture, GestureDetector, GestureHandlerRootView } from '../index';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 
@@ -130,6 +131,33 @@ describe('Legacy GestureDetector ref forwarding', () => {
 
     expect(firstRef).toHaveBeenCalledWith(null);
     expect(secondRef).toHaveBeenCalledWith(childInstance);
+  });
+
+  test('exposes the child host instance as the animatable ref', () => {
+    const wrapRef = React.createRef<Wrap>();
+    const childRef = React.createRef<ChildWithHostInstance>();
+
+    render(
+      <Wrap ref={wrapRef}>
+        <ChildWithHostInstance ref={childRef} />
+      </Wrap>
+    );
+
+    expect(childRef.current).not.toBeNull();
+    expect(wrapRef.current?.getAnimatableRef()).toBe(childRef.current);
+  });
+
+  test('falls back to itself as the animatable ref without a host instance', () => {
+    const wrapRef = React.createRef<Wrap>();
+
+    render(
+      <Wrap ref={wrapRef}>
+        <ChildIgnoringRef />
+      </Wrap>
+    );
+
+    expect(wrapRef.current).not.toBeNull();
+    expect(wrapRef.current?.getAnimatableRef()).toBe(wrapRef.current);
   });
 
   test('does not reattach gestures on re-render', () => {
