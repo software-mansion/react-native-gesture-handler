@@ -146,11 +146,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
     registry.getHandler(handlerTag)?.let { handler ->
       if (newState == GestureHandler.STATE_ACTIVE) {
+        // The first touch event reaches JS before the handler begins, so a handler
+        // that already tracks a pointer may still be UNDETERMINED here.
+        if (handler.hasTrackedPointers && handler.state == GestureHandler.STATE_UNDETERMINED) {
+          handler.begin()
+        }
+
         if (handler.state != GestureHandler.STATE_BEGAN) {
-          // We don't allow activation of gestures which haven't received any touches
           return
         }
-        handler.recordHandlerIfNotPresent()
       }
 
       when (newState) {

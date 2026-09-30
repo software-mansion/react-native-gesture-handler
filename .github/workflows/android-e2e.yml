@@ -37,10 +37,10 @@ jobs:
           distribution: oracle
           java-version: 17
 
-      - name: Use Node.js 24
+      - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: '.nvmrc'
 
       - name: Download APK built by the build workflow
         uses: actions/download-artifact@v4
@@ -167,7 +167,7 @@ jobs:
           echo "SCREENRECORD_PID=$!" >> "$GITHUB_ENV"
 
       - name: Run E2E tests
-        run: argent flow run ./.argent/flows --device "$ANDROID_SERIAL"
+        run: node ./.github/scripts/retry-flows.mjs ./.argent/flows --attempts 3 --device "$ANDROID_SERIAL"
 
       - name: Stop screen recording
         if: ${{ always() }}
