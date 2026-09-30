@@ -192,7 +192,7 @@ class NativeViewGestureHandler : GestureHandler() {
           activate()
         }
 
-        !isScrollViewDown(view, event) && tryIntercept(view, event) -> {
+        tryIntercept(view, event) -> {
           hook.sendTouchEvent(view, event)
           activate()
         }
@@ -355,13 +355,6 @@ class NativeViewGestureHandler : GestureHandler() {
     }
 
     private fun tryIntercept(view: View, event: MotionEvent) = view is ViewGroup && view.onInterceptTouchEvent(event)
-
-    // A scroll view gets DOWN through native dispatch, which skips it when an ancestor scroll view
-    // intercepts the DOWN to stop its own fling. Passing the DOWN to `onInterceptTouchEvent` here would
-    // still record the pointer, so a later MOVE drifting sideways past the touch slop would let this
-    // view take over the ancestor's drag.
-    private fun isScrollViewDown(view: View, event: MotionEvent) = event.actionMasked == MotionEvent.ACTION_DOWN &&
-      (view is ReactScrollView || view is ReactHorizontalScrollView)
 
     private val defaultHook = object : NativeViewGestureHandlerHook {}
 
