@@ -145,6 +145,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     UiThreadUtil.assertOnUiThread()
 
     registry.getHandler(handlerTag)?.let { handler ->
+      if (handler.state == GestureHandler.STATE_UNDETERMINED && !handler.hasTrackedPointers) {
+        return
+      }
+
       if (newState == GestureHandler.STATE_ACTIVE) {
         // The first touch event reaches JS before the handler begins, so a handler
         // that already tracks a pointer may still be UNDETERMINED here.
