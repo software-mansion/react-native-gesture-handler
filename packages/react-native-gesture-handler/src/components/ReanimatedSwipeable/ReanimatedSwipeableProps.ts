@@ -196,6 +196,12 @@ export type SwipeableProps = {
    * The horizontal offset from the starting point required to trigger a left-swipe gesture. Defaults to -10.
    */
   dragOffsetFromRight?: number;
+
+  /**
+   * Vertical offset from the starting point after which the swipe gesture fails. Passed to the underlying pan gesture as `failOffsetY`.
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-pan-gesture#failoffsety
+   */
+  failOffsetY?: number | [number, number];
 }>;
 
 export interface SwipeableMethods {
