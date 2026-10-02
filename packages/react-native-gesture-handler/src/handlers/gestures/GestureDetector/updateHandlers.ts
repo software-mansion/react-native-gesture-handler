@@ -9,6 +9,7 @@ import {
   ALLOWED_PROPS,
   checkGestureCallbacksForWorklets,
   extractGestureRelations,
+  hasExternalRelations,
 } from './utils';
 
 export function updateHandlers(
@@ -77,6 +78,9 @@ export function updateHandlers(
 
       registerHandler(handler.handlerTag, handler, handler.config.testId);
     }
+
+    preparedGesture.hasExternalRelations =
+      hasExternalRelations(attachedGestures);
 
     if (preparedGesture.animatedHandlers && shouldUpdateSharedValueIfUsed) {
       const newHandlersValue = attachedGestures

@@ -117,6 +117,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     animatedHandlers: null,
     shouldUseReanimated: shouldUseReanimated,
     isMounted: false,
+    // The real value is computed in the attach microtask, which runs after
+    // this commit's effects. Until then react to every mount, so a relation
+    // to a gesture mounting in the same commit is never skipped.
+    hasExternalRelations: true,
   }).current;
 
   const updateAttachedGestures = useDetectorUpdater(
