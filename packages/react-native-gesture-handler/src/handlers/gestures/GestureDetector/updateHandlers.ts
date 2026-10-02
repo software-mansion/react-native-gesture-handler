@@ -82,8 +82,9 @@ export function updateHandlers(
       registerHandler(handler.handlerTag, handler, handler.config.testId);
     }
 
-    preparedGesture.hasExternalRelations =
-      hasExternalRelations(attachedGestures);
+    // Classify the new instances: their configs reference the new siblings,
+    // which the old attached objects would mistake for external gestures
+    preparedGesture.hasExternalRelations = hasExternalRelations(newGestures);
 
     if (preparedGesture.animatedHandlers && shouldUpdateSharedValueIfUsed) {
       const newHandlersValue = attachedGestures
