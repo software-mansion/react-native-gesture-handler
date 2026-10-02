@@ -34,6 +34,9 @@ export function updateHandlers(
   // Store attached gestures to avoid crash when gestures changed after queueing micro task
   const attachedGestures = preparedGesture.attachedGestures;
 
+  // React to every mount until the microtask below classifies the new gesture set
+  preparedGesture.hasExternalRelations = true;
+
   // Use queueMicrotask to extract handlerTags, because when it's ran, all refs should be updated
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)

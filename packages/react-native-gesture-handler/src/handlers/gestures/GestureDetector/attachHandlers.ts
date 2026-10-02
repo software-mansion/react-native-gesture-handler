@@ -56,6 +56,9 @@ export function attachHandlers({
     registerHandler(handler.handlerTag, handler, handler.config.testId);
   }
 
+  // React to every mount until the microtask below classifies the new gesture set
+  preparedGesture.hasExternalRelations = true;
+
   // Use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
   ghQueueMicrotask(() => {
