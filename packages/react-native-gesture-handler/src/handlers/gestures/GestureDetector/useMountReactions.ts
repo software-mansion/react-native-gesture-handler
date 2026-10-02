@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 
 import { MountRegistry } from '../../../mountRegistry';
-import { transformIntoHandlerTags } from '../../utils';
 import type { GestureRef } from '../gesture';
 import type { AttachedGestureState } from './types';
 
@@ -13,8 +12,19 @@ function shouldUpdateDetector(
     return false;
   }
 
-  for (const tag of transformIntoHandlerTags(relation)) {
-    if (tag === gesture.handlerTag) {
+  for (const entry of relation) {
+    // Only refs can start pointing at a different handler after the detector
+    // attached, because `current` is filled in when the gesture they point at
+    // mounts. Gestures and numeric tags already carry their tag by then, so a
+    // mount can never change what they resolve to and scanning them is wasted
+    // work on every mount of every detector.
+    if (entry === null || typeof entry !== 'object' || !('current' in entry)) {
+      continue;
+    }
+
+    const current = entry.current as { handlerTag?: number } | null | undefined;
+
+    if (current?.handlerTag === gesture.handlerTag) {
       return true;
     }
   }
