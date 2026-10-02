@@ -193,3 +193,65 @@ describe('ReanimatedSwipeable callback identity', () => {
     expect(scheduleOnRN).not.toHaveBeenCalled();
   });
 });
+
+describe('ReanimatedSwipeable failOffsetY', () => {
+  let setConfigSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    setConfigSpy = jest.spyOn(
+      RNGestureHandlerModule,
+      'setGestureHandlerConfig'
+    );
+  });
+
+  afterEach(() => {
+    setConfigSpy.mockRestore();
+  });
+
+  function getPanConfigs() {
+    return setConfigSpy.mock.calls
+      .map(([, config]) => config as Record<string, unknown>)
+      .filter((config) => 'activeOffsetXStart' in config);
+  }
+
+  test('forwards failOffsetY to the pan gesture', async () => {
+    render(
+      <GestureHandlerRootView>
+        <ReanimatedSwipeable
+          failOffsetY={[-8, 8]}
+          renderRightActions={() => <Text>Delete</Text>}>
+          <Text>Row</Text>
+        </ReanimatedSwipeable>
+      </GestureHandlerRootView>
+    );
+    await flushNativeOps();
+
+    const panConfigs = getPanConfigs();
+    expect(panConfigs.length).toBeGreaterThan(0);
+    for (const config of panConfigs) {
+      expect(config).toMatchObject({
+        failOffsetYStart: -8,
+        failOffsetYEnd: 8,
+      });
+    }
+  });
+
+  test('does not set failOffsetY on the pan gesture when the prop is omitted', async () => {
+    render(
+      <GestureHandlerRootView>
+        <ReanimatedSwipeable renderRightActions={() => <Text>Delete</Text>}>
+          <Text>Row</Text>
+        </ReanimatedSwipeable>
+      </GestureHandlerRootView>
+    );
+    await flushNativeOps();
+
+    const panConfigs = getPanConfigs();
+    expect(panConfigs.length).toBeGreaterThan(0);
+    for (const config of panConfigs) {
+      expect(config).not.toHaveProperty('failOffsetYStart');
+      expect(config).not.toHaveProperty('failOffsetYEnd');
+    }
+  });
+});
