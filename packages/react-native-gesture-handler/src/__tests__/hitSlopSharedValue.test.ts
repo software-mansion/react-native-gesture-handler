@@ -80,6 +80,16 @@ describe('bindSharedValues', () => {
     });
   });
 
+  test('sends the current value when the listener is attached', () => {
+    const enabled = fakeSharedValue(false);
+    bind({ enabled: enabled as unknown as SharedValue });
+
+    expect(mockUpdateGestureHandlerConfig).toHaveBeenCalledTimes(1);
+    expect(mockUpdateGestureHandlerConfig).toHaveBeenCalledWith(7, {
+      enabled: false,
+    });
+  });
+
   test('leaves other config values untouched', () => {
     const enabled = fakeSharedValue(true);
     bind({ enabled: enabled as unknown as SharedValue });
