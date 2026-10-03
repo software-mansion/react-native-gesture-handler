@@ -8,6 +8,7 @@ import type {
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { getModuleId } from '../../../moduleId';
 import { tagMessage } from '../../../utils';
+import { useJSResponderHandler } from '../../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import type {
   DetectorCallbacks,
@@ -55,6 +56,10 @@ export function InterceptingGestureDetector<
   TExtendedHandlerData
 >) {
   useEnsureGestureHandlerRootView();
+  const { handleStartShouldSetResponder } = useJSResponderHandler(
+    gesture,
+    false
+  );
 
   const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
     () => new Set()
@@ -299,6 +304,7 @@ export function InterceptingGestureDetector<
             : undefined
         }
         handlerTags={handlerTags}
+        onStartShouldSetResponder={handleStartShouldSetResponder}
         style={nativeDetectorStyles.detector}
         virtualChildren={strippedVirtualChildren}
         moduleId={getModuleId()}>
