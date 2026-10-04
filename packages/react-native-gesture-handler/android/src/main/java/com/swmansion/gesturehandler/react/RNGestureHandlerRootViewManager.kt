@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.react
 
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.PointerEvents.Companion.parsePointerEvents
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
@@ -37,6 +38,11 @@ class RNGestureHandlerRootViewManager :
 
   override fun setModuleId(view: RNGestureHandlerRootView, value: Int) {
     view.setModuleId(value)
+  }
+
+  @ReactProp(name = "pointerEvents")
+  override fun setPointerEvents(view: RNGestureHandlerRootView, pointerEventsStr: String?) {
+    view.pointerEvents = parsePointerEvents(pointerEventsStr)
   }
 
   @ReactProp(name = "unstable_forceActive")

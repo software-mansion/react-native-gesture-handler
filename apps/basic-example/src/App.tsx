@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ContentsButton from './ContentsButton';
 import NativeDetector from './NativeDetector';
 import Navigator from './Navigator';
+import PointerEventsRepro from './PointerEventsRepro';
 import RuntimeDecoration from './RuntimeDecoration';
 import Text from './Text';
 
@@ -24,6 +25,10 @@ const EXAMPLES = [
   {
     name: 'Contents Button',
     component: ContentsButton,
+  },
+  {
+    name: 'Root Pointer Events',
+    component: PointerEventsRepro,
   },
 ];
 
