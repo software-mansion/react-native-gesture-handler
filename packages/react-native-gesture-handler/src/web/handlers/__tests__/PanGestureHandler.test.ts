@@ -17,6 +17,10 @@ class TestPanGestureHandler extends PanGestureHandler {
     this.onWheel(event);
   }
 
+  public nativeEvent() {
+    return this.transformNativeEvent();
+  }
+
   protected override onWheel(event: AdaptedEvent): void {
     this.wheelEvents.push(event);
     super.onWheel(event);
@@ -83,7 +87,26 @@ afterEach(() => {
 });
 
 class FakeView {
+  public readonly style = {};
+  public readonly children = [];
+  public readonly computedStyle: Record<string, string>;
   private readonly listeners = new Map<string, Set<(event: unknown) => void>>();
+
+  constructor(
+    private readonly left = 0,
+    private readonly top = 0,
+    scale = 1
+  ) {
+    this.computedStyle = {
+      display: 'block',
+      scale: 'none',
+      transform: `matrix(${scale}, 0, 0, ${scale}, 0, 0)`,
+    };
+  }
+
+  public getBoundingClientRect() {
+    return { left: this.left, top: this.top };
+  }
 
   public addEventListener(type: string, listener: (event: unknown) => void) {
     const listeners = this.listeners.get(type) ?? new Set();
@@ -95,7 +118,7 @@ class FakeView {
     this.listeners.get(type)?.delete(listener);
   }
 
-  public wheel(deltaY: number): void {
+  public wheel(deltaY: number, event: Partial<WheelEvent> = {}): void {
     this.listeners.get('wheel')?.forEach((listener) =>
       listener({
         clientX: 0,
@@ -107,10 +130,22 @@ class FakeView {
         timeStamp: 0,
         // Not a multiple of 120, so the wheel is recognized as a touchpad.
         wheelDeltaY: 13,
+        ...event,
       })
     );
   }
 }
+
+// The Jest environment is node, the view bounds are read through
+// getComputedStyle.
+beforeAll(() => {
+  (globalThis as Record<string, unknown>).getComputedStyle = (view: FakeView) =>
+    view.computedStyle;
+});
+
+afterAll(() => {
+  delete (globalThis as Record<string, unknown>).getComputedStyle;
+});
 
 describe('PanGestureHandler config reset', () => {
   test('a config without enableTrackpadTwoFingerGesture restores the disabled default', () => {
@@ -175,5 +210,68 @@ describe('PanGestureHandler trackpad gesture end', () => {
     // A wheel does not move the cursor, so the manager synthesizes coordinates
     // by accumulating deltas. The gesture that just ended must not contribute.
     expect(handler.wheelEvents[1].y).toBe(30);
+  });
+});
+
+describe('PanGestureHandler trackpad coordinates', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  function trackpadPan(view: FakeView, event: Partial<WheelEvent> = {}) {
+    const manager = new WheelEventManager(view as unknown as HTMLElement);
+    const handler = createHandler([manager]);
+
+    handler.setGestureConfig({
+      enabled: true,
+      enableTrackpadTwoFingerGesture: true,
+    });
+    handler.attachEventManager(manager);
+
+    view.wheel(10, { deltaX: 5, ...event });
+    view.wheel(10, { deltaX: 5, ...event });
+    view.wheel(10, { deltaX: 5, ...event });
+
+    return handler.nativeEvent();
+  }
+
+  test('a view at the page origin', () => {
+    expect(trackpadPan(new FakeView())).toMatchObject({
+      x: 15,
+      y: 30,
+      absoluteX: 15,
+      absoluteY: 30,
+    });
+  });
+
+  test('a view away from the page origin', () => {
+    const view = new FakeView(40, 60);
+
+    expect(
+      trackpadPan(view, { clientX: 50, clientY: 80, offsetX: 10, offsetY: 20 })
+    ).toMatchObject({ x: 25, y: 50, absoluteX: 65, absoluteY: 110 });
+  });
+
+  test('a wheel over a child of the view', () => {
+    const view = new FakeView(40, 60);
+
+    // The child sits at (70, 90), offsetX and offsetY are relative to it.
+    expect(
+      trackpadPan(view, { clientX: 80, clientY: 100, offsetX: 10, offsetY: 10 })
+    ).toMatchObject({ x: 55, y: 70, absoluteX: 95, absoluteY: 130 });
+  });
+
+  test('a scaled view', () => {
+    const view = new FakeView(40, 60, 2);
+
+    // offsetX and offsetY are in the untransformed space of the view.
+    expect(
+      trackpadPan(view, { clientX: 50, clientY: 80, offsetX: 5, offsetY: 10 })
+    ).toMatchObject({ x: 12.5, y: 25, absoluteX: 65, absoluteY: 110 });
   });
 });
