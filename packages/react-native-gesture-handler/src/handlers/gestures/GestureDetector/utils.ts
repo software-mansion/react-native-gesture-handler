@@ -69,6 +69,8 @@ function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
 // detector (they get a tag in `initialize`). Siblings added by composition are
 // attached together with the gesture, so they never resolve late.
 export function hasExternalRelations(gestures: GestureType[]) {
+  const ownGestures = new Set(gestures);
+
   for (const gesture of gestures) {
     const relations = [
       gesture.config.blocksHandlers,
@@ -88,7 +90,7 @@ export function hasExternalRelations(gestures: GestureType[]) {
 
         // Anything but our own gesture object is external: a ref, or a gesture
         // attached by another detector
-        if (!(entry instanceof BaseGesture) || !gestures.includes(entry)) {
+        if (!(entry instanceof BaseGesture) || !ownGestures.has(entry)) {
           return true;
         }
       }
