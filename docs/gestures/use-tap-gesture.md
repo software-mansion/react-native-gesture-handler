@@ -33,7 +33,7 @@ Maximum time, expressed in milliseconds, that defines how fast a finger must be 
 maxDelay: number | SharedValue<number>;
 ```
 
-Maximum time, expressed in milliseconds, that can pass before the next tap — if many taps are required. The default value is 500.
+Maximum time, expressed in milliseconds, that can pass before the next tap — if many taps are required. The default value is 200.
 
 ### numberOfTaps
 
