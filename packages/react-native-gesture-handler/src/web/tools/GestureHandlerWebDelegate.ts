@@ -7,11 +7,11 @@ import { DEFAULT_TOUCH_ACTION, DEFAULT_USER_SELECT } from '../constants';
 import type IGestureHandler from '../handlers/IGestureHandler';
 import type { SVGRef } from '../interfaces';
 import {
-  firstNonContentsView,
   getEffectiveBoundingRect,
   hasDisplayContents,
   isPointerInBounds,
   isRNSVGElement,
+  viewportToLocal,
 } from '../utils';
 import type EventManager from './EventManager';
 import type {
@@ -150,40 +150,7 @@ export class GestureHandlerWebDelegate
       throw new Error(tagMessage('Cannot convert coords on a null view'));
     }
 
-    const localView = this.gestureHandler.usesNativeOrVirtualDetector()
-      ? firstNonContentsView(this.view)
-      : this.view;
-
-    const rect = getEffectiveBoundingRect(localView);
-    const transform = getComputedStyle(localView).transform;
-    const matrix =
-      transform && transform !== 'none'
-        ? new DOMMatrix(transform)
-        : new DOMMatrix();
-
-    // Zero out translation — it's already reflected in the bounding rect
-    // center, so we only need to invert the rotation+scale part.
-    matrix.e = 0;
-    matrix.f = 0;
-    const inverse = matrix.inverse();
-
-    // Offset from the visual center of the bounding rect
-    const rectCenterX = rect.left + rect.width / 2;
-    const rectCenterY = rect.top + rect.height / 2;
-    const dx = absoluteX - rectCenterX;
-    const dy = absoluteY - rectCenterY;
-
-    // Apply inverse rotation+scale to get local-space offset from center
-    const localOffset = inverse.transformPoint(new DOMPoint(dx, dy));
-
-    // Add back the local center (untransformed dimensions)
-    const localCenterX = localView.offsetWidth / 2;
-    const localCenterY = localView.offsetHeight / 2;
-
-    return {
-      x: localCenterX + localOffset.x,
-      y: localCenterY + localOffset.y,
-    };
+    return viewportToLocal(this.view, { x: absoluteX, y: absoluteY });
   }
 
   reset(): void {
