@@ -170,11 +170,21 @@ function getUntransformedSize(
   rect: DOMRect,
   [a, b, c, d]: LinearTransform
 ) {
-  if (typeof view.offsetWidth === 'number') {
-    return { width: view.offsetWidth, height: view.offsetHeight };
+  // Layout sizes are unaffected by transforms. A `display: contents` element
+  // has no box and reports zeros.
+  if (!hasDisplayContents(view)) {
+    if (typeof view.offsetWidth === 'number') {
+      return { width: view.offsetWidth, height: view.offsetHeight };
+    }
+
+    // An svg root has a client box, the elements inside it do not.
+    if (view.clientWidth > 0 || view.clientHeight > 0) {
+      return { width: view.clientWidth, height: view.clientHeight };
+    }
   }
 
-  // SVG elements have no offset size, recover it from the transformed bounds
+  // Recover the size from the transformed bounds:
+  // rect.width = |a| * width + |c| * height, rect.height = |b| * width + |d| * height.
   const det = Math.abs(a * d) - Math.abs(b * c);
 
   if (det === 0) {

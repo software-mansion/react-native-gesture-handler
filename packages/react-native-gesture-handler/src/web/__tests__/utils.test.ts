@@ -7,6 +7,8 @@ type FakeViewOptions = {
   transform?: string;
   scale?: string;
   svg?: boolean;
+  // An svg root has a client box even though it has no offset size.
+  svgRoot?: boolean;
   // Transforms of the ancestors, outermost first.
   ancestors?: Matrix[];
   parentDisplay?: string;
@@ -44,6 +46,7 @@ function fakeView({
   transform,
   scale = 'none',
   svg = false,
+  svgRoot = false,
   ancestors = [],
   parentDisplay,
 }: FakeViewOptions = {}) {
@@ -81,6 +84,7 @@ function fakeView({
     parentElement,
     // SVG elements have no offset size.
     ...(svg ? {} : { offsetWidth: width, offsetHeight: height }),
+    ...(svgRoot ? { clientWidth: width, clientHeight: height } : {}),
     computedStyle: {
       display: 'block',
       scale,
@@ -262,6 +266,40 @@ describe('viewportToLocal', () => {
 
     // The point is mapped against the union of the children's bounds.
     expect(viewportToLocal(wrapper, point)).toEqual({ x: 10, y: 10 });
+  });
+
+  test('an svg root rotated by 45 degrees', () => {
+    // The bounds alone cannot tell the sides apart at 45 degrees, the size
+    // comes from the client box instead.
+    const s = Math.SQRT1_2;
+    const view = fakeView({ matrix: [s, s, -s, s], svg: true, svgRoot: true });
+    const corner = { x: 250 - 50 * s + 25 * s, y: 125 - 50 * s - 25 * s };
+
+    const local = viewportToLocal(view, corner);
+
+    expect(local.x).toBeCloseTo(0);
+    expect(local.y).toBeCloseTo(0);
+  });
+
+  test('a display: contents wrapper around several views in a scaled ancestor', () => {
+    const ancestor = fakeAncestor([2, 0, 0, 2], null);
+    const wrapper = {
+      style: { display: 'contents' },
+      children: [
+        fakeView({ ancestors: [[2, 0, 0, 2]] }),
+        fakeView({ ancestors: [[2, 0, 0, 2]] }),
+      ],
+      childElementCount: 2,
+      parentElement: ancestor,
+      // A contents element reports zeros, not its children's size.
+      offsetWidth: 0,
+      offsetHeight: 0,
+      computedStyle: { display: 'contents', scale: 'none', transform: 'none' },
+      getBoundingClientRect: () => ({ left: 0, top: 0, width: 0, height: 0 }),
+    } as unknown as HTMLElement;
+
+    // The union of the children is a scaled 100x50 box.
+    expect(viewportToLocal(wrapper, point)).toEqual({ x: 30, y: 17.5 });
   });
 
   test('a view scaled to zero', () => {
