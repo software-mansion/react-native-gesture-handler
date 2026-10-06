@@ -68,7 +68,7 @@ Called before `onPress` when a touch is engaged. Details about the event object 
 onPressOut?: null | ((event: PressableEvent) => void);
 ```
 
-Called before `onPress` when a touch is released (before [`onPress`](#onpress)). Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
+Called when a touch is released. When [`pressOutAfterAnimation`](#pressoutafteranimation) is set to `true`, a quick tap calls it after [`onPress`](#onpress). Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
 ### onLongPress
 
@@ -200,6 +200,20 @@ needsOffscreenAlphaCompositing?: boolean;
 ```
 
 Whether the view should render with an offscreen alpha-compositing buffer when its `opacity` is less than `1`. Defaults to `false`.
+
+<Badges platforms={['android', 'ios']}>
+### pressOutAfterAnimation [A][I]
+</Badges>
+
+```ts
+pressOutAfterAnimation?: boolean;
+```
+
+In some cases the platform defers the press, so a quick tap calls `onPressIn` and `onPressOut` almost at the same time and the `pressed` state never shows up.
+
+When set to `true`, such a tap keeps `pressed` for at least 130 ms, like React Native's `minPressDuration`: `onPressOut` is held back until then and is called after [`onPress`](#onpress), which is never delayed. Presses that were not deferred by the platform are not affected.
+
+By default set to `true`. Has no effect on web, where presses are never deferred, or when `simultaneousWith`, `requireToFail` or `block` is passed.
 
 ### testOnly_pressed
 
