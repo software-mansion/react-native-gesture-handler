@@ -46,7 +46,7 @@ export type TapGestureExternalConfig = CommonTapGestureConfig & {
 
   /**
    * Maximum time, expressed in milliseconds, that can pass before the next tap
-   * if many taps are required. The default value is 500.
+   * if many taps are required. The default value is 200.
    */
   maxDelay?: number;
 
