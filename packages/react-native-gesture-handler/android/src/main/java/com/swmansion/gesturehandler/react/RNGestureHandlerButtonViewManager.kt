@@ -825,6 +825,7 @@ class RNGestureHandlerButtonViewManager :
       if (pressStarted) {
         return
       }
+
       pressStarted = true
 
       if (hasLongPressHandler && longPressDuration >= 0) {
