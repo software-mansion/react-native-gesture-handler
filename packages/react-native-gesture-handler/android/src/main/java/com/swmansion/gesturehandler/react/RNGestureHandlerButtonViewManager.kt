@@ -741,6 +741,8 @@ class RNGestureHandlerButtonViewManager :
       }
 
       if (handler.isWithinBounds) {
+        // Re-entry while a held PressOut from leaving is pending (cancelOnLeave off).
+        flushPendingPressOut()
         dispatchJSEvent(EventType.PressIn, handler)
       } else {
         dispatchPressOut(handler)
