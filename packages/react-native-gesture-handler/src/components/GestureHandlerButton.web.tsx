@@ -65,7 +65,6 @@ type ButtonProps = ViewProps & {
   tapAnimationInDuration?: number;
   tapAnimationOutDuration?: number;
   longPressDuration?: number;
-  pressOutAfterAnimation?: boolean;
   longPressAnimationOutDuration?: number;
   hoverAnimationInDuration?: number;
   hoverAnimationOutDuration?: number;
@@ -122,8 +121,6 @@ export const ButtonComponent = ({
   tapAnimationInDuration = 50,
   tapAnimationOutDuration = 100,
   longPressDuration = -1,
-  // Browsers never defer the press, so there is nothing to compensate for on web.
-  pressOutAfterAnimation: _pressOutAfterAnimation = false,
   longPressAnimationOutDuration = 100,
   hoverAnimationInDuration = 50,
   hoverAnimationOutDuration = 100,
