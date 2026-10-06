@@ -688,6 +688,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   if (pointerInside) {
+    // Re-entry while a held onPressOut from leaving is pending (cancelOnLeave off).
+    [self flushPendingPressOutEvent];
     [self dispatchButtonEvent:RNGHButtonEventTypePressIn withExtraData:extraData];
   } else {
     [self dispatchPressOutWithExtraData:extraData];
