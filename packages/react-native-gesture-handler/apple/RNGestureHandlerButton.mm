@@ -52,7 +52,9 @@
   NSTimeInterval _pressInTimestamp;
   dispatch_block_t _pendingPressOutBlock;
   // `onPressOut` held back by `pressOutAfterAnimation` (the press-out animation has its own block above).
+  // The payload is kept apart from the block: a cancelled dispatch block never runs its body.
   dispatch_block_t _pendingPressOutEventBlock;
+  RNGestureHandlerEventExtraData *_pendingPressOutExtraData;
   // Whether UIKit deferred the press: an enclosing scroll view with `delaysContentTouches` holds
   // the touch until it rules out a scroll (or delivers begin and end together on a quick tap).
   BOOL _pressDeferredByPlatform;
@@ -231,6 +233,7 @@
     [self cancelPendingPressOutAnimation];
     [self cancelPendingHoverOut];
     [self cancelPendingLongPress];
+    [self flushPendingPressOutEvent];
     [self applyStartAnimationState];
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
@@ -255,6 +258,7 @@
     [self cancelPendingPressOutAnimation];
     [self cancelPendingHoverOut];
     [self cancelPendingLongPress];
+    [self flushPendingPressOutEvent];
     [self applyStartAnimationState];
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
@@ -741,6 +745,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 }
 
+#if !TARGET_OS_OSX
 - (BOOL)isInsideDelayingScrollView
 {
   for (UIView *view = self.superview; view != nil; view = view.superview) {
@@ -750,6 +755,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
   return NO;
 }
+#endif
 
 // With `pressOutAfterAnimation`, a press UIKit deferred (`delaysContentTouches` in a scroll view)
 // holds `onPressOut` until the press-in animation has played, like `handleAnimatePressOut` holds
@@ -765,18 +771,25 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   [self cancelPendingPressOutEvent];
   _lastEventWasInside = NO;
+  _pendingPressOutExtraData = extraData;
   __weak auto weakSelf = self;
   _pendingPressOutEventBlock = dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
-    __strong auto strongSelf = weakSelf;
-    if (strongSelf) {
-      strongSelf->_pendingPressOutEventBlock = nil;
-      [strongSelf.eventDelegate dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:extraData];
-    }
+    [weakSelf deliverPendingPressOutEvent];
   });
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)),
       dispatch_get_main_queue(),
       _pendingPressOutEventBlock);
+}
+
+- (void)deliverPendingPressOutEvent
+{
+  RNGestureHandlerEventExtraData *extraData = _pendingPressOutExtraData;
+  _pendingPressOutEventBlock = nil;
+  _pendingPressOutExtraData = nil;
+  if (extraData != nil) {
+    [self.eventDelegate dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:extraData];
+  }
 }
 
 - (void)flushPendingPressOutEvent
@@ -785,10 +798,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     return;
   }
 
-  dispatch_block_t block = _pendingPressOutEventBlock;
-  dispatch_block_cancel(block);
-  _pendingPressOutEventBlock = nil;
-  block();
+  dispatch_block_cancel(_pendingPressOutEventBlock);
+  [self deliverPendingPressOutEvent];
 }
 
 - (void)cancelPendingPressOutEvent
@@ -796,6 +807,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   if (_pendingPressOutEventBlock != nil) {
     dispatch_block_cancel(_pendingPressOutEventBlock);
     _pendingPressOutEventBlock = nil;
+    _pendingPressOutExtraData = nil;
   }
 }
 
