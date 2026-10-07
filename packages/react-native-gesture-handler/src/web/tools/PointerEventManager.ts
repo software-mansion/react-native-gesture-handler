@@ -2,11 +2,10 @@ import { PointerType } from '../../PointerType';
 import type { AdaptedEvent, Point } from '../interfaces';
 import { EventTypes } from '../interfaces';
 import {
-  calculateViewScale,
-  getEffectiveBoundingRect,
   isPointerInBounds,
   PointerTypeMapping,
   tryExtractStylusData,
+  viewportToLocal,
 } from '../utils';
 import EventManager from './EventManager';
 
@@ -221,14 +220,16 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   }
 
   protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
-    const rect = getEffectiveBoundingRect(this.view);
-    const { scaleX, scaleY } = calculateViewScale(this.view);
+    const local = viewportToLocal(this.view, {
+      x: event.clientX,
+      y: event.clientY,
+    });
 
     return {
       x: event.clientX,
       y: event.clientY,
-      offsetX: (event.clientX - rect.left) / scaleX,
-      offsetY: (event.clientY - rect.top) / scaleY,
+      offsetX: local.x,
+      offsetY: local.y,
       pointerId: event.pointerId,
       eventType: eventType,
       pointerType:
