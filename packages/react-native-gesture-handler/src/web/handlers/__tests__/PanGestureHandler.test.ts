@@ -86,16 +86,20 @@ afterEach(() => {
   ).gestureHandlers = [];
 });
 
+// A 100x100 view scaled around its center, `left` and `top` are the bounds of
+// the scaled box.
 class FakeView {
   public readonly style = {};
   public readonly children = [];
+  public readonly offsetWidth = 100;
+  public readonly offsetHeight = 100;
   public readonly computedStyle: Record<string, string>;
   private readonly listeners = new Map<string, Set<(event: unknown) => void>>();
 
   constructor(
     private readonly left = 0,
     private readonly top = 0,
-    scale = 1
+    private readonly scale = 1
   ) {
     this.computedStyle = {
       display: 'block',
@@ -105,7 +109,9 @@ class FakeView {
   }
 
   public getBoundingClientRect() {
-    return { left: this.left, top: this.top };
+    const size = 100 * Math.abs(this.scale);
+
+    return { left: this.left, top: this.top, width: size, height: size };
   }
 
   public addEventListener(type: string, listener: (event: unknown) => void) {
@@ -273,5 +279,14 @@ describe('PanGestureHandler trackpad coordinates', () => {
     expect(
       trackpadPan(view, { clientX: 50, clientY: 80, offsetX: 5, offsetY: 10 })
     ).toMatchObject({ x: 12.5, y: 25, absoluteX: 65, absoluteY: 110 });
+  });
+
+  test('a mirrored view', () => {
+    const view = new FakeView(40, 60, -1);
+
+    // The view's x axis runs from its right edge: 100 - (65 - 40).
+    expect(
+      trackpadPan(view, { clientX: 50, clientY: 80, offsetX: 5, offsetY: 10 })
+    ).toMatchObject({ x: 75, y: 50, absoluteX: 65, absoluteY: 110 });
   });
 });
