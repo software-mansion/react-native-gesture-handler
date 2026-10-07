@@ -75,7 +75,8 @@ export interface PressableProps extends CommonPressableProps {
   /**
    * When the platform deferred the press, holds `onPressOut` so a quick tap keeps `pressed` for at
    * least 130 ms, like React Native's `minPressDuration`. `onPress` is not delayed and may precede
-   * `onPressOut` on such taps. By default set to true.
+   * `onPressOut` on such taps. By default set to true. Has no effect on web or when any of
+   * `simultaneousWith`, `requireToFail` or `block` is passed.
    */
   pressOutAfterAnimation?: boolean | undefined;
 }

@@ -741,6 +741,8 @@ class RNGestureHandlerButtonViewManager :
       }
 
       if (handler.isWithinBounds) {
+        // Re-entry while a held PressOut from leaving is pending (cancelOnLeave off).
+        flushPendingPressOut()
         dispatchJSEvent(EventType.PressIn, handler)
       } else {
         dispatchPressOut(handler)
@@ -1397,8 +1399,8 @@ class RNGestureHandlerButtonViewManager :
     override fun onDetachedFromWindow() {
       pendingPressOut?.let { handler?.removeCallbacks(it) }
       pendingPressOut = null
-      pendingPressOutEvent?.let { handler?.removeCallbacks(it) }
-      pendingPressOutEvent = null
+      // Deliver a held PressOut now rather than drop it: JS already saw the PressIn.
+      flushPendingPressOut()
       pendingLongPress?.let { handler?.removeCallbacks(it) }
       pendingLongPress = null
       cancelPendingHoverOut()
