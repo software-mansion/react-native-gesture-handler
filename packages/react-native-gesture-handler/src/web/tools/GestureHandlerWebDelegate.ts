@@ -65,13 +65,17 @@ export class GestureHandlerWebDelegate
     };
 
     const shouldSendHoverEvents = handler.name === SingleGestureName.Hover;
+    const shouldSendWheelEvents = handler.name === SingleGestureName.Pan;
 
     this.eventManagers.push(
       new PointerEventManager(this.view, shouldSendHoverEvents)
     );
     this.eventManagers.push(new KeyboardEventManager(this.view));
-    this.eventManagers.push(new WheelEventManager(this.view));
     this.eventManagers.push(new ScrollEventManager(this.view));
+
+    if (shouldSendWheelEvents) {
+      this.eventManagers.push(new WheelEventManager(this.view));
+    }
 
     this.eventManagers.forEach((manager) =>
       this.gestureHandler.attachEventManager(manager)
