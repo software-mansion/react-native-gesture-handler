@@ -8,7 +8,10 @@ import {
   resolveHostInstance,
 } from '../../../hostInstance';
 import { tagMessage } from '../../../utils';
-import { Reanimated } from '../reanimatedWrapper';
+import {
+  Reanimated,
+  reanimatedRefreshesAnimatableRef,
+} from '../reanimatedWrapper';
 
 export class Wrap extends React.Component<{
   onGestureHandlerEvent?: unknown;
@@ -28,10 +31,14 @@ export class Wrap extends React.Component<{
 
   // Used by Reanimated's `createAnimatedComponent` (`AnimatedWrap`). Without it,
   // Reanimated calls `findHostInstance_DEPRECATED` on this class instance, which
-  // warns under StrictMode.
+  // warns under StrictMode. Reanimated caches the result, so the child's host
+  // instance is only safe to hand out when it re-resolves the ref on update;
+  // otherwise return the instance itself, which keeps the deprecated lookup.
   // eslint-disable-next-line @eslint-react/no-unused-class-component-members
   public getAnimatableRef() {
-    return resolveHostInstance(this);
+    return reanimatedRefreshesAnimatableRef()
+      ? resolveHostInstance(this)
+      : this;
   }
 
   private detachChildRef() {
