@@ -60,6 +60,7 @@ interface NativeProps extends ViewProps {
   tapAnimationInDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, 50>;
   tapAnimationOutDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, 100>;
   longPressDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, -1>;
+  pressOutAfterAnimation?: CodegenTypes.WithDefault<boolean, false>;
   longPressAnimationOutDuration?: CodegenTypes.WithDefault<
     CodegenTypes.Int32,
     -1
