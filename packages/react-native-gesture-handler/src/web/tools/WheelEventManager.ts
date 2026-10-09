@@ -21,7 +21,9 @@ export default class WheelEventManager extends EventManager<HTMLElement> {
 
   public registerListeners(): void {
     this.view.addEventListener('pointermove', this.resetDelta);
-    this.view.addEventListener('wheel', this.wheelCallback);
+    this.view.addEventListener('wheel', this.wheelCallback, {
+      passive: true,
+    });
   }
 
   public unregisterListeners(): void {

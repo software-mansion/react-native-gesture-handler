@@ -95,6 +95,7 @@ class FakeView {
   public readonly offsetHeight = 100;
   public readonly computedStyle: Record<string, string>;
   private readonly listeners = new Map<string, Set<(event: unknown) => void>>();
+  public readonly listenerOptions = new Map<string, unknown>();
 
   constructor(
     private readonly left = 0,
@@ -114,10 +115,15 @@ class FakeView {
     return { left: this.left, top: this.top, width: size, height: size };
   }
 
-  public addEventListener(type: string, listener: (event: unknown) => void) {
+  public addEventListener(
+    type: string,
+    listener: (event: unknown) => void,
+    options?: unknown
+  ) {
     const listeners = this.listeners.get(type) ?? new Set();
     listeners.add(listener);
     this.listeners.set(type, listeners);
+    this.listenerOptions.set(type, options);
   }
 
   public removeEventListener(type: string, listener: (event: unknown) => void) {
@@ -191,6 +197,17 @@ describe('PanGestureHandler trackpad gesture end', () => {
     // The gesture schedules its end on every wheel event, drop the last one.
     jest.clearAllTimers();
     jest.useRealTimers();
+  });
+
+  test('the wheel listener is passive, it never blocks native scrolling', () => {
+    const view = new FakeView();
+    const manager = new WheelEventManager(view as unknown as HTMLElement);
+    const handler = createHandler([manager]);
+
+    handler.setGestureConfig({ enabled: true });
+    handler.attachEventManager(manager);
+
+    expect(view.listenerOptions.get('wheel')).toEqual({ passive: true });
   });
 
   test('the next trackpad gesture starts from the wheel event coordinates', () => {
