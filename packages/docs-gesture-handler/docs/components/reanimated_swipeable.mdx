@@ -69,6 +69,18 @@ dragOffsetFromRight?: number | SharedValue<number>;
 
 The horizontal offset from the starting point required to trigger a left-swipe gesture. Defaults to `-10`.
 
+### failOffsetY
+
+```ts
+failOffsetY?: number |
+  SharedValue<number> |
+  [number | SharedValue<number>, number | SharedValue<number>];
+```
+
+The vertical offset range after which the swipe gesture fails if it hasn't activated yet. Not set by default. Useful when `Swipeable` is placed inside a vertically scrollable container, e.g. a list with pull-to-refresh, so that a mostly vertical drag is not taken over by the swipe.
+
+See [failOffsetY section](/docs/gestures/use-pan-gesture#failoffsety) in `Pan` gesture for more details.
+
 ### overshootLeft
 
 ```ts
