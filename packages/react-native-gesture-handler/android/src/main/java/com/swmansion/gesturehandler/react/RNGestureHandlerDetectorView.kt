@@ -23,10 +23,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private var subscribedVirtualHandlers: MutableMap<Int, MutableSet<Int>> = mutableMapOf()
   private var moduleId: Int = -1
 
-  // Event time of the last DOWN or POINTER_DOWN that native dispatch delivered to this view.
-  // Handler delivery bypasses `dispatchTouchEvent`, so an event intercepted by an ancestor never
-  // updates it. Down time can't be used: every event of a stream carries the first DOWN's.
-  private var lastNativeDownEventTime = -1L
+  // Down time of the last DOWN that native dispatch delivered to this view. Handler delivery
+  // bypasses `dispatchTouchEvent`, so a DOWN intercepted by an ancestor never updates it.
+  private var lastNativeDownTime = -1L
 
   data class VirtualChildren(val handlerTags: List<Int>, val viewTag: Int)
 
@@ -51,8 +50,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-    if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-      lastNativeDownEventTime = event.eventTime
+    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+      lastNativeDownTime = event.downTime
     }
     return super.dispatchTouchEvent(event)
   }
@@ -60,12 +59,11 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   /**
    * A native view takes over the touch stream with `requestDisallowInterceptTouchEvent`, which only
    * bubbles up, so handlers of detectors below it are never notified. Mirror the rule buttons use:
-   * cancel when the grab happens after a DOWN, or when it happens on a DOWN or POINTER_DOWN that
-   * never reached this detector (e.g. a scroll view catching a fling, or an ancestor taking over
-   * when another pointer lands).
+   * cancel when the grab happens after DOWN, or when it happens on DOWN and kept the event from
+   * reaching this detector (e.g. a scroll view catching a fling).
    */
-  fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean, eventTime: Long) =
-    grabbedMidGesture || lastNativeDownEventTime != eventTime
+  fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean, downTime: Long) =
+    grabbedMidGesture || lastNativeDownTime != downTime
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     super.requestDisallowInterceptTouchEvent(disallowIntercept)

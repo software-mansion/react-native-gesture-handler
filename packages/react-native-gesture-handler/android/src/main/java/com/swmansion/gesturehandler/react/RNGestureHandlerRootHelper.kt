@@ -156,7 +156,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       val grabbedMidGesture = event.actionMasked != MotionEvent.ACTION_DOWN &&
         event.actionMasked != MotionEvent.ACTION_POINTER_DOWN
 
-      orchestrator?.cancelHandlersOnNativeTouchGrab(grabbedMidGesture, event.eventTime)
+      orchestrator?.cancelHandlersOnNativeTouchGrab(grabbedMidGesture, event.downTime)
     }
   }
 
