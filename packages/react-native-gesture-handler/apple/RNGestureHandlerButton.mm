@@ -55,6 +55,8 @@
   // The payload is kept apart from the block: a cancelled dispatch block never runs its body.
   dispatch_block_t _pendingPressOutEventBlock;
   RNGestureHandlerEventExtraData *_pendingPressOutExtraData;
+  // InteractionFinished that arrived while onPressOut was held; delivered right after it.
+  RNGestureHandlerEventExtraData *_pendingInteractionFinishedExtraData;
   // Whether UIKit deferred the press: an enclosing scroll view with `delaysContentTouches` holds
   // the touch until it rules out a scroll (or delivers begin and end together on a quick tap).
   BOOL _pressDeferredByPlatform;
@@ -741,7 +743,11 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   if (isFinished) {
-    [self dispatchButtonEvent:RNGHButtonEventTypeInteractionFinished withExtraData:extraData];
+    if (_pendingPressOutEventBlock != nil) {
+      _pendingInteractionFinishedExtraData = extraData;
+    } else {
+      [self dispatchButtonEvent:RNGHButtonEventTypeInteractionFinished withExtraData:extraData];
+    }
   }
 }
 
@@ -784,11 +790,17 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)deliverPendingPressOutEvent
 {
-  RNGestureHandlerEventExtraData *extraData = _pendingPressOutExtraData;
+  RNGestureHandlerEventExtraData *pressOutExtraData = _pendingPressOutExtraData;
+  RNGestureHandlerEventExtraData *interactionFinishedExtraData = _pendingInteractionFinishedExtraData;
   _pendingPressOutEventBlock = nil;
   _pendingPressOutExtraData = nil;
-  if (extraData != nil) {
-    [self.eventDelegate dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:extraData];
+  _pendingInteractionFinishedExtraData = nil;
+  if (pressOutExtraData != nil) {
+    [self.eventDelegate dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:pressOutExtraData];
+  }
+  if (interactionFinishedExtraData != nil) {
+    [self.eventDelegate dispatchButtonEvent:RNGHButtonEventTypeInteractionFinished
+                              withExtraData:interactionFinishedExtraData];
   }
 }
 
@@ -808,6 +820,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     dispatch_block_cancel(_pendingPressOutEventBlock);
     _pendingPressOutEventBlock = nil;
     _pendingPressOutExtraData = nil;
+    _pendingInteractionFinishedExtraData = nil;
   }
 }
 
