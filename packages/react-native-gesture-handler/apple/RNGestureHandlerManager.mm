@@ -377,6 +377,18 @@ static BOOL RNGHIsScreensTouchHandlerHost(RNGHUIView *view)
     return;
   }
 
+#if !TARGET_OS_OSX
+  // A native handler bound to a ScrollView is attached to the component view that wraps the platform
+  // scroll view, so the check above does not recognize it as a scroll recognizer. On iOS its recognizer
+  // only mirrors the state of the scroll view's pan recognizer, so its activation means scrolling started.
+  // On macOS it begins on mouse down, so it is not skipped there.
+  RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:gestureRecognizer];
+  if ([gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]] && handler != nil &&
+      [handler retrieveScrollView:gestureRecognizer.view] != nil) {
+    return;
+  }
+#endif
+
   UIGestureRecognizer *touchHandler = nil;
 
   // this way we can extract the touch handler on both architectures relatively easily
