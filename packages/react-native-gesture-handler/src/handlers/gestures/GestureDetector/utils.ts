@@ -64,6 +64,42 @@ function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
   );
 }
 
+// Relations that may resolve to a different handler after this detector attached:
+// refs (filled when the target mounts) and gesture objects attached by another
+// detector (they get a tag in `initialize`). Siblings added by composition are
+// attached together with the gesture, so they never resolve late.
+export function hasExternalRelations(gestures: GestureType[]) {
+  const ownGestures = new Set(gestures);
+
+  for (const gesture of gestures) {
+    const relations = [
+      gesture.config.blocksHandlers,
+      gesture.config.requireToFail,
+      gesture.config.simultaneousWith,
+    ];
+
+    for (const relation of relations) {
+      if (relation === undefined) {
+        continue;
+      }
+
+      for (const entry of relation) {
+        if (typeof entry === 'number') {
+          continue;
+        }
+
+        // Anything but our own gesture object is external: a ref, or a gesture
+        // attached by another detector
+        if (!(entry instanceof BaseGesture) || !ownGestures.has(entry)) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 export function extractGestureRelations(gesture: GestureType) {
   const requireToFail = extractValidHandlerTags(gesture.config.requireToFail);
   const simultaneousWith = extractValidHandlerTags(
