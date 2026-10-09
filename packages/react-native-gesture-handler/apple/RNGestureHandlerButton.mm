@@ -51,6 +51,15 @@
   UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
   NSTimeInterval _pressInTimestamp;
   dispatch_block_t _pendingPressOutBlock;
+  // `onPressOut` held back by `pressOutAfterAnimation` (the press-out animation has its own block above).
+  // The payload is kept apart from the block: a cancelled dispatch block never runs its body.
+  dispatch_block_t _pendingPressOutEventBlock;
+  RNGestureHandlerEventExtraData *_pendingPressOutExtraData;
+  // InteractionFinished that arrived while onPressOut was held; delivered right after it.
+  RNGestureHandlerEventExtraData *_pendingInteractionFinishedExtraData;
+  // Whether UIKit deferred the press: an enclosing scroll view with `delaysContentTouches` holds
+  // the touch until it rules out a scroll (or delivers begin and end together on a quick tap).
+  BOOL _pressDeferredByPlatform;
   BOOL _isHovered;
   BOOL _isPressed;
   dispatch_block_t _pendingHoverOutBlock;
@@ -100,6 +109,8 @@
   _tapAnimationInDuration = 50;
   _tapAnimationOutDuration = 100;
   _longPressDuration = -1;
+  _pressOutAfterAnimation = NO;
+  _pressDeferredByPlatform = NO;
   _longPressAnimationOutDuration = -1;
   _activeOpacity = 1.0;
   _defaultOpacity = 1.0;
@@ -188,6 +199,8 @@
   [self cancelPendingPressOutAnimation];
   [self cancelPendingHoverOut];
   [self cancelPendingLongPress];
+  [self cancelPendingPressOutEvent];
+  _pressDeferredByPlatform = NO;
   _lastEventWasInside = NO;
   _longPressDetected = NO;
   _lastObservedExtraData = nil;
@@ -222,6 +235,7 @@
     [self cancelPendingPressOutAnimation];
     [self cancelPendingHoverOut];
     [self cancelPendingLongPress];
+    [self flushPendingPressOutEvent];
     [self applyStartAnimationState];
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
@@ -246,6 +260,7 @@
     [self cancelPendingPressOutAnimation];
     [self cancelPendingHoverOut];
     [self cancelPendingLongPress];
+    [self flushPendingPressOutEvent];
     [self applyStartAnimationState];
     _isTouchInsideBounds = NO;
     _suppressSuperControlActionDispatch = NO;
@@ -679,9 +694,11 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   if (pointerInside) {
+    // Re-entry while a held onPressOut from leaving is pending (cancelOnLeave off).
+    [self flushPendingPressOutEvent];
     [self dispatchButtonEvent:RNGHButtonEventTypePressIn withExtraData:extraData];
   } else {
-    [self dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:extraData];
+    [self dispatchPressOutWithExtraData:extraData];
     [self cancelPendingLongPress];
   }
 }
@@ -703,6 +720,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       newState == RNGestureHandlerStateCancelled;
 
   if (newState == RNGestureHandlerStateBegan) {
+    [self flushPendingPressOutEvent];
     [self dispatchButtonEvent:RNGHButtonEventTypePressIn withExtraData:extraData];
     _longPressDetected = NO;
 
@@ -714,7 +732,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   if (isFinished) {
     if (localLastEventWasInside) {
-      [self dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:extraData];
+      [self dispatchPressOutWithExtraData:extraData];
     }
 
     [self cancelPendingLongPress];
@@ -725,7 +743,84 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   if (isFinished) {
-    [self dispatchButtonEvent:RNGHButtonEventTypeInteractionFinished withExtraData:extraData];
+    if (_pendingPressOutEventBlock != nil) {
+      _pendingInteractionFinishedExtraData = extraData;
+    } else {
+      [self dispatchButtonEvent:RNGHButtonEventTypeInteractionFinished withExtraData:extraData];
+    }
+  }
+}
+
+#if !TARGET_OS_OSX
+- (BOOL)isInsideDelayingScrollView
+{
+  for (UIView *view = self.superview; view != nil; view = view.superview) {
+    if ([view isKindOfClass:[UIScrollView class]] && ((UIScrollView *)view).delaysContentTouches) {
+      return YES;
+    }
+  }
+  return NO;
+}
+#endif
+
+// With `pressOutAfterAnimation`, a press UIKit deferred (`delaysContentTouches` in a scroll view)
+// holds `onPressOut` until the press-in animation has played, like `handleAnimatePressOut` holds
+// the animation. An immediate press keeps its native timing. `onPress` is never delayed, so on
+// such taps `onPressOut` follows it.
+- (void)dispatchPressOutWithExtraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  NSTimeInterval remaining = _tapAnimationInDuration - (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
+  if (!_pressOutAfterAnimation || !_pressDeferredByPlatform || remaining <= 0) {
+    [self dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:extraData];
+    return;
+  }
+
+  [self cancelPendingPressOutEvent];
+  _lastEventWasInside = NO;
+  _pendingPressOutExtraData = extraData;
+  __weak auto weakSelf = self;
+  _pendingPressOutEventBlock = dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
+    [weakSelf deliverPendingPressOutEvent];
+  });
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)),
+      dispatch_get_main_queue(),
+      _pendingPressOutEventBlock);
+}
+
+- (void)deliverPendingPressOutEvent
+{
+  RNGestureHandlerEventExtraData *pressOutExtraData = _pendingPressOutExtraData;
+  RNGestureHandlerEventExtraData *interactionFinishedExtraData = _pendingInteractionFinishedExtraData;
+  _pendingPressOutEventBlock = nil;
+  _pendingPressOutExtraData = nil;
+  _pendingInteractionFinishedExtraData = nil;
+  if (pressOutExtraData != nil) {
+    [self.eventDelegate dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:pressOutExtraData];
+  }
+  if (interactionFinishedExtraData != nil) {
+    [self.eventDelegate dispatchButtonEvent:RNGHButtonEventTypeInteractionFinished
+                              withExtraData:interactionFinishedExtraData];
+  }
+}
+
+- (void)flushPendingPressOutEvent
+{
+  if (_pendingPressOutEventBlock == nil) {
+    return;
+  }
+
+  dispatch_block_cancel(_pendingPressOutEventBlock);
+  [self deliverPendingPressOutEvent];
+}
+
+- (void)cancelPendingPressOutEvent
+{
+  if (_pendingPressOutEventBlock != nil) {
+    dispatch_block_cancel(_pendingPressOutEventBlock);
+    _pendingPressOutEventBlock = nil;
+    _pendingPressOutExtraData = nil;
+    _pendingInteractionFinishedExtraData = nil;
   }
 }
 
@@ -1290,6 +1385,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   _isTouchInsideBounds = YES;
+  _pressDeferredByPlatform = _pressOutAfterAnimation && [self isInsideDelayingScrollView];
   // A pencil's hover-out arrives just before touch-down but only schedules the
   // clear, so `_isHovered` still reflects the open hover. Under Reduce Motion
   // that delay is zero and the block can land first — the press then brackets
