@@ -609,10 +609,14 @@ open class GestureHandler {
     }
 
     // if there are tracked pointers and the gesture is about to end, send event cancelling all pointers
-    if (trackedPointersCount > 0 &&
-      (newState == STATE_END || newState == STATE_CANCELLED || newState == STATE_FAILED)
-    ) {
+    if (trackedPointersCount > 0 && isFinished(newState)) {
       cancelPointers()
+
+      // `cancelPointers` dispatches the event synchronously and its callback may change the state
+      // (e.g. via `GestureStateManager.fail`), in which case the transition is already complete.
+      if (isFinished(state)) {
+        return
+      }
     }
 
     val oldState = state
@@ -998,6 +1002,8 @@ open class GestureHandler {
   }
 
   companion object {
+    fun isFinished(state: Int) = state == STATE_CANCELLED || state == STATE_FAILED || state == STATE_END
+
     private const val DEFAULT_NEEDS_POINTER_DATA = false
     private const val DEFAULT_MANUAL_ACTIVATION = false
     private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = false

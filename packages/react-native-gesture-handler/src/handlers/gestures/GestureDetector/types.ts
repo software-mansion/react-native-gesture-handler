@@ -14,6 +14,9 @@ export interface AttachedGestureState {
   shouldUseReanimated: boolean;
   // Whether the GestureDetector is mounted
   isMounted: boolean;
+  // Whether any attached gesture has a relation to a gesture outside this
+  // detector (a ref or a gesture object), which may resolve on a later mount
+  hasExternalRelations: boolean;
 }
 
 export interface GestureDetectorState {

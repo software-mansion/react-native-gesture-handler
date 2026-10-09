@@ -1,6 +1,7 @@
 import { PointerType } from '../../PointerType';
 import type { AdaptedEvent } from '../interfaces';
 import { EventTypes } from '../interfaces';
+import { viewportToLocal } from '../utils';
 import EventManager from './EventManager';
 
 export default class KeyboardEventManager extends EventManager<HTMLElement> {
@@ -112,15 +113,14 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   ): AdaptedEvent {
     const viewRect = (event.target as HTMLElement).getBoundingClientRect();
 
+    // The center of the focused element, which is where its own center lands
+    // whatever the transforms.
     const viewportPosition = {
       x: viewRect?.x + viewRect?.width / 2,
       y: viewRect?.y + viewRect?.height / 2,
     };
 
-    const relativePosition = {
-      x: viewRect?.width / 2,
-      y: viewRect?.height / 2,
-    };
+    const relativePosition = viewportToLocal(this.view, viewportPosition);
 
     return {
       x: viewportPosition.x,
