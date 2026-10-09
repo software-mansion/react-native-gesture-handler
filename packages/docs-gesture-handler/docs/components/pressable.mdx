@@ -211,7 +211,7 @@ pressOutAfterAnimation?: boolean;
 
 In some cases the platform defers the press, so a quick tap calls `onPressIn` and `onPressOut` almost at the same time and the `pressed` state never shows up.
 
-When set to `true`, `onPressOut` for such a tap is held back so that `pressed` lasts at least 130 ms, as in React Native's `Pressable`. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
+When set to `true`, `onPressOut` for such a tap is held back so that `pressed` lasts at least 130 ms, matching React Native's `Pressable`. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
 
 By default set to `true`. Has no effect on web, where presses are never deferred, or when `simultaneousWith`, `requireToFail` or `block` is passed.
 
