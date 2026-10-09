@@ -391,16 +391,16 @@ class GestureHandlerOrchestrator(
 
   /**
    * Cancels handlers that shouldn't survive a native view taking over the touch stream: handlers
-   * whose view opted out through its hook (buttons), and detector handlers that haven't activated.
+   * whose view opted out through its hook (buttons), and handlers attached through a detector that
+   * haven't activated, native gestures included.
    */
   fun cancelHandlersOnNativeTouchGrab(grabbedMidGesture: Boolean, downTime: Long) = cancelHandlersMatching {
-    if (it is NativeViewGestureHandler) {
-      it.shouldCancelOnNativeTouchGrab(grabbedMidGesture)
-    } else {
-      !it.isActive &&
-        GestureHandler.usesNativeOrVirtualDetector(it.actionType) &&
-        it.hostDetectorView?.shouldCancelOnNativeTouchGrab(grabbedMidGesture, downTime) == true
-    }
+    val cancelledByHook = it is NativeViewGestureHandler && it.shouldCancelOnNativeTouchGrab(grabbedMidGesture)
+    val cancelledByDetector = !it.isActive &&
+      GestureHandler.usesNativeOrVirtualDetector(it.actionType) &&
+      it.hostDetectorView?.shouldCancelOnNativeTouchGrab(grabbedMidGesture, downTime) == true
+
+    cancelledByHook || cancelledByDetector
   }
 
   /**
