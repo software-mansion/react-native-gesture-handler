@@ -1,8 +1,11 @@
 import { renderHook } from '@testing-library/react-native';
 import type { Platform as PlatformModule } from 'react-native';
 
+import type { GestureType } from '../handlers/gestures/gesture';
+import { BaseGesture } from '../handlers/gestures/gesture';
 import type { AttachedGestureState } from '../handlers/gestures/GestureDetector/types';
 import { useMountReactions } from '../handlers/gestures/GestureDetector/useMountReactions';
+import { hasExternalRelations } from '../handlers/gestures/GestureDetector/utils';
 import { MountRegistry } from '../mountRegistry';
 
 // The relation scan used to resolve entries through `transformIntoHandlerTags`,
@@ -36,12 +39,20 @@ const stateWithRelation = (
     animatedHandlers: null,
     shouldUseReanimated: false,
     isMounted: true,
+    hasExternalRelations: true,
   }) as unknown as AttachedGestureState;
 
 const mount = (handlerTag: number) =>
   MountRegistry.gestureHandlerWillMount({
     handlerTag,
   } as unknown as React.Component);
+
+const gestureObject = (handlerTag: number, config: object = {}) => {
+  const gesture = Object.create(BaseGesture.prototype) as GestureType;
+  gesture.handlerTag = handlerTag;
+  gesture.config = config as GestureType['config'];
+  return gesture;
+};
 
 describe('useMountReactions', () => {
   const relationKeys: RelationKey[] = [
@@ -97,15 +108,84 @@ describe('useMountReactions', () => {
     unmount();
   });
 
-  test('ignores entries that already carried their tag when the detector attached', () => {
+  test('ignores raw tags, which cannot change after the detector attached', () => {
     const updateDetector = jest.fn();
-    // A gesture object and a raw tag are both resolved by the time the detector
-    // attaches, so mounting cannot change what they point at.
     const { unmount } = renderHook(() =>
       useMountReactions(
         updateDetector,
-        stateWithRelation('simultaneousWith', [{ handlerTag: 42 }, 42])
+        stateWithRelation('simultaneousWith', [42])
       )
+    );
+
+    mount(42);
+
+    expect(updateDetector).not.toHaveBeenCalled();
+    unmount();
+  });
+
+  test('updates the detector when a gesture object in a relation mounts later', () => {
+    const updateDetector = jest.fn();
+    // The object had no tag when this detector attached; its own detector
+    // assigns one in `initialize` and then fires the mount event with it.
+    const external = gestureObject(-1);
+    const { unmount } = renderHook(() =>
+      useMountReactions(
+        updateDetector,
+        stateWithRelation('simultaneousWith', [external])
+      )
+    );
+
+    external.handlerTag = 42;
+    MountRegistry.gestureWillMount(external);
+
+    expect(updateDetector).toHaveBeenCalledTimes(1);
+    unmount();
+  });
+
+  test('does not match a different gesture object with the same tag', () => {
+    const updateDetector = jest.fn();
+    const { unmount } = renderHook(() =>
+      useMountReactions(
+        updateDetector,
+        stateWithRelation('simultaneousWith', [gestureObject(42)])
+      )
+    );
+
+    MountRegistry.gestureWillMount(gestureObject(42));
+
+    expect(updateDetector).not.toHaveBeenCalled();
+    unmount();
+  });
+
+  test('skips the mount of its own gestures', () => {
+    const updateDetector = jest.fn();
+    // Composition fills relations with sibling gestures, so without the guard
+    // every composed detector would update itself on mount.
+    const first = gestureObject(1);
+    const second = gestureObject(2);
+    first.config = { simultaneousWith: [second] } as GestureType['config'];
+    second.config = { simultaneousWith: [first] } as GestureType['config'];
+    const state = stateWithRelation('simultaneousWith', []);
+    state.attachedGestures = [first, second];
+    const { unmount } = renderHook(() =>
+      useMountReactions(updateDetector, state)
+    );
+
+    MountRegistry.gestureWillMount(first);
+    MountRegistry.gestureWillMount(second);
+
+    expect(updateDetector).not.toHaveBeenCalled();
+    unmount();
+  });
+
+  test('skips the scan when the detector has no external relations', () => {
+    const updateDetector = jest.fn();
+    const state = stateWithRelation('simultaneousWith', [
+      { current: { handlerTag: 42 } },
+    ]);
+    state.hasExternalRelations = false;
+    const { unmount } = renderHook(() =>
+      useMountReactions(updateDetector, state)
     );
 
     mount(42);
@@ -128,5 +208,39 @@ describe('useMountReactions', () => {
 
     expect(updateDetector).not.toHaveBeenCalled();
     unmount();
+  });
+});
+
+describe('hasExternalRelations', () => {
+  test('is false without relations or with raw tags only', () => {
+    expect(hasExternalRelations([gestureObject(1)])).toBe(false);
+    expect(
+      hasExternalRelations([gestureObject(1, { requireToFail: [7] })])
+    ).toBe(false);
+  });
+
+  test('is false when relations only point at sibling gestures', () => {
+    const first = gestureObject(1);
+    const second = gestureObject(2);
+    first.config = { simultaneousWith: [second] } as GestureType['config'];
+    second.config = { simultaneousWith: [first] } as GestureType['config'];
+
+    expect(hasExternalRelations([first, second])).toBe(false);
+  });
+
+  test('is true for a ref', () => {
+    expect(
+      hasExternalRelations([
+        gestureObject(1, { blocksHandlers: [{ current: null }] }),
+      ])
+    ).toBe(true);
+  });
+
+  test('is true for a gesture object attached by another detector', () => {
+    expect(
+      hasExternalRelations([
+        gestureObject(1, { simultaneousWith: [gestureObject(2)] }),
+      ])
+    ).toBe(true);
   });
 });
