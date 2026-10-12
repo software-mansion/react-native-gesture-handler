@@ -19,6 +19,11 @@ class TestGestureHandler extends GestureHandler {
   public markAsNativeDetector() {
     this.actionType = ActionType.NATIVE_DETECTOR;
   }
+
+  public touch(event: AdaptedEvent) {
+    this.tracker.addToTracker(event);
+    this.sendTouchEvent(event);
+  }
 }
 
 class TestEventManager extends EventManager<unknown> {
@@ -223,5 +228,57 @@ describe('GestureHandlerOrchestrator idle handlers', () => {
     expect(GestureHandlerOrchestrator.instance.isHandlerRecorded(pressed)).toBe(
       true
     );
+  });
+});
+
+describe('GestureHandler web touch events', () => {
+  afterEach(() => {
+    (
+      GestureHandlerOrchestrator.instance as unknown as {
+        gestureHandlers: IGestureHandler[];
+      }
+    ).gestureHandlers = [];
+  });
+
+  test('touches carry the view relative coordinates of the pointer', () => {
+    const delegate = {
+      init: jest.fn(),
+      onEnabledChange: jest.fn(),
+      reset: jest.fn(),
+    } as unknown as GestureHandlerDelegate<unknown, IGestureHandler>;
+    const onGestureHandlerEvent = jest.fn();
+    const handler = new TestGestureHandler(delegate);
+
+    handler.init(
+      1,
+      { current: { onGestureHandlerEvent } } as never,
+      ActionType.JS_FUNCTION_OLD_API
+    );
+    // The web config type only spells out the default, the runtime reads it.
+    handler.setGestureConfig({
+      enabled: true,
+      needsPointerData: true,
+    } as unknown as Config);
+
+    // The event managers map the pointer into the view's own space, the
+    // touch payload must not undo that with the view's bounds.
+    handler.touch({
+      x: 150,
+      y: 110,
+      offsetX: 25,
+      offsetY: 5,
+      pointerId: 0,
+      eventType: EventTypes.DOWN,
+      pointerType: PointerType.TOUCH,
+      time: 0,
+    });
+
+    const touch = { id: 0, x: 25, y: 5, absoluteX: 150, absoluteY: 110 };
+
+    expect(onGestureHandlerEvent).toHaveBeenCalledTimes(1);
+    expect(onGestureHandlerEvent.mock.calls[0][0].nativeEvent).toMatchObject({
+      allTouches: [touch],
+      changedTouches: [touch],
+    });
   });
 });

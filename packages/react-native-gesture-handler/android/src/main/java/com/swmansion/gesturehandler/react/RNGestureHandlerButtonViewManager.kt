@@ -618,6 +618,9 @@ class RNGestureHandlerButtonViewManager :
 
     // PressOut event held back by `pressOutAfterAnimation` (the animation has its own hold above).
     private var pendingPressOutEvent: Runnable? = null
+
+    // InteractionFinished that arrived while PressOut was held; delivered right after it.
+    private var pendingInteractionFinishedEvent: RNGestureHandlerButtonEvent? = null
     private var pendingLongPress: Runnable? = null
     private var pendingHoverOut: Choreographer.FrameCallback? = null
     private var isPointerInsideBounds = false
@@ -806,7 +809,13 @@ class RNGestureHandlerButtonViewManager :
         newState == GestureHandler.STATE_FAILED ||
         newState == GestureHandler.STATE_CANCELLED
       ) {
-        dispatchJSEvent(EventType.InteractionFinished, handler)
+        val interactionFinishedEvent = RNGestureHandlerButtonEvent.obtain(this, handler, EventType.InteractionFinished)
+
+        if (pendingPressOutEvent != null) {
+          pendingInteractionFinishedEvent = interactionFinishedEvent
+        } else {
+          dispatchEvent(interactionFinishedEvent)
+        }
       }
     }
 
@@ -843,6 +852,11 @@ class RNGestureHandlerButtonViewManager :
       val runnable = Runnable {
         pendingPressOutEvent = null
         dispatchEvent(event)
+
+        pendingInteractionFinishedEvent?.let {
+          pendingInteractionFinishedEvent = null
+          dispatchEvent(it)
+        }
       }
       pendingPressOutEvent = runnable
       this.handler?.postDelayed(runnable, remaining)
