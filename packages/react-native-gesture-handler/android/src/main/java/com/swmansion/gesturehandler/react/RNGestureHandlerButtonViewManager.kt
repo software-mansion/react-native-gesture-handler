@@ -738,6 +738,10 @@ class RNGestureHandlerButtonViewManager :
     // container) instead of pressing right away.
     private var pressDeferredByPlatform = false
 
+    // Uptime of the DOWN that began the current press sequence; the long press timer is measured from it.
+    private var pressDownTime = 0L
+    private var pressStarted = false
+
     override fun onHandlerUpdate(handler: NativeViewGestureHandler) {
       if (managedHandlerTag == null || handler.isWithinBounds == lastEventWasInside) {
         return
@@ -773,17 +777,16 @@ class RNGestureHandlerButtonViewManager :
         // native dispatch of the same DOWN and the sweep that reads the flag.
         receivedNativeDown = false
         flushPendingPressOut()
-        dispatchJSEvent(EventType.PressIn, handler)
+        pressDownTime = SystemClock.uptimeMillis()
+        pressStarted = false
         longPressDetected = false
 
-        if (hasLongPressHandler && longPressDuration >= 0) {
-          val runnable = Runnable {
-            pendingLongPress = null
-            longPressDetected = true
-            dispatchJSEvent(EventType.LongPress, handler)
-          }
-          pendingLongPress = runnable
-          this.handler?.postDelayed(runnable, longPressDuration.toLong())
+        // Touch-driven presses report PressIn and arm the long press timer from `setPressed`, when the
+        // press feedback starts. A synthetic activation (TalkBack, keyboard) has no touch and no
+        // pressed state to follow, so it reports PressIn right away. Nothing deferred it either.
+        if (!handler.hasTrackedPointers) {
+          pressDeferredByPlatform = false
+          dispatchJSEvent(EventType.PressIn, handler)
         }
       }
 
@@ -816,6 +819,42 @@ class RNGestureHandlerButtonViewManager :
         } else {
           dispatchEvent(interactionFinishedEvent)
         }
+      }
+    }
+
+    // The framework defers the pressed state inside scrolling containers and drops it when a parent
+    // intercepts the DOWN (e.g. a fling catch), so PressIn and the long press timer follow the pressed
+    // state, not BEGAN. Like `View.CheckForTap`, long press is still measured from the DOWN.
+    private fun onPressedStateStarted() {
+      val moduleId = moduleId ?: return
+      val handlerTag = managedHandlerTag ?: return
+      val handler =
+        RNGestureHandlerModule.registries[moduleId]?.getHandler(handlerTag) as? NativeViewGestureHandler ?: return
+
+      if (handler.state != GestureHandler.STATE_BEGAN && handler.state != GestureHandler.STATE_ACTIVE) {
+        return
+      }
+
+      if (!lastEventWasInside) {
+        dispatchJSEvent(EventType.PressIn, handler)
+      }
+
+      // Re-entry after leaving (cancelOnLeave off) reports PressIn again but never re-arms the timer.
+      if (pressStarted) {
+        return
+      }
+
+      pressStarted = true
+
+      if (hasLongPressHandler && longPressDuration >= 0) {
+        val elapsed = SystemClock.uptimeMillis() - pressDownTime
+        val runnable = Runnable {
+          pendingLongPress = null
+          longPressDetected = true
+          dispatchJSEvent(EventType.LongPress, handler)
+        }
+        pendingLongPress = runnable
+        this.handler?.postDelayed(runnable, (longPressDuration - elapsed).coerceAtLeast(0))
       }
     }
 
@@ -1595,6 +1634,7 @@ class RNGestureHandlerButtonViewManager :
 
         if (pressed) {
           animatePressIn()
+          onPressedStateStarted()
         } else {
           animatePressOut()
         }
