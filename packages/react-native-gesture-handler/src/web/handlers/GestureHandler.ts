@@ -579,8 +579,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   private transformTouchEvent(
     event: AdaptedEvent
   ): ResultEvent<GestureTouchEvent> | undefined {
-    const rect = this.delegate.measureView();
-
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
 
@@ -599,8 +597,8 @@ export default abstract class GestureHandler implements IGestureHandler {
 
       all.push({
         id: id,
-        x: element.abosoluteCoords.x - rect.pageX,
-        y: element.abosoluteCoords.y - rect.pageY,
+        x: element.relativeCoords.x,
+        y: element.relativeCoords.y,
         absoluteX: element.abosoluteCoords.x,
         absoluteY: element.abosoluteCoords.y,
       });
@@ -611,8 +609,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (event.eventType !== EventTypes.CANCEL) {
       changed.push({
         id: this.tracker.getMappedTouchEventId(event.pointerId),
-        x: event.x - rect.pageX,
-        y: event.y - rect.pageY,
+        x: event.offsetX,
+        y: event.offsetY,
         absoluteX: event.x,
         absoluteY: event.y,
       });
@@ -622,8 +620,8 @@ export default abstract class GestureHandler implements IGestureHandler {
 
         changed.push({
           id: id,
-          x: element.abosoluteCoords.x - rect.pageX,
-          y: element.abosoluteCoords.y - rect.pageY,
+          x: element.relativeCoords.x,
+          y: element.relativeCoords.y,
           absoluteX: element.abosoluteCoords.x,
           absoluteY: element.abosoluteCoords.y,
         });
@@ -677,7 +675,6 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private cancelTouches(): void {
     this.ensurePropsRef();
-    const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
@@ -693,16 +690,16 @@ export default abstract class GestureHandler implements IGestureHandler {
 
       all.push({
         id: id,
-        x: element.abosoluteCoords.x - rect.pageX,
-        y: element.abosoluteCoords.y - rect.pageY,
+        x: element.relativeCoords.x,
+        y: element.relativeCoords.y,
         absoluteX: element.abosoluteCoords.x,
         absoluteY: element.abosoluteCoords.y,
       });
 
       changed.push({
         id: id,
-        x: element.abosoluteCoords.x - rect.pageX,
-        y: element.abosoluteCoords.y - rect.pageY,
+        x: element.relativeCoords.x,
+        y: element.relativeCoords.y,
         absoluteX: element.abosoluteCoords.x,
         absoluteY: element.abosoluteCoords.y,
       });

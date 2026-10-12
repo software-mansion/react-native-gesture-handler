@@ -16,6 +16,7 @@ import {
   ALLOWED_PROPS,
   checkGestureCallbacksForWorklets,
   extractGestureRelations,
+  hasExternalRelations,
 } from './utils';
 
 interface AttachHandlersConfig {
@@ -55,6 +56,9 @@ export function attachHandlers({
     registerHandler(handler.handlerTag, handler, handler.config.testId);
   }
 
+  // React to every mount until the microtask below classifies the new gesture set
+  preparedGesture.hasExternalRelations = true;
+
   // Use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
   ghQueueMicrotask(() => {
@@ -73,8 +77,15 @@ export function attachHandlers({
       );
     }
 
+    preparedGesture.hasExternalRelations =
+      hasExternalRelations(gesturesToAttach);
+
     scheduleFlushOperations();
   });
+
+  // Set before the mount events below fire, so this detector's own mount
+  // listener can tell its gestures apart from external ones
+  preparedGesture.attachedGestures = gesturesToAttach;
 
   for (const gesture of gesturesToAttach) {
     const actionType = gesture.shouldUseReanimated
@@ -100,8 +111,6 @@ export function attachHandlers({
 
     MountRegistry.gestureWillMount(gesture);
   }
-
-  preparedGesture.attachedGestures = gesturesToAttach;
 
   if (preparedGesture.animatedHandlers) {
     const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;

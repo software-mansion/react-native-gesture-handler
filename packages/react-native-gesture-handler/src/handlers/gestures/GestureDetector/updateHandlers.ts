@@ -9,6 +9,7 @@ import {
   ALLOWED_PROPS,
   checkGestureCallbacksForWorklets,
   extractGestureRelations,
+  hasExternalRelations,
 } from './utils';
 
 export function updateHandlers(
@@ -32,6 +33,9 @@ export function updateHandlers(
 
   // Store attached gestures to avoid crash when gestures changed after queueing micro task
   const attachedGestures = preparedGesture.attachedGestures;
+
+  // React to every mount until the microtask below classifies the new gesture set
+  preparedGesture.hasExternalRelations = true;
 
   // Use queueMicrotask to extract handlerTags, because when it's ran, all refs should be updated
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
@@ -77,6 +81,10 @@ export function updateHandlers(
 
       registerHandler(handler.handlerTag, handler, handler.config.testId);
     }
+
+    // Classify the new instances: their configs reference the new siblings,
+    // which the old attached objects would mistake for external gestures
+    preparedGesture.hasExternalRelations = hasExternalRelations(newGestures);
 
     if (preparedGesture.animatedHandlers && shouldUpdateSharedValueIfUsed) {
       const newHandlersValue = attachedGestures
