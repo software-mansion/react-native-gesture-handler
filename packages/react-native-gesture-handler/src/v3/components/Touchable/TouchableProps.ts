@@ -130,4 +130,11 @@ export type TouchableProps = Omit<
      * On web this prop doesn't have any effect and behaves as if `true` was set.
      */
     cancelOnLeave?: boolean | undefined;
+
+    /**
+     * When the platform deferred the press (e.g. inside a scrolling container), holds `onPressOut`
+     * until the press-in animation has finished, so a quick tap still shows its feedback.
+     * `onPress` is not delayed and may precede `onPressOut` on such taps. By default set to false.
+     */
+    pressOutAfterAnimation?: boolean | undefined;
   };

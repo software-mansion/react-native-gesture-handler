@@ -79,6 +79,7 @@ class RNGestureHandlerButtonViewManager :
     view.managedHandlerTestID = null
     view.managedHandlerHitSlop = null
     view.moduleId = null
+    view.pressOutAfterAnimation = false
     view.resetHoverState()
     // Has to come last — every setter above flags the view as needing a managed handler update.
     view.managedHandlerNeedsUpdate = false
@@ -357,6 +358,11 @@ class RNGestureHandlerButtonViewManager :
     view.longPressDuration = value
   }
 
+  @ReactProp(name = "pressOutAfterAnimation")
+  override fun setPressOutAfterAnimation(view: ButtonViewGroup, value: Boolean) {
+    view.pressOutAfterAnimation = value
+  }
+
   @ReactProp(name = "longPressAnimationOutDuration")
   override fun setLongPressAnimationOutDuration(view: ButtonViewGroup, value: Int) {
     view.longPressAnimationOutDuration = value
@@ -567,6 +573,7 @@ class RNGestureHandlerButtonViewManager :
     var tapAnimationInDuration: Int = 50
     var tapAnimationOutDuration: Int = 100
     var longPressDuration: Int = -1
+    var pressOutAfterAnimation = false
     var longPressAnimationOutDuration: Int = -1
       get() = if (field < 0) tapAnimationOutDuration else field
     var activeOpacity: Float = 1.0f
@@ -608,6 +615,12 @@ class RNGestureHandlerButtonViewManager :
     private var underlayDrawable: PaintDrawable? = null
     private var pressInTimestamp = 0L
     private var pendingPressOut: Runnable? = null
+
+    // PressOut event held back by `pressOutAfterAnimation` (the animation has its own hold above).
+    private var pendingPressOutEvent: Runnable? = null
+
+    // InteractionFinished that arrived while PressOut was held; delivered right after it.
+    private var pendingInteractionFinishedEvent: RNGestureHandlerButtonEvent? = null
     private var pendingLongPress: Runnable? = null
     private var pendingHoverOut: Choreographer.FrameCallback? = null
     private var isPointerInsideBounds = false
@@ -721,15 +734,21 @@ class RNGestureHandlerButtonViewManager :
     // ancestor intercepted it — the orchestrator still delivers events then.
     private var receivedNativeDown = false
 
+    // Whether the framework deferred the press on the DOWN (tap timeout inside a scrolling
+    // container) instead of pressing right away.
+    private var pressDeferredByPlatform = false
+
     override fun onHandlerUpdate(handler: NativeViewGestureHandler) {
       if (managedHandlerTag == null || handler.isWithinBounds == lastEventWasInside) {
         return
       }
 
       if (handler.isWithinBounds) {
+        // Re-entry while a held PressOut from leaving is pending (cancelOnLeave off).
+        flushPendingPressOut()
         dispatchJSEvent(EventType.PressIn, handler)
       } else {
-        dispatchJSEvent(EventType.PressOut, handler)
+        dispatchPressOut(handler)
 
         pendingLongPress?.let {
           this.handler?.removeCallbacks(it)
@@ -753,6 +772,7 @@ class RNGestureHandlerButtonViewManager :
         // terminal state may never come and the stale value would survive. BEGAN precedes both the
         // native dispatch of the same DOWN and the sweep that reads the flag.
         receivedNativeDown = false
+        flushPendingPressOut()
         dispatchJSEvent(EventType.PressIn, handler)
         longPressDetected = false
 
@@ -772,7 +792,7 @@ class RNGestureHandlerButtonViewManager :
         newState == GestureHandler.STATE_CANCELLED
       ) {
         if (localLastEventWasInside) {
-          dispatchJSEvent(EventType.PressOut, handler)
+          dispatchPressOut(handler)
         }
 
         pendingLongPress?.let {
@@ -789,21 +809,63 @@ class RNGestureHandlerButtonViewManager :
         newState == GestureHandler.STATE_FAILED ||
         newState == GestureHandler.STATE_CANCELLED
       ) {
-        dispatchJSEvent(EventType.InteractionFinished, handler)
+        val interactionFinishedEvent = RNGestureHandlerButtonEvent.obtain(this, handler, EventType.InteractionFinished)
+
+        if (pendingPressOutEvent != null) {
+          pendingInteractionFinishedEvent = interactionFinishedEvent
+        } else {
+          dispatchEvent(interactionFinishedEvent)
+        }
       }
     }
 
     private fun dispatchJSEvent(type: EventType, handler: NativeViewGestureHandler) {
-      val reactContext = context as? ReactContext ?: return
-      // TODO: deprecated, but its replacement is unavailable before RN 0.85 — drop when possible
-      val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, this.id) ?: return
-      eventDispatcher.dispatchEvent(RNGestureHandlerButtonEvent.obtain(this, handler, type))
+      dispatchEvent(RNGestureHandlerButtonEvent.obtain(this, handler, type))
 
       if (type == EventType.PressIn) {
         lastEventWasInside = true
       } else if (type == EventType.PressOut) {
         lastEventWasInside = false
       }
+    }
+
+    private fun dispatchEvent(event: RNGestureHandlerButtonEvent) {
+      val reactContext = context as? ReactContext ?: return
+      // TODO: deprecated, but its replacement is unavailable before RN 0.85 — drop when possible
+      val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, this.id) ?: return
+      eventDispatcher.dispatchEvent(event)
+    }
+
+    // With `pressOutAfterAnimation`, a press the platform deferred (tap timeout inside a scrolling
+    // container) holds PressOut until the press-in animation has played, like `animatePressOut`
+    // holds the animation. An immediate press keeps its native timing. Press is never delayed, so
+    // on such taps PressOut follows it. The event is built now so it carries the release position.
+    private fun dispatchPressOut(handler: NativeViewGestureHandler) {
+      val remaining = tapAnimationInDuration - (SystemClock.uptimeMillis() - pressInTimestamp)
+      if (!pressOutAfterAnimation || !pressDeferredByPlatform || remaining <= 0) {
+        dispatchJSEvent(EventType.PressOut, handler)
+        return
+      }
+
+      val event = RNGestureHandlerButtonEvent.obtain(this, handler, EventType.PressOut)
+      lastEventWasInside = false
+      val runnable = Runnable {
+        pendingPressOutEvent = null
+        dispatchEvent(event)
+
+        pendingInteractionFinishedEvent?.let {
+          pendingInteractionFinishedEvent = null
+          dispatchEvent(it)
+        }
+      }
+      pendingPressOutEvent = runnable
+      this.handler?.postDelayed(runnable, remaining)
+    }
+
+    private fun flushPendingPressOut() {
+      val runnable = pendingPressOutEvent ?: return
+      handler?.removeCallbacks(runnable)
+      runnable.run()
     }
 
     override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
@@ -929,6 +991,10 @@ class RNGestureHandlerButtonViewManager :
         }
 
         val handled = super.onTouchEvent(event)
+
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+          pressDeferredByPlatform = !isPressed
+        }
 
         // Replay press-in / press-out animations across drag transitions.
         if (handled && canRespondToTouches()) {
@@ -1347,6 +1413,8 @@ class RNGestureHandlerButtonViewManager :
     override fun onDetachedFromWindow() {
       pendingPressOut?.let { handler?.removeCallbacks(it) }
       pendingPressOut = null
+      // Deliver a held PressOut now rather than drop it: JS already saw the PressIn.
+      flushPendingPressOut()
       pendingLongPress?.let { handler?.removeCallbacks(it) }
       pendingLongPress = null
       cancelPendingHoverOut()
