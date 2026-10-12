@@ -156,11 +156,15 @@ RNGestureHandlerDetectorShadowNode::unflattenNode(
       std::static_pointer_cast<RNGestureHandlerDetectorShadowNode>(clonedNode);
 
   clonedNodeWithProtectedAccess->traits_.set(ShadowNodeTraits::FormsView);
+
 #ifdef ANDROID
+  // Android TextView is not a ViewGroup, so a Paragraph must not form a
+  // stacking context or its inline views get mounted into it and crash
   if (std::strcmp(node->getComponentName(), "Paragraph") == 0) {
     return clonedNode;
   }
 #endif
+
   clonedNodeWithProtectedAccess->traits_.set(
       ShadowNodeTraits::FormsStackingContext);
 
