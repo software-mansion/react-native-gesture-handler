@@ -13,9 +13,9 @@ import { NativeGestureRole } from '../web/interfaces';
 import { ButtonEventName } from '../web/tools/ButtonEvents';
 import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
 import {
-  calculateViewScale,
-  getEffectiveBoundingRect,
+  isPointerInBounds,
   PointerTypeMapping,
+  viewportToLocal,
 } from '../web/utils';
 
 const prefersReducedMotion = (): boolean =>
@@ -31,25 +31,21 @@ type ButtonPointerEvent = NativeSyntheticEvent<{
 }>;
 
 // Same coordinate basis as the press path (see PointerEventManager's
-// `mapEvent`), so the two payloads agree. Both reads below force a layout flush,
+// `mapEvent`), so the two payloads agree. The reads below force a layout flush,
 // hence the caller-side gate on a hover callback existing.
 const buttonEventFromPointerEvent = (
   event: ButtonPointerEvent
 ): ButtonEvent => {
   const view = event.currentTarget as unknown as HTMLElement;
-  const rect = getEffectiveBoundingRect(view);
-  const { scaleX, scaleY } = calculateViewScale(view);
   const absoluteX = event.nativeEvent.clientX ?? 0;
   const absoluteY = event.nativeEvent.clientY ?? 0;
+  const absolute = { x: absoluteX, y: absoluteY };
+  const local = viewportToLocal(view, absolute);
 
   return {
-    pointerInside:
-      absoluteX >= rect.left &&
-      absoluteX <= rect.right &&
-      absoluteY >= rect.top &&
-      absoluteY <= rect.bottom,
-    x: (absoluteX - rect.left) / scaleX,
-    y: (absoluteY - rect.top) / scaleY,
+    pointerInside: isPointerInBounds(view, absolute),
+    x: local.x,
+    y: local.y,
     absoluteX,
     absoluteY,
     numberOfPointers: 1,
