@@ -38,7 +38,7 @@ Either view styles or a function that receives a boolean reflecting whether the 
 onPress?: null | ((event: PressableEvent) => void);
 ```
 
-Called after [`onPressOut`](#onpressout) when a single tap gesture is detected. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
+Called when a single tap gesture is detected. It follows [`onPressOut`](#onpressout), unless [`pressOutAfterAnimation`](#pressoutafteranimation) delays `onPressOut`. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
 ### onPressIn
 
@@ -54,7 +54,7 @@ Called before `onPress` when a touch is engaged. Details about the event object 
 onPressOut?: null | ((event: PressableEvent) => void);
 ```
 
-Called before `onPress` when a touch is released (before [`onPress`](#onpress)). Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
+Called when a touch is released. When [`pressOutAfterAnimation`](#pressoutafteranimation) is set to `true`, a quick tap the platform deferred calls it after [`onPress`](#onpress). Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
 ### onLongPress
 
@@ -168,6 +168,18 @@ needsOffscreenAlphaCompositing?: boolean;
 ```
 
 Whether the view should render with an offscreen alpha-compositing buffer when its `opacity` is less than `1`. Defaults to `false`.
+
+### pressOutAfterAnimation \[A]\[I]
+
+```ts
+pressOutAfterAnimation?: boolean;
+```
+
+In some cases the platform defers the press, so a quick tap calls `onPressIn` and `onPressOut` almost at the same time and the `pressed` state never shows up.
+
+When set to `true`, `onPressOut` for such a tap is held back so that `pressed` lasts at least 130 ms, matching React Native's `Pressable`. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
+
+By default set to `true`. Has no effect on web, where presses are never deferred, or when `simultaneousWith`, `requireToFail` or `block` is passed.
 
 ### testOnly\_pressed
 

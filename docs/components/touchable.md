@@ -309,6 +309,18 @@ cancelOnLeave?: boolean;
 
 Whether the touch should be canceled when the pointer leaves the component. By default set to `true`. On web this prop doesn't have any effect and behaves as if `true` was set.
 
+### pressOutAfterAnimation \[A]\[I]
+
+```ts
+pressOutAfterAnimation?: boolean;
+```
+
+In some cases the platform defers the press, so a quick tap calls `onPressIn` and `onPressOut` almost at the same time and feedback driven from these callbacks never shows up.
+
+When set to `true`, `onPressOut` for such a tap is held back until the press-in animation (see [`animationDuration`](#animationduration)) finishes. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
+
+By default set to `false`. Has no effect on web, where presses are never deferred.
+
 ### needsOffscreenAlphaCompositing \[A]
 
 ```ts
