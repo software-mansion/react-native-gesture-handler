@@ -27,6 +27,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   // bypasses `dispatchTouchEvent`, so a DOWN intercepted by an ancestor never updates it.
   private var lastNativeDownTime = -1L
 
+  // Event time of the last CANCEL native dispatch delivered to this view. The cancel loop of an
+  // intercepting ancestor reuses the intercepted event, so it matches that event's time.
+  private var lastNativeCancelTime = -1L
+
   data class VirtualChildren(val handlerTags: List<Int>, val viewTag: Int)
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
@@ -50,11 +54,17 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-      lastNativeDownTime = event.downTime
+    when (event.actionMasked) {
+      MotionEvent.ACTION_DOWN -> lastNativeDownTime = event.downTime
+      MotionEvent.ACTION_CANCEL -> {
+        lastNativeCancelTime = event.eventTime
+        RNGestureHandlerRootView.findGestureHandlerRootView(this)?.onNativeTouchCancelled()
+      }
     }
     return super.dispatchTouchEvent(event)
   }
+
+  fun shouldCancelOnNativeTouchCancel(eventTime: Long) = lastNativeCancelTime == eventTime
 
   /**
    * A native view takes over the touch stream with `requestDisallowInterceptTouchEvent`, which only

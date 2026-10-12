@@ -404,6 +404,16 @@ class GestureHandlerOrchestrator(
   }
 
   /**
+   * Cancels pending detector handlers whose detector got ACTION_CANCEL from the native dispatch of
+   * the event with `eventTime`. Unlike a disallow-intercept request, the CANCEL names its target.
+   */
+  fun cancelHandlersOnNativeTouchCancel(eventTime: Long) = cancelHandlersMatching {
+    !it.isActive &&
+      GestureHandler.usesNativeOrVirtualDetector(it.actionType) &&
+      it.hostDetectorView?.shouldCancelOnNativeTouchCancel(eventTime) == true
+  }
+
+  /**
    * isViewAttachedUnderWrapper checks whether all of parents for view related to handler
    * view are attached. Since there might be an issue rarely observed when view
    * has been detached and handler's state hasn't been change to canceled, failed or
