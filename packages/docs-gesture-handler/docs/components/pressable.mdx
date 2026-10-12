@@ -52,7 +52,7 @@ Either view styles or a function that receives a boolean reflecting whether the 
 onPress?: null | ((event: PressableEvent) => void);
 ```
 
-Called when a single tap gesture is detected, after [`onPressOut`](#onpressout) unless [`pressOutAfterAnimation`](#pressoutafteranimation) holds that one back. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
+Called when a single tap gesture is detected. It follows [`onPressOut`](#onpressout), unless [`pressOutAfterAnimation`](#pressoutafteranimation) delays `onPressOut`. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
 ### onPressIn
 
