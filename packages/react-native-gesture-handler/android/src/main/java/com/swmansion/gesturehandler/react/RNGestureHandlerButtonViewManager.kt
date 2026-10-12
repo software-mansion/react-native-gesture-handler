@@ -774,10 +774,17 @@ class RNGestureHandlerButtonViewManager :
         // native dispatch of the same DOWN and the sweep that reads the flag.
         receivedNativeDown = false
         flushPendingPressOut()
-        // PressIn and the long press timer follow `setPressed`, when the press feedback starts.
         pressDownTime = SystemClock.uptimeMillis()
         pressStarted = false
         longPressDetected = false
+
+        // Touch-driven presses report PressIn and arm the long press timer from `setPressed`, when the
+        // press feedback starts. A synthetic activation (TalkBack, keyboard) has no touch and no
+        // pressed state to follow, so it reports PressIn right away. Nothing deferred it either.
+        if (!handler.hasTrackedPointers) {
+          pressDeferredByPlatform = false
+          dispatchJSEvent(EventType.PressIn, handler)
+        }
       }
 
       if (newState == GestureHandler.STATE_END ||
