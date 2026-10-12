@@ -2,7 +2,7 @@ Gesture that can recognize hovering above the view it's attached to.
 
 The hover effect may be activated by moving a mouse or a stylus over the view.
 
-On iOS additional [visual effects](#effect-ios-only) may be configured.
+On iOS additional [visual effects](#effect) may be configured.
 
 > **Note**
 >

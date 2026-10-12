@@ -21,7 +21,7 @@
 
 <script>!function(){try{var e=location.pathname;if(["/react-native-gesture-handler/search"].some(function(t){return e===t||0===e.indexOf(t+"/")}))return;var t=localStorage.getItem("swm.topbarbanner.v1.react-native-gesture-handler-topbar-1.ea15c4216158c4097b65fe6504a4b3b7");if(!t)return;var r=JSON.parse(t);if(!r||"number"!=typeof r.height||r.height<5)return;if(Date.now()-r.timestamp>=2592e6)return;var a=document.documentElement;a.style.setProperty("--banner-height-react-native-gesture-handler-topbar-1-ea15c4216158c4097b65fe6504a4b3b7",r.height+"px"),"string"==typeof r.bgColor&&a.style.setProperty("--banner-bg-react-native-gesture-handler-topbar-1-ea15c4216158c4097b65fe6504a4b3b7",r.bgColor)}catch(e){}}()</script>
 <script src="/react-native-gesture-handler/js/snack-helpers.js" async></script><link rel="stylesheet" href="/react-native-gesture-handler/assets/css/styles.71b47b82.css">
-<script src="/react-native-gesture-handler/assets/js/runtime~main.de3343ca.js" defer="defer"></script>
+<script src="/react-native-gesture-handler/assets/js/runtime~main.1a18ebae.js" defer="defer"></script>
 <script src="/react-native-gesture-handler/assets/js/main.67d0bc2b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -47,7 +47,7 @@ On iOS the default behavior when more than one finger is placed on the screen is
 This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions like for example <code>UIScrollView</code> component.</p>
 <p>On Android, the default behavior for native components like scroll view, pager views or drawers is different and hence gesture defaults to that when it comes to pan handling.
 The difference is that instead of treating the center of mass of all the fingers placed as a leading pointer it takes the latest placed finger as such.
-This behavior can be changed on Android using <a href="#averagetouches-android-only"><code>averageTouches</code></a> flag.</p>
+This behavior can be changed on Android using <a href="#averagetouches"><code>averageTouches</code></a> flag.</p>
 <p>Note that on both Android and iOS when the additional finger is placed on the screen that translation prop is not affected even though the position of the pointer being tracked might have changed.
 Therefore it is safe to rely on translation most of the time as it only reflects the movement that happens regardless of how many fingers are placed on the screen and if that number changes over time.
 If you wish to track the &quot;center of mass&quot; virtual pointer and account for its changes when the number of fingers changes you can use relative or absolute position provided in the event (<a href="#x"><code>x</code></a> and <a href="#y"><code>y</code></a> or <a href="#absolutex"><code>absoluteX</code></a> and <a href="#absolutey"><code>absoluteY</code></a>).</p>

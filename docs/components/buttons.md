@@ -171,7 +171,7 @@ Below we list some of the common usecases for button components to be used along
 
 ### Lists and action buttons
 
-If you have a list with clickable items or have an action button that needs to display as a separate UI block (vs being inlined in a text) you should use [`RectButton`](#rectbutton). It changes opacity on click and additionally supports a [ripple effect](#ripplecolor-android-only) on Android.
+If you have a list with clickable items or have an action button that needs to display as a separate UI block (vs being inlined in a text) you should use [`RectButton`](#rectbutton). It changes opacity on click and additionally supports a [ripple effect](#ripplecolor) on Android.
 
 To determine the emphasis of a button, it's vital to use a fill color or leave it transparent, especially on Android.
 For medium emphasis, you may consider outlined buttons which are used for lower impact than fill buttons.

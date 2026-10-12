@@ -178,7 +178,7 @@ Below we list some of the common usecases for button components to be used along
 
 ### Lists and action buttons
 
-If you have a list with clickable items or have an action button that needs to display as a separate UI block (vs being inlined in a text) you should use [`RectButton`](#rectbutton). It changes opacity on click and additionally supports a [ripple effect](#ripplecolor-android-only) on Android.
+If you have a list with clickable items or have an action button that needs to display as a separate UI block (vs being inlined in a text) you should use [`RectButton`](#rectbutton). It changes opacity on click and additionally supports a [ripple effect](#ripplecolor) on Android.
 
 To determine the emphasis of a button, it's vital to use a fill color or leave it transparent, especially on Android.
 For medium emphasis, you may consider outlined buttons which are used for lower impact than fill buttons.
@@ -609,7 +609,7 @@ Either a component rendered in the content view or a function. If `children` is 
 enableContextMenu: boolean;
 ```
 
-Specifies whether the context menu should be enabled after clicking on the underlying view with the right mouse button. Default value is set to `false` if [`MouseButton.RIGHT`](#mousebutton-web--android-only) is specified.
+Specifies whether the context menu should be enabled after clicking on the underlying view with the right mouse button. Default value is set to `false` if [`MouseButton.RIGHT`](#mousebutton) is specified.
 
 ### userSelect \[W]
 
@@ -831,7 +831,7 @@ A function that returns a component which will be rendered beneath the `Swipeabl
   * It equals `0` when the `Swipeable` is fully closed and `1` when it is fully opened.
   * As the element overshoots its open position, the value approaches `Infinity`.
 * `translation` - a horizontal offset of the `Swipeable` relative to its closed position.
-* `swipeableMethods` - provides an object exposing methods detailed in the [methods section](#methods).
+* `swipeableMethods` - provides an object exposing methods detailed in the [methods section](#swipeable-ref-methods).
 
 This function must return a [`ReactNode`](https://reactnative.dev/docs/react-node). To accommodate `rtl` (right-to-left) flexbox layouts, use the [`flexDirection`](https://reactnative.dev/docs/flexbox#flex-direction) style property.
 
@@ -851,7 +851,7 @@ A function that returns a component which will be rendered beneath the `Swipeabl
   * It equals `0` when the `Swipeable` is fully closed and `1` when it is fully opened.
   * As the element overshoots its open position, the value approaches `Infinity`.
 * `translation` - a horizontal offset of the `Swipeable` relative to its closed position.
-* `swipeableMethods` - provides an object exposing methods detailed in the [methods section](#methods).
+* `swipeableMethods` - provides an object exposing methods detailed in the [methods section](#swipeable-ref-methods).
 
 This function must return a [`ReactNode`](https://reactnative.dev/docs/react-node). To accommodate `rtl` (right-to-left) flexbox layouts, use the [`flexDirection`](https://reactnative.dev/docs/flexbox#flex-direction) style property.
 
@@ -2909,7 +2909,7 @@ Gesture that can recognize hovering above the view it's attached to.
 
 The hover effect may be activated by moving a mouse or a stylus over the view.
 
-On iOS additional [visual effects](#effect-ios-only) may be configured.
+On iOS additional [visual effects](#effect) may be configured.
 
 > **Note**
 >
@@ -3320,7 +3320,7 @@ This applies also to many platform native components that handle touch even if n
 
 On Android, the default behavior for native components like scroll view, pager views or drawers is different and hence gesture defaults to that when it comes to pan handling.
 The difference is that instead of treating the center of mass of all the fingers placed as a leading pointer it takes the latest placed finger as such.
-This behavior can be changed on Android using [`averageTouches`](#averagetouches-android-only) flag.
+This behavior can be changed on Android using [`averageTouches`](#averagetouches) flag.
 
 Note that on both Android and iOS when the additional finger is placed on the screen that translation prop is not affected even though the position of the pointer being tracked might have changed.
 Therefore it is safe to rely on translation most of the time as it only reflects the movement that happens regardless of how many fingers are placed on the screen and if that number changes over time.
@@ -3943,7 +3943,7 @@ fireGestureHandler: (componentOrGesture, eventList) => void;
 Simulates one event stream (i.e. event sequence starting with `BEGIN` state and ending
 with one of `END`/`FAIL`/`CANCEL` states), calling appropriate callbacks associated with given gesture handler.
 
-* `componentOrGesture` - Either Gesture Handler component found by `Jest` queries (e.g. `getByTestId`) or Gesture found by [`getByGestureTestId()`](#getbygesturetestidtestid)
+* `componentOrGesture` - Either Gesture Handler component found by `Jest` queries (e.g. `getByTestId`) or Gesture found by [`getByGestureTestId()`](#getbygesturetestid)
 
 * `eventList` - Event data passed to appropriate callback. RNGH fills event list if required
   data is missing using these rules:
