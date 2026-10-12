@@ -143,9 +143,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
    * request alone doesn't say what the caller did with the event: a scrollable calls it when it
    * takes over the touch, but e.g. a nested pager calls it already on DOWN, just to keep its
    * ancestors from stealing a swipe it may recognize later, and the event still reaches the
-   * button - at request time both calls look identical. They only become
-   * distinguishable once the native dispatch completes (did the button receive the DOWN?), which
-   * is why cancellation runs here instead of in `requestDisallowInterceptTouchEvent`.
+   * button or detector - at request time both calls look identical. They only become
+   * distinguishable once the native dispatch completes (did the button or detector receive the
+   * DOWN?), which is why cancellation runs here instead of in `requestDisallowInterceptTouchEvent`.
    */
   fun onNativeDispatchEnd(event: MotionEvent) {
     passingNativeTouch = false
@@ -156,7 +156,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       val grabbedMidGesture = event.actionMasked != MotionEvent.ACTION_DOWN &&
         event.actionMasked != MotionEvent.ACTION_POINTER_DOWN
 
-      orchestrator?.cancelHandlersOnNativeTouchGrab(grabbedMidGesture)
+      orchestrator?.cancelHandlersOnNativeTouchGrab(grabbedMidGesture, event.downTime)
     }
   }
 
