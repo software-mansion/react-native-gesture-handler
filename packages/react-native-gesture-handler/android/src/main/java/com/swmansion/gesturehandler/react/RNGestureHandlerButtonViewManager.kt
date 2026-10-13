@@ -79,7 +79,7 @@ class RNGestureHandlerButtonViewManager :
     view.managedHandlerTestID = null
     view.managedHandlerHitSlop = null
     view.moduleId = null
-    view.pressOutAfterAnimation = false
+    view.immediatePressOut = true
     view.resetHoverState()
     // Has to come last — every setter above flags the view as needing a managed handler update.
     view.managedHandlerNeedsUpdate = false
@@ -358,9 +358,9 @@ class RNGestureHandlerButtonViewManager :
     view.longPressDuration = value
   }
 
-  @ReactProp(name = "pressOutAfterAnimation")
-  override fun setPressOutAfterAnimation(view: ButtonViewGroup, value: Boolean) {
-    view.pressOutAfterAnimation = value
+  @ReactProp(name = "immediatePressOut")
+  override fun setImmediatePressOut(view: ButtonViewGroup, value: Boolean) {
+    view.immediatePressOut = value
   }
 
   @ReactProp(name = "longPressAnimationOutDuration")
@@ -573,7 +573,7 @@ class RNGestureHandlerButtonViewManager :
     var tapAnimationInDuration: Int = 50
     var tapAnimationOutDuration: Int = 100
     var longPressDuration: Int = -1
-    var pressOutAfterAnimation = false
+    var immediatePressOut = true
     var longPressAnimationOutDuration: Int = -1
       get() = if (field < 0) tapAnimationOutDuration else field
     var activeOpacity: Float = 1.0f
@@ -616,7 +616,7 @@ class RNGestureHandlerButtonViewManager :
     private var pressInTimestamp = 0L
     private var pendingPressOut: Runnable? = null
 
-    // PressOut event held back by `pressOutAfterAnimation` (the animation has its own hold above).
+    // PressOut event held back unless `immediatePressOut` (the animation has its own hold above).
     private var pendingPressOutEvent: Runnable? = null
 
     // InteractionFinished that arrived while PressOut was held; delivered right after it.
@@ -875,13 +875,13 @@ class RNGestureHandlerButtonViewManager :
       eventDispatcher.dispatchEvent(event)
     }
 
-    // With `pressOutAfterAnimation`, a press the platform deferred (tap timeout inside a scrolling
+    // Unless `immediatePressOut`, a press the platform deferred (tap timeout inside a scrolling
     // container) holds PressOut until the press-in animation has played, like `animatePressOut`
     // holds the animation. An immediate press keeps its native timing. Press is never delayed, so
     // on such taps PressOut follows it. The event is built now so it carries the release position.
     private fun dispatchPressOut(handler: NativeViewGestureHandler) {
       val remaining = tapAnimationInDuration - (SystemClock.uptimeMillis() - pressInTimestamp)
-      if (!pressOutAfterAnimation || !pressDeferredByPlatform || remaining <= 0) {
+      if (immediatePressOut || !pressDeferredByPlatform || remaining <= 0) {
         dispatchJSEvent(EventType.PressOut, handler)
         return
       }

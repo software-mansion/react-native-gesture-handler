@@ -254,3 +254,19 @@ footer
     align-items: center;
   }
 }
+
+[class*='_headerWithBadges_'] [class*='_badge_'][class*='_versionBadge_'] {
+  background: transparent;
+  margin-left: auto;
+  color: var(--swm-navy-light-60);
+  border: 1px solid var(--swm-navy-light-20);
+  font-weight: 400;
+  padding: calc(0.25rem - 1px) 0.5rem;
+}
+
+[data-theme='dark']
+  [class*='_headerWithBadges_']
+  [class*='_badge_'][class*='_versionBadge_'] {
+  color: var(--swm-navy-light-40);
+  border-color: var(--swm-light-off-navy);
+}

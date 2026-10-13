@@ -80,7 +80,7 @@ const StatefulPressable = (props: PressableProps) => {
     ref,
     // Only PressableWithTouchable holds onPressOut; keep the native button at its default here.
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    pressOutAfterAnimation,
+    immediatePressOut,
     ...remainingProps
   } = props;
 
