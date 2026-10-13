@@ -78,7 +78,10 @@ UIManagerAny.genericDirectEventTypes = {
   ...customGHEventsConfig,
 };
 
-const UIManagerConstants = UIManagerAny.getViewManagerConfig?.('getConstants');
+const UIManagerConstants =
+  Platform.OS === 'windows'
+    ? null
+    : UIManagerAny.getViewManagerConfig?.('getConstants');
 
 if (UIManagerConstants) {
   UIManagerConstants.genericDirectEventTypes = {
