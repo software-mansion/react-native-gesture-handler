@@ -788,6 +788,7 @@ class GestureHandlerOrchestrator(
         continue
       }
       view.onTouchEvent(cancelEvent)
+      view.stopNestedScroll()
     }
 
     cancelEvent.recycle()

@@ -37,8 +37,9 @@ export const NativeProxy = {
     });
   },
   // updateGestureHandlerConfig can be called on the UI thread when using
-  // SharedValue binding. Therefore, it needs to be a worklet and we flush
-  // immediately since we're likely already on the UI thread.
+  // SharedValue binding, so it needs to be a worklet and calls the module
+  // directly instead of going through the operation queue above. The native
+  // side still applies it asynchronously.
   updateGestureHandlerConfig: <
     TConfig,
     THandlerData,

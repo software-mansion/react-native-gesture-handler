@@ -28,6 +28,11 @@ table thead tr {
   border-bottom: 1px solid var(--ifm-table-border-color);
 }
 
+/* Every table in the upgrade guide maps RNGH2 to RNGH3, so split the columns evenly. */
+.docs-doc-id-guides\/upgrading-to-3 table {
+  table-layout: fixed;
+}
+
 .platform-compatibility table {
   display: table;
   width: 100%;
@@ -253,4 +258,20 @@ footer
   footer .footer__bottom [class*='footer__copyright'] {
     align-items: center;
   }
+}
+
+[class*='_headerWithBadges_'] [class*='_badge_'][class*='_versionBadge_'] {
+  background: transparent;
+  margin-left: auto;
+  color: var(--swm-navy-light-60);
+  border: 1px solid var(--swm-navy-light-20);
+  font-weight: 400;
+  padding: calc(0.25rem - 1px) 0.5rem;
+}
+
+[data-theme='dark']
+  [class*='_headerWithBadges_']
+  [class*='_badge_'][class*='_versionBadge_'] {
+  color: var(--swm-navy-light-40);
+  border-color: var(--swm-light-off-navy);
 }

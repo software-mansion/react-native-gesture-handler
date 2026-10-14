@@ -51,7 +51,7 @@
   UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
   NSTimeInterval _pressInTimestamp;
   dispatch_block_t _pendingPressOutBlock;
-  // `onPressOut` held back by `pressOutAfterAnimation` (the press-out animation has its own block above).
+  // `onPressOut` held back unless `immediatePressOut` (the press-out animation has its own block above).
   // The payload is kept apart from the block: a cancelled dispatch block never runs its body.
   dispatch_block_t _pendingPressOutEventBlock;
   RNGestureHandlerEventExtraData *_pendingPressOutExtraData;
@@ -109,7 +109,7 @@
   _tapAnimationInDuration = 50;
   _tapAnimationOutDuration = 100;
   _longPressDuration = -1;
-  _pressOutAfterAnimation = NO;
+  _immediatePressOut = YES;
   _pressDeferredByPlatform = NO;
   _longPressAnimationOutDuration = -1;
   _activeOpacity = 1.0;
@@ -763,14 +763,14 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 }
 #endif
 
-// With `pressOutAfterAnimation`, a press UIKit deferred (`delaysContentTouches` in a scroll view)
+// Unless `immediatePressOut`, a press UIKit deferred (`delaysContentTouches` in a scroll view)
 // holds `onPressOut` until the press-in animation has played, like `handleAnimatePressOut` holds
 // the animation. An immediate press keeps its native timing. `onPress` is never delayed, so on
 // such taps `onPressOut` follows it.
 - (void)dispatchPressOutWithExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
   NSTimeInterval remaining = _tapAnimationInDuration - (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
-  if (!_pressOutAfterAnimation || !_pressDeferredByPlatform || remaining <= 0) {
+  if (_immediatePressOut || !_pressDeferredByPlatform || remaining <= 0) {
     [self dispatchButtonEvent:RNGHButtonEventTypePressOut withExtraData:extraData];
     return;
   }
@@ -1385,7 +1385,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   _isTouchInsideBounds = YES;
-  _pressDeferredByPlatform = _pressOutAfterAnimation && [self isInsideDelayingScrollView];
+  _pressDeferredByPlatform = !_immediatePressOut && [self isInsideDelayingScrollView];
   // A pencil's hover-out arrives just before touch-down but only schedules the
   // clear, so `_isHovered` still reflects the open hover. Under Reduce Motion
   // that delay is zero and the block can land first — the press then brackets

@@ -132,9 +132,9 @@ export type TouchableProps = Omit<
     cancelOnLeave?: boolean | undefined;
 
     /**
-     * When the platform deferred the press (e.g. inside a scrolling container), holds `onPressOut`
-     * until the press-in animation has finished, so a quick tap still shows its feedback.
-     * `onPress` is not delayed and may precede `onPressOut` on such taps. By default set to false.
+     * Set to `false` to hold `onPressOut` for a press the platform deferred (e.g. inside a scrolling
+     * container) until the press-in animation has finished, so a quick tap still shows its feedback.
+     * `onPress` is not delayed and may precede `onPressOut` on such taps. By default set to true.
      */
-    pressOutAfterAnimation?: boolean | undefined;
+    immediatePressOut?: boolean | undefined;
   };
