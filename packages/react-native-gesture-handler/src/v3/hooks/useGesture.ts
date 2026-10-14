@@ -63,8 +63,8 @@ export function useGesture<
     [handlerTag, config.simultaneousWith, config.requireToFail, config.block]
   );
 
-  const gesture = useMemo(
-    () => ({
+  const gesture = useMemo(() => {
+    const g = {
       handlerTag,
       type,
       config,
@@ -74,17 +74,25 @@ export function useGesture<
         reanimatedEventHandler,
       },
       gestureRelations,
-    }),
-    [
-      handlerTag,
-      type,
-      config,
-      jsEventHandler,
-      reanimatedEventHandler,
-      animatedEventHandler,
-      gestureRelations,
-    ]
-  );
+    };
+
+    Object.defineProperties(g, {
+      type: { enumerable: false },
+      config: { enumerable: false },
+      detectorCallbacks: { enumerable: false },
+      gestureRelations: { enumerable: false },
+    });
+
+    return g;
+  }, [
+    handlerTag,
+    type,
+    config,
+    jsEventHandler,
+    reanimatedEventHandler,
+    animatedEventHandler,
+    gestureRelations,
+  ]);
 
   useEffect(() => {
     NativeProxy.createGestureHandler(type, handlerTag, {});

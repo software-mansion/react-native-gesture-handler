@@ -3,6 +3,7 @@ name: Build iOS (basic-example)
 on:
   pull_request:
     paths:
+      - .nvmrc
       - .github/workflows/ios-basic.yml
       - .github/workflows/ios-build.yml
       - packages/react-native-gesture-handler/package.json

@@ -3,6 +3,7 @@ name: Build Android (basic-example)
 on:
   pull_request:
     paths:
+      - .nvmrc
       - .github/workflows/android-basic.yml
       - .github/workflows/android-build.yml
       - packages/react-native-gesture-handler/package.json

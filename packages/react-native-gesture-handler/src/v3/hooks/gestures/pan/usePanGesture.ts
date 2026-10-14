@@ -1,3 +1,4 @@
+import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
 import type {
   GestureEvent,
   HandlerData,
@@ -8,6 +9,7 @@ import { useGesture } from '../../useGesture';
 import {
   getChangeEventCalculator,
   maybeUnpackValue,
+  splitSingleOffset,
   useClonedAndRemappedConfig,
 } from '../../utils';
 import type {
@@ -89,14 +91,16 @@ function transformOffsetProp(
   if (Array.isArray(propValue)) {
     config[`${propName}Start`] = propValue[0];
     config[`${propName}End`] = propValue[1];
-  } else {
-    const offsetValue = maybeUnpackValue<number>(propValue);
+  } else if (Reanimated?.isSharedValue(propValue)) {
+    const [start, end] = splitSingleOffset(propValue.value as number);
 
-    if (offsetValue < 0) {
-      config[`${propName}Start`] = propValue;
-    } else {
-      config[`${propName}End`] = propValue;
-    }
+    config[`${propName}Start`] = start;
+    config[`${propName}End`] = end;
+
+    return;
+  } else {
+    const suffix = (propValue as number) < 0 ? 'Start' : 'End';
+    config[`${propName}${suffix}`] = propValue;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
