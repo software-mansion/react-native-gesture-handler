@@ -4262,6 +4262,18 @@ Full changes are as follows:
 | `gesture.requireExternalGestureToFail`    | `gesture.requireToFail`     |
 | `gesture.blocksExternalGesture`           | `gesture.block`             |
 
+### Relations with wrapped components
+
+Previously, relation properties of [wrapped components](/docs/components/wrapped-components), such as `ScrollView`, accepted refs, so the gesture had to be assigned a ref using `withRef`. In Gesture Handler 3, those properties accept gesture objects directly, and `withRef` is no longer needed.
+
+Full changes are as follows:
+
+| RNGH2                  | RNGH3                  |
+| ---------------------- | ---------------------- |
+| `simultaneousHandlers` | `simultaneousWith`     |
+| `waitFor`              | `requireToFail`        |
+| `blocksHandlers`       | `block`                |
+
 ## Migrating components relying on view hierarchy
 
 Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/core-components/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector).
