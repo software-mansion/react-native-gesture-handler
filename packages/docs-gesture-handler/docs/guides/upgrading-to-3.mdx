@@ -238,6 +238,38 @@ Full changes are as follows:
 | `gesture.requireExternalGestureToFail`    | `gesture.requireToFail`     |
 | `gesture.blocksExternalGesture`           | `gesture.block`             |
 
+### Relations with wrapped components
+
+Previously, relation properties of [wrapped components](/docs/components/wrapped-components), such as `ScrollView`, accepted refs, so the gesture had to be assigned a ref using `withRef`. In Gesture Handler 3, those properties accept gesture objects directly, and `withRef` is no longer needed.
+
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`const panRef = useRef();
+const pan = Gesture.Pan().withRef(panRef);
+
+<GestureDetector gesture={pan}>
+  <ScrollView simultaneousHandlers={panRef} />
+</GestureDetector>
+`}
+code2={
+`const pan = usePanGesture({});
+
+<GestureDetector gesture={pan}>
+  <ScrollView simultaneousWith={pan} />
+</GestureDetector>
+`}
+/>
+
+Full changes are as follows:
+
+| RNGH2                  | RNGH3                  |
+| ---------------------- | ---------------------- |
+| `simultaneousHandlers` | `simultaneousWith`     |
+| `waitFor`              | `requireToFail`        |
+| `blocksHandlers`       | `block`                |
+
 
 ## Migrating components relying on view hierarchy
 
