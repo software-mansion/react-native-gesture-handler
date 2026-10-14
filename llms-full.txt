@@ -233,7 +233,7 @@ Either view styles or a function that receives a boolean reflecting whether the 
 onPress?: null | ((event: PressableEvent) => void);
 ```
 
-Called when a single tap gesture is detected. It follows [`onPressOut`](#onpressout), unless [`pressOutAfterAnimation`](#pressoutafteranimation) delays `onPressOut`. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
+Called when a single tap gesture is detected. It follows [`onPressOut`](#onpressout), unless [`immediatePressOut`](#immediatepressout) is off and the platform deferred a quick tap. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
 ### onPressIn
 
@@ -249,7 +249,7 @@ Called before `onPress` when a touch is engaged. Details about the event object 
 onPressOut?: null | ((event: PressableEvent) => void);
 ```
 
-Called when a touch is released. When [`pressOutAfterAnimation`](#pressoutafteranimation) is set to `true`, a quick tap the platform deferred calls it after [`onPress`](#onpress). Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
+Called when a touch is released. Unless [`immediatePressOut`](#immediatepressout) is set to `true`, a quick tap the platform deferred calls it after [`onPress`](#onpress). Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
 ### onLongPress
 
@@ -364,17 +364,17 @@ needsOffscreenAlphaCompositing?: boolean;
 
 Whether the view should render with an offscreen alpha-compositing buffer when its `opacity` is less than `1`. Defaults to `false`.
 
-### pressOutAfterAnimation \[A]\[I]
+### immediatePressOut \[A]\[I]
 
 ```ts
-pressOutAfterAnimation?: boolean;
+immediatePressOut?: boolean;
 ```
 
-In some cases the platform defers the press, so a quick tap calls `onPressIn` and `onPressOut` almost at the same time and the `pressed` state never shows up.
+In some cases the platform defers the press, so a quick tap would call `onPressIn` and `onPressOut` almost at the same time and the `pressed` state would never show up. By default, `onPressOut` for such a tap is held back so that `pressed` lasts at least 130 ms, matching React Native's `Pressable`. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
 
-When set to `true`, `onPressOut` for such a tap is held back so that `pressed` lasts at least 130 ms, matching React Native's `Pressable`. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
+When set to `true`, `onPressOut` is called as soon as the press ends, even for such a tap.
 
-By default set to `true`. Has no effect on web, where presses are never deferred, or when `simultaneousWith`, `requireToFail` or `block` is passed.
+By default set to `false`. Has no effect on web, where presses are never deferred, or when `simultaneousWith`, `requireToFail` or `block` is passed.
 
 ### testOnly\_pressed
 
@@ -1285,17 +1285,17 @@ cancelOnLeave?: boolean;
 
 Whether the touch should be canceled when the pointer leaves the component. By default set to `true`. On web this prop doesn't have any effect and behaves as if `true` was set.
 
-### pressOutAfterAnimation \[A]\[I]
+### immediatePressOut \[A]\[I]
 
 ```ts
-pressOutAfterAnimation?: boolean;
+immediatePressOut?: boolean;
 ```
 
 In some cases the platform defers the press, so a quick tap calls `onPressIn` and `onPressOut` almost at the same time and feedback driven from these callbacks never shows up.
 
-When set to `true`, `onPressOut` for such a tap is held back until the press-in animation (see [`animationDuration`](#animationduration)) finishes. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
+When set to `false`, `onPressOut` for such a tap is held back until the press-in animation (see [`animationDuration`](#animationduration)) finishes. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
 
-By default set to `false`. Has no effect on web, where presses are never deferred.
+By default set to `true`. Has no effect on web, where presses are never deferred.
 
 ### needsOffscreenAlphaCompositing \[A]
 
