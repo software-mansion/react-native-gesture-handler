@@ -146,12 +146,12 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   longPressDuration?: number | undefined;
 
   /**
-   * When the platform deferred the press (e.g. the tap timeout inside a
-   * scrolling container), hold the press-out event until the press-in
-   * animation has played, so feedback driven from the callbacks stays
-   * visible. The press event is not delayed.
+   * Set to `false` to hold the press-out event for a press the platform
+   * deferred (e.g. the tap timeout inside a scrolling container) until the
+   * press-in animation has played, so feedback driven from the callbacks
+   * stays visible. The press event is not delayed.
    */
-  pressOutAfterAnimation?: boolean | undefined;
+  immediatePressOut?: boolean | undefined;
 
   /**
    * Duration of the press-out animation, in milliseconds, when the

@@ -21,8 +21,8 @@ const IS_TEST_ENV = isTestEnv();
 
 // RN's Pressable default. Touchable's own default is 600ms
 const DEFAULT_LONG_PRESS_DURATION = 500;
-// Pressable has no native opacity/scale animation. The press-in duration only matters with
-// `pressOutAfterAnimation`: it is how long a platform-deferred quick tap keeps `pressed` before
+// Pressable has no native opacity/scale animation. The press-in duration only matters without
+// `immediatePressOut`: it is how long a platform-deferred quick tap keeps `pressed` before
 // onPressOut. 130 ms matches RN's minPressDuration.
 const PRESSABLE_ANIMATION_DURATION = { in: 50, out: 100, tap: { in: 130 } };
 
@@ -88,7 +88,7 @@ const PressableWithTouchable = (props: PressableProps) => {
     disabled,
     accessible,
     ref,
-    pressOutAfterAnimation = true,
+    immediatePressOut = false,
     ...rest
   } = props;
 
@@ -319,7 +319,7 @@ const PressableWithTouchable = (props: PressableProps) => {
       delayLongPress={resolvedDelayLongPress}
       style={[pointerStyle, resolvedStyle]}
       animationDuration={PRESSABLE_ANIMATION_DURATION}
-      pressOutAfterAnimation={pressOutAfterAnimation}
+      immediatePressOut={immediatePressOut}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={handlePress}

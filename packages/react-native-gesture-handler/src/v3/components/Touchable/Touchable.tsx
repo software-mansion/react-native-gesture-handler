@@ -85,7 +85,7 @@ export const Touchable = (props: TouchableProps) => {
     children,
     disabled = false,
     cancelOnLeave = true,
-    pressOutAfterAnimation = false,
+    immediatePressOut = true,
     ref,
     ...rest
   } = props;
@@ -226,7 +226,7 @@ export const Touchable = (props: TouchableProps) => {
       activeUnderlayOpacity={activeUnderlayOpacity}
       underlayColor={underlayColor}
       longPressDuration={resolvedDelayLongPress}
-      pressOutAfterAnimation={pressOutAfterAnimation}
+      immediatePressOut={immediatePressOut}
       hasLongPressHandler={onLongPress !== undefined}
       onButtonPress={internalOnPress}
       onButtonPressIn={internalOnPressIn}
