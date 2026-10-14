@@ -35,7 +35,7 @@ import PinchExample from './simple/pinch';
 import RotationExample from './simple/rotation';
 import TapExample from './simple/tap';
 import KeyboardShouldPersistTapsExample from './tests/keyboardShouldPersistTaps';
-import NativeTakeoverExample from './tests/nativeTakeover';
+import NativeInterceptCancellationExample from './tests/nativeInterceptCancellation';
 import NestedPressablesExample from './tests/nestedPressables';
 import NestedRootViewExample from './tests/nestedRootView';
 import NestedTouchablesExample from './tests/nestedTouchables';
@@ -132,8 +132,8 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Nested pressables', component: NestedPressablesExample },
       { name: 'Nested touchables', component: NestedTouchablesExample },
       {
-        name: 'Native takeover',
-        component: NativeTakeoverExample,
+        name: 'Native intercept cancellation',
+        component: NativeInterceptCancellationExample,
         unsupportedPlatforms: new Set(['ios', 'macos', 'web']),
       },
       { name: 'Pressable', component: PressableExample },

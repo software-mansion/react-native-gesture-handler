@@ -7,11 +7,11 @@ steps:
   - await: { visible: { text: "Empty Example" }, timeout: 15000 }
   - when: { platform: android }
     steps:
-      - echo: "On the Home list, search for the native takeover example"
-      - type: { text: "takeover", into: { id: "search-examples" } }
-      - await: { visible: { text: "Native takeover" } }
+      - echo: "On the Home list, search for the native intercept cancellation example"
+      - type: { text: "intercept", into: { id: "search-examples" } }
+      - await: { visible: { text: "Native intercept cancellation" } }
       - echo: "Tap the example to open it"
-      - tap: { text: "Native takeover" }
+      - tap: { text: "Native intercept cancellation" }
       - await: { visible: { id: "tap-box" } }
       - await: { idle: true }
 

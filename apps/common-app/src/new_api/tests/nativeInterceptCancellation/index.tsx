@@ -111,7 +111,7 @@ function DrawerMode(props: TapBoxProps) {
   );
 }
 
-export default function NativeTakeoverExample() {
+export default function NativeInterceptCancellationExample() {
   const [mode, setMode] = useState<Mode>('pager');
   const [count, setCount] = useState(0);
   const log = useIndexedLogger();
