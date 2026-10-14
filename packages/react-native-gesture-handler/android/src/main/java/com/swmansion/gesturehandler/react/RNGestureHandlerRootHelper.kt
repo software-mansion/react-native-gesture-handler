@@ -24,6 +24,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private var passingTouch = false
   private var passingNativeTouch = false
   private var nativeTouchGrabRequested = false
+  private var nativeTouchCancelled = false
 
   init {
     val registry =
@@ -139,6 +140,17 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   /**
+   * A detector got ACTION_CANCEL from the native dispatch: an ancestor took over the touch and its
+   * disallow-intercept request never reached the root (stopped at a flagged ancestor, or never
+   * made, e.g. DrawerLayout). CANCELs outside a native pass are the root's or a native handler's own.
+   */
+  fun onNativeTouchCancelled() {
+    if (passingNativeTouch) {
+      nativeTouchCancelled = true
+    }
+  }
+
+  /**
    * Deferred handling of a disallow-intercept request recorded during this dispatch pass. The
    * request alone doesn't say what the caller did with the event: a scrollable calls it when it
    * takes over the touch, but e.g. a nested pager calls it already on DOWN, just to keep its
@@ -157,6 +169,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         event.actionMasked != MotionEvent.ACTION_POINTER_DOWN
 
       orchestrator?.cancelHandlersOnNativeTouchGrab(grabbedMidGesture, event.downTime)
+    }
+
+    if (nativeTouchCancelled) {
+      nativeTouchCancelled = false
+      orchestrator?.cancelHandlersOnNativeTouchCancel(event.eventTime)
     }
   }
 

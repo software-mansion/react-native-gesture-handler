@@ -366,19 +366,23 @@ class GestureHandlerOrchestrator(
   }
 
   private inline fun cancelHandlersMatching(predicate: (GestureHandler) -> Boolean) {
-    val handlersToProcess = obtainHandlerList()
-    handlersToProcess.addAll(gestureHandlers)
+    val handlersToCancel = obtainHandlerList()
+    gestureHandlers.filterTo(handlersToCancel, predicate)
 
     try {
-      handlersToProcess.forEach {
-        if (predicate(it)) {
-          it.cancel()
+      // Cancelling a handler activates the handlers awaiting its failure. Drop the batch from the
+      // awaiting pool first, so cancelling one member cannot activate another before its turn.
+      for (handler in handlersToCancel) {
+        if (awaitingHandlersTags.remove(handler.tag)) {
+          awaitingHandlers.remove(handler)
         }
       }
 
+      handlersToCancel.forEach { it.cancel() }
+
       scheduleFinishedHandlersCleanup()
     } finally {
-      recycleHandlerList(handlersToProcess)
+      recycleHandlerList(handlersToCancel)
     }
   }
 
@@ -401,6 +405,16 @@ class GestureHandlerOrchestrator(
       it.hostDetectorView?.shouldCancelOnNativeTouchGrab(grabbedMidGesture, downTime) == true
 
     cancelledByHook || cancelledByDetector
+  }
+
+  /**
+   * Cancels pending detector handlers whose detector got ACTION_CANCEL from the native dispatch of
+   * the event with `eventTime`. Unlike a disallow-intercept request, the CANCEL names its target.
+   */
+  fun cancelHandlersOnNativeTouchCancel(eventTime: Long) = cancelHandlersMatching {
+    !it.isActive &&
+      GestureHandler.usesNativeOrVirtualDetector(it.actionType) &&
+      it.hostDetectorView?.shouldCancelOnNativeTouchCancel(eventTime) == true
   }
 
   /**
