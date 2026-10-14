@@ -1,0 +1,63 @@
+# Android only: a native view (nested PagerView) takes over the touch without
+# the root seeing a disallow-intercept request. The tap under it must be
+# cancelled by the framework's ACTION_CANCEL instead of firing on lift.
+steps:
+  - echo: Launching Expo Example
+  - launch: com.example.ExpoExample
+  - await: { visible: { text: "Empty Example" }, timeout: 15000 }
+  - when: { platform: android }
+    steps:
+      - echo: "On the Home list, search for the native takeover example"
+      - type: { text: "takeover", into: { id: "search-examples" } }
+      - await: { visible: { text: "Native takeover" } }
+      - echo: "Tap the example to open it"
+      - tap: { text: "Native takeover" }
+      - await: { visible: { id: "tap-box" } }
+      - await: { idle: true }
+
+      - echo: "Clear console"
+      - await: { visible: { id: "open-console-button" } }
+      - tap: { id: "open-console-button" }
+      - await: { visible: { id: "clear-console-button" } }
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Swipe the inner pager starting on the tap box"
+      - assert: { visible: { text: "Tap count: 0" } }
+      - swipe: { from: { id: "tap-box" }, direction: left }
+      - await: { visible: { id: "inner-page-2" } }
+      - await: { idle: true }
+
+      - echo: "The pager moved and the tap did not fire"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: "1. onBegin" } }
+      - assert: { visible: { text: "2. onFinalize" } }
+      - assert: { hidden: { text: "onActivate" } }
+      - assert: { hidden: { text: "onDeactivate" } }
+
+      - echo: "Clear console"
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Swipe back to the first page"
+      - swipe: { from: { id: "inner-page-2" }, direction: right }
+      - await: { visible: { id: "tap-box" } }
+      - await: { idle: true }
+      - assert: { visible: { text: "Tap count: 0" } }
+
+      - echo: "A plain tap on the box still counts"
+      - tap: { id: "tap-box" }
+      - await: { visible: { text: "Tap count: 1" } }
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: "3. onBegin" } }
+      - assert: { visible: { text: "4. onActivate" } }
+      - assert: { visible: { text: "5. onDeactivate" } }
+      - assert: { visible: { text: "6. onFinalize" } }
