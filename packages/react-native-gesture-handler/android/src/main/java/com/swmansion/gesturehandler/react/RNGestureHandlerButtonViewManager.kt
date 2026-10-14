@@ -762,6 +762,17 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun onHandlerStateChange(handler: NativeViewGestureHandler, newState: Int, prevState: Int) {
+      if (newState == GestureHandler.STATE_BEGAN) {
+        // Reset here, not on gesture end: the native DOWN sets the flag even when the orchestrator
+        // never tracks the handler (disabled button, alpha below the traversal threshold), so a
+        // terminal state may never come and the stale value would survive. BEGAN precedes both the
+        // native dispatch of the same DOWN and the sweep that reads the flag.
+        //
+        // Runs before the managed guard because the sweep reads the flag for detector-attached
+        // buttons too, and those manage no handler.
+        receivedNativeDown = false
+      }
+
       if (managedHandlerTag == null) {
         return
       }
@@ -771,11 +782,6 @@ class RNGestureHandlerButtonViewManager :
       val localLastEventWasInside = lastEventWasInside
 
       if (newState == GestureHandler.STATE_BEGAN) {
-        // Reset here, not on gesture end: the native DOWN sets the flag even when the orchestrator
-        // never tracks the handler (disabled button, alpha below the traversal threshold), so a
-        // terminal state may never come and the stale value would survive. BEGAN precedes both the
-        // native dispatch of the same DOWN and the sweep that reads the flag.
-        receivedNativeDown = false
         flushPendingPressOut()
         pressDownTime = SystemClock.uptimeMillis()
         pressStarted = false
