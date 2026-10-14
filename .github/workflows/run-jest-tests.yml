@@ -3,6 +3,7 @@ name: Run Jest tests
 on:
   pull_request:
     paths:
+      - .nvmrc
       - '**/*.js'
       - '**/*.jsx'
       - '**/*.ts'
@@ -25,10 +26,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js 24
+      - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: '.nvmrc'
           cache: yarn
 
       - name: Install node dependencies

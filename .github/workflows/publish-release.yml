@@ -47,10 +47,10 @@ jobs:
         run: |
           echo "YARN_ENABLE_HARDENED_MODE=0" >> $GITHUB_ENV
   
-      - name: Setup Node
+      - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: '.nvmrc'
           cache: 'yarn'
           registry-url: https://registry.npmjs.org/
 

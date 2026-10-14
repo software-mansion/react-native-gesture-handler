@@ -47,4 +47,7 @@ export default {
   flushOperations() {
     // NO-OP
   },
+  getModuleId() {
+    return -1;
+  },
 };

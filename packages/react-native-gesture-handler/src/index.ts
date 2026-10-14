@@ -1,5 +1,3 @@
-import './globals';
-
 import { initialize } from './init';
 
 export {
