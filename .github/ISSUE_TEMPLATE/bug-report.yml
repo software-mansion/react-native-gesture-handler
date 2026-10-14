@@ -110,15 +110,6 @@ body:
         - Using Expo Prebuild or an Expo development build
 
   - type: dropdown
-    id: architecture
-    attributes:
-      label: Architecture
-      description: What React Native architecture your application is running on? Currently, the New Architecture is enabled by default for every new React Native project.
-      options:
-        - New Architecture (Fabric)
-        - Old Architecture (Paper)
-
-  - type: dropdown
     id: build-type
     attributes:
       label: Build type

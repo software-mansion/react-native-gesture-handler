@@ -16,6 +16,7 @@ steps:
   - await: { visible: { id: "clear-console-button" } }
   - tap: { id: "clear-console-button" }
   - tap: { id: "close-console-button" }
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
 
   - echo: "Level 1 - tap the outer tap gesture"
@@ -33,6 +34,7 @@ steps:
   - echo: "Clear console"
   - tap: { id: "clear-console-button" }
   - tap: { id: "close-console-button" }
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
 
   - echo: "Level 2 - tap the touchable nested in the outer tap gesture"
@@ -52,6 +54,7 @@ steps:
   - echo: "Clear console"
   - tap: { id: "clear-console-button" }
   - tap: { id: "close-console-button" }
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
 
   - echo: "Level 3 - tap the tap gesture nested in the touchable"
@@ -69,6 +72,7 @@ steps:
   - echo: "Clear console"
   - tap: { id: "clear-console-button" }
   - tap: { id: "close-console-button" }
+  - await: { hidden: { id: "close-console-button" } }
   - await: { idle: true }
 
   - echo: "Level 4 - tap the innermost touchable"

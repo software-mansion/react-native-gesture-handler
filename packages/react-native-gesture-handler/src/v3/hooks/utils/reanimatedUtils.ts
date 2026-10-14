@@ -29,6 +29,20 @@ function hash(str: string) {
 
 export const SHARED_VALUE_OFFSET = 1.618;
 
+const UNREACHABLE_OFFSET = 1e9;
+
+export function splitSingleOffset(value: number): [number, number] {
+  'worklet';
+  return value < 0 ? [value, UNREACHABLE_OFFSET] : [-UNREACHABLE_OFFSET, value];
+}
+
+const PAN_OFFSET_KEYS = new Set([
+  'activeOffsetX',
+  'activeOffsetY',
+  'failOffsetX',
+  'failOffsetY',
+]);
+
 // Don't transfer entire NativeProxy to the UI thread
 const { updateGestureHandlerConfig } = NativeProxy;
 
@@ -65,6 +79,15 @@ export function bindSharedValues<
       if (configKey === 'hitSlop') {
         updateGestureHandlerConfig(handlerTag, {
           hitSlop: normalizeHitSlop(value as HitSlop),
+        });
+        return;
+      }
+
+      if (PAN_OFFSET_KEYS.has(configKey)) {
+        const [start, end] = splitSingleOffset(value as number);
+        updateGestureHandlerConfig(handlerTag, {
+          [`${configKey}Start`]: start,
+          [`${configKey}End`]: end,
         });
         return;
       }

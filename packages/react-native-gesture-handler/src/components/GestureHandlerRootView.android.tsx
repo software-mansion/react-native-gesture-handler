@@ -3,6 +3,7 @@ import * as React from 'react';
 import { StyleSheet } from 'react-native';
 
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
+import { getModuleId } from '../moduleId';
 import type { RootViewNativeProps } from '../specs/RNGestureHandlerRootViewNativeComponent';
 import GestureHandlerRootViewNativeComponent from '../specs/RNGestureHandlerRootViewNativeComponent';
 
@@ -18,7 +19,7 @@ export default function GestureHandlerRootView({
       <GestureHandlerRootViewNativeComponent
         style={style ?? styles.container}
         {...rest}
-        moduleId={globalThis._RNGH_MODULE_ID} // Ensure moduleId is set
+        moduleId={getModuleId()}
       />
     </GestureHandlerRootViewContext>
   );

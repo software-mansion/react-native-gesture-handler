@@ -58,7 +58,7 @@ export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
 
   /**
    * Maximum time, expressed in milliseconds, that can pass before the next tap — if many taps are required.
-   * The default value is 500.
+   * The default value is 200.
    * @param delay
    */
   maxDelay(delay: number) {

@@ -3,6 +3,7 @@ name: Build iOS (SPM)
 on:
   pull_request:
     paths:
+      - .nvmrc
       - packages/react-native-gesture-handler/Package.swift
       - packages/react-native-gesture-handler/package.json
       - packages/react-native-gesture-handler/react-native.config.js
@@ -55,10 +56,10 @@ jobs:
           echo "DEVELOPER_DIR=$XCODE_APP/Contents/Developer" >> "$GITHUB_ENV"
           DEVELOPER_DIR="$XCODE_APP/Contents/Developer" xcodebuild -version
 
-      - name: Use Node.js 24
+      - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: '.nvmrc'
           cache: yarn
 
       - name: Read React Native version

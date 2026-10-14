@@ -6,6 +6,7 @@ import type {
   UserSelect,
 } from '../../../handlers/gestureHandlerCommon';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { getModuleId } from '../../../moduleId';
 import { tagMessage } from '../../../utils';
 import { useJSResponderHandler } from '../../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
@@ -306,7 +307,7 @@ export function InterceptingGestureDetector<
         onStartShouldSetResponder={handleStartShouldSetResponder}
         style={nativeDetectorStyles.detector}
         virtualChildren={strippedVirtualChildren}
-        moduleId={globalThis._RNGH_MODULE_ID}>
+        moduleId={getModuleId()}>
         {children}
       </NativeDetectorComponent>
     </InterceptingDetectorContext>
