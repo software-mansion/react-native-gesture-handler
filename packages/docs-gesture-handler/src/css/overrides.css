@@ -28,6 +28,11 @@ table thead tr {
   border-bottom: 1px solid var(--ifm-table-border-color);
 }
 
+/* Every table in the upgrade guide maps RNGH2 to RNGH3, so split the columns evenly. */
+.docs-doc-id-guides\/upgrading-to-3 table {
+  table-layout: fixed;
+}
+
 .platform-compatibility table {
   display: table;
   width: 100%;
