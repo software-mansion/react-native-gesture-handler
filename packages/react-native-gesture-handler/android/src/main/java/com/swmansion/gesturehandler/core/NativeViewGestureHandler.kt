@@ -164,6 +164,9 @@ class NativeViewGestureHandler : GestureHandler() {
         if (shouldStopNestedScroll()) {
           view.stopNestedScroll()
         }
+        if (state == STATE_ACTIVE && hook.shouldClearChildTouchTargets()) {
+          clearChildTouchTargets(view as ViewGroup, event)
+        }
 
         if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && hook.canActivate(view)) {
           activate()
@@ -213,6 +216,17 @@ class NativeViewGestureHandler : GestureHandler() {
       view?.stopNestedScroll()
     }
     event.recycle()
+  }
+
+  // While active, the view gets touches through `onTouchEvent`, so the child it dispatched the native
+  // DOWN to stays recorded as its touch target. The root's next ACTION_CANCEL would then pass through
+  // `ScrollView.onInterceptTouchEvent`, whose CANCEL branch calls `springBack` and ends the fling this
+  // UP just started. Disallowing interception lets the CANCEL reach only the stale children.
+  private fun clearChildTouchTargets(view: ViewGroup, event: MotionEvent) {
+    val cancelEvent = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_CANCEL }
+    view.requestDisallowInterceptTouchEvent(true)
+    view.dispatchTouchEvent(cancelEvent)
+    cancelEvent.recycle()
   }
 
   // Once the handler is active, it delivers touches straight to the view's `onTouchEvent`. Normally
@@ -366,6 +380,11 @@ class NativeViewGestureHandler : GestureHandler() {
      * are fed through `onTouchEvent`, so `View.dispatchTouchEvent` never gets to do it.
      */
     fun shouldStopNestedScroll() = false
+
+    /**
+     * Whether the view's stale child touch targets should be cleared when the active gesture ends.
+     */
+    fun shouldClearChildTouchTargets() = false
 
     /**
      * Checks whether handler can activate. Used by TextViewHook.
@@ -546,6 +565,8 @@ class NativeViewGestureHandler : GestureHandler() {
     // ScrollView starts a nested scroll on DOWN but never stops it itself. Without this the
     // parent's `onStopNestedScroll` never runs, e.g. SwipeRefreshLayout never triggers refresh.
     override fun shouldStopNestedScroll() = true
+
+    override fun shouldClearChildTouchTargets() = true
   }
 
   private class ReactViewGroupHook : NativeViewGestureHandlerHook {

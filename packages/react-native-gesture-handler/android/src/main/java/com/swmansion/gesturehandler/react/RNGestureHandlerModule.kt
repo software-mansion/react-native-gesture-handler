@@ -145,12 +145,20 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     UiThreadUtil.assertOnUiThread()
 
     registry.getHandler(handlerTag)?.let { handler ->
+      if (handler.state == GestureHandler.STATE_UNDETERMINED && !handler.hasTrackedPointers) {
+        return
+      }
+
       if (newState == GestureHandler.STATE_ACTIVE) {
+        // The first touch event reaches JS before the handler begins, so a handler
+        // that already tracks a pointer may still be UNDETERMINED here.
+        if (handler.hasTrackedPointers && handler.state == GestureHandler.STATE_UNDETERMINED) {
+          handler.begin()
+        }
+
         if (handler.state != GestureHandler.STATE_BEGAN) {
-          // We don't allow activation of gestures which haven't received any touches
           return
         }
-        handler.recordHandlerIfNotPresent()
       }
 
       when (newState) {
@@ -169,6 +177,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   private external fun invalidateNative(): Unit
 
   override fun getBindingsInstaller() = getBindingsInstallerCxx()
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  override fun getModuleId(): Double = moduleId.toDouble()
 
   override fun invalidate() {
     registry.dropAllHandlers()

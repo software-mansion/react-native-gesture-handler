@@ -13,6 +13,7 @@ const flushOperations = NOOP;
 const configureRelations = NOOP;
 const installUIRuntimeBindings = NOOPTrue;
 const install = NOOP;
+const getModuleId = () => -1;
 
 export default {
   attachGestureHandler,
@@ -24,4 +25,5 @@ export default {
   installUIRuntimeBindings,
   flushOperations,
   install,
+  getModuleId,
 } as const;

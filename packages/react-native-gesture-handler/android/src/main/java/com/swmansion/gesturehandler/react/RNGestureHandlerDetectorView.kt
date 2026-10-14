@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.react
 
 import android.content.Context
+import android.view.MotionEvent
 import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
@@ -21,6 +22,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private var attachedHandlers: MutableSet<Int> = mutableSetOf()
   private var subscribedVirtualHandlers: MutableMap<Int, MutableSet<Int>> = mutableMapOf()
   private var moduleId: Int = -1
+
+  // Down time of the last DOWN that native dispatch delivered to this view. Handler delivery
+  // bypasses `dispatchTouchEvent`, so a DOWN intercepted by an ancestor never updates it.
+  private var lastNativeDownTime = -1L
 
   data class VirtualChildren(val handlerTags: List<Int>, val viewTag: Int)
 
@@ -43,6 +48,22 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     detachAllHandlers()
     super.onDetachedFromWindow()
   }
+
+  override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+      lastNativeDownTime = event.downTime
+    }
+    return super.dispatchTouchEvent(event)
+  }
+
+  /**
+   * A native view takes over the touch stream with `requestDisallowInterceptTouchEvent`, which only
+   * bubbles up, so handlers of detectors below it are never notified. Mirror the rule buttons use:
+   * cancel when the grab happens after DOWN, or when it happens on DOWN and kept the event from
+   * reaching this detector (e.g. a scroll view catching a fling).
+   */
+  fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean, downTime: Long) =
+    grabbedMidGesture || lastNativeDownTime != downTime
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     super.requestDisallowInterceptTouchEvent(disallowIntercept)

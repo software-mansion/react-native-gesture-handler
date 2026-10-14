@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
 
+import { getModuleId } from '../../moduleId';
 import { useJSResponderHandler } from '../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 import type { NativeDetectorProps } from './common';
@@ -100,7 +101,7 @@ export function NativeDetector<
       onGestureHandlerAnimatedEvent={
         gesture.detectorCallbacks.animatedEventHandler
       }
-      moduleId={globalThis._RNGH_MODULE_ID}
+      moduleId={getModuleId()}
       handlerTags={handlerTags}
       style={nativeDetectorStyles.detector}>
       {children}

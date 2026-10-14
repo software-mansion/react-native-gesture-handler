@@ -3,6 +3,7 @@ name: Test macOS build
 on:
   pull_request:
     paths:
+      - .nvmrc
       - .github/workflows/macos-build.yml
       - packages/react-native-gesture-handler/RNGestureHandler.podspec
       - packages/react-native-gesture-handler/apple/**
@@ -27,10 +28,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js 22
+      - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: yarn
 
       - name: Install node dependencies
