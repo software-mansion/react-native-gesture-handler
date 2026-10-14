@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { ComponentType, ReactElement } from 'react';
+import {
+  Children,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { findNodeHandle, Platform } from 'react-native';
 
 import { tagMessage } from '../../../utils';
@@ -13,6 +21,17 @@ import {
   useInterceptingDetectorContext,
 } from './useInterceptingDetectorContext';
 import { Wrap } from './Wrap';
+
+function getChildName(children: unknown) {
+  const { type } = Children.only(children) as ReactElement<
+    unknown,
+    string | ComponentType<unknown>
+  >;
+
+  return typeof type === 'string'
+    ? type
+    : (type.displayName ?? type.name ?? 'Unknown');
+}
 
 function useRequiredInterceptingDetectorContext() {
   const context = useInterceptingDetectorContext();
@@ -57,6 +76,31 @@ export function VirtualDetector<
   );
 
   useNativeGestureRole(viewRef, props.children);
+
+  // Dev-only: a host view under Wrap while the child never handed one back
+  // means the child swallowed the ref. A child with no host view yet is left alone.
+  const wrapRef = useRef<Wrap | null>(null);
+  const reportedRef = useRef(false);
+
+  useEffect(() => {
+    if (
+      !__DEV__ ||
+      reportedRef.current ||
+      viewRef.current ||
+      wrapRef.current === null ||
+      !findNodeHandle(wrapRef.current)
+    ) {
+      return;
+    }
+
+    reportedRef.current = true;
+
+    console.error(
+      tagMessage(
+        `VirtualGestureDetector could not attach to its child (${getChildName(props.children)}). The child must be a host view or forward its \`ref\` to one.`
+      )
+    );
+  });
 
   const handlerTags = useMemo(
     () =>
@@ -114,5 +158,14 @@ export function VirtualDetector<
 
   useGestureRelationsUpdater(props.gesture);
 
-  return <Wrap ref={handleRef}>{props.children}</Wrap>;
+  // The web Wrap is a plain element around the child, so its ref is the view.
+  if (Platform.OS === 'web') {
+    return <Wrap ref={handleRef}>{props.children}</Wrap>;
+  }
+
+  return (
+    <Wrap ref={wrapRef} hostRef={handleRef}>
+      {props.children}
+    </Wrap>
+  );
 }

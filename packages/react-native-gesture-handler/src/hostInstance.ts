@@ -18,6 +18,12 @@ export function assignRef(
   return undefined;
 }
 
+// Undoes `assignRef`: runs the cleanup a ref callback returned, otherwise
+// assigns null, which is what React does when no cleanup was returned.
+export function detachRef(ref: WrapRef, cleanup?: () => void) {
+  cleanup ? cleanup() : assignRef(ref, null);
+}
+
 export function isHostInstance(instance: unknown) {
   return (
     (instance as { __internalInstanceHandle?: unknown } | null | undefined)
