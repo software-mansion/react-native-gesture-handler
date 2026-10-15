@@ -1,6 +1,7 @@
 import EventManager from './EventManager';
 import { AdaptedEvent, EventTypes } from '../interfaces';
 import { PointerType } from '../../PointerType';
+import { calculateViewScale } from '../utils';
 
 export default class WheelEventManager extends EventManager<HTMLElement> {
   private wheelDelta = { x: 0, y: 0 };
@@ -28,11 +29,17 @@ export default class WheelEventManager extends EventManager<HTMLElement> {
   }
 
   protected mapEvent(event: WheelEvent): AdaptedEvent {
+    const rect = this.view.getBoundingClientRect();
+    const { scaleX, scaleY } = calculateViewScale(this.view);
+
+    const x = event.clientX + this.wheelDelta.x;
+    const y = event.clientY + this.wheelDelta.y;
+
     return {
-      x: event.clientX + this.wheelDelta.x,
-      y: event.clientY + this.wheelDelta.y,
-      offsetX: event.offsetX - event.deltaX,
-      offsetY: event.offsetY - event.deltaY,
+      x,
+      y,
+      offsetX: (x - rect.left) / scaleX,
+      offsetY: (y - rect.top) / scaleY,
       pointerId: -1,
       eventType: EventTypes.MOVE,
       pointerType: PointerType.OTHER,
