@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { findNodeHandle, Platform } from 'react-native';
 
 import { tagMessage } from '../../../utils';
+import { useJSResponderHandler } from '../../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import type { DetectorCallbacks, VirtualChild } from '../../types';
 import type { VirtualDetectorProps } from '../common';
@@ -37,6 +38,9 @@ export function VirtualDetector<
 
   const { register, unregister, setMode } =
     useRequiredInterceptingDetectorContext();
+  const { handleStartShouldSetResponder } = useJSResponderHandler(
+    props.gesture
+  );
 
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
@@ -114,5 +118,11 @@ export function VirtualDetector<
 
   useGestureRelationsUpdater(props.gesture);
 
-  return <Wrap ref={handleRef}>{props.children}</Wrap>;
+  return (
+    <Wrap
+      ref={handleRef}
+      onStartShouldSetResponder={handleStartShouldSetResponder}>
+      {props.children}
+    </Wrap>
+  );
 }
