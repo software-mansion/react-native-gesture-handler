@@ -97,7 +97,7 @@ class GestureHandlerOrchestrator(
 
   private fun cleanupFinishedHandlers() {
     for (handler in gestureHandlers.asReversed()) {
-      if (isFinished(handler.state) && !handler.isAwaiting) {
+      if (GestureHandler.isFinished(handler.state) && !handler.isAwaiting) {
         handler.reset()
         handler.apply {
           isActive = false
@@ -107,13 +107,13 @@ class GestureHandlerOrchestrator(
       }
     }
 
-    gestureHandlers.removeAll { isFinished(it.state) && !it.isAwaiting }
+    gestureHandlers.removeAll { GestureHandler.isFinished(it.state) && !it.isAwaiting }
 
     finishedHandlersCleanupScheduled = false
   }
 
   private fun hasOtherHandlerToWaitFor(handler: GestureHandler) =
-    gestureHandlers.any { !isFinished(it.state) && shouldHandlerWaitForOther(handler, it) }
+    gestureHandlers.any { !GestureHandler.isFinished(it.state) && shouldHandlerWaitForOther(handler, it) }
 
   private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler) =
     gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
@@ -163,7 +163,7 @@ class GestureHandlerOrchestrator(
       handler.isAwaiting = false
     }
 
-    if (isFinished(newState)) {
+    if (GestureHandler.isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
       // while iterating over its elements
       val currentlyAwaitingHandlers = awaitingHandlers.toList()
@@ -927,9 +927,5 @@ class GestureHandlerOrchestrator(
         true
       }
     }
-
-    private fun isFinished(state: Int) = state == GestureHandler.STATE_CANCELLED ||
-      state == GestureHandler.STATE_FAILED ||
-      state == GestureHandler.STATE_END
   }
 }
