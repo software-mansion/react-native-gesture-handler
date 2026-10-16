@@ -7,6 +7,7 @@ import GestureHandlerButton, {
 } from '../../../components/GestureHandlerButton';
 import { getTVProps } from '../../../components/utils';
 import { getNextHandlerTag } from '../../../handlers/getNextHandlerTag';
+import { getModuleId } from '../../../moduleId';
 import {
   isKeyboardDismissingTap,
   JSResponderContext,
@@ -84,6 +85,7 @@ export const Touchable = (props: TouchableProps) => {
     children,
     disabled = false,
     cancelOnLeave = true,
+    immediatePressOut = true,
     ref,
     ...rest
   } = props;
@@ -214,7 +216,7 @@ export const Touchable = (props: TouchableProps) => {
       ref={ref ?? null}
       enabled={!disabled}
       onStartShouldSetResponderCapture={handleStartShouldSetResponderCapture}
-      moduleId={globalThis._RNGH_MODULE_ID}
+      moduleId={getModuleId()}
       handlerTag={handlerTag}
       cancelOnLeave={cancelOnLeave}
       gestureTestID={props.testID}
@@ -224,6 +226,7 @@ export const Touchable = (props: TouchableProps) => {
       activeUnderlayOpacity={activeUnderlayOpacity}
       underlayColor={underlayColor}
       longPressDuration={resolvedDelayLongPress}
+      immediatePressOut={immediatePressOut}
       hasLongPressHandler={onLongPress !== undefined}
       onButtonPress={internalOnPress}
       onButtonPressIn={internalOnPressIn}

@@ -187,7 +187,7 @@ fireGestureHandler: (componentOrGesture, eventList) => void;
 Simulates one event stream (i.e. event sequence starting with `BEGIN` state and ending
 with one of `END`/`FAIL`/`CANCEL` states), calling appropriate callbacks associated with given gesture handler.
 
-- `componentOrGesture` - Either Gesture Handler component found by `Jest` queries (e.g. `getByTestId`) or Gesture found by [`getByGestureTestId()`](#getbygesturetestidtestid)
+- `componentOrGesture` - Either Gesture Handler component found by `Jest` queries (e.g. `getByTestId`) or Gesture found by [`getByGestureTestId()`](#getbygesturetestid)
 
 - `eventList` - Event data passed to appropriate callback. RNGH fills event list if required
   data is missing using these rules:

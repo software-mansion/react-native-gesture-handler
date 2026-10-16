@@ -9,10 +9,15 @@ import {
 } from 'react-native';
 
 import createNativeWrapper from '../createNativeWrapper';
+import { GestureDetectorType } from '../detectors';
 
-export const ScrollView = createNativeWrapper(RNScrollView, {
-  disallowInterruption: false,
-});
+export const ScrollView = createNativeWrapper(
+  RNScrollView,
+  {
+    disallowInterruption: false,
+  },
+  GestureDetectorType.Intercepting
+);
 
 export const Switch = createNativeWrapper(RNSwitch, {
   shouldCancelWhenOutside: false,

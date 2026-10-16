@@ -1,12 +1,14 @@
 import { PointerType } from '../../PointerType';
 import type { AdaptedEvent } from '../interfaces';
 import { EventTypes } from '../interfaces';
+import { viewportToLocal } from '../utils';
 import EventManager from './EventManager';
 
 export default class KeyboardEventManager extends EventManager<HTMLElement> {
-  private static activationKeys = ['Enter', ' '];
-  private static cancelationKeys = ['Tab'];
-  private isPressed = false;
+  private static activationKeys = new Set(['Enter', ' ']);
+  private static cancelationKeys = new Set(['Tab']);
+  private keyPointer: string | null = null;
+
   private static registeredStaticListeners = false;
   private static instances: Set<KeyboardEventManager> = new Set();
 
@@ -14,8 +16,7 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
     // We need a global listener, as in some cases, keyUp event gets stop-propagated.
     // Then, if we used only component-level listeners the gesture would never end,
     // causing other gestues to fail.
-
-    if (this.activationKeys.indexOf(event.key) === -1) {
+    if (!this.activationKeys.has(event.key)) {
       return;
     }
 
@@ -25,30 +26,30 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   };
 
   private keyDownCallback = (event: KeyboardEvent): void => {
-    if (
-      KeyboardEventManager.cancelationKeys.indexOf(event.key) !== -1 &&
-      this.isPressed
-    ) {
-      this.dispatchEvent(event, EventTypes.CANCEL);
+    if (this.keyPointer !== null) {
+      if (KeyboardEventManager.cancelationKeys.has(event.key)) {
+        this.dispatchEvent(event, EventTypes.CANCEL);
+        this.keyPointer = null;
+      }
+
       return;
     }
 
-    if (KeyboardEventManager.activationKeys.indexOf(event.key) === -1) {
+    if (!KeyboardEventManager.activationKeys.has(event.key) || event.repeat) {
       return;
     }
 
+    this.keyPointer = event.key;
     this.dispatchEvent(event, EventTypes.DOWN);
   };
 
   private onKeyUp = (event: KeyboardEvent): void => {
-    if (
-      KeyboardEventManager.activationKeys.indexOf(event.key) === -1 ||
-      !this.isPressed
-    ) {
+    if (this.keyPointer !== event.key) {
       return;
     }
 
     this.dispatchEvent(event, EventTypes.UP);
+    this.keyPointer = null;
   };
 
   private dispatchEvent(event: KeyboardEvent, eventType: EventTypes) {
@@ -60,15 +61,12 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
 
     switch (eventType) {
       case EventTypes.UP:
-        this.isPressed = false;
         this.onPointerUp(adaptedEvent);
         break;
       case EventTypes.DOWN:
-        this.isPressed = true;
         this.onPointerDown(adaptedEvent);
         break;
       case EventTypes.CANCEL:
-        this.isPressed = false;
         this.onPointerCancel(adaptedEvent);
         break;
     }
@@ -104,21 +102,25 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
     }
   }
 
+  public override resetManager(): void {
+    super.resetManager();
+    this.keyPointer = null;
+  }
+
   protected mapEvent(
     event: KeyboardEvent,
     eventType: EventTypes
   ): AdaptedEvent {
     const viewRect = (event.target as HTMLElement).getBoundingClientRect();
 
+    // The center of the focused element, which is where its own center lands
+    // whatever the transforms.
     const viewportPosition = {
       x: viewRect?.x + viewRect?.width / 2,
       y: viewRect?.y + viewRect?.height / 2,
     };
 
-    const relativePosition = {
-      x: viewRect?.width / 2,
-      y: viewRect?.height / 2,
-    };
+    const relativePosition = viewportToLocal(this.view, viewportPosition);
 
     return {
       x: viewportPosition.x,

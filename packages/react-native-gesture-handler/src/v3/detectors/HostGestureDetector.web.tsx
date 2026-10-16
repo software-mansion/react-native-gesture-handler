@@ -1,5 +1,5 @@
 import type { Ref, RefObject } from 'react';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View } from 'react-native';
 
 import { ActionType } from '../../ActionType';
@@ -9,6 +9,11 @@ import type {
 } from '../../handlers/gestureHandlerCommon';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
 import { tagMessage } from '../../utils';
+import {
+  DEFAULT_ENABLE_CONTEXT_MENU,
+  DEFAULT_TOUCH_ACTION,
+  DEFAULT_USER_SELECT,
+} from '../../web/constants';
 import { type PropsRef } from '../../web/interfaces';
 import NodeManager from '../../web/tools/NodeManager';
 import { useNativeGestureRole } from './useNativeGestureRole';
@@ -57,6 +62,21 @@ type DetectorRefs = {
 // Invoked from `NodeManager.observeHandler` once the handler is known to exist. Branches on
 // handler kind + actionType to pick the right binding flow. May be called multiple times for
 // the same tag (handler re-registration), so each branch must be idempotent.
+// The detector owns these props. It always sends concrete values so that
+// removing a prop takes the handler back to the default instead of leaving the
+// previous value in place (partial updates skip `undefined` keys).
+function unpackDOMProps(source: {
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
+}) {
+  return {
+    userSelect: source.userSelect ?? DEFAULT_USER_SELECT,
+    touchAction: source.touchAction ?? DEFAULT_TOUCH_ACTION,
+    enableContextMenu: source.enableContextMenu ?? DEFAULT_ENABLE_CONTEXT_MENU,
+  };
+}
+
 function attachReadyHandler(
   refs: DetectorRefs,
   tag: number,
@@ -99,11 +119,10 @@ function attachReadyHandler(
       refs.attachedHandlers.add(tag);
     }
 
-    RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
-      userSelect: child.userSelect,
-      touchAction: child.touchAction,
-      enableContextMenu: child.enableContextMenu,
-    });
+    RNGestureHandlerModule.updateGestureHandlerConfig(
+      tag,
+      unpackDOMProps(child)
+    );
     return;
   }
 
@@ -122,11 +141,10 @@ function attachReadyHandler(
     refs.attachedHandlers.add(tag);
   }
 
-  RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
-    userSelect: refs.propsRef.current.userSelect,
-    touchAction: refs.propsRef.current.touchAction,
-    enableContextMenu: refs.propsRef.current.enableContextMenu,
-  });
+  RNGestureHandlerModule.updateGestureHandlerConfig(
+    tag,
+    unpackDOMProps(refs.propsRef.current)
+  );
 }
 
 function tryAttachNativeHandlersToChildView(refs: DetectorRefs) {
@@ -169,11 +187,10 @@ function tryAttachNativeHandlersToChildView(refs: DetectorRefs) {
       refs.viewRef
     );
     refs.attachedHandlers.add(tag);
-    RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
-      userSelect: refs.propsRef.current.userSelect,
-      touchAction: refs.propsRef.current.touchAction,
-      enableContextMenu: refs.propsRef.current.enableContextMenu,
-    });
+    RNGestureHandlerModule.updateGestureHandlerConfig(
+      tag,
+      unpackDOMProps(refs.propsRef.current)
+    );
   }
 }
 
@@ -225,7 +242,10 @@ function teardown(refs: DetectorRefs) {
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
-  const handlerTagsSet = useMemo(() => new Set(handlerTags), [...handlerTags]);
+  // Spreading the array into the deps does not work: React compares
+  // deps only up to the shorter length, so a tag appended or removed at the end
+  // was never picked up.
+  const handlerTagsKey = handlerTags.join(',');
 
   const viewRef = useRef<Element>(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
@@ -270,11 +290,10 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         .difference(claimedByVirtual);
 
       for (const tag of handlersToUpdate) {
-        RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
-          userSelect: props.userSelect,
-          touchAction: props.touchAction,
-          enableContextMenu: props.enableContextMenu,
-        });
+        RNGestureHandlerModule.updateGestureHandlerConfig(
+          tag,
+          unpackDOMProps(props)
+        );
       }
     }
   }, [props, refs]);
@@ -282,11 +301,12 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   useEffect(() => {
     syncSubscriptions(
       refs,
-      handlerTagsSet,
+      new Set(handlerTags),
       refs.subscribedHandlers,
       ActionType.NATIVE_DETECTOR
     );
-  }, [handlerTagsSet, refs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handlerTagsKey, refs]);
 
   useEffect(() => {
     // Refresh the snapshot used by the ready callback so re-fires read current child props.
@@ -334,11 +354,10 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       // applied in `attachReadyHandler`, so this is a no-op for them.
       for (const tag of subs) {
         if (refs.attachedHandlers.has(tag)) {
-          RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
-            userSelect: child.userSelect,
-            touchAction: child.touchAction,
-            enableContextMenu: child.enableContextMenu,
-          });
+          RNGestureHandlerModule.updateGestureHandlerConfig(
+            tag,
+            unpackDOMProps(child)
+          );
         }
       }
     });

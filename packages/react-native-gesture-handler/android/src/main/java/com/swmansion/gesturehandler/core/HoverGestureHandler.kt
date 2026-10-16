@@ -123,6 +123,7 @@ class HoverGestureHandler : GestureHandler() {
   override fun onReset() {
     super.onReset()
     stylusData = StylusData()
+    handler.removeCallbacksAndMessages(null)
   }
 
   private fun finish() {

@@ -24,10 +24,12 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private var passingTouch = false
   private var passingNativeTouch = false
   private var nativeTouchGrabRequested = false
+  private var nativeTouchCancelled = false
 
   init {
     val registry =
-      RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
+      RNGestureHandlerModule.registries[moduleId]
+        ?: throw Exception("Tried to access a non-existent registry for module $moduleId")
 
     UiThreadUtil.assertOnUiThread()
     val wrappedViewTag = wrappedView.id
@@ -65,7 +67,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
   fun tearDown() {
     val registry =
-      RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
+      RNGestureHandlerModule.registries[moduleId]
+        ?: throw Exception("Tried to access a non-existent registry for module $moduleId")
 
     Log.i(
       ReactConstants.TAG,
@@ -137,13 +140,24 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   /**
+   * A detector got ACTION_CANCEL from the native dispatch: an ancestor took over the touch and its
+   * disallow-intercept request never reached the root (stopped at a flagged ancestor, or never
+   * made, e.g. DrawerLayout). CANCELs outside a native pass are the root's or a native handler's own.
+   */
+  fun onNativeTouchCancelled() {
+    if (passingNativeTouch) {
+      nativeTouchCancelled = true
+    }
+  }
+
+  /**
    * Deferred handling of a disallow-intercept request recorded during this dispatch pass. The
    * request alone doesn't say what the caller did with the event: a scrollable calls it when it
    * takes over the touch, but e.g. a nested pager calls it already on DOWN, just to keep its
    * ancestors from stealing a swipe it may recognize later, and the event still reaches the
-   * button - at request time both calls look identical. They only become
-   * distinguishable once the native dispatch completes (did the button receive the DOWN?), which
-   * is why cancellation runs here instead of in `requestDisallowInterceptTouchEvent`.
+   * button or detector - at request time both calls look identical. They only become
+   * distinguishable once the native dispatch completes (did the button or detector receive the
+   * DOWN?), which is why cancellation runs here instead of in `requestDisallowInterceptTouchEvent`.
    */
   fun onNativeDispatchEnd(event: MotionEvent) {
     passingNativeTouch = false
@@ -154,7 +168,12 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       val grabbedMidGesture = event.actionMasked != MotionEvent.ACTION_DOWN &&
         event.actionMasked != MotionEvent.ACTION_POINTER_DOWN
 
-      orchestrator?.cancelHandlersOnNativeTouchGrab(grabbedMidGesture)
+      orchestrator?.cancelHandlersOnNativeTouchGrab(grabbedMidGesture, event.downTime)
+    }
+
+    if (nativeTouchCancelled) {
+      nativeTouchCancelled = false
+      orchestrator?.cancelHandlersOnNativeTouchCancel(event.eventTime)
     }
   }
 

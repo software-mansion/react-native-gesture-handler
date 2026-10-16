@@ -116,7 +116,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   self.enabled = YES;
   self.testID = nil;
-  self.manualActivation = NO;
+  _manualActivation = NO;
   _shouldCancelWhenOutside = NO;
   _cancelsJSResponder = YES;
   _hitSlop = RNGHHitSlopEmpty;
@@ -132,6 +132,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   [self resetConfig];
   [self updateConfig:config];
+  [self syncManualActivationRecognizer];
 }
 
 - (void)updateConfig:(NSDictionary *)config
@@ -421,6 +422,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   _state = [self recognizerState];
 
+  // When the state manager activates a handler it dispatches ACTIVE itself and sets the recognizer's
+  // state to Began so that UIKit keeps driving it. UIKit delivers the action for that
+  // programmatic transition asynchronously, so this method runs later with the recognizer in Began
+  // while ACTIVE has already been sent. `sendEventsInState:` drops that stale event, but by then
+  // `_state` (which touch events report) would have been overwritten. Keep the handler active instead.
+  if (!fromReset && _state == RNGestureHandlerStateBegan && _lastState == RNGestureHandlerStateActive) {
+    _state = RNGestureHandlerStateActive;
+    return;
+  }
+
   // From iOS 26.0 when recognizers are reset, their state is also changed to UIGestureRecognizerStatePossible.
   // This means that our logic that relies on sending events in `reset` methods doesn't work properly. The bug that
   // `onFinalize` was not send after `onBegin` happened because both recognizer states, `Began` and `Possible`, are
@@ -665,14 +676,24 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)setManualActivation:(BOOL)manualActivation
 {
   _manualActivation = manualActivation;
+  [self syncManualActivationRecognizer];
+}
 
-  if (manualActivation) {
+- (void)syncManualActivationRecognizer
+{
+  BOOL hasRecognizer = _manualActivationRecognizer != nil;
+
+  if (hasRecognizer == _manualActivation) {
+    return;
+  }
+
+  if (_manualActivation) {
     _manualActivationRecognizer = [[RNManualActivationRecognizer alloc] initWithGestureHandler:self];
 
     if (_recognizer.view != nil) {
       [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
     }
-  } else if (_manualActivationRecognizer != nil) {
+  } else {
     [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
     _manualActivationRecognizer = nil;
   }

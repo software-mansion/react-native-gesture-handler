@@ -21,6 +21,10 @@ const IS_TEST_ENV = isTestEnv();
 
 // RN's Pressable default. Touchable's own default is 600ms
 const DEFAULT_LONG_PRESS_DURATION = 500;
+// Pressable has no native opacity/scale animation. The press-in duration only matters without
+// `immediatePressOut`: it is how long a platform-deferred quick tap keeps `pressed` before
+// onPressOut. 130 ms matches RN's minPressDuration.
+const PRESSABLE_ANIMATION_DURATION = { in: 50, out: 100, tap: { in: 130 } };
 
 type Timers = {
   press: ReturnType<typeof setTimeout> | null;
@@ -84,6 +88,7 @@ const PressableWithTouchable = (props: PressableProps) => {
     disabled,
     accessible,
     ref,
+    immediatePressOut = false,
     ...rest
   } = props;
 
@@ -192,8 +197,9 @@ const PressableWithTouchable = (props: PressableProps) => {
   };
 
   const handlePressOut = (event: ButtonEvent) => {
-    // Not cleared here: onPress fires after onPressOut and must stay suppressed
-    // too; isActive resets on the next press-in.
+    // Not cleared here: onPress can fire on either side of onPressOut (a quick
+    // tap defers onPressOut) and must stay suppressed too; isActive resets on
+    // the next press-in.
     if (!isActive.current) {
       return;
     }
@@ -312,6 +318,8 @@ const PressableWithTouchable = (props: PressableProps) => {
       touchSoundDisabled={android_disableSound ?? undefined}
       delayLongPress={resolvedDelayLongPress}
       style={[pointerStyle, resolvedStyle]}
+      animationDuration={PRESSABLE_ANIMATION_DURATION}
+      immediatePressOut={immediatePressOut}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={handlePress}

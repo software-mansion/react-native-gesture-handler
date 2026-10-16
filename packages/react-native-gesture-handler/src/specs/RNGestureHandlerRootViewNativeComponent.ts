@@ -6,7 +6,12 @@ export interface RootViewNativeProps extends ViewProps {
   unstable_forceActive?: boolean;
 }
 
+// @ts-expect-error WithDefault adds null for codegen, unlike ViewProps.pointerEvents.
 interface NativeProps extends ViewProps {
+  pointerEvents?: CodegenTypes.WithDefault<
+    'box-none' | 'none' | 'box-only' | 'auto',
+    'auto'
+  >;
   moduleId?: CodegenTypes.WithDefault<CodegenTypes.Int32, -1>;
   unstable_forceActive?: boolean;
 }
