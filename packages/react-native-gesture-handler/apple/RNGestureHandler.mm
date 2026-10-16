@@ -105,7 +105,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)resetConfig
 {
   self.enabled = YES;
-  self.manualActivation = NO;
+  _manualActivation = NO;
   _shouldCancelWhenOutside = NO;
   _handlersToWaitFor = nil;
   _simultaneousHandlers = nil;
@@ -176,6 +176,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       RCTLogError(@"Cannot have all of top, bottom and height defined");
     }
   }
+
+  [self syncManualActivationRecognizer];
 }
 
 - (void)setEnabled:(BOOL)enabled
@@ -480,14 +482,24 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)setManualActivation:(BOOL)manualActivation
 {
   _manualActivation = manualActivation;
+  [self syncManualActivationRecognizer];
+}
 
-  if (manualActivation) {
+- (void)syncManualActivationRecognizer
+{
+  BOOL hasRecognizer = _manualActivationRecognizer != nil;
+
+  if (hasRecognizer == _manualActivation) {
+    return;
+  }
+
+  if (_manualActivation) {
     _manualActivationRecognizer = [[RNManualActivationRecognizer alloc] initWithGestureHandler:self];
 
     if (_recognizer.view != nil) {
       [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
     }
-  } else if (_manualActivationRecognizer != nil) {
+  } else {
     [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
     _manualActivationRecognizer = nil;
   }
