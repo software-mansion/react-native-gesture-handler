@@ -23,6 +23,9 @@ public class RNGestureHandlerRootViewManagerDelegate<T extends View, U extends B
   @Override
   public void setProperty(T view, String propName, @Nullable Object value) {
     switch (propName) {
+      case "pointerEvents":
+        mViewManager.setPointerEvents(view, (String) value);
+        break;
       case "unstable_forceActive":
         mViewManager.setUnstable_forceActive(view, value == null ? false : (boolean) value);
         break;

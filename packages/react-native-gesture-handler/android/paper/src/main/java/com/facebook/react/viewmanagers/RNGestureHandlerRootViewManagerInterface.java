@@ -10,8 +10,10 @@
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
 public interface RNGestureHandlerRootViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
+  void setPointerEvents(T view, @Nullable String value);
   void setUnstable_forceActive(T view, boolean value);
 }
