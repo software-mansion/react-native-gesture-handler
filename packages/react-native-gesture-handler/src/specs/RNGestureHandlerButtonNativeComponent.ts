@@ -11,7 +11,7 @@ export type ButtonEvent = Readonly<{
   pointerType: CodegenTypes.Int32;
 }>;
 
-// @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it
+/** @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it */
 interface NativeProps extends ViewProps {
   // The events are namespaced with `Button` because the base view config on iOS
   // already registers `topPress` as a bubbling event — a direct event with the

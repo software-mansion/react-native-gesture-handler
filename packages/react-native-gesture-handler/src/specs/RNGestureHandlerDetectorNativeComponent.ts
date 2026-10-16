@@ -41,7 +41,7 @@ export interface VirtualChildrenProps {
   viewTag: CodegenTypes.Int32;
 }
 
-// @ts-expect-error WithDefault adds `| null` to the type, which doesn't align with ViewProps.pointerEvents
+/** @ts-expect-error WithDefault adds `| null` to the type, which doesn't align with ViewProps.pointerEvents */
 // Using Exclude to remove null from the type makes the error go away, but breaks codegen.
 export interface NativeProps extends ViewProps {
   onGestureHandlerEvent?:
