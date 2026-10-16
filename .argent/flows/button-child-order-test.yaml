@@ -1,3 +1,5 @@
+# The snapshots run on iOS only: the bug was iOS-specific (the button's
+# underlay layer shifted Fabric's mount index), so baselines exist for iOS only.
 steps:
   - echo: Launching Expo Example
   - launch: com.example.ExpoExample
@@ -14,13 +16,17 @@ steps:
   - tap: { id: "button-child-order-toggle" }
   - await: { visible: { text: "Toggle (on)" } }
   - await: { idle: true }
-  - echo: "Every button column must still show its label, like the View column"
-  - snapshot:
-      { name: opacity-row-on, cropOn: { id: "button-child-order-opacity-row" } }
+  - when: { platform: ios }
+    steps:
+      - echo: "Every button column must still show its label, like the View column"
+      - snapshot:
+          { name: opacity-row-on, cropOn: { id: "button-child-order-opacity-row" } }
 
   - echo: "Toggle off - the labels are remounted again"
   - tap: { id: "button-child-order-toggle" }
   - await: { visible: { text: "Toggle (off)" } }
   - await: { idle: true }
-  - snapshot:
-      { name: opacity-row-off, cropOn: { id: "button-child-order-opacity-row" } }
+  - when: { platform: ios }
+    steps:
+      - snapshot:
+          { name: opacity-row-off, cropOn: { id: "button-child-order-opacity-row" } }
