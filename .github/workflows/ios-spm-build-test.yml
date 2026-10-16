@@ -39,7 +39,7 @@ jobs:
 
     env:
       APP_NAME: GHSpmTest
-      WORKLETS_VERSION: 0.13.0-nightly-20260913-5336bb7f4
+      WORKLETS_VERSION: 0.13.0
 
     steps:
       - name: checkout

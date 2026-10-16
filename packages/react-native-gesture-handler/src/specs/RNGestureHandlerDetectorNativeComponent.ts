@@ -1,4 +1,4 @@
-import type { CodegenTypes, HostComponent, ViewProps } from 'react-native';
+import type { CodegenTypes, ViewProps } from 'react-native';
 import { codegenNativeComponent } from 'react-native';
 
 type GestureHandlerEvent = Readonly<{
@@ -78,4 +78,4 @@ export interface NativeProps extends ViewProps {
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerDetector', {
   interfaceOnly: true,
-}) as HostComponent<NativeProps>;
+});

@@ -1,9 +1,4 @@
-import type {
-  CodegenTypes,
-  ColorValue,
-  HostComponent,
-  ViewProps,
-} from 'react-native';
+import type { CodegenTypes, ColorValue, ViewProps } from 'react-native';
 import { codegenNativeComponent } from 'react-native';
 
 export type ButtonEvent = Readonly<{
@@ -131,6 +126,4 @@ interface NativeProps extends ViewProps {
   borderStartStartRadius?: CodegenTypes.UnsafeMixed;
 }
 
-export default codegenNativeComponent<NativeProps>(
-  'RNGestureHandlerButton'
-) as HostComponent<NativeProps>;
+export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');
