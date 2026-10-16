@@ -1,0 +1,26 @@
+steps:
+  - echo: Launching Expo Example
+  - launch: com.example.ExpoExample
+  - await: { visible: { text: "Empty Example" }, timeout: 15000 }
+  - echo: "On the Home list, search for the button child order example"
+  - type: { text: "button child order", into: { id: "search-examples" } }
+  - await: { visible: { text: "Button child order" } }
+  - echo: "Tap the example to open it"
+  - tap: { text: "Button child order" }
+  - await: { visible: { id: "button-child-order-toggle" } }
+  - await: { idle: true }
+
+  - echo: "Toggle on - the opacity change remounts each label inside its button"
+  - tap: { id: "button-child-order-toggle" }
+  - await: { visible: { text: "Toggle (on)" } }
+  - await: { idle: true }
+  - echo: "Every button column must still show its label, like the View column"
+  - snapshot:
+      { name: opacity-row-on, cropOn: { id: "button-child-order-opacity-row" } }
+
+  - echo: "Toggle off - the labels are remounted again"
+  - tap: { id: "button-child-order-toggle" }
+  - await: { visible: { text: "Toggle (off)" } }
+  - await: { idle: true }
+  - snapshot:
+      { name: opacity-row-off, cropOn: { id: "button-child-order-opacity-row" } }
