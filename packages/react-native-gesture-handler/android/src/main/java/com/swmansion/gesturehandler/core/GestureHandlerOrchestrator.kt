@@ -662,9 +662,12 @@ class GestureHandlerOrchestrator(
     }
 
     // if the pointer is inside the view but it overflows its parent, handlers attached to the parent
-    // might not have been extracted (pointer might be in a child, but may be outside parent)
-    if (coords[0] in 0f..view.width.toFloat() &&
-      coords[1] in 0f..view.height.toFloat() &&
+    // might not have been extracted (pointer might be in a child, but may be outside parent).
+    // Checked against the same bounds as the handlers above: a detector frame widened to cover a
+    // transformed child overflows its parent, but a pointer in the area the child vacated is not
+    // over its content and must not record the ancestors ahead of the views behind it.
+    if (boundsX in 0f..boundsView.width.toFloat() &&
+      boundsY in 0f..boundsView.height.toFloat() &&
       isViewOverflowingParent(view) &&
       extractAncestorHandlers(view, coords, pointerId, event)
     ) {
