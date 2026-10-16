@@ -1,5 +1,6 @@
 import { cleanup, render } from '@testing-library/react-native';
 import React from 'react';
+import type { ViewProps } from 'react-native';
 import { findNodeHandle, View } from 'react-native';
 
 import {
@@ -59,6 +60,41 @@ describe('VirtualDetector', () => {
       'VirtualGestureDetector must be a descendant of an InterceptingGestureDetector'
     );
   });
+
+  test('virtual detector reports a child that swallows the ref', () => {
+    const consoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+
+    function SwallowsRef({ style }: { style?: ViewProps['style'] }) {
+      return <View style={style} />;
+    }
+
+    function VirtualDetectorSwallowedRef() {
+      const tap = useTapGesture({});
+      return (
+        <GestureHandlerRootView>
+          <InterceptingGestureDetector>
+            <VirtualDetector gesture={tap}>
+              <SwallowsRef />
+            </VirtualDetector>
+          </InterceptingGestureDetector>
+        </GestureHandlerRootView>
+      );
+    }
+
+    const screen = render(<VirtualDetectorSwallowedRef />);
+    screen.rerender(<VirtualDetectorSwallowedRef />);
+
+    expect(consoleError).toHaveBeenCalledTimes(1);
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'VirtualGestureDetector could not attach to its child (SwallowsRef)'
+      )
+    );
+    consoleError.mockRestore();
+  });
+
   test('virtual detector does not handle animated events', () => {
     (findNodeHandle as jest.Mock).mockReturnValue(123);
 
