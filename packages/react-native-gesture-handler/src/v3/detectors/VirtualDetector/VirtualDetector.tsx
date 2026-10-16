@@ -77,19 +77,12 @@ export function VirtualDetector<
 
   useNativeGestureRole(viewRef, props.children);
 
-  // Dev-only: a host view under Wrap while the child never handed one back
-  // means the child swallowed the ref. A child with no host view yet is left alone.
-  const wrapRef = useRef<Wrap | null>(null);
+  // Dev-only: no host instance after a commit means the child did not hand
+  // its `ref` to one. A child that renders null first is reported as well.
   const reportedRef = useRef(false);
 
   useEffect(() => {
-    if (
-      !__DEV__ ||
-      reportedRef.current ||
-      viewRef.current ||
-      wrapRef.current === null ||
-      !findNodeHandle(wrapRef.current)
-    ) {
+    if (!__DEV__ || reportedRef.current || viewRef.current) {
       return;
     }
 
@@ -158,14 +151,5 @@ export function VirtualDetector<
 
   useGestureRelationsUpdater(props.gesture);
 
-  // The web Wrap is a plain element around the child, so its ref is the view.
-  if (Platform.OS === 'web') {
-    return <Wrap ref={handleRef}>{props.children}</Wrap>;
-  }
-
-  return (
-    <Wrap ref={wrapRef} hostRef={handleRef}>
-      {props.children}
-    </Wrap>
-  );
+  return <Wrap ref={handleRef}>{props.children}</Wrap>;
 }
