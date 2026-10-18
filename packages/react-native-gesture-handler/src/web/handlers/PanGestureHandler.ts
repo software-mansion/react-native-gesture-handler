@@ -304,7 +304,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected override onPointerMove(event: AdaptedEvent): void {
+  private trackMove(event: AdaptedEvent): void {
     this.tracker.track(event);
     this.stylusData = event.stylusData;
 
@@ -312,8 +312,31 @@ export default class PanGestureHandler extends GestureHandler {
     this.updateVelocity(event.pointerId);
 
     this.checkBegan();
+  }
+
+  protected override onPointerMove(event: AdaptedEvent): void {
+    this.trackMove(event);
 
     super.onPointerMove(event);
+  }
+
+  // The move that brings the pointer back into the view.
+  protected override onPointerEnter(event: AdaptedEvent): void {
+    this.trackMove(event);
+
+    this.tryToSendMoveEvent(false, event);
+  }
+
+  // The move that takes the pointer out of the view.
+  protected override onPointerLeave(event: AdaptedEvent): void {
+    if (this.shouldCancelWhenOutside) {
+      super.onPointerLeave(event);
+      return;
+    }
+
+    this.trackMove(event);
+
+    this.tryToSendMoveEvent(true, event);
   }
 
   protected override onPointerOutOfBounds(event: AdaptedEvent): void {
@@ -321,13 +344,7 @@ export default class PanGestureHandler extends GestureHandler {
       return;
     }
 
-    this.tracker.track(event);
-    this.stylusData = event.stylusData;
-
-    this.updateLastCoords();
-    this.updateVelocity(event.pointerId);
-
-    this.checkBegan();
+    this.trackMove(event);
 
     if (this.state === State.ACTIVE) {
       super.onPointerOutOfBounds(event);
