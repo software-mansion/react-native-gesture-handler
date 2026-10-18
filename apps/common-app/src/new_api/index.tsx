@@ -35,6 +35,7 @@ import PinchExample from './simple/pinch';
 import RotationExample from './simple/rotation';
 import TapExample from './simple/tap';
 import KeyboardShouldPersistTapsExample from './tests/keyboardShouldPersistTaps';
+import MovedDetectorExample from './tests/movedDetector';
 import NativeInterceptCancellationExample from './tests/nativeInterceptCancellation';
 import NestedPressablesExample from './tests/nestedPressables';
 import NestedRootViewExample from './tests/nestedRootView';
@@ -128,6 +129,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       },
       { name: 'Pointer Type', component: PointerTypeExample },
       { name: 'Reattaching', component: ReattachingExample },
+      { name: 'Moved detector', component: MovedDetectorExample },
       { name: 'Modal with Nested Root View', component: NestedRootViewExample },
       { name: 'Nested pressables', component: NestedPressablesExample },
       { name: 'Nested touchables', component: NestedTouchablesExample },

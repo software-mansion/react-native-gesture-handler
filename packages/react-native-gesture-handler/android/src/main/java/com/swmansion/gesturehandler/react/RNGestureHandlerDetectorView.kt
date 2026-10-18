@@ -1,6 +1,8 @@
 package com.swmansion.gesturehandler.react
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
 import com.facebook.react.bridge.ReadableArray
@@ -31,6 +33,17 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   // intercepting ancestor reuses the intercepted event, so it matches that event's time.
   private var lastNativeCancelTime = -1L
 
+  // Fabric moves a view (a reorder, or reparenting when an ancestor stops being flattened) by
+  // removing it and adding it back within one mount, so the view is off the window only for that
+  // moment. Detaching right away would cancel a gesture in progress, so the detach waits until
+  // after the mount and is skipped if the view is back on the window by then.
+  private val mainHandler = Handler(Looper.getMainLooper())
+  private val detachIfStillDetached = Runnable {
+    if (!isAttachedToWindow) {
+      detachAllHandlers()
+    }
+  }
+
   data class VirtualChildren(val handlerTags: List<Int>, val viewTag: Int)
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
@@ -42,6 +55,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
+    mainHandler.removeCallbacks(detachIfStillDetached)
     if (moduleId != -1) {
       attachHandlers(handlersToAttach)
       attachVirtualChildren(virtualChildrenToAttach)
@@ -49,7 +63,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   override fun onDetachedFromWindow() {
-    detachAllHandlers()
+    mainHandler.post(detachIfStillDetached)
     super.onDetachedFromWindow()
   }
 
@@ -273,6 +287,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   fun detachAllHandlers() {
+    // A view dropped with a detach pending must not lose the handlers it gets when it's reused.
+    mainHandler.removeCallbacks(detachIfStillDetached)
     RNGestureHandlerModule.registries[moduleId]?.let { registry ->
       registry.cancelAllObservationsForOwner(this)
       for (tag in attachedHandlers) {
