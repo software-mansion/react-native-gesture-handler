@@ -123,6 +123,10 @@ open class GestureHandler {
   var pointerType: Int = POINTER_TYPE_OTHER
     private set
 
+  // Whether the current gesture is an activation no pointer drives, a confirm key's or an accessibility service's.
+  var isActivatedWithoutPointer = false
+    private set
+
   protected var mouseButton = 0
 
   // properties set and accessed only by the orchestrator
@@ -203,6 +207,7 @@ open class GestureHandler {
     Arrays.fill(trackedPointerIDs, -1)
     trackedPointersIDsCount = 0
     state = STATE_UNDETERMINED
+    isActivatedWithoutPointer = false
     this.view = view
     this.orchestrator = orchestrator
 
@@ -885,6 +890,7 @@ open class GestureHandler {
   // An activation no pointer drives, a confirm key's or an accessibility service's click, reports no pointer
   // (https://www.w3.org/TR/pointerevents3/#event-attributes) and happens at the view's visible center.
   fun prepareActivationWithoutPointer(pointerType: Int) {
+    isActivatedWithoutPointer = true
     numberOfPointers = 0
     this.pointerType = pointerType
     val centerView = coordinateView ?: return

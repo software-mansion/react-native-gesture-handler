@@ -184,3 +184,7 @@ absoluteY: number;
 Y coordinate, expressed in points, of the same point relative to the window.
 
 <BaseEventData />
+
+:::note
+On Android, a hardware key's press and an accessibility service's click, which no pointer drives, activate the gesture with `numberOfPointers` set to `0`, and `pointerType` set to `PointerType.KEY` for the key and `PointerType.OTHER` for the service. On web, a key's press counts as one `PointerType.KEY` pointer.
+:::

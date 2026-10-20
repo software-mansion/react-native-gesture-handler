@@ -933,8 +933,7 @@ class RNGestureHandlerButtonViewManager :
       val moduleId = moduleId ?: return
       val managedHandlerTag = managedHandlerTag ?: return
 
-      val orchestrator =
-        RNGestureHandlerRootView.findGestureHandlerRootView(this)?.orchestrator ?: return
+      val orchestrator = findOrchestrator() ?: return
       val handler = RNGestureHandlerModule.registries[moduleId]?.getHandler(managedHandlerTag) ?: return
 
       if (!orchestrator.isHandlingTouch && handler.view != null) {
@@ -1503,7 +1502,13 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun drawableHotspotChanged(x: Float, y: Float) {
-      if (touchResponder == null || touchResponder === this || canBePressedWithoutPointer) {
+      val canMoveHotspot = if (clickWithoutPointer != null) {
+        canBePressedWithoutPointer
+      } else {
+        touchResponder == null || touchResponder === this
+      }
+
+      if (canMoveHotspot) {
         super.drawableHotspotChanged(x, y)
         // Forward hotspot to the ripple when it's drawn manually.
         selectableDrawable?.setHotspot(x, y)
@@ -1607,8 +1612,9 @@ class RNGestureHandlerButtonViewManager :
 
       val source = clickWithoutPointer
       if (source != null) {
+        val orchestrator = findOrchestrator() ?: return false
         // View sounds the click and reports it to accessibility services, so it does only for a press a handler took.
-        return activateNativeHandlers(source.pointerType) && super.performClick()
+        return orchestrator.activateNativeHandlersForView(this, source.pointerType) && super.performClick()
       }
 
       return if (soundResponder === this) {
@@ -1620,8 +1626,7 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
-    private fun activateNativeHandlers(pointerType: Int): Boolean =
-      RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this, pointerType) ?: false
+    private fun findOrchestrator() = RNGestureHandlerRootView.findGestureHandlerRootView(this)?.orchestrator
 
     override fun setEnabled(enabled: Boolean) {
       val changed = enabled != isEnabled
@@ -1651,16 +1656,28 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
-    // `performClick` refuses while a child is pressed, so the press that click would end is refused too.
+    // A press no pointer drives shows only where its click would activate the button: `performClick` refuses while a
+    // child is pressed, and a pointer pressing the button keeps its press, whose release clicks.
     private val canBePressedWithoutPointer: Boolean
-      get() = clickWithoutPointer != null && !isChildTouched()
+      get() = !isChildTouched() && findOrchestrator()?.canActivateNativeHandlersWithoutPointer(this) == true
+
+    // `View.onKeyUp` unpresses a pressed view before it clicks, which would end a pointer's press.
+    private val canBeUnpressedWithoutPointer: Boolean
+      get() = findOrchestrator()?.isViewPressedByPointer(this) != true
 
     override fun setPressed(pressed: Boolean) {
+      if (clickWithoutPointer != null) {
+        val canChangeWithoutPointer = if (pressed) canBePressedWithoutPointer else canBeUnpressedWithoutPointer
+        if (!canChangeWithoutPointer) {
+          return
+        }
+      }
+
       // button can be pressed alongside other button if both are non-exclusive and it doesn't have
       // any pressed children (to prevent pressing the parent when children is pressed).
       val canBePressedAlongsideOther = !exclusive && touchResponder?.exclusive != true && !isChildTouched()
 
-      if (!pressed || touchResponder === this || canBePressedAlongsideOther || canBePressedWithoutPointer) {
+      if (!pressed || touchResponder === this || canBePressedAlongsideOther || clickWithoutPointer != null) {
         // we set pressed state only for current responder or any non-exclusive button when responder
         // is null or non-exclusive, assuming it doesn't have pressed children, and for a press no
         // pointer drives, which competes with no touch

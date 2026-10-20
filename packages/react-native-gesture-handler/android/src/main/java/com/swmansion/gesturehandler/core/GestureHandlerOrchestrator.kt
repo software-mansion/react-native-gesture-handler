@@ -267,8 +267,8 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    // An activation whose handler tracks no pointer, a key's or an accessibility service's, shares no touch with the JS responder.
-    if (handler.cancelsJSResponder && handler.hasTrackedPointers) {
+    // An activation no pointer drives, a key's or an accessibility service's, shares no touch with the JS responder.
+    if (handler.cancelsJSResponder && !handler.isActivatedWithoutPointer) {
       onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
     }
 
@@ -958,7 +958,27 @@ class GestureHandlerOrchestrator(
   // be turned on and also confirm with the ViewConfigHelper implementation
   private fun isClipping(view: View) = view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
 
-  /** Activates the view's native handlers no pointer drives and answers whether one of them took the activation. */
+  /** Whether a pointer presses the view through one of its native handlers. */
+  fun isViewPressedByPointer(view: View): Boolean {
+    val registeredHandlers = handlerRegistry.getHandlersForView(view) ?: return false
+    return synchronized(registeredHandlers) {
+      registeredHandlers.any { isNativeHandlerTrackingPointer(it) }
+    }
+  }
+
+  /** Whether a press no pointer drives can activate the view's native handlers, so the view may show it as pressed. */
+  fun canActivateNativeHandlersWithoutPointer(view: View): Boolean {
+    val registeredHandlers = handlerRegistry.getHandlersForView(view) ?: return false
+    return synchronized(registeredHandlers) {
+      registeredHandlers.none { isNativeHandlerTrackingPointer(it) } &&
+        registeredHandlers.any { canBeginWithoutPointer(it) }
+    }
+  }
+
+  /**
+   * Activates the view's native handlers a press no pointer drives can begin, and answers whether one of them took
+   * the press.
+   */
   fun activateNativeHandlersForView(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER): Boolean {
     val registeredHandlers = handlerRegistry.getHandlersForView(view) ?: return false
     val handlers = obtainHandlerList()
@@ -968,10 +988,13 @@ class GestureHandlerOrchestrator(
     }
 
     try {
+      if (handlers.any { isNativeHandlerTrackingPointer(it) }) {
+        return false
+      }
+
       var activated = false
       for (handler in handlers) {
-        // A pointer's gesture presses on its release, which also frees the button's touch responder.
-        if (handler !is NativeViewGestureHandler || !handler.isEnabled || handler.hasTrackedPointers) {
+        if (!canBeginWithoutPointer(handler)) {
           continue
         }
 
@@ -992,6 +1015,16 @@ class GestureHandlerOrchestrator(
       recycleHandlerList(handlers)
     }
   }
+
+  // A pointer's gesture presses on its release, which also frees the button's touch responder.
+  private fun isNativeHandlerTrackingPointer(handler: GestureHandler) =
+    handler is NativeViewGestureHandler && handler.hasTrackedPointers
+
+  // A handler in a gesture of its own, one waiting on another gesture with its pointers lifted included, keeps that
+  // gesture's report, which `makeActive` dispatches once it may activate.
+  private fun canBeginWithoutPointer(handler: GestureHandler) = handler is NativeViewGestureHandler &&
+    handler.isEnabled &&
+    (handler.state == GestureHandler.STATE_UNDETERMINED || !gestureHandlers.contains(handler))
 
   companion object {
     // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
