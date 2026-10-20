@@ -1503,7 +1503,7 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun drawableHotspotChanged(x: Float, y: Float) {
-      if (touchResponder == null || touchResponder === this) {
+      if (touchResponder == null || touchResponder === this || canBePressedWithoutPointer) {
         super.drawableHotspotChanged(x, y)
         // Forward hotspot to the ripple when it's drawn manually.
         selectableDrawable?.setHotspot(x, y)
@@ -1651,12 +1651,14 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
+    // `performClick` refuses while a child is pressed, so the press that click would end is refused too.
+    private val canBePressedWithoutPointer: Boolean
+      get() = clickWithoutPointer != null && !isChildTouched()
+
     override fun setPressed(pressed: Boolean) {
       // button can be pressed alongside other button if both are non-exclusive and it doesn't have
       // any pressed children (to prevent pressing the parent when children is pressed).
       val canBePressedAlongsideOther = !exclusive && touchResponder?.exclusive != true && !isChildTouched()
-      // `performClick` refuses while a child is pressed, so the press that click would end is refused too.
-      val canBePressedWithoutPointer = clickWithoutPointer != null && !isChildTouched()
 
       if (!pressed || touchResponder === this || canBePressedAlongsideOther || canBePressedWithoutPointer) {
         // we set pressed state only for current responder or any non-exclusive button when responder

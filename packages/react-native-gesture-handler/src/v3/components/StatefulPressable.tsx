@@ -379,7 +379,7 @@ const StatefulPressable = (props: PressableProps) => {
         // tvOS drives this native gesture from the focus-engine Select press, and Android from a key
         // or an accessibility service with no pointer. The press state machine is touch-based and never
         // receives LONG_PRESS_TOUCHES_DOWN here, so bypass it and drive the press handlers directly.
-        // A focus-driven press has no coordinates, so skip the hit-slop bounds check entirely.
+        // The hit-slop bounds check tests where a pointer went down, and a press with no pointer has none.
         handlePressIn(toPressableEventWithoutPointer(event), true);
         return;
       }

@@ -424,11 +424,12 @@ open class GestureHandler {
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
     lastEventOffsetY = adaptedTransformedEvent.rawY - adaptedTransformedEvent.y
 
-    if (sourceEvent.action == MotionEvent.ACTION_DOWN ||
+    // The pointer beginning the gesture names its type; adapted, its event is `ACTION_DOWN`, a second finger's too.
+    if (adaptedSourceEvent.actionMasked == MotionEvent.ACTION_DOWN ||
       sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
       sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE
     ) {
-      setPointerType(sourceEvent)
+      setPointerType(adaptedSourceEvent)
     }
 
     if (sourceEvent.isHoverAction()) {

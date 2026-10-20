@@ -539,17 +539,30 @@ class GestureHandlerOrchestrator(
       return
     }
 
+    prepareForRecording(handler, view)
+    gestureHandlers.add(handler)
+  }
+
+  private fun recordHandlerForPointer(handler: GestureHandler, view: View, pointerId: Int) {
+    if (!gestureHandlers.contains(handler)) {
+      prepareForRecording(handler, view)
+
+      // The handlers already recorded compete with this one for the pointer's touch.
+      if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
+        handler.cancel()
+      }
+
+      gestureHandlers.add(handler)
+    }
+
+    handler.startTrackingPointer(pointerId)
+  }
+
+  private fun prepareForRecording(handler: GestureHandler, view: View?) {
     handler.isActive = false
     handler.isAwaiting = false
     handler.activationIndex = Int.MAX_VALUE
     handler.prepare(view, this)
-
-    // The recorded handlers compete for the touch being dispatched; outside one, none competes with this handler.
-    if (isHandlingTouch && !handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
-      handler.cancel()
-    }
-
-    gestureHandlers.add(handler)
   }
 
   private fun isViewOverflowingParent(view: View): Boolean {
@@ -591,8 +604,7 @@ class GestureHandlerOrchestrator(
 
               if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
                 found = true
-                recordHandlerIfNotPresent(handler, parentViewGroup)
-                handler.startTrackingPointer(pointerId)
+                recordHandlerForPointer(handler, parentViewGroup, pointerId)
               }
             }
           }
@@ -656,8 +668,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          recordHandlerIfNotPresent(handler, view)
-          handler.startTrackingPointer(pointerId)
+          recordHandlerForPointer(handler, view, pointerId)
           found = true
         }
       }
@@ -693,8 +704,7 @@ class GestureHandlerOrchestrator(
                 continue
               }
 
-              recordHandlerIfNotPresent(handler, view)
-              handler.startTrackingPointer(pointerId)
+              recordHandlerForPointer(handler, view, pointerId)
               found = true
             }
           }
@@ -948,29 +958,39 @@ class GestureHandlerOrchestrator(
   // be turned on and also confirm with the ViewConfigHelper implementation
   private fun isClipping(view: View) = view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
 
-  /** Activates the view's native handlers and answers whether one of them took the activation. */
+  /** Activates the view's native handlers no pointer drives and answers whether one of them took the activation. */
   fun activateNativeHandlersForView(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER): Boolean {
-    var activated = false
-    handlerRegistry.getHandlersForView(view)?.forEach {
-      if (it !is NativeViewGestureHandler || !it.isEnabled) {
-        return@forEach
-      }
-      this.recordHandlerIfNotPresent(it, view)
-
-      if (!it.hasTrackedPointers) {
-        it.prepareActivationWithoutPointer(pointerType)
-      }
-
-      it.withMarkedAsInBounds {
-        it.begin()
-        if (it.state == GestureHandler.STATE_BEGAN || it.state == GestureHandler.STATE_ACTIVE) {
-          activated = true
-        }
-        it.activate()
-        it.end()
-      }
+    val registeredHandlers = handlerRegistry.getHandlersForView(view) ?: return false
+    val handlers = obtainHandlerList()
+    // Other threads attach and drop handlers under the list's lock; the activation's callbacks run outside it.
+    synchronized(registeredHandlers) {
+      handlers.addAll(registeredHandlers)
     }
-    return activated
+
+    try {
+      var activated = false
+      for (handler in handlers) {
+        // A pointer's gesture presses on its release, which also frees the button's touch responder.
+        if (handler !is NativeViewGestureHandler || !handler.isEnabled || handler.hasTrackedPointers) {
+          continue
+        }
+
+        recordHandlerIfNotPresent(handler, view)
+        handler.prepareActivationWithoutPointer(pointerType)
+
+        handler.withMarkedAsInBounds {
+          handler.begin()
+          if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE) {
+            activated = true
+          }
+          handler.activate()
+          handler.end()
+        }
+      }
+      return activated
+    } finally {
+      recycleHandlerList(handlers)
+    }
   }
 
   companion object {

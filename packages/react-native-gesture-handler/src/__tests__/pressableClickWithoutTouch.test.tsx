@@ -152,6 +152,9 @@ afterEach(() => {
 const PRESS_RETENTION_OFFSET = 20;
 const RETENTION_ZONE_TOUCH = { x: 130, y: 22 };
 
+// A hit slop that takes the button's left half, center included, out of what a pointer can press.
+const CENTER_EXCLUDING_HIT_SLOP = { left: -(BUTTON_CENTER_TOUCH.x + 10) };
+
 type PressHandler = jest.Mock<void, [PressableEvent]>;
 
 type PressHandlers = {
@@ -160,7 +163,8 @@ type PressHandlers = {
   onPressOut: PressHandler;
 };
 
-type EngineProps = PressHandlers & Pick<PressableProps, 'pressRetentionOffset'>;
+type EngineProps = PressHandlers &
+  Pick<PressableProps, 'hitSlop' | 'pressRetentionOffset'>;
 
 type PressableContainer = (pressable: React.ReactElement) => React.ReactElement;
 
@@ -495,6 +499,102 @@ describe.each([
     driver.touchDownOnPressGesture(RETENTION_ZONE_TOUCH);
     driver.changeNativeGestureState(withTouch(ACTIVATED));
     driver.changeNativeGestureState(withTouch(ENDED));
+
+    expect(handlers.onPressIn).not.toHaveBeenCalled();
+    expect(handlers.onPress).not.toHaveBeenCalled();
+  });
+
+  test('runs onPress once for a click without a touch before its layout is measured', async () => {
+    const handlers = createPressHandlers();
+    await driver.render(handlers);
+
+    driver.fireNativeGesture(CLICK_WITHOUT_TOUCH);
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test('runs onPress once for a click without a touch whose hit slop leaves out its center', async () => {
+    const handlers = createPressHandlers();
+    await driver.render({ ...handlers, hitSlop: CENTER_EXCLUDING_HIT_SLOP });
+    layOutButton();
+
+    driver.fireNativeGesture(CLICK_WITHOUT_TOUCH);
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+});
+
+// The default `Pressable` presses from the press events its native button sends.
+const buttonEvent = (numberOfPointers: number, pointerType: PointerType) => ({
+  nativeEvent: {
+    pointerInside: true,
+    ...POSITION_WITHOUT_POINTER,
+    numberOfPointers,
+    pointerType,
+  },
+});
+
+const pressButton = (event: ReturnType<typeof buttonEvent>) => {
+  const button = screen.getByTestId('pressable');
+  for (const eventName of [
+    'buttonPressIn',
+    'buttonPressOut',
+    'buttonPress',
+    'buttonInteractionFinished',
+  ]) {
+    fireEvent(button, eventName, event);
+  }
+};
+
+const renderDefaultPressable = (props: EngineProps) =>
+  renderSettled(
+    <GestureHandlerRootView>
+      <Pressable testID="pressable" {...props}>
+        <Text>Press Me</Text>
+      </Pressable>
+    </GestureHandlerRootView>
+  );
+
+describe('Pressable on Android', () => {
+  test('runs onPress once for a click without a touch before its layout is measured', async () => {
+    const handlers = createPressHandlers();
+    await renderDefaultPressable(handlers);
+
+    pressButton(buttonEvent(0, PointerType.KEY));
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test('runs onPress once for a click without a touch whose hit slop leaves out its center', async () => {
+    const handlers = createPressHandlers();
+    await renderDefaultPressable({
+      ...handlers,
+      hitSlop: CENTER_EXCLUDING_HIT_SLOP,
+    });
+    layOutButton();
+
+    pressButton(buttonEvent(0, PointerType.KEY));
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test('runs nothing for a touch at its center when its hit slop leaves the center out', async () => {
+    const handlers = createPressHandlers();
+    await renderDefaultPressable({
+      ...handlers,
+      hitSlop: CENTER_EXCLUDING_HIT_SLOP,
+    });
+    layOutButton();
+
+    pressButton(buttonEvent(1, PointerType.TOUCH));
 
     expect(handlers.onPressIn).not.toHaveBeenCalled();
     expect(handlers.onPress).not.toHaveBeenCalled();

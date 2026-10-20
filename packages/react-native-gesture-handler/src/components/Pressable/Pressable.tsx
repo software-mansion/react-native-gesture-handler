@@ -155,8 +155,9 @@ const LegacyPressable = (props: LegacyPressableProps) => {
   }, [cancelDelayedPress, cancelLongPress]);
 
   const handlePressIn = useCallback(
-    (event: PressableEvent) => {
+    (event: PressableEvent, skipBoundsCheck = false) => {
       if (
+        !skipBoundsCheck &&
         !isTouchWithinInset(
           dimensions.current,
           normalizedHitSlop,
@@ -306,7 +307,8 @@ const LegacyPressable = (props: LegacyPressableProps) => {
         .onBegin((event) => {
           if (isActivatedWithoutPointer(event)) {
             // The press state machine is touch-based and never receives LONG_PRESS_TOUCHES_DOWN here.
-            handlePressIn(gestureToPressableEvent(event));
+            // The hit-slop bounds check tests where a pointer went down, and a press with no pointer has none.
+            handlePressIn(gestureToPressableEvent(event), true);
             return;
           }
           if (Platform.OS === 'android' && isScreenReaderEnabled) {

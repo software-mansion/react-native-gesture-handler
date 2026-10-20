@@ -151,4 +151,36 @@ pointerInside: boolean;
 
 `true` if the gesture was performed inside the containing view, `false` otherwise.
 
+### x
+
+```ts
+x: number;
+```
+
+X coordinate, expressed in points, of the pointer relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). A key's press on Android and web, and an accessibility service's click on Android, report the view's center; iOS and tvOS report `0` for a press without a touch.
+
+### y
+
+```ts
+y: number;
+```
+
+Y coordinate, expressed in points, of the pointer relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). A key's press on Android and web, and an accessibility service's click on Android, report the view's center; iOS and tvOS report `0` for a press without a touch.
+
+### absoluteX
+
+```ts
+absoluteX: number;
+```
+
+X coordinate, expressed in points, of the same point relative to the window.
+
+### absoluteY
+
+```ts
+absoluteY: number;
+```
+
+Y coordinate, expressed in points, of the same point relative to the window.
+
 <BaseEventData />
