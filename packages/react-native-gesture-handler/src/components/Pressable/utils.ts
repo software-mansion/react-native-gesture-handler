@@ -1,4 +1,5 @@
 import type { Insets } from 'react-native';
+import { Platform } from 'react-native';
 
 import type {
   GestureStateChangeEvent,
@@ -8,8 +9,13 @@ import type {
 import type {
   HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
 } from '../../handlers/GestureHandlerEventPayload';
-import type { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
+import type {
+  HoverGestureEvent,
+  LongPressGestureEvent,
+  NativeGestureEvent,
+} from '../../v3';
 import type { HoverGestureActiveEvent } from '../../v3/hooks';
 import type {
   InnerPressableEvent,
@@ -47,14 +53,19 @@ const touchDataToPressEvent = (
   changedTouches: [], // Always empty - legacy compatibility
 });
 
+type PositionedGestureEvent =
+  | GestureStateChangeEvent<
+      | HoverGestureHandlerEventPayload
+      | LongPressGestureHandlerEventPayload
+      | NativeViewGestureHandlerPayload
+    >
+  | HoverGestureEvent
+  | HoverGestureActiveEvent
+  | LongPressGestureEvent
+  | NativeGestureEvent;
+
 const gestureToPressEvent = (
-  event:
-    | GestureStateChangeEvent<
-        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-      >
-    | HoverGestureEvent
-    | HoverGestureActiveEvent
-    | LongPressGestureEvent,
+  event: PositionedGestureEvent,
   timestamp: number,
   targetId: number
 ): InnerPressableEvent => ({
@@ -80,13 +91,7 @@ const isTouchWithinInset = (
   (touch?.locationY ?? 0) > -(inset.top ?? 0);
 
 const gestureToPressableEvent = (
-  event:
-    | GestureStateChangeEvent<
-        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-      >
-    | HoverGestureEvent
-    | HoverGestureActiveEvent
-    | LongPressGestureEvent
+  event: PositionedGestureEvent
 ): PressableEvent => {
   const timestamp = Date.now();
 
@@ -178,10 +183,16 @@ const viewCenterToPressableEvent = (
   };
 };
 
+// Android reports a key's or an accessibility service's activation of the native gesture with no pointer
+// (https://www.w3.org/TR/pointerevents3/#event-attributes).
+const isActivatedWithoutPointer = (event: { numberOfPointers: number }) =>
+  Platform.OS === 'android' && event.numberOfPointers === 0;
+
 export {
   addInsets,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
+  isActivatedWithoutPointer,
   isTouchWithinInset,
   numberAsInset,
   viewCenterToPressableEvent,

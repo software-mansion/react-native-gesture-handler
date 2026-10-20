@@ -9,6 +9,7 @@ import { Keyboard, TextInput, View } from 'react-native';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
+import { PointerType } from '../PointerType';
 import { State } from '../State';
 import { Pressable, RectButton, ScrollView, Touchable } from '../v3/components';
 import { GestureDetector } from '../v3/detectors';
@@ -50,6 +51,15 @@ const fireNativeTap = (testID: string) => {
   fireEvent(button, 'buttonPress', buttonEvent());
   fireEvent(button, 'buttonInteractionFinished', buttonEvent());
 };
+
+// A press no pointer drives, such as a hardware Enter's, reports no pointer.
+const buttonEventWithoutPointer = () => ({
+  nativeEvent: {
+    ...buttonEvent().nativeEvent,
+    numberOfPointers: 0,
+    pointerType: PointerType.KEY,
+  },
+});
 
 describe('[API v3] Hooks', () => {
   test('Pan gesture', () => {
@@ -477,6 +487,9 @@ describe('[API v3] Components', () => {
       keyboardShouldPersistTaps,
     });
 
+    // A tap is driven by one pointer.
+    const ONE_POINTER = 1;
+
     // The drop requires a focused RN TextInput to blur.
     const focusInput = () =>
       jest
@@ -497,21 +510,35 @@ describe('[API v3] Components', () => {
       await act(flushImmediate);
 
       // Keyboard not shown yet -> nothing to dismiss.
-      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(false);
+      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
+        false
+      );
 
       showKeyboard(addListenerSpy);
 
       // `never` (and its default, undefined) drops the tap; the others never do.
-      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(true);
-      expect(isKeyboardDismissingTap(makeContext(undefined))).toBe(true);
-      expect(isKeyboardDismissingTap(makeContext('handled'))).toBe(false);
-      expect(isKeyboardDismissingTap(makeContext('always'))).toBe(false);
+      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
+        true
+      );
+      expect(isKeyboardDismissingTap(makeContext(undefined), ONE_POINTER)).toBe(
+        true
+      );
+      expect(isKeyboardDismissingTap(makeContext('handled'), ONE_POINTER)).toBe(
+        false
+      );
+      expect(isKeyboardDismissingTap(makeContext('always'), ONE_POINTER)).toBe(
+        false
+      );
       // Outside an RNGH ScrollView there is no context, so nothing is dropped.
-      expect(isKeyboardDismissingTap(null)).toBe(false);
+      expect(isKeyboardDismissingTap(null, ONE_POINTER)).toBe(false);
+      // A key or an accessibility service presses without a pointer, which is no tap.
+      expect(isKeyboardDismissingTap(makeContext('never'), 0)).toBe(false);
 
       // The verdict must survive the dismissal blurring the input mid-tap.
       focusSpy.mockReturnValue(undefined);
-      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(true);
+      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
+        true
+      );
 
       addListenerSpy.mockRestore();
       focusSpy.mockRestore();
@@ -532,12 +559,16 @@ describe('[API v3] Components', () => {
       showKeyboard(addListenerSpy);
 
       expect(TextInput.State.currentlyFocusedInput()).toBeNull();
-      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(false);
+      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
+        false
+      );
 
       // Focus moving to an RN input while the keyboard stays up makes the
       // tap dismissible again.
       const focusSpy = focusInput();
-      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(true);
+      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
+        true
+      );
 
       addListenerSpy.mockRestore();
       focusSpy.mockRestore();
@@ -556,7 +587,9 @@ describe('[API v3] Components', () => {
       // A detached/floating keyboard reports height 0 - nothing to dismiss.
       showKeyboard(addListenerSpy, 0);
 
-      expect(isKeyboardDismissingTap(makeContext('never'))).toBe(false);
+      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
+        false
+      );
 
       addListenerSpy.mockRestore();
     });
@@ -602,6 +635,49 @@ describe('[API v3] Components', () => {
       expect(onPress).not.toHaveBeenCalled();
       expect(onPressIn).not.toHaveBeenCalled();
       expect(onPressOut).not.toHaveBeenCalled();
+      addListenerSpy.mockRestore();
+      focusSpy.mockRestore();
+    });
+
+    test('Touchable fires every press callback for a press no pointer drives while the keyboard is visible (never)', async () => {
+      const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+      const focusSpy = focusInput();
+      const onPress = jest.fn();
+      const onPressIn = jest.fn();
+      const onPressOut = jest.fn();
+
+      render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="never">
+            <Touchable
+              testID="touchable"
+              onPress={onPress}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+            />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+      await act(flushImmediate);
+      showKeyboard(addListenerSpy);
+      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
+        true
+      );
+
+      // A key or an accessibility service dismisses no keyboard, so the press is not the dismissing tap.
+      const button = screen.getByTestId('touchable');
+      fireEvent(button, 'buttonPressIn', buttonEventWithoutPointer());
+      fireEvent(button, 'buttonPressOut', buttonEventWithoutPointer());
+      fireEvent(button, 'buttonPress', buttonEventWithoutPointer());
+      fireEvent(
+        button,
+        'buttonInteractionFinished',
+        buttonEventWithoutPointer()
+      );
+
+      expect(onPressIn).toHaveBeenCalledTimes(1);
+      expect(onPressOut).toHaveBeenCalledTimes(1);
+      expect(onPress).toHaveBeenCalledTimes(1);
       addListenerSpy.mockRestore();
       focusSpy.mockRestore();
     });

@@ -267,7 +267,8 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    if (handler.cancelsJSResponder) {
+    // An activation reporting no pointer, a key's or an accessibility service's, shares no touch with the JS responder.
+    if (handler.cancelsJSResponder && handler.numberOfPointers > 0) {
       onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
     }
 
@@ -946,12 +947,16 @@ class GestureHandlerOrchestrator(
   // be turned on and also confirm with the ViewConfigHelper implementation
   private fun isClipping(view: View) = view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
 
-  fun activateNativeHandlersForView(view: View) {
+  fun activateNativeHandlersForView(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER) {
     handlerRegistry.getHandlersForView(view)?.forEach {
-      if (it !is NativeViewGestureHandler) {
+      if (it !is NativeViewGestureHandler || !it.isEnabled) {
         return@forEach
       }
       this.recordHandlerIfNotPresent(it, view)
+
+      if (!it.hasTrackedPointers) {
+        it.prepareActivationWithoutPointer(pointerType)
+      }
 
       it.withMarkedAsInBounds {
         it.begin()

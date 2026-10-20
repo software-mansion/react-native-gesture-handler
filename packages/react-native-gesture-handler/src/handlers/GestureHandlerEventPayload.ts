@@ -67,6 +67,18 @@ export type NativeViewGestureHandlerPayload = {
    * True if gesture was performed inside of containing view, false otherwise.
    */
   pointerInside: boolean;
+
+  /** X of the pointer, or of the view's center when none drives the gesture, relative to the view. */
+  x: number;
+
+  /** Y of the pointer, or of the view's center when none drives the gesture, relative to the view. */
+  y: number;
+
+  /** X of the same point relative to the window. */
+  absoluteX: number;
+
+  /** Y of the same point relative to the window. */
+  absoluteY: number;
 };
 
 export type PanGestureHandlerEventPayload = {

@@ -195,8 +195,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     return shouldIntercept
   }
 
-  fun activateNativeHandlers(view: View) {
-    orchestrator?.activateNativeHandlersForView(view)
+  fun activateNativeHandlers(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER) {
+    orchestrator?.activateNativeHandlersForView(view, pointerType)
   }
 
   fun recordHandlerIfNotPresent(handler: GestureHandler) {

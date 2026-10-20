@@ -40,9 +40,11 @@ export function setKeyboardVisibility(visible: boolean) {
 }
 
 export function isKeyboardDismissingTap(
-  jsResponderContext: JSResponderContextValue | null | undefined
+  jsResponderContext: JSResponderContextValue | null | undefined,
+  numberOfPointers: number
 ): boolean {
-  if (jsResponderContext == null) {
+  // Only a tap dismisses the keyboard; a key or an accessibility service presses without a pointer.
+  if (jsResponderContext == null || numberOfPointers === 0) {
     return false;
   }
 

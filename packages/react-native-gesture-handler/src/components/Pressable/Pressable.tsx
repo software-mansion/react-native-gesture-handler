@@ -32,6 +32,7 @@ import {
   addInsets,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
+  isActivatedWithoutPointer,
   isTouchWithinInset,
   numberAsInset,
   viewCenterToPressableEvent,
@@ -302,7 +303,12 @@ const LegacyPressable = (props: LegacyPressableProps) => {
             handlePressOut(pressableEvent, false);
           }
         })
-        .onBegin(() => {
+        .onBegin((event) => {
+          if (isActivatedWithoutPointer(event)) {
+            // The press state machine is touch-based and never receives LONG_PRESS_TOUCHES_DOWN here.
+            handlePressIn(gestureToPressableEvent(event));
+            return;
+          }
           if (Platform.OS === 'android' && isScreenReaderEnabled) {
             stateMachine.handleEvent(
               StateMachineEvent.NATIVE_BEGIN,
@@ -318,7 +324,13 @@ const LegacyPressable = (props: LegacyPressableProps) => {
             stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
           }
         })
-        .onFinalize((_event, success) => {
+        .onFinalize((event, success) => {
+          if (isActivatedWithoutPointer(event)) {
+            handlePressOut(gestureToPressableEvent(event), success);
+            handleFinalize();
+            return;
+          }
+
           if (Platform.OS !== 'web') {
             // On Web we use LongPress().onFinalize() instead of Native().onFinalize(),
             // as Native cancels on mouse move, and LongPress does not.
@@ -334,7 +346,13 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           }
         })
         .shouldActivateOnStart(Platform.OS === 'web'),
-    [stateMachine, handlePressOut, handleFinalize, isScreenReaderEnabled]
+    [
+      stateMachine,
+      handlePressIn,
+      handlePressOut,
+      handleFinalize,
+      isScreenReaderEnabled,
+    ]
   );
 
   const isPressableEnabled = disabled !== true;

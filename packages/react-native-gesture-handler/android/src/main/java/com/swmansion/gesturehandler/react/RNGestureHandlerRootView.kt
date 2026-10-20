@@ -85,8 +85,8 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
 
-  fun activateNativeHandlers(view: View) {
-    rootHelper?.activateNativeHandlers(view)
+  fun activateNativeHandlers(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER) {
+    rootHelper?.activateNativeHandlers(view, pointerType)
   }
 
   fun onNativeTouchCancelled() {

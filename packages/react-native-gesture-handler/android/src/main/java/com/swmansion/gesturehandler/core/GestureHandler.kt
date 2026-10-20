@@ -881,6 +881,21 @@ open class GestureHandler {
     isWithinBounds = false
   }
 
+  // An activation no pointer drives, a confirm key's or an accessibility service's click, reports no pointer
+  // (https://www.w3.org/TR/pointerevents3/#event-attributes) and happens at the view's visible center.
+  fun prepareActivationWithoutPointer(pointerType: Int) {
+    numberOfPointers = 0
+    this.pointerType = pointerType
+    val centerView = coordinateView ?: return
+    lastAbsolutePositionX = centerView.width / 2f
+    lastAbsolutePositionY = centerView.height / 2f
+    tempPoint[0] = lastAbsolutePositionX
+    tempPoint[1] = lastAbsolutePositionY
+    mapPointToScreen(centerView, tempPoint)
+    lastEventOffsetX = tempPoint[0] - lastAbsolutePositionX
+    lastEventOffsetY = tempPoint[1] - lastAbsolutePositionY
+  }
+
   private fun setPointerType(event: MotionEvent) {
     pointerType = event.getPointerType(event.actionIndex)
   }
@@ -1044,6 +1059,9 @@ open class GestureHandler {
     const val POINTER_TYPE_KEY = 3
     const val POINTER_TYPE_OTHER = 4
     private const val MAX_POINTERS_COUNT = 17
+    private val tempPoint = FloatArray(2)
+    private val tempRootOrigin = FloatArray(2)
+    private val tempLocationOnScreen = IntArray(2)
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
@@ -1061,6 +1079,30 @@ open class GestureHandler {
 
     private var nextEventCoalescingKey: Short = 0
     private fun hitSlopSet(value: Float): Boolean = !java.lang.Float.isNaN(value)
+
+    // Maps a point in the view's coordinates to the screen through every ancestor's transform and scroll, the way
+    // View.getLocationOnScreen maps the view's origin; the root view's own screen location carries the window's offset.
+    private fun mapPointToScreen(view: View, point: FloatArray) {
+      var current = view
+      while (true) {
+        if (!current.matrix.isIdentity) {
+          current.matrix.mapPoints(point)
+        }
+        val parent = current.parent as? View ?: break
+        point[0] += current.left - parent.scrollX
+        point[1] += current.top - parent.scrollY
+        current = parent
+      }
+      // `getLocationOnScreen` maps the root view's origin through the same matrix the point took.
+      tempRootOrigin[0] = 0f
+      tempRootOrigin[1] = 0f
+      if (!current.matrix.isIdentity) {
+        current.matrix.mapPoints(tempRootOrigin)
+      }
+      current.getLocationOnScreen(tempLocationOnScreen)
+      point[0] += tempLocationOnScreen[0] - tempRootOrigin[0]
+      point[1] += tempLocationOnScreen[1] - tempRootOrigin[1]
+    }
 
     fun stateToString(state: Int): String? {
       when (state) {

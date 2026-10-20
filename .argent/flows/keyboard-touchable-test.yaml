@@ -1,0 +1,49 @@
+# Android only: a hardware Enter or Space presses the focused touchable. Tab
+# moves focus in view order, so the second Tab reaches the level 4 touchable.
+steps:
+  - echo: Launching Expo Example
+  - launch: com.example.ExpoExample
+  - await: { visible: { text: "Empty Example" }, timeout: 15000 }
+  - when: { platform: android }
+    steps:
+      - echo: "On the Home list, search for the nested touchables example"
+      - type: { text: "nested touchables", into: { id: "search-examples" } }
+      - await: { visible: { text: "Nested touchables" } }
+      - echo: "Tap the example to open it"
+      - tap: { text: "Nested touchables" }
+      - await: { visible: { id: "level-4" } }
+      - await: { idle: true }
+
+      - echo: "Clear console"
+      - await: { visible: { id: "open-console-button" } }
+      - tap: { id: "open-console-button" }
+      - await: { visible: { id: "clear-console-button" } }
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Tab twice to focus the level 4 touchable, then press Enter and Space"
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: enter }
+      - tool: keyboard
+        args: { key: space }
+
+      - echo: "Each key presses level 4 once and no other level logs"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: { matches: '^1\. L4 onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^2\. L4 onPressOut$' } } }
+      - assert: { visible: { text: { matches: '^3\. L4 onPress$' } } }
+      - assert: { visible: { text: { matches: '^4\. L4 onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^5\. L4 onPressOut$' } } }
+      - assert: { visible: { text: { matches: '^6\. L4 onPress$' } } }
+      - assert: { hidden: { text: "L1 on" } }
+      - assert: { hidden: { text: "L2 on" } }
+      - assert: { hidden: { text: "L3 on" } }
+      - assert: { hidden: { text: "7. L" } }

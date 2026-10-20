@@ -15,6 +15,7 @@ import android.graphics.drawable.RippleDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.os.Build
+import android.os.Bundle
 import android.os.SystemClock
 import android.util.TypedValue
 import android.view.Choreographer
@@ -610,7 +611,7 @@ class RNGestureHandlerButtonViewManager :
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
-    private var receivedKeyEvent = false
+    private var clickWithoutPointer: ClickWithoutPointer? = null
     private var currentAnimator: AnimatorSet? = null
     private var underlayDrawable: PaintDrawable? = null
     private var pressInTimestamp = 0L
@@ -681,6 +682,16 @@ class RNGestureHandlerButtonViewManager :
     private inline fun withManagedHandlerUpdate(block: () -> Unit) {
       block()
       managedHandlerNeedsUpdate = true
+    }
+
+    private inline fun withClickWithoutPointer(source: ClickWithoutPointer, block: () -> Boolean): Boolean {
+      val enclosingSource = clickWithoutPointer
+      clickWithoutPointer = source
+      try {
+        return block()
+      } finally {
+        clickWithoutPointer = enclosingSource
+      }
     }
 
     fun setOverflow(overflow: String?) {
@@ -1570,33 +1581,47 @@ class RNGestureHandlerButtonViewManager :
       return false
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-      receivedKeyEvent = true
-      return super.onKeyUp(keyCode, event)
+    // View presses a focused view on a confirm key's down and clicks it on the key's up, from inside these calls
+    // (https://developer.android.com/reference/android/view/View#onKeyUp(int,%20android.view.KeyEvent)).
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = withClickWithoutPointer(ClickWithoutPointer.Key) {
+      super.onKeyDown(keyCode, event)
     }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean = withClickWithoutPointer(ClickWithoutPointer.Key) {
+      super.onKeyUp(keyCode, event)
+    }
+
+    // An accessibility service's click action reaches the view through this call, with touch exploration on or off
+    // (https://developer.android.com/reference/android/view/View#performAccessibilityAction(int,%20android.os.Bundle)).
+    override fun performAccessibilityAction(action: Int, arguments: Bundle?): Boolean =
+      withClickWithoutPointer(ClickWithoutPointer.AccessibilityAction) {
+        super.performAccessibilityAction(action, arguments)
+      }
 
     override fun performClick(): Boolean {
       // don't perform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
-      return if (!isChildTouched()) {
-        // Don't activate native handlers when isPressed is true (motion events are passing through)
-        if (context.isScreenReaderOn() && !isPressed) {
-          RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
-        } else if (receivedKeyEvent) {
-          RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
-          receivedKeyEvent = false
-        }
+      if (isChildTouched()) {
+        return false
+      }
 
-        if (soundResponder === this) {
-          tryFreeingResponder()
-          soundResponder = null
-          super.performClick()
-        } else {
-          false
-        }
+      val source = clickWithoutPointer
+      if (source != null) {
+        activateNativeHandlers(source.pointerType)
+        return super.performClick()
+      }
+
+      return if (soundResponder === this) {
+        tryFreeingResponder()
+        soundResponder = null
+        super.performClick()
       } else {
         false
       }
+    }
+
+    private fun activateNativeHandlers(pointerType: Int) {
+      RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this, pointerType)
     }
 
     override fun setEnabled(enabled: Boolean) {
@@ -1631,10 +1656,13 @@ class RNGestureHandlerButtonViewManager :
       // button can be pressed alongside other button if both are non-exclusive and it doesn't have
       // any pressed children (to prevent pressing the parent when children is pressed).
       val canBePressedAlongsideOther = !exclusive && touchResponder?.exclusive != true && !isChildTouched()
+      // `performClick` refuses while a child is pressed, so the press that click would end is refused too.
+      val canBePressedWithoutPointer = clickWithoutPointer != null && !isChildTouched()
 
-      if (!pressed || touchResponder === this || canBePressedAlongsideOther) {
+      if (!pressed || touchResponder === this || canBePressedAlongsideOther || canBePressedWithoutPointer) {
         // we set pressed state only for current responder or any non-exclusive button when responder
-        // is null or non-exclusive, assuming it doesn't have pressed children
+        // is null or non-exclusive, assuming it doesn't have pressed children, and for a press no
+        // pointer drives, which competes with no touch
         isTouched = pressed
         super.setPressed(pressed)
 
@@ -1701,6 +1729,13 @@ class RNGestureHandlerButtonViewManager :
       HoverIn,
       HoverOut,
       InteractionFinished,
+    }
+
+    // A click View makes with no pointer (https://www.w3.org/TR/pointerevents3/#event-attributes).
+    // It reports a key's pointer type, as web does for a key, or an unknown one; web also counts the key's pointer.
+    private enum class ClickWithoutPointer(val pointerType: Int) {
+      Key(GestureHandler.POINTER_TYPE_KEY),
+      AccessibilityAction(GestureHandler.POINTER_TYPE_OTHER),
     }
   }
 
