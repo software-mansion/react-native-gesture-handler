@@ -2,8 +2,8 @@ import { cleanup, render } from '@testing-library/react-native';
 import React from 'react';
 import { findNodeHandle, View } from 'react-native';
 
+import * as refreshesAnimatableRef from '../handlers/gestures/GestureDetector/refreshesAnimatableRef';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
-import * as reanimatedWrapper from '../handlers/gestures/reanimatedWrapper';
 import { Gesture, GestureDetector, GestureHandlerRootView } from '../index';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 
@@ -139,7 +139,7 @@ describe('Legacy GestureDetector ref forwarding', () => {
 
     beforeEach(() => {
       refreshSpy = jest.spyOn(
-        reanimatedWrapper,
+        refreshesAnimatableRef,
         'reanimatedRefreshesAnimatableRef'
       );
     });
