@@ -967,50 +967,53 @@ class GestureHandlerOrchestrator(
   }
 
   /** Whether a press no pointer drives can activate the view's native handlers, so the view may show it as pressed. */
-  fun canActivateNativeHandlersWithoutPointer(view: View): Boolean {
-    val registeredHandlers = handlerRegistry.getHandlersForView(view) ?: return false
-    return synchronized(registeredHandlers) {
-      registeredHandlers.none { isNativeHandlerTrackingPointer(it) } &&
-        registeredHandlers.any { canBeginWithoutPointer(it) }
-    }
-  }
+  fun canActivateNativeHandlersWithoutPointer(view: View): Boolean =
+    withHandlersReadyForActivationWithoutPointer(view) { handlers -> handlers.isNotEmpty() }
 
   /**
    * Activates the view's native handlers a press no pointer drives can begin, and answers whether one of them took
    * the press.
    */
-  fun activateNativeHandlersForView(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER): Boolean {
-    val registeredHandlers = handlerRegistry.getHandlersForView(view) ?: return false
-    val handlers = obtainHandlerList()
-    // Other threads attach and drop handlers under the list's lock; the activation's callbacks run outside it.
-    synchronized(registeredHandlers) {
-      handlers.addAll(registeredHandlers)
-    }
-
-    try {
-      if (handlers.any { isNativeHandlerTrackingPointer(it) }) {
-        return false
-      }
-
+  fun activateNativeHandlersForView(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER): Boolean =
+    withHandlersReadyForActivationWithoutPointer(view) { handlers ->
       var activated = false
       for (handler in handlers) {
-        if (!canBeginWithoutPointer(handler)) {
-          continue
-        }
-
         recordHandlerIfNotPresent(handler, view)
         handler.prepareActivationWithoutPointer(pointerType)
+        handler.begin()
+        handler.activate()
+        handler.end()
 
-        handler.withMarkedAsInBounds {
-          handler.begin()
-          if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE) {
-            activated = true
-          }
-          handler.activate()
-          handler.end()
+        // A handler waiting on another gesture has ended too; one a gesture it waits on cancelled took nothing.
+        if (handler.state == GestureHandler.STATE_END) {
+          activated = true
         }
       }
-      return activated
+      activated
+    }
+
+  // Hands the block the view's native handlers a press no pointer drives can begin, or none while a pointer presses
+  // the view through one of them. Other threads attach and drop handlers under the registry list's lock, so the block
+  // gets a snapshot taken under it and runs, with every callback it starts, outside it.
+  private inline fun <T> withHandlersReadyForActivationWithoutPointer(
+    view: View,
+    block: (handlers: List<GestureHandler>) -> T,
+  ): T {
+    val handlers = obtainHandlerList()
+    try {
+      handlerRegistry.getHandlersForView(view)?.let { registeredHandlers ->
+        synchronized(registeredHandlers) {
+          handlers.addAll(registeredHandlers)
+        }
+      }
+
+      if (handlers.any { isNativeHandlerTrackingPointer(it) }) {
+        handlers.clear()
+      } else {
+        handlers.retainAll { canBeginWithoutPointer(it) }
+      }
+
+      return block(handlers)
     } finally {
       recycleHandlerList(handlers)
     }

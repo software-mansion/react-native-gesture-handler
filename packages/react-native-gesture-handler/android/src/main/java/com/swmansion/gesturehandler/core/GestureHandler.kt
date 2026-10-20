@@ -881,16 +881,11 @@ open class GestureHandler {
     onReset()
   }
 
-  fun withMarkedAsInBounds(closure: () -> Unit) {
-    isWithinBounds = true
-    closure()
-    isWithinBounds = false
-  }
-
   // An activation no pointer drives, a confirm key's or an accessibility service's click, reports no pointer
-  // (https://www.w3.org/TR/pointerevents3/#event-attributes) and happens at the view's visible center.
+  // (https://www.w3.org/TR/pointerevents3/#event-attributes) and happens inside the view, at its visible center.
   fun prepareActivationWithoutPointer(pointerType: Int) {
     isActivatedWithoutPointer = true
+    isWithinBounds = true
     numberOfPointers = 0
     this.pointerType = pointerType
     val centerView = coordinateView ?: return
