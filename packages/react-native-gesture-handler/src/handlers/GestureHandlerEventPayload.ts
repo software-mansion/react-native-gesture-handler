@@ -68,10 +68,10 @@ export type NativeViewGestureHandlerPayload = {
    */
   pointerInside: boolean;
 
-  /** X of the pointer, or of the view's center when none drives the gesture, relative to the view. */
+  /** X of the pointer relative to the view; with none, the view's center on Android and web and 0 on iOS and tvOS. */
   x: number;
 
-  /** Y of the pointer, or of the view's center when none drives the gesture, relative to the view. */
+  /** Y of the pointer relative to the view; with none, the view's center on Android and web and 0 on iOS and tvOS. */
   y: number;
 
   /** X of the same point relative to the window. */

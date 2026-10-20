@@ -1,7 +1,8 @@
 # Android only: a hardware Enter presses each kind of focused gesture-handler
-# control once, as a key with no pointer, where a tap would land. Tab moves
-# focus in view order, so after the taps and the console clear the counts below
-# reach the inner default Pressable, then each control after it.
+# control once, as a key with no pointer, where a tap would land, while a
+# gesture its touch activates still takes that touch from React Native. Tab
+# moves focus in view order, so after the taps and the console clear the counts
+# below reach the inner default Pressable, then each control after it.
 steps:
   - echo: Launching Expo Example
   - launch: com.example.ExpoExample
@@ -127,6 +128,24 @@ steps:
       - await: { hidden: { id: "close-console-button" } }
       - await: { idle: true }
 
+      - echo: "Tap React Native's Pressable inside the long press its touch activates, the first touch it gets"
+      - tap: { id: "react-native-pressable" }
+      - await: { idle: true }
+
+      - echo: "The touch's activation takes the touch from React Native's Pressable, which never presses"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: { matches: '^22\. \[react native pressable\] onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^23\. \[react native pressable\] onPressOut$' } } }
+      - assert: { hidden: { text: { matches: '^24\. ' } } }
+
+      - echo: "Clear console"
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
       - echo: "Tap the input inside the ScrollView, so the soft keyboard is up for it, then Tab to the Pressable beside it and press Enter"
       - tap: { id: "typing-input" }
       - await: { idle: true }
@@ -139,7 +158,7 @@ steps:
       - tap: { id: "open-console-button" }
       - await: { idle: true }
       - await: { visible: { id: "close-console-button" } }
-      - assert: { visible: { text: { matches: '^22\. \[typing pressable\] onPressIn$' } } }
-      - assert: { visible: { text: { matches: '^23\. \[typing pressable\] onPressOut$' } } }
-      - assert: { visible: { text: { matches: '^24\. \[typing pressable\] onPress$' } } }
-      - assert: { hidden: { text: { matches: '^25\. ' } } }
+      - assert: { visible: { text: { matches: '^24\. \[typing pressable\] onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^25\. \[typing pressable\] onPressOut$' } } }
+      - assert: { visible: { text: { matches: '^26\. \[typing pressable\] onPress$' } } }
+      - assert: { hidden: { text: { matches: '^27\. ' } } }

@@ -267,8 +267,8 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    // An activation reporting no pointer, a key's or an accessibility service's, shares no touch with the JS responder.
-    if (handler.cancelsJSResponder && handler.numberOfPointers > 0) {
+    // An activation whose handler tracks no pointer, a key's or an accessibility service's, shares no touch with the JS responder.
+    if (handler.cancelsJSResponder && handler.hasTrackedPointers) {
       onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
     }
 
@@ -544,7 +544,8 @@ class GestureHandlerOrchestrator(
     handler.activationIndex = Int.MAX_VALUE
     handler.prepare(view, this)
 
-    if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
+    // The recorded handlers compete for the touch being dispatched; outside one, none competes with this handler.
+    if (isHandlingTouch && !handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
       handler.cancel()
     }
 
@@ -947,7 +948,9 @@ class GestureHandlerOrchestrator(
   // be turned on and also confirm with the ViewConfigHelper implementation
   private fun isClipping(view: View) = view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
 
-  fun activateNativeHandlersForView(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER) {
+  /** Activates the view's native handlers and answers whether one of them took the activation. */
+  fun activateNativeHandlersForView(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER): Boolean {
+    var activated = false
     handlerRegistry.getHandlersForView(view)?.forEach {
       if (it !is NativeViewGestureHandler || !it.isEnabled) {
         return@forEach
@@ -960,10 +963,14 @@ class GestureHandlerOrchestrator(
 
       it.withMarkedAsInBounds {
         it.begin()
+        if (it.state == GestureHandler.STATE_BEGAN || it.state == GestureHandler.STATE_ACTIVE) {
+          activated = true
+        }
         it.activate()
         it.end()
       }
     }
+    return activated
   }
 
   companion object {

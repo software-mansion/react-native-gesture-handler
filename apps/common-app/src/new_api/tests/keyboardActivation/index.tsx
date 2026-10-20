@@ -1,6 +1,13 @@
 import React, { useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import {
+  Pressable as ReactNativePressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import {
+  GestureDetector,
+  GestureStateManager,
   LegacyPressable,
   PointerType,
   Pressable,
@@ -8,6 +15,7 @@ import {
   ScrollView,
   TextInput,
   Touchable,
+  useLongPressGesture,
 } from 'react-native-gesture-handler';
 
 import { COLORS, useIndexedLogger } from '../../../common';
@@ -50,6 +58,12 @@ function useTapComparison(log: Log) {
 export default function KeyboardActivationExample() {
   const log = useIndexedLogger();
   const compareWithTap = useTapComparison(log);
+  const touchActivatedLongPress = useLongPressGesture({
+    onTouchesDown: (event) => {
+      'worklet';
+      GestureStateManager.activate(event.handlerTag);
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -137,6 +151,15 @@ export default function KeyboardActivationExample() {
         style={styles.disabledButton}
         {...pressHandlers(log, '[disabled pressable]')}
       />
+
+      {/* A gesture its own touch activates takes that touch from React Native's Pressable, the first touch after mount included. */}
+      <GestureDetector gesture={touchActivatedLongPress}>
+        <ReactNativePressable
+          testID="react-native-pressable"
+          style={styles.reactNativeButton}
+          {...pressHandlers(log, '[react native pressable]')}
+        />
+      </GestureDetector>
     </View>
   );
 }
@@ -214,5 +237,11 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 8,
     backgroundColor: COLORS.GRAY,
+  },
+  reactNativeButton: {
+    width: 200,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: COLORS.NAVY,
   },
 });

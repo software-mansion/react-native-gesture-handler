@@ -1607,8 +1607,8 @@ class RNGestureHandlerButtonViewManager :
 
       val source = clickWithoutPointer
       if (source != null) {
-        activateNativeHandlers(source.pointerType)
-        return super.performClick()
+        // View sounds the click and reports it to accessibility services, so it does only for a press a handler took.
+        return activateNativeHandlers(source.pointerType) && super.performClick()
       }
 
       return if (soundResponder === this) {
@@ -1620,9 +1620,8 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
-    private fun activateNativeHandlers(pointerType: Int) {
-      RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this, pointerType)
-    }
+    private fun activateNativeHandlers(pointerType: Int): Boolean =
+      RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this, pointerType) ?: false
 
     override fun setEnabled(enabled: Boolean) {
       val changed = enabled != isEnabled
