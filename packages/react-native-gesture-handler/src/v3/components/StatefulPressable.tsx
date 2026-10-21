@@ -38,7 +38,6 @@ import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 import { INT32_MAX, isTestEnv } from '../../utils';
 import { GestureDetector } from '../detectors';
-import type { NativeGestureEvent } from '../hooks';
 import {
   useHoverGesture,
   useLongPressGesture,
@@ -230,12 +229,6 @@ const StatefulPressable = (props: PressableProps) => {
     [handleFinalize, innerHandlePressIn, onPress, onPressOut]
   );
 
-  // Android, a TV's included, reports where a key or an accessibility service activated the view; tvOS reports none.
-  const toPressableEventWithoutPointer = (event: NativeGestureEvent) =>
-    Platform.OS === 'android'
-      ? gestureToPressableEvent(event)
-      : viewCenterToPressableEvent(dimensions.current);
-
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
   const isScreenReaderEnabled = useIsScreenReaderEnabled();
 
@@ -375,12 +368,12 @@ const StatefulPressable = (props: PressableProps) => {
         return;
       }
 
-      if (Platform.isTV || isActivatedWithoutPointer(event)) {
-        // tvOS drives this native gesture from the focus-engine Select press, and Android from a key
+      if (isActivatedWithoutPointer(event)) {
+        // A TV drives this native gesture from the focus-engine Select press, and Android from a key
         // or an accessibility service with no pointer. The press state machine is touch-based and never
         // receives LONG_PRESS_TOUCHES_DOWN here, so bypass it and drive the press handlers directly.
         // The hit-slop bounds check tests where a pointer went down, and a press with no pointer has none.
-        handlePressIn(toPressableEventWithoutPointer(event), true);
+        handlePressIn(gestureToPressableEvent(event), true);
         return;
       }
       if (Platform.OS === 'android' && isScreenReaderEnabled) {
@@ -404,8 +397,8 @@ const StatefulPressable = (props: PressableProps) => {
         return;
       }
 
-      if (Platform.isTV || isActivatedWithoutPointer(event)) {
-        handlePressOut(toPressableEventWithoutPointer(event), !event.canceled);
+      if (isActivatedWithoutPointer(event)) {
+        handlePressOut(gestureToPressableEvent(event), !event.canceled);
         handleFinalize();
         return;
       }

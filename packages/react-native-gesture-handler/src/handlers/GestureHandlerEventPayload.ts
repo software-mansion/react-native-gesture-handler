@@ -70,17 +70,17 @@ export type NativeViewGestureHandlerPayload = {
 
   /**
    * X coordinate, expressed in points, of the pointer relative to the view
-   * attached to the handler. A key's press on Android and web, and an
-   * accessibility service's click on Android, report the view's center; iOS and
-   * tvOS report 0 for a press without a touch.
+   * attached to the handler. A press no pointer drives, such as a key's press,
+   * an accessibility service's click on Android or a TV's Select press, reports
+   * the view's center.
    */
   x: number;
 
   /**
    * Y coordinate, expressed in points, of the pointer relative to the view
-   * attached to the handler. A key's press on Android and web, and an
-   * accessibility service's click on Android, report the view's center; iOS and
-   * tvOS report 0 for a press without a touch.
+   * attached to the handler. A press no pointer drives, such as a key's press,
+   * an accessibility service's click on Android or a TV's Select press, reports
+   * the view's center.
    */
   y: number;
 

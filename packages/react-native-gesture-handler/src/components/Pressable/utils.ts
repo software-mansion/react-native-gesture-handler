@@ -184,9 +184,9 @@ const viewCenterToPressableEvent = (
 };
 
 // Android reports a key's or an accessibility service's activation of the native gesture with no pointer
-// (https://www.w3.org/TR/pointerevents3/#event-attributes).
+// (https://www.w3.org/TR/pointerevents3/#event-attributes), and a TV's focus engine drives every press.
 const isActivatedWithoutPointer = (event: { numberOfPointers: number }) =>
-  Platform.OS === 'android' && event.numberOfPointers === 0;
+  Platform.isTV || (Platform.OS === 'android' && event.numberOfPointers === 0);
 
 export {
   addInsets,

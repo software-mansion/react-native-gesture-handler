@@ -121,15 +121,9 @@ const withoutPointer =
 const CLICK_WITHOUT_TOUCH = [BEGAN, ACTIVATED, ENDED].map(
   withoutPointer(PointerType.KEY)
 );
-// tvOS sends a focus Select press with no touch, at (0, 0) in the view and at the view's origin in the window.
+// tvOS sends a focus Select press with no touch, as a key at the view's center.
 const TV_SELECT_PRESS = [BEGAN, ACTIVATED, ENDED].map(
-  (transition): NativeGestureEvent => ({
-    ...reportingPointers(0, PointerType.TOUCH)(transition),
-    x: 0,
-    y: 0,
-    absoluteX: BUTTON_SCREEN_ORIGIN.x,
-    absoluteY: BUTTON_SCREEN_ORIGIN.y,
-  })
+  withoutPointer(PointerType.KEY)
 );
 const PRESSED_WHERE_NATIVE_GESTURE_REPORTS = {
   locationX: POSITION_WITHOUT_POINTER.x,
@@ -526,6 +520,22 @@ describe.each([
     expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
     expect(handlers.onPress).toHaveBeenCalledTimes(1);
   });
+
+  // The screen reader's own branch presses at the layout center, which this hit slop leaves out.
+  test('runs onPress once for a screen reader click whose hit slop leaves out its center', async () => {
+    jest
+      .spyOn(AccessibilityInfo, 'isScreenReaderEnabled')
+      .mockResolvedValueOnce(true);
+    const handlers = createPressHandlers();
+    await driver.render({ ...handlers, hitSlop: CENTER_EXCLUDING_HIT_SLOP });
+    layOutButton();
+
+    driver.fireNativeGesture(ACCESSIBILITY_CLICK);
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
 });
 
 // The default `Pressable` presses from the press events its native button sends.
@@ -601,33 +611,64 @@ describe('Pressable on Android', () => {
   });
 });
 
-describe('StatefulPressable on a TV', () => {
+describe.each([
+  ['StatefulPressable', statefulDriver],
+  ['LegacyPressable', legacyDriver],
+] as const)('%s on a TV', (_name, driver) => {
   test('presses an Android TV key press at the position its native gesture reports', async () => {
     jest.replaceProperty(Platform, 'isTV', true);
     const handlers = createPressHandlers();
-    await statefulDriver.render(handlers);
+    await driver.render(handlers);
     layOutButton();
 
-    statefulDriver.fireNativeGesture(CLICK_WITHOUT_TOUCH);
+    driver.fireNativeGesture(CLICK_WITHOUT_TOUCH);
 
     expectPressedOnceAt(handlers, PRESSED_WHERE_NATIVE_GESTURE_REPORTS);
   });
 
-  test('presses a tvOS focus press at the layout center, with no page position', async () => {
+  test('presses a tvOS focus press at the position its native gesture reports', async () => {
     jest.replaceProperty(Platform, 'OS', 'ios');
     jest.replaceProperty(Platform, 'isTV', true);
     const handlers = createPressHandlers();
-    await statefulDriver.render(handlers);
+    await driver.render(handlers);
     layOutButton();
 
-    statefulDriver.fireNativeGesture(TV_SELECT_PRESS);
+    driver.fireNativeGesture(TV_SELECT_PRESS);
 
-    expectPressedOnceAt(handlers, {
-      locationX: BUTTON_CENTER_TOUCH.x,
-      locationY: BUTTON_CENTER_TOUCH.y,
-      pageX: -1,
-      pageY: -1,
+    expectPressedOnceAt(handlers, PRESSED_WHERE_NATIVE_GESTURE_REPORTS);
+  });
+
+  test('presses a tvOS focus press whose hit slop leaves out its center', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    jest.replaceProperty(Platform, 'isTV', true);
+    const handlers = createPressHandlers();
+    await driver.render({ ...handlers, hitSlop: CENTER_EXCLUDING_HIT_SLOP });
+    layOutButton();
+
+    driver.fireNativeGesture(TV_SELECT_PRESS);
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Pressable on a TV', () => {
+  test('presses a tvOS focus press whose hit slop leaves out its center', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    jest.replaceProperty(Platform, 'isTV', true);
+    const handlers = createPressHandlers();
+    await renderDefaultPressable({
+      ...handlers,
+      hitSlop: CENTER_EXCLUDING_HIT_SLOP,
     });
+    layOutButton();
+
+    pressButton(buttonEvent(0, PointerType.KEY));
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
   });
 });
 

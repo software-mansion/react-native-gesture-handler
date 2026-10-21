@@ -277,8 +277,10 @@
                                        pointerInside:(BOOL)pointerInside
 {
   RNGHUITouch *touch = [[event allTouches] anyObject];
-  CGPoint position = touch ? [touch locationInView:sender] : CGPointZero;
-  CGPoint absolutePosition = touch ? [touch locationInView:nil] : [sender convertPoint:CGPointZero toView:nil];
+  // A press no touch drives, the focus engine's Select on a TV, happens at the view's center, as a switch's does.
+  CGPoint position =
+      touch ? [touch locationInView:sender] : CGPointMake(CGRectGetMidX(sender.bounds), CGRectGetMidY(sender.bounds));
+  CGPoint absolutePosition = touch ? [touch locationInView:nil] : [sender convertPoint:position toView:nil];
 
   return [RNGestureHandlerEventExtraData forPointerInside:pointerInside
                                              withPosition:position
@@ -317,7 +319,13 @@
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
-  [self setCurrentPointerTypeForEvent:event];
+  if (event.allTouches.count == 0) {
+    // A press no touch drives reports no pointer, as a key does
+    // (https://www.w3.org/TR/pointerevents3/#event-attributes).
+    [self setCurrentPointerType:RNGestureHandlerKey];
+  } else {
+    [self setCurrentPointerTypeForEvent:event];
+  }
   [self reset];
 
   if (_disallowInterruption) {
