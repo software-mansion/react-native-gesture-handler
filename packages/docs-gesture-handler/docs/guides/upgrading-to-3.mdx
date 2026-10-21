@@ -317,24 +317,32 @@ label1={"RNGH 2"}
 label2={"RNGH 3"}
 code1={
 `
-<FlatList
-  renderItem={({ item }) => (
+function Row() {
+  const pan = Gesture.Pan();
+
+  return (
     <GestureDetector gesture={pan}>
-      <Row item={item} />
+      <View />
     </GestureDetector>
-  )}
-/>
+  );
+}
+
+<FlatList renderItem={() => <Row />} />
 `}
 code2={
 `
+function Row() {
+  const pan = usePanGesture();
+
+  return (
+    <VirtualGestureDetector gesture={pan}>
+      <View />
+    </VirtualGestureDetector>
+  );
+}
+
 <InterceptingGestureDetector>
-  <FlatList
-    renderItem={({ item }) => (
-      <VirtualGestureDetector gesture={pan}>
-        <Row item={item} />
-      </VirtualGestureDetector>
-    )}
-  />
+  <FlatList renderItem={() => <Row />} />
 </InterceptingGestureDetector>
 `}
 />
