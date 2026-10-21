@@ -341,12 +341,12 @@ A method that resets the swiping states of this `Swipeable` component. Unlike [`
 
 Example of a `Swipeable` component can be found in [Gesture Handler repository](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/new_api/components/swipeable/index.tsx).
 
-The actions are rendered beneath the row. In the example below, `RightAction` measures its own width and uses `translation` to stay attached to the right edge of the row, so it slides in together with the row instead of showing through it when the row content is not fully opaque.
+In the example below, `RightAction` measures its own width and uses `translation` to stay attached to the right edge of the row, so it slides in together with the row instead of being uncovered in place.
 
 <CollapsibleCode 
 label="Show full example"
 expandedLabel="Hide full example"
-lineBounds={[12, 49]}
+lineBounds={[11, 50]}
 src={`
 import React from 'react';
 import type { LayoutChangeEvent } from 'react-native';
@@ -354,7 +354,7 @@ import { StyleSheet, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import type { SharedValue } from 'react-native-reanimated';
-import Reanimated, {
+import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -373,11 +373,11 @@ function RightAction({ translation }: { translation: SharedValue<number> }) {
   }));
 
   return (
-    <Reanimated.View
+    <Animated.View
       onLayout={onLayout}
       style={[styles.rightAction, styleAnimation]}>
       <Text style={styles.rightActionText}>Delete</Text>
-    </Reanimated.View>
+    </Animated.View>
   );
 }
 
