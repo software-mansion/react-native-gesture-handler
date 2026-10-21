@@ -92,6 +92,8 @@ const StatefulPressable = (props: PressableProps) => {
   const isOnPressAllowed = useRef<boolean>(true);
   const jsResponderContext = use(JSResponderContext);
   const isCurrentlyPressed = useRef<boolean>(false);
+  // Whether the press in progress began with no pointer, which decides how it ends.
+  const isPressWithoutPointer = useRef<boolean>(false);
   const dimensions = useRef<PressableDimensions>({
     width: 0,
     height: 0,
@@ -163,6 +165,7 @@ const StatefulPressable = (props: PressableProps) => {
 
   const handleFinalize = useCallback(() => {
     isCurrentlyPressed.current = false;
+    isPressWithoutPointer.current = false;
     dropKeyboardTapRef.current = null;
     cancelLongPress();
     cancelDelayedPress();
@@ -362,13 +365,14 @@ const StatefulPressable = (props: PressableProps) => {
       }
     },
     onBegin: (event) => {
+      isPressWithoutPointer.current = isActivatedWithoutPointer(event);
       captureKeyboardDismiss(event.numberOfPointers);
 
       if (dropKeyboardTapRef.current) {
         return;
       }
 
-      if (isActivatedWithoutPointer(event)) {
+      if (isPressWithoutPointer.current) {
         // A TV drives this native gesture from the focus-engine Select press, and Android from a key
         // or an accessibility service with no pointer. The press state machine is touch-based and never
         // receives LONG_PRESS_TOUCHES_DOWN here, so bypass it and drive the press handlers directly.
@@ -397,7 +401,7 @@ const StatefulPressable = (props: PressableProps) => {
         return;
       }
 
-      if (isActivatedWithoutPointer(event)) {
+      if (isPressWithoutPointer.current) {
         handlePressOut(gestureToPressableEvent(event), !event.canceled);
         handleFinalize();
         return;

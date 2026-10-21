@@ -85,6 +85,8 @@ const LegacyPressable = (props: LegacyPressableProps) => {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
   const isCurrentlyPressed = useRef<boolean>(false);
+  // Whether the press in progress began with no pointer, which decides how it ends.
+  const isPressWithoutPointer = useRef<boolean>(false);
   const dimensions = useRef<PressableDimensions>({ width: 0, height: 0 });
 
   const normalizedHitSlop: Insets = useMemo(
@@ -149,6 +151,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
 
   const handleFinalize = useCallback(() => {
     isCurrentlyPressed.current = false;
+    isPressWithoutPointer.current = false;
     cancelLongPress();
     cancelDelayedPress();
     setPressedState(false);
@@ -305,7 +308,8 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           }
         })
         .onBegin((event) => {
-          if (isActivatedWithoutPointer(event)) {
+          isPressWithoutPointer.current = isActivatedWithoutPointer(event);
+          if (isPressWithoutPointer.current) {
             // The press state machine is touch-based and never receives LONG_PRESS_TOUCHES_DOWN here.
             // The hit-slop bounds check tests where a pointer went down, and a press with no pointer has none.
             handlePressIn(gestureToPressableEvent(event), true);
@@ -327,7 +331,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           }
         })
         .onFinalize((event, success) => {
-          if (isActivatedWithoutPointer(event)) {
+          if (isPressWithoutPointer.current) {
             handlePressOut(gestureToPressableEvent(event), success);
             handleFinalize();
             return;

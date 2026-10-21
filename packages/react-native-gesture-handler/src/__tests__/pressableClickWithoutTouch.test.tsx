@@ -149,6 +149,8 @@ const RETENTION_ZONE_TOUCH = { x: 130, y: 22 };
 // A hit slop that takes the button's left half, center included, out of what a pointer can press.
 const CENTER_EXCLUDING_HIT_SLOP = { left: -(BUTTON_CENTER_TOUCH.x + 10) };
 
+const TOUCH_AWAY_FROM_CENTER = { x: 10, y: 10 };
+
 type PressHandler = jest.Mock<void, [PressableEvent]>;
 
 type PressHandlers = {
@@ -784,6 +786,24 @@ describe.each([
 
     expect(handlers.onPressIn).not.toHaveBeenCalled();
     expect(handlers.onPress).not.toHaveBeenCalled();
+  });
+
+  // An action an iOS button sends with no event, as it sends a press's cancel when it is disabled under a finger, counts no pointer.
+  test('presses a touch press where the touch was when its native gesture ends reporting no pointer', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    const handlers = createPressHandlers();
+    await driver.render(handlers);
+    layOutButton();
+
+    driver.touchDownOnPressGesture(TOUCH_AWAY_FROM_CENTER);
+    driver.changeNativeGestureState(withTouch(BEGAN));
+    driver.changeNativeGestureState(withTouch(ACTIVATED));
+    driver.changeNativeGestureState(withoutPointer(PointerType.TOUCH)(ENDED));
+
+    expectPressedOnceAt(handlers, {
+      locationX: TOUCH_AWAY_FROM_CENTER.x,
+      locationY: TOUCH_AWAY_FROM_CENTER.y,
+    });
   });
 });
 
