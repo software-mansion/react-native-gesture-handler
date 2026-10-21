@@ -18,12 +18,29 @@ import {
   Touchable,
   useLongPressGesture,
 } from 'react-native-gesture-handler';
+import { useSharedValue } from 'react-native-reanimated';
 
 import { COLORS, useIndexedLogger } from '../../../common';
 
 type Log = (message: string) => void;
 
 type Position = { absoluteX: number; absoluteY: number };
+
+type Point = { x: number; y: number };
+
+// A press no pointer drives has no touch to land on.
+function describeActivationPoint(
+  event: Point & { numberOfPointers: number; pointerInside: boolean },
+  touch: Point
+) {
+  'worklet';
+  if (event.numberOfPointers === 0) {
+    return '';
+  }
+  const isAtTouch =
+    Math.abs(event.x - touch.x) <= 1 && Math.abs(event.y - touch.y) <= 1;
+  return `${isAtTouch ? ' at its touch' : ' away from its touch'}${event.pointerInside ? '' : ', outside'}`;
+}
 
 const pressHandlers = (log: Log, token: string) => ({
   onPressIn: () => log(`${token} onPressIn`),
@@ -59,6 +76,7 @@ function useTapComparison(log: Log) {
 export default function KeyboardActivationExample() {
   const log = useIndexedLogger();
   const compareWithTap = useTapComparison(log);
+  const touchOnTouchActivatedButton = useSharedValue<Point>({ x: 0, y: 0 });
   const touchActivatedLongPress = useLongPressGesture({
     onTouchesDown: (event) => {
       'worklet';
@@ -136,12 +154,14 @@ export default function KeyboardActivationExample() {
         style={styles.touchActivatedButton}
         onTouchesDown={(event) => {
           'worklet';
+          const { x, y } = event.changedTouches[0];
+          touchOnTouchActivatedButton.value = { x, y };
           GestureStateManager.activate(event.handlerTag);
         }}
         onActivate={(event) => {
           'worklet';
           log(
-            `[touch activated button] onActivate ${PointerType[event.pointerType]} with ${event.numberOfPointers} pointers`
+            `[touch activated button] onActivate ${PointerType[event.pointerType]} with ${event.numberOfPointers} pointers${describeActivationPoint(event, touchOnTouchActivatedButton.value)}`
           );
         }}
       />

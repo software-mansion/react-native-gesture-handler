@@ -183,11 +183,19 @@ const viewCenterToPressableEvent = (
   };
 };
 
-// Android reports a key's or an accessibility service's activation of the native gesture with no pointer
-// (https://www.w3.org/TR/pointerevents3/#event-attributes); on tvOS nothing points at the screen, so the focus
-// engine drives every press.
-const isActivatedWithoutPointer = (event: { numberOfPointers: number }) =>
-  Platform.OS === 'android' ? event.numberOfPointers === 0 : Platform.isTV;
+// Android and iOS report a press no pointer drives, a key's, an accessibility service's or one no touch drives, with
+// no pointer (https://www.w3.org/TR/pointerevents3/#event-attributes); on tvOS nothing points at the screen, so the
+// focus engine drives every press. Web reports no pointer once a press's pointers lift.
+const isActivatedWithoutPointer = (event: { numberOfPointers: number }) => {
+  switch (Platform.OS) {
+    case 'android':
+      return event.numberOfPointers === 0;
+    case 'ios':
+      return Platform.isTV || event.numberOfPointers === 0;
+    default:
+      return false;
+  }
+};
 
 export {
   addInsets,

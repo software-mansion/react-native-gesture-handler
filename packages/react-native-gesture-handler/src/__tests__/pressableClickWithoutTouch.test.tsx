@@ -121,8 +121,8 @@ const withoutPointer =
 const CLICK_WITHOUT_TOUCH = [BEGAN, ACTIVATED, ENDED].map(
   withoutPointer(PointerType.KEY)
 );
-// tvOS sends a focus Select press with no touch, as a key at the view's center.
-const TV_SELECT_PRESS = [BEGAN, ACTIVATED, ENDED].map(
+// Apple's native view handler sends a press no touch drives, a TV's focus Select press among them, as a key at the view's center.
+const APPLE_PRESS_WITHOUT_TOUCH = [BEGAN, ACTIVATED, ENDED].map(
   withoutPointer(PointerType.KEY)
 );
 const PRESSED_WHERE_NATIVE_GESTURE_REPORTS = {
@@ -633,7 +633,7 @@ describe.each([
     await driver.render(handlers);
     layOutButton();
 
-    driver.fireNativeGesture(TV_SELECT_PRESS);
+    driver.fireNativeGesture(APPLE_PRESS_WITHOUT_TOUCH);
 
     expectPressedOnceAt(handlers, PRESSED_WHERE_NATIVE_GESTURE_REPORTS);
   });
@@ -645,7 +645,7 @@ describe.each([
     await driver.render({ ...handlers, hitSlop: CENTER_EXCLUDING_HIT_SLOP });
     layOutButton();
 
-    driver.fireNativeGesture(TV_SELECT_PRESS);
+    driver.fireNativeGesture(APPLE_PRESS_WITHOUT_TOUCH);
 
     expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
     expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
@@ -722,6 +722,90 @@ describe('Pressable on a TV', () => {
 
   test('runs nothing for a touch on an Android TV at its center when its hit slop leaves the center out', async () => {
     jest.replaceProperty(Platform, 'isTV', true);
+    const handlers = createPressHandlers();
+    await renderDefaultPressable({
+      ...handlers,
+      hitSlop: CENTER_EXCLUDING_HIT_SLOP,
+    });
+    layOutButton();
+
+    pressButton(buttonEvent(1, PointerType.TOUCH));
+
+    expect(handlers.onPressIn).not.toHaveBeenCalled();
+    expect(handlers.onPress).not.toHaveBeenCalled();
+  });
+});
+
+describe.each([
+  ['StatefulPressable', statefulDriver],
+  ['LegacyPressable', legacyDriver],
+] as const)('%s on iOS', (_name, driver) => {
+  test('presses a press no touch drives at the position its native gesture reports', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    const handlers = createPressHandlers();
+    await driver.render(handlers);
+    layOutButton();
+
+    driver.fireNativeGesture(APPLE_PRESS_WITHOUT_TOUCH);
+
+    expectPressedOnceAt(handlers, PRESSED_WHERE_NATIVE_GESTURE_REPORTS);
+  });
+
+  // On iOS the press gesture sees the touch before the native gesture begins.
+  test('runs onPress once for a touch press', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    const handlers = createPressHandlers();
+    await driver.render(handlers);
+    layOutButton();
+
+    driver.touchDownOnPressGesture(BUTTON_CENTER_TOUCH);
+    driver.changeNativeGestureState(withTouch(BEGAN));
+    driver.changeNativeGestureState(withTouch(ACTIVATED));
+    driver.changeNativeGestureState(withTouch(ENDED));
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test('runs nothing for a touch that begins in the press retention zone', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    const handlers = createPressHandlers();
+    await driver.render({
+      ...handlers,
+      pressRetentionOffset: PRESS_RETENTION_OFFSET,
+    });
+    layOutButton();
+
+    driver.touchDownOnPressGesture(RETENTION_ZONE_TOUCH);
+    driver.changeNativeGestureState(withTouch(BEGAN));
+    driver.changeNativeGestureState(withTouch(ACTIVATED));
+    driver.changeNativeGestureState(withTouch(ENDED));
+
+    expect(handlers.onPressIn).not.toHaveBeenCalled();
+    expect(handlers.onPress).not.toHaveBeenCalled();
+  });
+});
+
+describe('Pressable on iOS', () => {
+  test('presses a press no touch drives whose hit slop leaves out its center', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    const handlers = createPressHandlers();
+    await renderDefaultPressable({
+      ...handlers,
+      hitSlop: CENTER_EXCLUDING_HIT_SLOP,
+    });
+    layOutButton();
+
+    pressButton(buttonEvent(0, PointerType.KEY));
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test('runs nothing for a touch at its center when its hit slop leaves the center out', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
     const handlers = createPressHandlers();
     await renderDefaultPressable({
       ...handlers,

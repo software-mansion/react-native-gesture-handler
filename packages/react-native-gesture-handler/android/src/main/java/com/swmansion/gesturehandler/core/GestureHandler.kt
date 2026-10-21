@@ -392,18 +392,59 @@ open class GestureHandler {
       return
     }
 
-    // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188
-    val (adaptedTransformedEvent, adaptedSourceEvent) = if (BuildConfig.DEBUG) {
-      arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
-    } else {
-      try {
-        arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
-      } catch (e: AdaptEventException) {
+    val adaptedEvents = adaptEvents(transformedEvent, sourceEvent) ?: run {
+      fail()
+      return
+    }
+    val (adaptedTransformedEvent, adaptedSourceEvent) = adaptedEvents
+
+    updatePointerCountAndPosition(adaptedTransformedEvent)
+
+    if (shouldCancelWhenOutside) {
+      if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
         fail()
         return
       }
     }
 
+    updateLastPosition(adaptedTransformedEvent)
+    updatePointerType(adaptedSourceEvent, sourceEvent)
+
+    if (sourceEvent.isHoverAction()) {
+      onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
+    } else {
+      onHandle(adaptedTransformedEvent, adaptedSourceEvent)
+    }
+    recycleAdaptedEvents(adaptedEvents, transformedEvent, sourceEvent)
+  }
+
+  // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188
+  private fun adaptEvents(transformedEvent: MotionEvent, sourceEvent: MotionEvent): Array<MotionEvent>? =
+    if (BuildConfig.DEBUG) {
+      arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
+    } else {
+      try {
+        arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
+      } catch (e: AdaptEventException) {
+        null
+      }
+    }
+
+  private fun recycleAdaptedEvents(
+    adaptedEvents: Array<MotionEvent>,
+    transformedEvent: MotionEvent,
+    sourceEvent: MotionEvent,
+  ) {
+    val (adaptedTransformedEvent, adaptedSourceEvent) = adaptedEvents
+    if (adaptedTransformedEvent != transformedEvent) {
+      adaptedTransformedEvent.recycle()
+    }
+    if (adaptedSourceEvent != sourceEvent) {
+      adaptedSourceEvent.recycle()
+    }
+  }
+
+  private fun updatePointerCountAndPosition(adaptedTransformedEvent: MotionEvent) {
     numberOfPointers = when (adaptedTransformedEvent.actionMasked) {
       MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
       else -> adaptedTransformedEvent.pointerCount
@@ -416,37 +457,22 @@ open class GestureHandler {
     // also use that child rather than the wrapper, otherwise hit-testing would ignore the user's
     // transforms applied to the visible view.
     isWithinBounds = isWithinBounds(coordinateView, x, y)
+  }
 
-    if (shouldCancelWhenOutside) {
-      if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
-        fail()
-        return
-      }
-    }
-
+  private fun updateLastPosition(adaptedTransformedEvent: MotionEvent) {
     lastAbsolutePositionX = GestureUtils.getLastPointerX(adaptedTransformedEvent, true)
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
     lastEventOffsetY = adaptedTransformedEvent.rawY - adaptedTransformedEvent.y
+  }
 
-    // The pointer beginning the gesture names its type; adapted, its event is `ACTION_DOWN`, a second finger's too.
+  // The pointer beginning the gesture names its type; adapted, its event is `ACTION_DOWN`, a second finger's too.
+  private fun updatePointerType(adaptedSourceEvent: MotionEvent, sourceEvent: MotionEvent) {
     if (adaptedSourceEvent.actionMasked == MotionEvent.ACTION_DOWN ||
       sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
       sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE
     ) {
       setPointerType(adaptedSourceEvent)
-    }
-
-    if (sourceEvent.isHoverAction()) {
-      onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
-    } else {
-      onHandle(adaptedTransformedEvent, adaptedSourceEvent)
-    }
-    if (adaptedTransformedEvent != transformedEvent) {
-      adaptedTransformedEvent.recycle()
-    }
-    if (adaptedSourceEvent != sourceEvent) {
-      adaptedSourceEvent.recycle()
     }
   }
 
@@ -533,10 +559,13 @@ open class GestureHandler {
     if (event.actionMasked == MotionEvent.ACTION_DOWN ||
       event.actionMasked == MotionEvent.ACTION_POINTER_DOWN
     ) {
-      // A touch callback can activate the handler before `handle()` runs, so its report counts this touch's pointers.
-      numberOfPointers = trackedPointersIDsCount
-      if (trackedPointersIDsCount == 1) {
-        setPointerType(sourceEvent)
+      // A touch callback can activate the handler before `handle()` runs, so its report describes this touch first.
+      adaptEvents(event, sourceEvent)?.let { adaptedEvents ->
+        val (adaptedEvent, adaptedSourceEvent) = adaptedEvents
+        updatePointerCountAndPosition(adaptedEvent)
+        updateLastPosition(adaptedEvent)
+        updatePointerType(adaptedSourceEvent, sourceEvent)
+        recycleAdaptedEvents(adaptedEvents, event, sourceEvent)
       }
       dispatchTouchDownEvent(event, sourceEvent)
       dispatchTouchMoveEvent(event, sourceEvent)
