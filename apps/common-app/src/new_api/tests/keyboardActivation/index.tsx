@@ -11,6 +11,7 @@ import {
   LegacyPressable,
   PointerType,
   Pressable,
+  RawButton,
   RectButton,
   ScrollView,
   TextInput,
@@ -128,6 +129,23 @@ export default function KeyboardActivationExample() {
         />
       </View>
 
+      {/* Its touch activates it from a UI-thread onTouchesDown, before the button reads that touch. */}
+      <RawButton
+        testID="touch-activated-button"
+        disableReanimated={false}
+        style={styles.touchActivatedButton}
+        onTouchesDown={(event) => {
+          'worklet';
+          GestureStateManager.activate(event.handlerTag);
+        }}
+        onActivate={(event) => {
+          'worklet';
+          log(
+            `[touch activated button] onActivate ${PointerType[event.pointerType]} with ${event.numberOfPointers} pointers`
+          );
+        }}
+      />
+
       {/* A tap here while the input holds the soft keyboard only dismisses it; a key press is no such tap. */}
       <ScrollView
         style={styles.typing}
@@ -208,6 +226,12 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 12,
     backgroundColor: COLORS.YELLOW,
+  },
+  touchActivatedButton: {
+    width: 200,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: COLORS.KINDA_GREEN,
   },
   typing: {
     flexGrow: 0,

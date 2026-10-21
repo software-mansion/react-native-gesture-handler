@@ -533,6 +533,11 @@ open class GestureHandler {
     if (event.actionMasked == MotionEvent.ACTION_DOWN ||
       event.actionMasked == MotionEvent.ACTION_POINTER_DOWN
     ) {
+      // A touch callback can activate the handler before `handle()` runs, so its report counts this touch's pointers.
+      numberOfPointers = trackedPointersIDsCount
+      if (trackedPointersIDsCount == 1) {
+        setPointerType(sourceEvent)
+      }
       dispatchTouchDownEvent(event, sourceEvent)
       dispatchTouchMoveEvent(event, sourceEvent)
     } else if (event.actionMasked == MotionEvent.ACTION_UP ||

@@ -186,5 +186,5 @@ Y coordinate, expressed in points, of the same point relative to the window.
 <BaseEventData />
 
 :::note
-On Android, a hardware key's press and an accessibility service's click, which no pointer drives, activate the gesture with `numberOfPointers` set to `0`, and `pointerType` set to `PointerType.KEY` for the key and `PointerType.OTHER` for the service. On tvOS, the focus engine's Select press reports `numberOfPointers` set to `0` and `PointerType.KEY`. On web, a key's press counts as one `PointerType.KEY` pointer.
+On Android, a hardware key's press and an accessibility service's click on a Gesture Handler button, which no pointer drives, activate the button's own native gesture with `numberOfPointers` set to `0`, and `pointerType` set to `PointerType.KEY` for the key and `PointerType.OTHER` for the service; a native gesture on any other view gets no such activation. On tvOS, the focus engine's Select press on a button reports `numberOfPointers` set to `0` and `PointerType.KEY`. On web, a key's press counts as one `PointerType.KEY` pointer.
 :::

@@ -1,6 +1,7 @@
 # Android only: a hardware Enter presses each kind of focused gesture-handler
-# control once, as a key with no pointer, where a tap would land, while a
-# gesture its touch activates still takes that touch from React Native. Tab
+# control once, as a key with no pointer, where a tap would land; a touch after
+# it reports its own pointer; and a gesture its touch activates still takes that
+# touch from React Native. Tab
 # moves focus in view order, so after the taps and the console clear the counts
 # below reach the inner default Pressable, then each control after it.
 steps:
@@ -112,6 +113,11 @@ steps:
         args: { key: tab }
       - tool: keyboard
         args: { key: enter }
+      - echo: "Tab to the RawButton its touch activates and press Enter"
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: enter }
 
       - echo: "Enter reports a key with no pointer, and lands where the tap did"
       - tap: { id: "open-console-button" }
@@ -120,7 +126,25 @@ steps:
       - assert: { visible: { text: { matches: '^19\. \[rect button\] onBegin KEY with 0 pointers$' } } }
       - assert: { visible: { text: { matches: '^20\. \[rect button\] onPress$' } } }
       - assert: { visible: { text: { matches: '^21\. \[scaled\] key press lands on the tap$' } } }
-      - assert: { hidden: { text: { matches: '^22\. ' } } }
+      - assert: { visible: { text: { matches: '^22\. \[touch activated button\] onActivate KEY with 0 pointers$' } } }
+      - assert: { hidden: { text: { matches: '^23\. ' } } }
+
+      - echo: "Clear console"
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Tap the RawButton, whose touch activates it before the button reads the touch"
+      - tap: { id: "touch-activated-button" }
+      - await: { idle: true }
+
+      - echo: "The activation reports the touch, not the key before it"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: { matches: '^23\. \[touch activated button\] onActivate TOUCH with 1 pointers$' } } }
+      - assert: { hidden: { text: { matches: '^24\. ' } } }
 
       - echo: "Clear console"
       - tap: { id: "clear-console-button" }
@@ -136,9 +160,9 @@ steps:
       - tap: { id: "open-console-button" }
       - await: { idle: true }
       - await: { visible: { id: "close-console-button" } }
-      - assert: { visible: { text: { matches: '^22\. \[react native pressable\] onPressIn$' } } }
-      - assert: { visible: { text: { matches: '^23\. \[react native pressable\] onPressOut$' } } }
-      - assert: { hidden: { text: { matches: '^24\. ' } } }
+      - assert: { visible: { text: { matches: '^24\. \[react native pressable\] onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^25\. \[react native pressable\] onPressOut$' } } }
+      - assert: { hidden: { text: { matches: '^26\. ' } } }
 
       - echo: "Clear console"
       - tap: { id: "clear-console-button" }
@@ -158,7 +182,7 @@ steps:
       - tap: { id: "open-console-button" }
       - await: { idle: true }
       - await: { visible: { id: "close-console-button" } }
-      - assert: { visible: { text: { matches: '^24\. \[typing pressable\] onPressIn$' } } }
-      - assert: { visible: { text: { matches: '^25\. \[typing pressable\] onPressOut$' } } }
-      - assert: { visible: { text: { matches: '^26\. \[typing pressable\] onPress$' } } }
-      - assert: { hidden: { text: { matches: '^27\. ' } } }
+      - assert: { visible: { text: { matches: '^26\. \[typing pressable\] onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^27\. \[typing pressable\] onPressOut$' } } }
+      - assert: { visible: { text: { matches: '^28\. \[typing pressable\] onPress$' } } }
+      - assert: { hidden: { text: { matches: '^29\. ' } } }

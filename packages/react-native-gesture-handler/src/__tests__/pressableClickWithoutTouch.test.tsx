@@ -651,6 +651,38 @@ describe.each([
     expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
     expect(handlers.onPress).toHaveBeenCalledTimes(1);
   });
+
+  test('presses a tvOS press that reports a pointer, as nothing on tvOS points at the screen', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    jest.replaceProperty(Platform, 'isTV', true);
+    const handlers = createPressHandlers();
+    await driver.render(handlers);
+    layOutButton();
+
+    driver.fireNativeGesture([BEGAN, ACTIVATED, ENDED].map(withTouch));
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test('runs nothing for a touch on an Android TV that begins in the press retention zone', async () => {
+    jest.replaceProperty(Platform, 'isTV', true);
+    const handlers = createPressHandlers();
+    await driver.render({
+      ...handlers,
+      pressRetentionOffset: PRESS_RETENTION_OFFSET,
+    });
+    layOutButton();
+
+    driver.changeNativeGestureState(withTouch(BEGAN));
+    driver.touchDownOnPressGesture(RETENTION_ZONE_TOUCH);
+    driver.changeNativeGestureState(withTouch(ACTIVATED));
+    driver.changeNativeGestureState(withTouch(ENDED));
+
+    expect(handlers.onPressIn).not.toHaveBeenCalled();
+    expect(handlers.onPress).not.toHaveBeenCalled();
+  });
 });
 
 describe('Pressable on a TV', () => {
@@ -669,6 +701,38 @@ describe('Pressable on a TV', () => {
     expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
     expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
     expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test('presses a tvOS press that reports a pointer under a hit slop that leaves out its center', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    jest.replaceProperty(Platform, 'isTV', true);
+    const handlers = createPressHandlers();
+    await renderDefaultPressable({
+      ...handlers,
+      hitSlop: CENTER_EXCLUDING_HIT_SLOP,
+    });
+    layOutButton();
+
+    pressButton(buttonEvent(1, PointerType.TOUCH));
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test('runs nothing for a touch on an Android TV at its center when its hit slop leaves the center out', async () => {
+    jest.replaceProperty(Platform, 'isTV', true);
+    const handlers = createPressHandlers();
+    await renderDefaultPressable({
+      ...handlers,
+      hitSlop: CENTER_EXCLUDING_HIT_SLOP,
+    });
+    layOutButton();
+
+    pressButton(buttonEvent(1, PointerType.TOUCH));
+
+    expect(handlers.onPressIn).not.toHaveBeenCalled();
+    expect(handlers.onPress).not.toHaveBeenCalled();
   });
 });
 
