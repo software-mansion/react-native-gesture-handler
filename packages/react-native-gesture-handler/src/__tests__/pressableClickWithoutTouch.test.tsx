@@ -787,6 +787,50 @@ describe.each([
   });
 });
 
+// Web drops a pointer from its tracker before its gesture ends, so every press ends reporting no pointer.
+const WEB_RELEASE = {
+  ...reportingPointers(0, PointerType.TOUCH)(ENDED),
+  x: 10,
+  y: 10,
+  absoluteX: BUTTON_SCREEN_ORIGIN.x + 10,
+  absoluteY: BUTTON_SCREEN_ORIGIN.y + 10,
+};
+
+const finishLegacyPressGesture = () => {
+  const { handlerTag } = findLegacyGesture(longPressHandlerName);
+  act(() => {
+    for (const transition of [BEGAN, ACTIVATED, ENDED]) {
+      DeviceEventEmitter.emit('onGestureHandlerStateChange', {
+        handlerTag,
+        ...withTouch(transition),
+        pointerInside: true,
+      });
+    }
+  });
+};
+
+describe('LegacyPressable on web', () => {
+  test('presses out where its press gesture saw the touch, not where its native gesture ends', async () => {
+    jest.replaceProperty(Platform, 'OS', 'web');
+    const handlers = createPressHandlers();
+    await legacyDriver.render(handlers);
+    layOutButton();
+
+    legacyDriver.changeNativeGestureState(withTouch(BEGAN));
+    legacyDriver.changeNativeGestureState(withTouch(ACTIVATED));
+    legacyDriver.touchDownOnPressGesture(BUTTON_CENTER_TOUCH);
+    legacyDriver.changeNativeGestureState(WEB_RELEASE);
+    finishLegacyPressGesture();
+
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut.mock.calls[0][0].nativeEvent).toMatchObject({
+      locationX: BUTTON_CENTER_TOUCH.x,
+      locationY: BUTTON_CENTER_TOUCH.y,
+    });
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('Pressable on iOS', () => {
   test('presses a press no touch drives whose hit slop leaves out its center', async () => {
     jest.replaceProperty(Platform, 'OS', 'ios');
