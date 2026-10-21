@@ -398,24 +398,27 @@ open class GestureHandler {
     }
     val (adaptedTransformedEvent, adaptedSourceEvent) = adaptedEvents
 
-    updatePointerCountAndPosition(adaptedTransformedEvent)
+    try {
+      updatePointerCountAndPosition(adaptedTransformedEvent)
 
-    if (shouldCancelWhenOutside) {
-      if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
-        fail()
-        return
+      if (shouldCancelWhenOutside) {
+        if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
+          fail()
+          return
+        }
       }
-    }
 
-    updateLastPosition(adaptedTransformedEvent)
-    updatePointerType(adaptedSourceEvent, sourceEvent)
+      updateLastPosition(adaptedTransformedEvent)
+      updatePointerType(adaptedSourceEvent, sourceEvent)
 
-    if (sourceEvent.isHoverAction()) {
-      onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
-    } else {
-      onHandle(adaptedTransformedEvent, adaptedSourceEvent)
+      if (sourceEvent.isHoverAction()) {
+        onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
+      } else {
+        onHandle(adaptedTransformedEvent, adaptedSourceEvent)
+      }
+    } finally {
+      recycleAdaptedEvents(adaptedEvents, transformedEvent, sourceEvent)
     }
-    recycleAdaptedEvents(adaptedEvents, transformedEvent, sourceEvent)
   }
 
   // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188

@@ -129,7 +129,7 @@ export const Touchable = (props: TouchableProps) => {
       // overwrite it after the keyboard is already dismissed.
       dropKeyboardTapRef.current ??= isKeyboardDismissingTap(
         jsResponderContext,
-        e.nativeEvent.numberOfPointers
+        e.nativeEvent
       );
 
       if (dropKeyboardTapRef.current) {

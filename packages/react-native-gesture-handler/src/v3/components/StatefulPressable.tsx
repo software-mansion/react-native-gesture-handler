@@ -173,10 +173,10 @@ const StatefulPressable = (props: PressableProps) => {
   }, [cancelDelayedPress, cancelLongPress]);
 
   const captureKeyboardDismiss = useCallback(
-    (numberOfPointers: number) => {
+    (press: { numberOfPointers: number }) => {
       dropKeyboardTapRef.current ??= isKeyboardDismissingTap(
         jsResponderContext,
-        numberOfPointers
+        press
       );
     },
     [jsResponderContext]
@@ -307,7 +307,7 @@ const StatefulPressable = (props: PressableProps) => {
     maxDistance: INT32_MAX, // Stops long press from cancelling on touch move
     cancelsTouchesInView: false,
     onTouchesDown: (event) => {
-      captureKeyboardDismiss(event.numberOfTouches);
+      captureKeyboardDismiss({ numberOfPointers: event.numberOfTouches });
 
       if (dropKeyboardTapRef.current) {
         return;
@@ -366,17 +366,17 @@ const StatefulPressable = (props: PressableProps) => {
     },
     onBegin: (event) => {
       isPressWithoutPointer.current = isActivatedWithoutPointer(event);
-      captureKeyboardDismiss(event.numberOfPointers);
+      captureKeyboardDismiss(event);
 
       if (dropKeyboardTapRef.current) {
         return;
       }
 
       if (isPressWithoutPointer.current) {
-        // A TV drives this native gesture from the focus-engine Select press, and Android from a key
-        // or an accessibility service with no pointer. The press state machine is touch-based and never
-        // receives LONG_PRESS_TOUCHES_DOWN here, so bypass it and drive the press handlers directly.
-        // The hit-slop bounds check tests where a pointer went down, and a press with no pointer has none.
+        // Android drives this native gesture from a key or an accessibility service with no pointer, iOS from a
+        // press no touch drives, and tvOS from the focus-engine Select press. The press state machine is
+        // touch-based and never receives LONG_PRESS_TOUCHES_DOWN here, so bypass it and drive the press handlers
+        // directly. The hit-slop bounds check tests where a pointer went down, and a press with no pointer has none.
         handlePressIn(gestureToPressableEvent(event), true);
         return;
       }

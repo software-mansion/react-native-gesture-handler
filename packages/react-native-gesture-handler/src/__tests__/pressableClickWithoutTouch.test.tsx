@@ -562,12 +562,17 @@ const pressButton = (event: ReturnType<typeof buttonEvent>) => {
   }
 };
 
-const renderDefaultPressable = (props: EngineProps) =>
+const renderDefaultPressable = (
+  props: EngineProps,
+  container: PressableContainer = renderAlone
+) =>
   renderSettled(
     <GestureHandlerRootView>
-      <Pressable testID="pressable" {...props}>
-        <Text>Press Me</Text>
-      </Pressable>
+      {container(
+        <Pressable testID="pressable" {...props}>
+          <Text>Press Me</Text>
+        </Pressable>
+      )}
     </GestureHandlerRootView>
   );
 
@@ -915,19 +920,30 @@ const cancelTouchOnStatefulPressGesture = (
   });
 };
 
-// Only `StatefulPressable` drops the tap that dismisses the keyboard, so only it is driven with the keyboard up.
+// Renders a press target in a gesture-handler `ScrollView` whose tap dismisses the keyboard a React Native input holds.
+const renderWithKeyboardUp = async (
+  renderPressable: (container: PressableContainer) => Promise<void>
+) => {
+  const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+  focusTextInput();
+  await renderPressable(insideScrollViewDismissingKeyboard);
+  layOutButton();
+  emitKeyboardEvent(addListenerSpy, 'keyboardDidShow');
+  expect(
+    isKeyboardDismissingTap(NEVER_PERSIST_TAPS_CONTEXT, {
+      numberOfPointers: ONE_POINTER,
+    })
+  ).toBe(true);
+  return addListenerSpy;
+};
+
+// `LegacyPressable` drops no tap dismissing the keyboard, so only `StatefulPressable` and the default `Pressable`,
+// whose `Touchable` drops it, are driven with the keyboard up.
 describe('StatefulPressable on Android with the keyboard up for a React Native input', () => {
-  const renderWithKeyboardUp = async (handlers: PressHandlers) => {
-    const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
-    focusTextInput();
-    await statefulDriver.render(handlers, insideScrollViewDismissingKeyboard);
-    layOutButton();
-    emitKeyboardEvent(addListenerSpy, 'keyboardDidShow');
-    expect(
-      isKeyboardDismissingTap(NEVER_PERSIST_TAPS_CONTEXT, ONE_POINTER)
-    ).toBe(true);
-    return addListenerSpy;
-  };
+  const renderStatefulWithKeyboardUp = (handlers: PressHandlers) =>
+    renderWithKeyboardUp((container) =>
+      statefulDriver.render(handlers, container)
+    );
 
   afterEach(() => {
     setKeyboardVisibility(false);
@@ -935,7 +951,7 @@ describe('StatefulPressable on Android with the keyboard up for a React Native i
 
   test('drops a touch press, which is the tap dismissing the keyboard', async () => {
     const handlers = createPressHandlers();
-    await renderWithKeyboardUp(handlers);
+    await renderStatefulWithKeyboardUp(handlers);
 
     statefulDriver.changeNativeGestureState(withTouch(BEGAN));
     statefulDriver.touchDownOnPressGesture(BUTTON_CENTER_TOUCH);
@@ -948,7 +964,7 @@ describe('StatefulPressable on Android with the keyboard up for a React Native i
 
   test('runs onPress once for a click without a touch', async () => {
     const handlers = createPressHandlers();
-    await renderWithKeyboardUp(handlers);
+    await renderStatefulWithKeyboardUp(handlers);
 
     statefulDriver.fireNativeGesture(CLICK_WITHOUT_TOUCH);
 
@@ -962,7 +978,7 @@ describe('StatefulPressable on Android with the keyboard up for a React Native i
       .spyOn(AccessibilityInfo, 'isScreenReaderEnabled')
       .mockResolvedValueOnce(true);
     const handlers = createPressHandlers();
-    await renderWithKeyboardUp(handlers);
+    await renderStatefulWithKeyboardUp(handlers);
     const [began, activated, ended] = ACCESSIBILITY_CLICK;
 
     statefulDriver.changeNativeGestureState(began);
@@ -978,7 +994,7 @@ describe('StatefulPressable on Android with the keyboard up for a React Native i
 
   test('runs onPress once for a click without a touch after a touch the press gesture saw cancelled', async () => {
     const handlers = createPressHandlers();
-    await renderWithKeyboardUp(handlers);
+    await renderStatefulWithKeyboardUp(handlers);
 
     cancelTouchOnStatefulPressGesture(BUTTON_CENTER_TOUCH);
     statefulDriver.fireNativeGesture(CLICK_WITHOUT_TOUCH);
@@ -990,7 +1006,7 @@ describe('StatefulPressable on Android with the keyboard up for a React Native i
 
   test('runs onPress once for a touch press after the keyboard hides, after a touch the press gesture saw cancelled', async () => {
     const handlers = createPressHandlers();
-    const addListenerSpy = await renderWithKeyboardUp(handlers);
+    const addListenerSpy = await renderStatefulWithKeyboardUp(handlers);
 
     cancelTouchOnStatefulPressGesture(BUTTON_CENTER_TOUCH);
     emitKeyboardEvent(addListenerSpy, 'keyboardDidHide');
@@ -998,6 +1014,46 @@ describe('StatefulPressable on Android with the keyboard up for a React Native i
     statefulDriver.touchDownOnPressGesture(BUTTON_CENTER_TOUCH);
     statefulDriver.changeNativeGestureState(withTouch(ACTIVATED));
     statefulDriver.changeNativeGestureState(withTouch(ENDED));
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+});
+
+// Each target is rendered where the keyboard drops a phone's tap; on tvOS the focus engine drives every press, so none is a tap.
+describe('on tvOS with the keyboard up for a React Native input', () => {
+  const switchToTvOS = () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    jest.replaceProperty(Platform, 'isTV', true);
+  };
+
+  afterEach(() => {
+    setKeyboardVisibility(false);
+  });
+
+  test('StatefulPressable presses a tvOS press that reports a pointer', async () => {
+    const handlers = createPressHandlers();
+    await renderWithKeyboardUp((container) =>
+      statefulDriver.render(handlers, container)
+    );
+    switchToTvOS();
+
+    statefulDriver.fireNativeGesture([BEGAN, ACTIVATED, ENDED].map(withTouch));
+
+    expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
+    expect(handlers.onPressOut).toHaveBeenCalledTimes(1);
+    expect(handlers.onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test('Pressable presses a tvOS press that reports a pointer', async () => {
+    const handlers = createPressHandlers();
+    await renderWithKeyboardUp((container) =>
+      renderDefaultPressable(handlers, container)
+    );
+    switchToTvOS();
+
+    pressButton(buttonEvent(1, PointerType.TOUCH));
 
     expect(handlers.onPressIn).toHaveBeenCalledTimes(1);
     expect(handlers.onPressOut).toHaveBeenCalledTimes(1);

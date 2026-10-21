@@ -488,7 +488,7 @@ describe('[API v3] Components', () => {
     });
 
     // A tap is driven by one pointer.
-    const ONE_POINTER = 1;
+    const TAP = { numberOfPointers: 1 };
 
     // The drop requires a focused RN TextInput to blur.
     const focusInput = () =>
@@ -510,35 +510,25 @@ describe('[API v3] Components', () => {
       await act(flushImmediate);
 
       // Keyboard not shown yet -> nothing to dismiss.
-      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
-        false
-      );
+      expect(isKeyboardDismissingTap(makeContext('never'), TAP)).toBe(false);
 
       showKeyboard(addListenerSpy);
 
       // `never` (and its default, undefined) drops the tap; the others never do.
-      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
-        true
-      );
-      expect(isKeyboardDismissingTap(makeContext(undefined), ONE_POINTER)).toBe(
-        true
-      );
-      expect(isKeyboardDismissingTap(makeContext('handled'), ONE_POINTER)).toBe(
-        false
-      );
-      expect(isKeyboardDismissingTap(makeContext('always'), ONE_POINTER)).toBe(
-        false
-      );
+      expect(isKeyboardDismissingTap(makeContext('never'), TAP)).toBe(true);
+      expect(isKeyboardDismissingTap(makeContext(undefined), TAP)).toBe(true);
+      expect(isKeyboardDismissingTap(makeContext('handled'), TAP)).toBe(false);
+      expect(isKeyboardDismissingTap(makeContext('always'), TAP)).toBe(false);
       // Outside an RNGH ScrollView there is no context, so nothing is dropped.
-      expect(isKeyboardDismissingTap(null, ONE_POINTER)).toBe(false);
+      expect(isKeyboardDismissingTap(null, TAP)).toBe(false);
       // A key or an accessibility service presses without a pointer, which is no tap.
-      expect(isKeyboardDismissingTap(makeContext('never'), 0)).toBe(false);
+      expect(
+        isKeyboardDismissingTap(makeContext('never'), { numberOfPointers: 0 })
+      ).toBe(false);
 
       // The verdict must survive the dismissal blurring the input mid-tap.
       focusSpy.mockReturnValue(undefined);
-      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
-        true
-      );
+      expect(isKeyboardDismissingTap(makeContext('never'), TAP)).toBe(true);
 
       addListenerSpy.mockRestore();
       focusSpy.mockRestore();
@@ -559,16 +549,12 @@ describe('[API v3] Components', () => {
       showKeyboard(addListenerSpy);
 
       expect(TextInput.State.currentlyFocusedInput()).toBeNull();
-      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
-        false
-      );
+      expect(isKeyboardDismissingTap(makeContext('never'), TAP)).toBe(false);
 
       // Focus moving to an RN input while the keyboard stays up makes the
       // tap dismissible again.
       const focusSpy = focusInput();
-      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
-        true
-      );
+      expect(isKeyboardDismissingTap(makeContext('never'), TAP)).toBe(true);
 
       addListenerSpy.mockRestore();
       focusSpy.mockRestore();
@@ -587,9 +573,7 @@ describe('[API v3] Components', () => {
       // A detached/floating keyboard reports height 0 - nothing to dismiss.
       showKeyboard(addListenerSpy, 0);
 
-      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
-        false
-      );
+      expect(isKeyboardDismissingTap(makeContext('never'), TAP)).toBe(false);
 
       addListenerSpy.mockRestore();
     });
@@ -660,9 +644,7 @@ describe('[API v3] Components', () => {
       );
       await act(flushImmediate);
       showKeyboard(addListenerSpy);
-      expect(isKeyboardDismissingTap(makeContext('never'), ONE_POINTER)).toBe(
-        true
-      );
+      expect(isKeyboardDismissingTap(makeContext('never'), TAP)).toBe(true);
 
       // A key or an accessibility service dismisses no keyboard, so the press is not the dismissing tap.
       const button = screen.getByTestId('touchable');

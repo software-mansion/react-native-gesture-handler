@@ -547,7 +547,8 @@ class GestureHandlerOrchestrator(
     if (!gestureHandlers.contains(handler)) {
       prepareForRecording(handler, view)
 
-      // The handlers already recorded compete with this one for the pointer's touch.
+      // The handlers the current touch already recorded may refuse one its pointer records; an activation no pointer
+      // drives is no part of a touch.
       if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
         handler.cancel()
       }

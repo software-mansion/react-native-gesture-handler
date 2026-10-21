@@ -427,8 +427,8 @@ class NativeViewGestureHandler : GestureHandler() {
     fun shouldCancelRootViewGestureHandlerIfNecessary() = false
 
     /**
-     * Called when the handler is being recorded by the orchestrator, before any pointer events
-     * are delivered. Returning `false` cancels the handler immediately.
+     * Called when a pointer's touch records the handler with the orchestrator, before any pointer
+     * events are delivered. Returning `false` cancels the handler immediately.
      *
      * @param recorded handlers already recorded for the current touch
      * @param handler the handler being recorded
