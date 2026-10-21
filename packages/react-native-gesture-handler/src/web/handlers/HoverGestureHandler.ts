@@ -49,6 +49,12 @@ export default class HoverGestureHandler extends GestureHandler {
   }
 
   protected override onPointerMove(event: AdaptedEvent): void {
+    // `pointerenter` may fire before listeners are attached
+    if (this.state === State.UNDETERMINED) {
+      this.onPointerMoveOver(event);
+      return;
+    }
+
     this.tracker.track(event);
     this.stylusData = event.stylusData;
 
