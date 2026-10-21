@@ -177,6 +177,82 @@ const styles = StyleSheet.create({
 `}/>
 
 
+#### Views reordered during a gesture
+
+When a re-render changes `GestureDetector`'s place in the view hierarchy (e.g., a drag-to-reorder list puts the held row at a new index), Fabric detaches the view and reattaches it, therefore the active gesture is cancelled.
+
+On Android, you can keep the gesture alive by wrapping the list in `InterceptingGestureDetector` and using `VirtualGestureDetector` for each row. The gesture is then attached through the list's detector, which stays in place.
+
+On iOS the system cancels the gesture of a reattached view regardless of the detector used.
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[11, 43]}
+src={`
+import React, { useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import {
+  GestureHandlerRootView,
+  InterceptingGestureDetector,
+  usePanGesture,
+  VirtualGestureDetector,
+} from 'react-native-gesture-handler';
+
+type RowProps = { id: string; onGrab: (id: string) => void };
+
+function Row({ id, onGrab }: RowProps) {
+  const pan = usePanGesture({
+    runOnJS: true,
+    onActivate: () => onGrab(id),
+  });
+
+  return (
+    <VirtualGestureDetector gesture={pan}>
+      <View style={styles.row}>
+        <Text style={styles.text}>{id}</Text>
+      </View>
+    </VirtualGestureDetector>
+  );
+}
+
+export default function App() {
+  const [rows, setRows] = useState(['A', 'B', 'C', 'D']);
+
+  const onGrab = (id: string) =>
+    setRows((current) => [id, ...current.filter((row) => row !== id)]);
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <InterceptingGestureDetector>
+        <FlatList
+          data={rows}
+          keyExtractor={(id) => id}
+          renderItem={({ item }) => <Row id={item} onGrab={onGrab} />}
+        />
+      </InterceptingGestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
+  row: {
+    height: 80,
+    marginBottom: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#001A72',
+  },
+  text: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+});
+`}/>
+
+
 ## Properties
 
 ### gesture
