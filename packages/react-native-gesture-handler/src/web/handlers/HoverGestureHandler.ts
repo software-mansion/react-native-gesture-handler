@@ -30,7 +30,9 @@ export default class HoverGestureHandler extends GestureHandler {
     GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(this);
 
     this.tracker.addToTracker(event);
+    this.pointerType = event.pointerType;
     this.stylusData = event.stylusData;
+
     super.onPointerMoveOver(event);
 
     if (this.state === State.UNDETERMINED) {
@@ -50,6 +52,7 @@ export default class HoverGestureHandler extends GestureHandler {
 
   protected override onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
+    this.pointerType = event.pointerType;
     this.stylusData = event.stylusData;
 
     super.onPointerMove(event);
