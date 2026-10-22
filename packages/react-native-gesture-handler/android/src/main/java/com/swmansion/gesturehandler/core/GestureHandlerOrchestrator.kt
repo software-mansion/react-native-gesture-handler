@@ -533,7 +533,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  fun recordHandlerIfNotPresent(handler: GestureHandler, view: View?) {
+  fun recordHandlerIfNotPresent(handler: GestureHandler, view: View?, pointerId: Int = -1) {
     if (gestureHandlers.contains(handler)) {
       return
     }
@@ -543,7 +543,9 @@ class GestureHandlerOrchestrator(
     handler.activationIndex = Int.MAX_VALUE
     handler.prepare(view, this)
 
-    if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
+    // Only handlers extracted for the same pointer (they already track it) may block this one
+    val recorded = if (pointerId >= 0) gestureHandlers.filter { it.isTrackingPointer(pointerId) } else emptyList()
+    if (!handler.shouldBeginWithRecordedHandlers(recorded)) {
       handler.cancel()
     }
 
@@ -589,7 +591,7 @@ class GestureHandlerOrchestrator(
 
               if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
                 found = true
-                recordHandlerIfNotPresent(handler, parentViewGroup)
+                recordHandlerIfNotPresent(handler, parentViewGroup, pointerId)
                 handler.startTrackingPointer(pointerId)
               }
             }
@@ -654,7 +656,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          recordHandlerIfNotPresent(handler, view)
+          recordHandlerIfNotPresent(handler, view, pointerId)
           handler.startTrackingPointer(pointerId)
           found = true
         }
@@ -691,7 +693,7 @@ class GestureHandlerOrchestrator(
                 continue
               }
 
-              recordHandlerIfNotPresent(handler, view)
+              recordHandlerIfNotPresent(handler, view, pointerId)
               handler.startTrackingPointer(pointerId)
               found = true
             }
