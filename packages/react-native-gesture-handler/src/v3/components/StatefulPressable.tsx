@@ -91,6 +91,7 @@ const StatefulPressable = (props: PressableProps) => {
   const isOnPressAllowed = useRef<boolean>(true);
   const jsResponderContext = use(JSResponderContext);
   const isCurrentlyPressed = useRef<boolean>(false);
+  const pressInEventRef = useRef<PressableEvent | null>(null);
   const dimensions = useRef<PressableDimensions>({
     width: 0,
     height: 0,
@@ -304,6 +305,7 @@ const StatefulPressable = (props: PressableProps) => {
       }
 
       const pressableEvent = gestureTouchToPressableEvent(event);
+      pressInEventRef.current = pressableEvent;
       stateMachine.handleEvent(
         StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
         pressableEvent
@@ -399,6 +401,21 @@ const StatefulPressable = (props: PressableProps) => {
       stateMachine.handleEvent(
         event.canceled ? StateMachineEvent.CANCEL : StateMachineEvent.FINALIZE
       );
+
+      // On iOS the button's cancel can land before the long press's touch
+      // cancel, or without one, so deliver the press-out here
+      if (
+        Platform.OS === 'ios' &&
+        event.canceled &&
+        isCurrentlyPressed.current
+      ) {
+        handlePressOut(
+          pressInEventRef.current ??
+            viewCenterToPressableEvent(dimensions.current),
+          false
+        );
+        return;
+      }
 
       handleFinalize();
     },
