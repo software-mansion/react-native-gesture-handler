@@ -341,35 +341,43 @@ A method that resets the swiping states of this `Swipeable` component. Unlike [`
 
 Example of a `Swipeable` component can be found in [Gesture Handler repository](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/new_api/components/swipeable/index.tsx).
 
+In the example below, `RightAction` measures its own width and uses `translation` to stay attached to the right edge of the row, so it slides in together with the row instead of being uncovered in place.
+
 <CollapsibleCode 
 label="Show full example"
 expandedLabel="Hide full example"
-lineBounds={[10, 41]}
+lineBounds={[11, 50]}
 src={`
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
-
+import type { LayoutChangeEvent } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import Reanimated, {
-  SharedValue,
+import type { SharedValue } from 'react-native-reanimated';
+import Animated, {
   useAnimatedStyle,
+  useSharedValue,
 } from 'react-native-reanimated';
 
-function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
-  const styleAnimation = useAnimatedStyle(() => {
-    console.log('showRightProgress:', prog.value);
-    console.log('appliedTranslation:', drag.value);
+function RightAction({ translation }: { translation: SharedValue<number> }) {
+  const width = useSharedValue(0);
 
-    return {
-      transform: [{ translateX: drag.value + 50 }],
-    };
-  });
+  const onLayout = (e: LayoutChangeEvent) => {
+    width.value = e.nativeEvent.layout.width;
+  };
+
+  const styleAnimation = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: Math.max(translation.value, -width.value) + width.value },
+    ],
+  }));
 
   return (
-    <Reanimated.View style={styleAnimation}>
-      <Text style={styles.rightAction}>Text</Text>
-    </Reanimated.View>
+    <Animated.View
+      onLayout={onLayout}
+      style={[styles.rightAction, styleAnimation]}>
+      <Text style={styles.rightActionText}>Delete</Text>
+    </Animated.View>
   );
 }
 
@@ -381,19 +389,22 @@ export default function Example() {
         friction={2}
         enableTrackpadTwoFingerGesture
         rightThreshold={40}
-        renderRightActions={RightAction}>
-        <Text>Swipe me!</Text>
+        renderRightActions={(_progress, translation) => (
+          <RightAction translation={translation} />
+        )}>
+        <Text>Swipe left!</Text>
       </ReanimatedSwipeable>
     </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
-  separator: {
-    width: '100%',
-    borderTopWidth: 1,
+  rightAction: {
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+    backgroundColor: 'purple',
   },
+  rightActionText: { color: 'white' },
   swipeable: {
     height: 50,
     backgroundColor: 'papayawhip',
