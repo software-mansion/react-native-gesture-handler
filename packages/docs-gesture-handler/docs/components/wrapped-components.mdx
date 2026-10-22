@@ -7,6 +7,8 @@ sidebar_position: 5
 
 Some components come with a [`Native`](/docs/gestures/use-native-gesture) gesture pre-applied. This allows them to participate in the gesture recognition process. Have a look at the example below.
 
+The callbacks of the pre-applied gesture always run on the JS thread; the Reanimated-specific configuration (`disableReanimated`, `runOnJS`) is not available on these components.
+
 ```tsx
 import { useState } from 'react';
 import { Switch } from 'react-native';
