@@ -376,10 +376,12 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    this.tryToSendTouchEvent(event);
+    event.eventType = EventTypes.MOVE;
+    this.onPointerOutOfBounds(event);
   }
   protected onPointerEnter(event: AdaptedEvent): void {
-    this.tryToSendTouchEvent(event);
+    event.eventType = EventTypes.MOVE;
+    this.onPointerMove(event);
   }
   protected onPointerCancel(_event: AdaptedEvent): void {
     // No need to send a cancel touch event explicitly here. `cancel` will

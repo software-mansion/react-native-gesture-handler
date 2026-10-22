@@ -21,6 +21,26 @@ class TestPanGestureHandler extends PanGestureHandler {
     return this.transformNativeEvent();
   }
 
+  public pointerDown(event: AdaptedEvent): void {
+    this.onPointerDown(event);
+  }
+
+  public pointerMove(event: AdaptedEvent): void {
+    this.onPointerMove(event);
+  }
+
+  public pointerLeave(event: AdaptedEvent): void {
+    this.onPointerLeave(event);
+  }
+
+  public pointerEnter(event: AdaptedEvent): void {
+    this.onPointerEnter(event);
+  }
+
+  public pointerUp(event: AdaptedEvent): void {
+    this.onPointerUp(event);
+  }
+
   protected override onWheel(event: AdaptedEvent): void {
     this.wheelEvents.push(event);
     super.onWheel(event);
@@ -39,6 +59,19 @@ function wheelEvent(): AdaptedEvent {
     time: 0,
     // Not a multiple of 120, so the wheel is recognized as a touchpad.
     wheelDeltaY: 13,
+  };
+}
+
+function pointerEvent(eventType: EventTypes, y: number): AdaptedEvent {
+  return {
+    x: 20,
+    y,
+    offsetX: 20,
+    offsetY: y,
+    pointerId: 0,
+    eventType,
+    pointerType: PointerType.MOUSE,
+    time: 0,
   };
 }
 
@@ -305,5 +338,83 @@ describe('PanGestureHandler trackpad coordinates', () => {
     expect(
       trackpadPan(view, { clientX: 50, clientY: 80, offsetX: 5, offsetY: 10 })
     ).toMatchObject({ x: 75, y: 50, absoluteX: 65, absoluteY: 110 });
+  });
+});
+
+describe('PanGestureHandler pointer leaving and entering the view', () => {
+  // The view is 40x40, the pointer goes down at its center.
+  function startPan(config: Record<string, unknown> = {}) {
+    const handler = createHandler();
+    const updates: { state: State; translationY: unknown }[] = [];
+
+    handler.sendEvent = jest.fn((newState: State) => {
+      updates.push({
+        state: newState,
+        translationY: handler.nativeEvent().translationY,
+      });
+    });
+
+    handler.setGestureConfig({ enabled: true, minDist: 0, ...config });
+    handler.pointerDown(pointerEvent(EventTypes.DOWN, 20));
+
+    return { handler, updates };
+  }
+
+  test('the move that leaves the view updates the position', () => {
+    const { handler, updates } = startPan();
+
+    handler.pointerMove(pointerEvent(EventTypes.MOVE, 25));
+    expect(handler.state).toBe(State.ACTIVE);
+
+    updates.length = 0;
+    handler.pointerLeave(pointerEvent(EventTypes.LEAVE, 320));
+
+    expect(updates).toEqual([{ state: State.ACTIVE, translationY: 300 }]);
+
+    handler.pointerUp(pointerEvent(EventTypes.UP, 320));
+
+    expect(updates[updates.length - 1]).toEqual({
+      state: State.END,
+      translationY: 300,
+    });
+  });
+
+  test('the move that enters the view updates the position', () => {
+    const { handler, updates } = startPan();
+
+    handler.pointerMove(pointerEvent(EventTypes.MOVE, 25));
+    handler.pointerLeave(pointerEvent(EventTypes.LEAVE, 320));
+
+    updates.length = 0;
+    handler.pointerEnter(pointerEvent(EventTypes.ENTER, 30));
+
+    expect(updates).toEqual([{ state: State.ACTIVE, translationY: 10 }]);
+
+    handler.pointerUp(pointerEvent(EventTypes.UP, 30));
+
+    expect(updates[updates.length - 1]).toEqual({
+      state: State.END,
+      translationY: 10,
+    });
+  });
+
+  test('the move that leaves the view can activate the gesture', () => {
+    const { handler } = startPan({ minDist: 10 });
+
+    handler.pointerMove(pointerEvent(EventTypes.MOVE, 25));
+    expect(handler.state).toBe(State.BEGAN);
+
+    handler.pointerLeave(pointerEvent(EventTypes.LEAVE, 320));
+
+    expect(handler.state).toBe(State.ACTIVE);
+  });
+
+  test('the gesture is still cancelled when the pointer leaves the view with shouldCancelWhenOutside', () => {
+    const { handler } = startPan({ shouldCancelWhenOutside: true });
+
+    handler.pointerMove(pointerEvent(EventTypes.MOVE, 25));
+    handler.pointerLeave(pointerEvent(EventTypes.LEAVE, 320));
+
+    expect(handler.state).toBe(State.CANCELLED);
   });
 });
