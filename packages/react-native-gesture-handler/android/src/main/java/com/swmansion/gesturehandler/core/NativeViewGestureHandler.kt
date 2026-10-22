@@ -124,6 +124,9 @@ class NativeViewGestureHandler : GestureHandler() {
 
   override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = canBeInterruptedBy(handler)
 
+  override val cancelsJSResponderOnBegin: Boolean
+    get() = cancelsJSResponder && hook.cancelsJSResponderOnBegin()
+
   /**
    * Whether this handler permits [other] to take over the touch stream, given its
    * `disallowInterruption` and `yieldsToContinuousGestures` configuration.
@@ -406,6 +409,13 @@ class NativeViewGestureHandler : GestureHandler() {
      * Called after a native view grabbed the touch lock; return true to cancel the handler.
      */
     fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean) = false
+
+    /**
+     * Whether the JS responder should be cancelled as soon as the handler begins. A handler that may
+     * only activate on ACTION_UP cancels too late there: RN's root dispatches the UP to JS before any
+     * child sees it, so the JS responder has already finished (#4626).
+     */
+    fun cancelsJSResponderOnBegin() = false
 
     /**
      * shouldActivateOnStart and tryIntercept have priority over this method

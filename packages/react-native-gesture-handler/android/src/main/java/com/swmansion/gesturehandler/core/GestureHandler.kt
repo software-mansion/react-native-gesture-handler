@@ -102,6 +102,11 @@ open class GestureHandler {
   var dispatchesReanimatedEvents = false
   var cancelsJSResponder = true
 
+  // Whether the JS responder is cancelled already when the handler begins instead of on activation.
+  // Implies `cancelsJSResponder`.
+  open val cancelsJSResponderOnBegin: Boolean
+    get() = false
+
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
     private set

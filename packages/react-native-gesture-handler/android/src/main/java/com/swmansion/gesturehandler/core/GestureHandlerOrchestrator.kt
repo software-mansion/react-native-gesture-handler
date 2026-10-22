@@ -201,6 +201,10 @@ class GestureHandlerOrchestrator(
       }
       cleanupAwaitingHandlers()
     }
+    if (newState == GestureHandler.STATE_BEGAN && handler.cancelsJSResponderOnBegin) {
+      onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
+    }
+
     if (newState == GestureHandler.STATE_ACTIVE) {
       tryActivate(handler)
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
@@ -267,7 +271,7 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    if (handler.cancelsJSResponder) {
+    if (handler.cancelsJSResponder && !handler.cancelsJSResponderOnBegin) {
       onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
     }
 

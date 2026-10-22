@@ -941,6 +941,11 @@ class RNGestureHandlerButtonViewManager :
 
     override fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean) = grabbedMidGesture || !receivedNativeDown
 
+    // Inside a scrolling container the pressed state (and so the activation) is deferred, possibly
+    // until UP, which is too late to cancel the JS responder. Beginning already means the button owns
+    // the touch unless a scroll takes over, and a scroll cancels the JS responder on its own.
+    override fun cancelsJSResponderOnBegin() = true
+
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
       if (super.onInterceptTouchEvent(event)) {
         return true
