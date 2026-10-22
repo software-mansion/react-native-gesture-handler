@@ -67,6 +67,34 @@ export type NativeViewGestureHandlerPayload = {
    * True if gesture was performed inside of containing view, false otherwise.
    */
   pointerInside: boolean;
+
+  /**
+   * X coordinate, expressed in points, of the pointer relative to the view
+   * attached to the handler. A press no pointer drives, such as a key's press,
+   * an accessibility service's click on Android or a TV's Select press, reports
+   * the view's center.
+   */
+  x: number;
+
+  /**
+   * Y coordinate, expressed in points, of the pointer relative to the view
+   * attached to the handler. A press no pointer drives, such as a key's press,
+   * an accessibility service's click on Android or a TV's Select press, reports
+   * the view's center.
+   */
+  y: number;
+
+  /**
+   * X coordinate, expressed in points, of the same point relative to the
+   * window.
+   */
+  absoluteX: number;
+
+  /**
+   * Y coordinate, expressed in points, of the same point relative to the
+   * window.
+   */
+  absoluteY: number;
 };
 
 export type PanGestureHandlerEventPayload = {

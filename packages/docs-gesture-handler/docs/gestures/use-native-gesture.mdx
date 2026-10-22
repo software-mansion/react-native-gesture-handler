@@ -151,4 +151,40 @@ pointerInside: boolean;
 
 `true` if the gesture was performed inside the containing view, `false` otherwise.
 
+### x
+
+```ts
+x: number;
+```
+
+X coordinate, expressed in points, of the pointer relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). A press no pointer drives, such as a key's press, an accessibility service's click on Android or a TV's Select press, reports the view's center.
+
+### y
+
+```ts
+y: number;
+```
+
+Y coordinate, expressed in points, of the pointer relative to the view attached to the [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector). A press no pointer drives, such as a key's press, an accessibility service's click on Android or a TV's Select press, reports the view's center.
+
+### absoluteX
+
+```ts
+absoluteX: number;
+```
+
+X coordinate, expressed in points, of the same point relative to the window.
+
+### absoluteY
+
+```ts
+absoluteY: number;
+```
+
+Y coordinate, expressed in points, of the same point relative to the window.
+
 <BaseEventData />
+
+:::note
+On Android, a hardware key's press and an accessibility service's click on a Gesture Handler button, which no pointer drives, activate the button's own native gesture with `numberOfPointers` set to `0`, and `pointerType` set to `PointerType.KEY` for the key and `PointerType.OTHER` for the service; a native gesture on any other view gets no such activation. On iOS, a press on a button that no touch drives, such as the focus engine's Select press on tvOS, reports `numberOfPointers` set to `0` and `PointerType.KEY`. On web, a key's press counts as one `PointerType.KEY` pointer.
+:::

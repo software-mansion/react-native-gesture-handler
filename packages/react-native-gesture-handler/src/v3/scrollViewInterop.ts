@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { TextInput } from 'react-native';
 
+import { isActivatedWithoutPointer } from '../components/Pressable/utils';
+
 export type KeyboardShouldPersistTaps =
   | boolean
   | 'always'
@@ -40,9 +42,11 @@ export function setKeyboardVisibility(visible: boolean) {
 }
 
 export function isKeyboardDismissingTap(
-  jsResponderContext: JSResponderContextValue | null | undefined
+  jsResponderContext: JSResponderContextValue | null | undefined,
+  press: { numberOfPointers: number }
 ): boolean {
-  if (jsResponderContext == null) {
+  // Only a tap dismisses the keyboard, and a press no pointer drives is none.
+  if (jsResponderContext == null || isActivatedWithoutPointer(press)) {
     return false;
   }
 

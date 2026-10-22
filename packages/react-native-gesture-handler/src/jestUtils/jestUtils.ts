@@ -115,6 +115,10 @@ const handlersDefaultEvents: DefaultEventsMapping = {
   [nativeViewHandlerName]: {
     pointerInside: true,
     numberOfPointers: 1,
+    x: 0,
+    y: 0,
+    absoluteX: 0,
+    absoluteY: 0,
   },
   [panHandlerName]: {
     x: 0,

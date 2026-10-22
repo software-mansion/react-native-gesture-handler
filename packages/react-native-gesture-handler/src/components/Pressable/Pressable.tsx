@@ -32,6 +32,7 @@ import {
   addInsets,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
+  isActivatedWithoutPointer,
   isTouchWithinInset,
   numberAsInset,
   viewCenterToPressableEvent,
@@ -84,6 +85,8 @@ const LegacyPressable = (props: LegacyPressableProps) => {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
   const isCurrentlyPressed = useRef<boolean>(false);
+  // Whether the press in progress began with no pointer, which decides how it ends.
+  const isPressWithoutPointer = useRef<boolean>(false);
   const dimensions = useRef<PressableDimensions>({ width: 0, height: 0 });
 
   const normalizedHitSlop: Insets = useMemo(
@@ -148,14 +151,16 @@ const LegacyPressable = (props: LegacyPressableProps) => {
 
   const handleFinalize = useCallback(() => {
     isCurrentlyPressed.current = false;
+    isPressWithoutPointer.current = false;
     cancelLongPress();
     cancelDelayedPress();
     setPressedState(false);
   }, [cancelDelayedPress, cancelLongPress]);
 
   const handlePressIn = useCallback(
-    (event: PressableEvent) => {
+    (event: PressableEvent, skipBoundsCheck = false) => {
       if (
+        !skipBoundsCheck &&
         !isTouchWithinInset(
           dimensions.current,
           normalizedHitSlop,
@@ -302,7 +307,14 @@ const LegacyPressable = (props: LegacyPressableProps) => {
             handlePressOut(pressableEvent, false);
           }
         })
-        .onBegin(() => {
+        .onBegin((event) => {
+          isPressWithoutPointer.current = isActivatedWithoutPointer(event);
+          if (isPressWithoutPointer.current) {
+            // The press state machine is touch-based and never receives LONG_PRESS_TOUCHES_DOWN here.
+            // The hit-slop bounds check tests where a pointer went down, and a press with no pointer has none.
+            handlePressIn(gestureToPressableEvent(event), true);
+            return;
+          }
           if (Platform.OS === 'android' && isScreenReaderEnabled) {
             stateMachine.handleEvent(
               StateMachineEvent.NATIVE_BEGIN,
@@ -318,7 +330,13 @@ const LegacyPressable = (props: LegacyPressableProps) => {
             stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
           }
         })
-        .onFinalize((_event, success) => {
+        .onFinalize((event, success) => {
+          if (isPressWithoutPointer.current) {
+            handlePressOut(gestureToPressableEvent(event), success);
+            handleFinalize();
+            return;
+          }
+
           if (Platform.OS !== 'web') {
             // On Web we use LongPress().onFinalize() instead of Native().onFinalize(),
             // as Native cancels on mouse move, and LongPress does not.
@@ -334,7 +352,13 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           }
         })
         .shouldActivateOnStart(Platform.OS === 'web'),
-    [stateMachine, handlePressOut, handleFinalize, isScreenReaderEnabled]
+    [
+      stateMachine,
+      handlePressIn,
+      handlePressOut,
+      handleFinalize,
+      isScreenReaderEnabled,
+    ]
   );
 
   const isPressableEnabled = disabled !== true;

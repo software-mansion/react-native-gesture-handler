@@ -267,7 +267,8 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    if (handler.cancelsJSResponder) {
+    // An activation no pointer drives, a key's or an accessibility service's, shares no touch with the JS responder.
+    if (handler.cancelsJSResponder && !handler.isActivatedWithoutPointer) {
       onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
     }
 
@@ -538,16 +539,31 @@ class GestureHandlerOrchestrator(
       return
     }
 
+    prepareForRecording(handler, view)
+    gestureHandlers.add(handler)
+  }
+
+  private fun recordHandlerForPointer(handler: GestureHandler, view: View, pointerId: Int) {
+    if (!gestureHandlers.contains(handler)) {
+      prepareForRecording(handler, view)
+
+      // The handlers the current touch already recorded may refuse one its pointer records; an activation no pointer
+      // drives is no part of a touch.
+      if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
+        handler.cancel()
+      }
+
+      gestureHandlers.add(handler)
+    }
+
+    handler.startTrackingPointer(pointerId)
+  }
+
+  private fun prepareForRecording(handler: GestureHandler, view: View?) {
     handler.isActive = false
     handler.isAwaiting = false
     handler.activationIndex = Int.MAX_VALUE
     handler.prepare(view, this)
-
-    if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
-      handler.cancel()
-    }
-
-    gestureHandlers.add(handler)
   }
 
   private fun isViewOverflowingParent(view: View): Boolean {
@@ -589,8 +605,7 @@ class GestureHandlerOrchestrator(
 
               if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
                 found = true
-                recordHandlerIfNotPresent(handler, parentViewGroup)
-                handler.startTrackingPointer(pointerId)
+                recordHandlerForPointer(handler, parentViewGroup, pointerId)
               }
             }
           }
@@ -654,8 +669,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          recordHandlerIfNotPresent(handler, view)
-          handler.startTrackingPointer(pointerId)
+          recordHandlerForPointer(handler, view, pointerId)
           found = true
         }
       }
@@ -691,8 +705,7 @@ class GestureHandlerOrchestrator(
                 continue
               }
 
-              recordHandlerIfNotPresent(handler, view)
-              handler.startTrackingPointer(pointerId)
+              recordHandlerForPointer(handler, view, pointerId)
               found = true
             }
           }
@@ -946,20 +959,76 @@ class GestureHandlerOrchestrator(
   // be turned on and also confirm with the ViewConfigHelper implementation
   private fun isClipping(view: View) = view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
 
-  fun activateNativeHandlersForView(view: View) {
-    handlerRegistry.getHandlersForView(view)?.forEach {
-      if (it !is NativeViewGestureHandler) {
-        return@forEach
-      }
-      this.recordHandlerIfNotPresent(it, view)
-
-      it.withMarkedAsInBounds {
-        it.begin()
-        it.activate()
-        it.end()
-      }
+  /** Whether a pointer presses the view through one of its native handlers. */
+  fun isViewPressedByPointer(view: View): Boolean {
+    val registeredHandlers = handlerRegistry.getHandlersForView(view) ?: return false
+    return synchronized(registeredHandlers) {
+      registeredHandlers.any { isNativeHandlerTrackingPointer(it) }
     }
   }
+
+  /** Whether a press no pointer drives can activate the view's native handlers, so the view may show it as pressed. */
+  fun canActivateNativeHandlersWithoutPointer(view: View): Boolean =
+    withHandlersReadyForActivationWithoutPointer(view) { handlers -> handlers.isNotEmpty() }
+
+  /**
+   * Activates the view's native handlers a press no pointer drives can begin, and answers whether one of them took
+   * the press.
+   */
+  fun activateNativeHandlersForView(view: View, pointerType: Int = GestureHandler.POINTER_TYPE_OTHER): Boolean =
+    withHandlersReadyForActivationWithoutPointer(view) { handlers ->
+      var activated = false
+      for (handler in handlers) {
+        recordHandlerIfNotPresent(handler, view)
+        handler.prepareActivationWithoutPointer(pointerType)
+        handler.begin()
+        handler.activate()
+        handler.end()
+
+        // A handler waiting on another gesture has ended too; one a gesture it waits on cancelled took nothing.
+        if (handler.state == GestureHandler.STATE_END) {
+          activated = true
+        }
+      }
+      activated
+    }
+
+  // Hands the block the view's native handlers a press no pointer drives can begin, or none while a pointer presses
+  // the view through one of them. Other threads attach and drop handlers under the registry list's lock, so the block
+  // gets a snapshot taken under it and runs, with every callback it starts, outside it.
+  private inline fun <T> withHandlersReadyForActivationWithoutPointer(
+    view: View,
+    block: (handlers: List<GestureHandler>) -> T,
+  ): T {
+    val handlers = obtainHandlerList()
+    try {
+      handlerRegistry.getHandlersForView(view)?.let { registeredHandlers ->
+        synchronized(registeredHandlers) {
+          handlers.addAll(registeredHandlers)
+        }
+      }
+
+      if (handlers.any { isNativeHandlerTrackingPointer(it) }) {
+        handlers.clear()
+      } else {
+        handlers.retainAll { canBeginWithoutPointer(it) }
+      }
+
+      return block(handlers)
+    } finally {
+      recycleHandlerList(handlers)
+    }
+  }
+
+  // A pointer's gesture presses on its release, which also frees the button's touch responder.
+  private fun isNativeHandlerTrackingPointer(handler: GestureHandler) =
+    handler is NativeViewGestureHandler && handler.hasTrackedPointers
+
+  // A handler in a gesture of its own, one waiting on another gesture with its pointers lifted included, keeps that
+  // gesture's report, which `makeActive` dispatches once it may activate.
+  private fun canBeginWithoutPointer(handler: GestureHandler) = handler is NativeViewGestureHandler &&
+    handler.isEnabled &&
+    (handler.state == GestureHandler.STATE_UNDETERMINED || !gestureHandlers.contains(handler))
 
   companion object {
     // The limit doesn't necessarily need to exists, it was just simpler to implement it that way

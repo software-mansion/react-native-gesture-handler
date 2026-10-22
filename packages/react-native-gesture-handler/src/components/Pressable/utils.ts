@@ -1,4 +1,5 @@
 import type { Insets } from 'react-native';
+import { Platform } from 'react-native';
 
 import type {
   GestureStateChangeEvent,
@@ -8,8 +9,13 @@ import type {
 import type {
   HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
 } from '../../handlers/GestureHandlerEventPayload';
-import type { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
+import type {
+  HoverGestureEvent,
+  LongPressGestureEvent,
+  NativeGestureEvent,
+} from '../../v3';
 import type { HoverGestureActiveEvent } from '../../v3/hooks';
 import type {
   InnerPressableEvent,
@@ -47,14 +53,19 @@ const touchDataToPressEvent = (
   changedTouches: [], // Always empty - legacy compatibility
 });
 
+type PositionedGestureEvent =
+  | GestureStateChangeEvent<
+      | HoverGestureHandlerEventPayload
+      | LongPressGestureHandlerEventPayload
+      | NativeViewGestureHandlerPayload
+    >
+  | HoverGestureEvent
+  | HoverGestureActiveEvent
+  | LongPressGestureEvent
+  | NativeGestureEvent;
+
 const gestureToPressEvent = (
-  event:
-    | GestureStateChangeEvent<
-        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-      >
-    | HoverGestureEvent
-    | HoverGestureActiveEvent
-    | LongPressGestureEvent,
+  event: PositionedGestureEvent,
   timestamp: number,
   targetId: number
 ): InnerPressableEvent => ({
@@ -80,13 +91,7 @@ const isTouchWithinInset = (
   (touch?.locationY ?? 0) > -(inset.top ?? 0);
 
 const gestureToPressableEvent = (
-  event:
-    | GestureStateChangeEvent<
-        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-      >
-    | HoverGestureEvent
-    | HoverGestureActiveEvent
-    | LongPressGestureEvent
+  event: PositionedGestureEvent
 ): PressableEvent => {
   const timestamp = Date.now();
 
@@ -178,10 +183,17 @@ const viewCenterToPressableEvent = (
   };
 };
 
+// A press no pointer drives, a key's, an accessibility service's or one no touch drives, begins with no pointer
+// (https://www.w3.org/TR/pointerevents3/#event-attributes); on tvOS nothing points at the screen, so the focus engine
+// drives every press. A press's last event counts only the pointers still down, so a press is classified by its first.
+const isActivatedWithoutPointer = (event: { numberOfPointers: number }) =>
+  (Platform.OS === 'ios' && Platform.isTV) || event.numberOfPointers === 0;
+
 export {
   addInsets,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
+  isActivatedWithoutPointer,
   isTouchWithinInset,
   numberAsInset,
   viewCenterToPressableEvent,
