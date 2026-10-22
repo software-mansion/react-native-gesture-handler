@@ -53,6 +53,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     super.onDetachedFromWindow()
   }
 
+  // The DOWN currently going through the native dispatch below this detector, see
+  // `requestDisallowInterceptTouchEvent`.
+  private var nativeDownInFlight: MotionEvent? = null
+
   override fun dispatchTouchEvent(event: MotionEvent): Boolean {
     when (event.actionMasked) {
       MotionEvent.ACTION_DOWN -> lastNativeDownTime = event.downTime
@@ -61,7 +65,19 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         RNGestureHandlerRootView.findGestureHandlerRootView(this)?.onNativeTouchCancelled()
       }
     }
-    return super.dispatchTouchEvent(event)
+
+    val isDown = event.actionMasked == MotionEvent.ACTION_DOWN ||
+      event.actionMasked == MotionEvent.ACTION_POINTER_DOWN
+    if (!isDown) {
+      return super.dispatchTouchEvent(event)
+    }
+
+    nativeDownInFlight = event
+    try {
+      return super.dispatchTouchEvent(event)
+    } finally {
+      nativeDownInFlight = null
+    }
   }
 
   fun shouldCancelOnNativeTouchCancel(eventTime: Long) = lastNativeCancelTime == eventTime
@@ -78,6 +94,12 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
     if (!disallowIntercept) {
+      return
+    }
+
+    // Same rule as ButtonViewGroup: a disabled descendant cannot own the touch, so its request on the
+    // DOWN is noise (ReactEditText asks before checking isEnabled, #4622).
+    if (nativeDownInFlight?.let { hasDisabledTouchTargetAt(it) } == true) {
       return
     }
 

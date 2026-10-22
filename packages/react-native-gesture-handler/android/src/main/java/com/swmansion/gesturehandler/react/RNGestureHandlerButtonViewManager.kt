@@ -734,6 +734,10 @@ class RNGestureHandlerButtonViewManager :
     // ancestor intercepted it — the orchestrator still delivers events then.
     private var receivedNativeDown = false
 
+    // The DOWN currently going through the native dispatch below this button, so a disallow-intercept
+    // request made during it can be matched against the view that received it.
+    private var nativeDownInFlight: MotionEvent? = null
+
     // Whether the framework deferred the press on the DOWN (tap timeout inside a scrolling
     // container) instead of pressing right away.
     private var pressDeferredByPlatform = false
@@ -919,6 +923,13 @@ class RNGestureHandlerButtonViewManager :
         return
       }
 
+      // A disabled descendant cannot own the touch, so its request on the DOWN is noise: ReactEditText
+      // asks before View.onTouchEvent even looks at isEnabled (#4622). A request on any later event
+      // means something is really dragging and still cancels.
+      if (nativeDownInFlight?.let { hasDisabledTouchTargetAt(it) } == true) {
+        return
+      }
+
       val moduleId = moduleId ?: return
       val managedHandlerTag = managedHandlerTag ?: return
 
@@ -936,7 +947,18 @@ class RNGestureHandlerButtonViewManager :
         receivedNativeDown = true
       }
 
-      return super.dispatchTouchEvent(event)
+      val isDown = event.actionMasked == MotionEvent.ACTION_DOWN ||
+        event.actionMasked == MotionEvent.ACTION_POINTER_DOWN
+      if (!isDown) {
+        return super.dispatchTouchEvent(event)
+      }
+
+      nativeDownInFlight = event
+      try {
+        return super.dispatchTouchEvent(event)
+      } finally {
+        nativeDownInFlight = null
+      }
     }
 
     override fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean) = grabbedMidGesture || !receivedNativeDown
