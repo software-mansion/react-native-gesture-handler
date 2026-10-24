@@ -21,6 +21,7 @@ class GestureHandlerOrchestrator(
   private val viewConfigHelper: ViewConfigurationHelper,
   private val rootView: ViewGroup,
   private val onJSResponderCancelListener: OnJSResponderCancelListener,
+  private val onTouchEventProcessed: (MotionEvent) -> Unit = {},
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -74,6 +75,12 @@ class GestureHandlerOrchestrator(
       cancelAll()
     }
     deliverEventToGestureHandlers(event)
+    // A discrete handler can start interception on UP. Cancel native touches before losing
+    // their DOWN positions or resetting the native handlers that still own their views.
+    onTouchEventProcessed(event)
+    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+      pointerDownPoints.clear()
+    }
     isHandlingTouch = false
     if (finishedHandlersCleanupScheduled && handlingChangeSemaphore == 0) {
       cleanupFinishedHandlers()
@@ -765,8 +772,6 @@ class GestureHandlerOrchestrator(
         pointerDownPoints.put(event.getPointerId(index), PointF(event.getX(index), event.getY(index)))
       MotionEvent.ACTION_POINTER_UP ->
         pointerDownPoints.remove(event.getPointerId(index))
-      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
-        pointerDownPoints.clear()
     }
   }
 
