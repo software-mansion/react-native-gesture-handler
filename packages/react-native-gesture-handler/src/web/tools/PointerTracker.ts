@@ -1,12 +1,9 @@
 import type { AdaptedEvent, Point } from '../interfaces';
-import VelocityTracker, {
-  POINTER_STOPPED_MILLISECONDS,
-} from './VelocityTracker';
+import VelocityTracker from './VelocityTracker';
 
 export interface TrackerElement {
   abosoluteCoords: Point;
   relativeCoords: Point;
-  timestamp: number;
   velocityX: number;
   velocityY: number;
 }
@@ -45,7 +42,6 @@ export default class PointerTracker {
     const newElement: TrackerElement = {
       abosoluteCoords: { x: event.x, y: event.y },
       relativeCoords: { x: event.offsetX, y: event.offsetY },
-      timestamp: event.time,
       velocityX: 0,
       velocityY: 0,
     };
@@ -76,7 +72,6 @@ export default class PointerTracker {
 
     pointerData.velocityX = velocityX;
     pointerData.velocityY = velocityY;
-    pointerData.timestamp = event.time;
 
     pointerData.abosoluteCoords = { x: event.x, y: event.y };
     pointerData.relativeCoords = { x: event.offsetX, y: event.offsetY };
@@ -125,18 +120,13 @@ export default class PointerTracker {
       : null;
   }
 
-  // Velocity at `time`: zero once the pointer rested long enough to count as
-  // stopped, the velocity of its last move otherwise.
   public getVelocityAt(pointerId: number, time: number) {
-    const pointerData = this.trackedPointers.get(pointerId);
-
-    if (!pointerData) {
+    if (!this.trackedPointers.has(pointerId)) {
       return null;
     }
 
-    return time - pointerData.timestamp > POINTER_STOPPED_MILLISECONDS
-      ? { x: 0, y: 0 }
-      : { x: pointerData.velocityX, y: pointerData.velocityY };
+    const [x, y] = this.velocityTracker.velocityAt(time);
+    return { x, y };
   }
 
   public getLastAbsoluteCoords(pointerId?: number) {

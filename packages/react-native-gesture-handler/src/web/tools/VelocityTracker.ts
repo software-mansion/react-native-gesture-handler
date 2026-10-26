@@ -2,11 +2,8 @@ import type { AdaptedEvent } from '../interfaces';
 import CircularBuffer from './CircularBuffer';
 import LeastSquareSolver from './LeastSquareSolver';
 
-// A pointer that sent no sample for this long is treated as stopped.
-export const POINTER_STOPPED_MILLISECONDS = 40;
-
 export default class VelocityTracker {
-  private assumePointerMoveStoppedMilliseconds = POINTER_STOPPED_MILLISECONDS;
+  private assumePointerMoveStoppedMilliseconds = 40;
   private historySize = 20;
   private horizonMilliseconds = 300;
   private minSampleSize = 3;
@@ -93,6 +90,17 @@ export default class VelocityTracker {
       return estimate;
     }
     return [0, 0];
+  }
+
+  // Velocity at `time`: zero once no sample arrived within the stopped
+  // window, the current estimate otherwise.
+  public velocityAt(time: number): [number, number] {
+    const newest = this.samples.get(this.samples.size - 1);
+
+    return !newest ||
+      time - newest.time > this.assumePointerMoveStoppedMilliseconds
+      ? [0, 0]
+      : this.velocity;
   }
 
   public reset(): void {
