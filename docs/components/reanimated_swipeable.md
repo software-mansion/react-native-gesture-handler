@@ -297,3 +297,5 @@ A method that resets the swiping states of this `Swipeable` component. Unlike [`
 ## Example
 
 Example of a `Swipeable` component can be found in [Gesture Handler repository](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/new_api/components/swipeable/index.tsx).
+
+In the example below, `RightAction` measures its own width and uses `translation` to stay attached to the right edge of the row, so it slides in together with the row instead of being uncovered in place.
