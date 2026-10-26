@@ -142,8 +142,10 @@ static const NSTimeInterval pointerStoppedInterval = 0.04;
     [_gestureHandler reset];
   }
 
-  _lastMoveTimestamp = event.timestamp;
-  _restedBeforeRelease = NO;
+  if (self.state == UIGestureRecognizerStatePossible) {
+    _lastMoveTimestamp = event.timestamp;
+    _restedBeforeRelease = NO;
+  }
 
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   if (_hasCustomActivationCriteria) {
