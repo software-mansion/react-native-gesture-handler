@@ -8,10 +8,8 @@ import {
   resolveHostInstance,
 } from '../../../hostInstance';
 import { tagMessage } from '../../../utils';
-import {
-  Reanimated,
-  reanimatedRefreshesAnimatableRef,
-} from '../reanimatedWrapper';
+import { Reanimated } from '../reanimatedWrapper';
+import { reanimatedRefreshesAnimatableRef } from './refreshesAnimatableRef';
 
 export class Wrap extends React.Component<{
   onGestureHandlerEvent?: unknown;
