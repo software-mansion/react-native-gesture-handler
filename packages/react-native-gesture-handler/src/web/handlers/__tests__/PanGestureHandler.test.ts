@@ -450,4 +450,13 @@ describe('PanGestureHandler velocity at release', () => {
   test('a pointer that rested before release reports zero velocity', () => {
     expect(dragThenRelease(532).velocityY).toBe(0);
   });
+
+  // The last move is at 32ms, the pointer counts as stopped after 40ms.
+  test('a pointer released at the stopped threshold keeps its velocity', () => {
+    expect(dragThenRelease(72).velocityY).toBeCloseTo(1250, -2);
+  });
+
+  test('a pointer released past the stopped threshold reports zero velocity', () => {
+    expect(dragThenRelease(73).velocityY).toBe(0);
+  });
 });
