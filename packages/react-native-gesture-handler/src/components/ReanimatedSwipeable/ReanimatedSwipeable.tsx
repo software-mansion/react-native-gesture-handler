@@ -153,6 +153,10 @@ const Swipeable = (props: SwipeableProps) => {
   const showLeftProgress = useSharedValue<number>(0);
   const showRightProgress = useSharedValue<number>(0);
 
+  // Row state at the start of the animation whose end events are not yet
+  // dispatched, or `null` when there is none.
+  const pendingEndFromState = useSharedValue<number | null>(null);
+
   const updateAnimatedEvent = useCallback(() => {
     'worklet';
 
@@ -257,8 +261,12 @@ const Swipeable = (props: SwipeableProps) => {
     [onSwipeableClose, onSwipeableOpen]
   );
 
-  const animateRow: (toValue: number, velocityX?: number) => void = useCallback(
-    (toValue: number, velocityX = 0) => {
+  const animateRow: (
+    toValue: number,
+    velocityX?: number,
+    silent?: boolean
+  ) => void = useCallback(
+    (toValue: number, velocityX = 0, silent = false) => {
       'worklet';
 
       const translationSpringConfig = {
@@ -292,12 +300,18 @@ const Swipeable = (props: SwipeableProps) => {
 
       const frozenRowState = rowState.value;
 
+      // A silent animation dispatches only the end events of an earlier
+      // animation that it interrupted.
+      const endFromState = silent ? pendingEndFromState.value : frozenRowState;
+      pendingEndFromState.value = endFromState;
+
       appliedTranslation.value = withSpring(
         toValue,
         translationSpringConfig,
         (isFinished) => {
-          if (isFinished) {
-            dispatchEndEvents(frozenRowState, toValue);
+          if (isFinished && endFromState !== null) {
+            pendingEndFromState.value = null;
+            dispatchEndEvents(endFromState, toValue);
           }
         }
       );
@@ -314,7 +328,9 @@ const Swipeable = (props: SwipeableProps) => {
         progressSpringConfig
       );
 
-      dispatchImmediateEvents(frozenRowState, toValue);
+      if (!silent) {
+        dispatchImmediateEvents(frozenRowState, toValue);
+      }
 
       rowState.value = Math.sign(toValue);
 
@@ -330,6 +346,7 @@ const Swipeable = (props: SwipeableProps) => {
       rightWidth,
       dispatchImmediateEvents,
       dispatchEndEvents,
+      pendingEndFromState,
     ]
   );
 
@@ -400,6 +417,7 @@ const Swipeable = (props: SwipeableProps) => {
         showLeftProgress.value = 0;
         appliedTranslation.value = 0;
         rowState.value = 0;
+        pendingEndFromState.value = null;
       },
     }),
     [
@@ -411,6 +429,7 @@ const Swipeable = (props: SwipeableProps) => {
       showLeftProgress,
       appliedTranslation,
       rowState,
+      pendingEndFromState,
     ]
   );
 
@@ -488,8 +507,20 @@ const Swipeable = (props: SwipeableProps) => {
   );
 
   const handleRelease = useCallback(
-    (event: PanGestureActiveEvent) => {
+    (event: PanGestureActiveEvent & { canceled: boolean }) => {
       'worklet';
+      if (event.canceled) {
+        // Restore the row to where it rested before the gesture.
+        const restingValue =
+          rowState.value === 1
+            ? leftWidth.value
+            : rowState.value === -1
+              ? -rightWidth.value
+              : 0;
+        animateRow(restingValue, 0, true);
+        return;
+      }
+
       const { velocityX } = event;
       userDrag.value = event.translationX;
 
