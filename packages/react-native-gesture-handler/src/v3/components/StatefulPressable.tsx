@@ -311,13 +311,6 @@ const StatefulPressable = (props: PressableProps) => {
         pressableEvent
       );
     },
-    onTouchesUp: () => {
-      if (Platform.OS === 'android' && !isScreenReaderEnabled) {
-        // Prevents potential soft-locks
-        stateMachine.reset();
-        handleFinalize();
-      }
-    },
     onTouchesCancel: (event) => {
       const pressableEvent = gestureTouchToPressableEvent(event);
       stateMachine.reset();
@@ -402,13 +395,9 @@ const StatefulPressable = (props: PressableProps) => {
         event.canceled ? StateMachineEvent.CANCEL : StateMachineEvent.FINALIZE
       );
 
-      // On iOS the button's cancel can land before the long press's touch
-      // cancel, or without one, so deliver the press-out here
-      if (
-        Platform.OS === 'ios' &&
-        event.canceled &&
-        isCurrentlyPressed.current
-      ) {
+      // The button's cancel can land before the long press's touch cancel,
+      // or without one, so deliver the press-out here
+      if (event.canceled && isCurrentlyPressed.current) {
         handlePressOut(
           pressInEventRef.current ??
             viewCenterToPressableEvent(dimensions.current),
