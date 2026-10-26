@@ -123,6 +123,10 @@ open class GestureHandler {
   var pointerType: Int = POINTER_TYPE_OTHER
     private set
 
+  // Whether the current gesture is an activation no pointer drives, a confirm key's or an accessibility service's.
+  var isActivatedWithoutPointer = false
+    private set
+
   protected var mouseButton = 0
 
   // properties set and accessed only by the orchestrator
@@ -203,6 +207,7 @@ open class GestureHandler {
     Arrays.fill(trackedPointerIDs, -1)
     trackedPointersIDsCount = 0
     state = STATE_UNDETERMINED
+    isActivatedWithoutPointer = false
     this.view = view
     this.orchestrator = orchestrator
 
@@ -387,18 +392,62 @@ open class GestureHandler {
       return
     }
 
-    // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188
-    val (adaptedTransformedEvent, adaptedSourceEvent) = if (BuildConfig.DEBUG) {
+    val adaptedEvents = adaptEvents(transformedEvent, sourceEvent) ?: run {
+      fail()
+      return
+    }
+    val (adaptedTransformedEvent, adaptedSourceEvent) = adaptedEvents
+
+    try {
+      updatePointerCountAndPosition(adaptedTransformedEvent)
+
+      if (shouldCancelWhenOutside) {
+        if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
+          fail()
+          return
+        }
+      }
+
+      updateLastPosition(adaptedTransformedEvent)
+      updatePointerType(adaptedSourceEvent, sourceEvent)
+
+      if (sourceEvent.isHoverAction()) {
+        onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
+      } else {
+        onHandle(adaptedTransformedEvent, adaptedSourceEvent)
+      }
+    } finally {
+      recycleAdaptedEvents(adaptedEvents, transformedEvent, sourceEvent)
+    }
+  }
+
+  // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188
+  private fun adaptEvents(transformedEvent: MotionEvent, sourceEvent: MotionEvent): Array<MotionEvent>? =
+    if (BuildConfig.DEBUG) {
       arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
     } else {
       try {
         arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
       } catch (e: AdaptEventException) {
-        fail()
-        return
+        null
       }
     }
 
+  private fun recycleAdaptedEvents(
+    adaptedEvents: Array<MotionEvent>,
+    transformedEvent: MotionEvent,
+    sourceEvent: MotionEvent,
+  ) {
+    val (adaptedTransformedEvent, adaptedSourceEvent) = adaptedEvents
+    if (adaptedTransformedEvent != transformedEvent) {
+      adaptedTransformedEvent.recycle()
+    }
+    if (adaptedSourceEvent != sourceEvent) {
+      adaptedSourceEvent.recycle()
+    }
+  }
+
+  private fun updatePointerCountAndPosition(adaptedTransformedEvent: MotionEvent) {
     numberOfPointers = when (adaptedTransformedEvent.actionMasked) {
       MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
       else -> adaptedTransformedEvent.pointerCount
@@ -411,36 +460,22 @@ open class GestureHandler {
     // also use that child rather than the wrapper, otherwise hit-testing would ignore the user's
     // transforms applied to the visible view.
     isWithinBounds = isWithinBounds(coordinateView, x, y)
+  }
 
-    if (shouldCancelWhenOutside) {
-      if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
-        fail()
-        return
-      }
-    }
-
+  private fun updateLastPosition(adaptedTransformedEvent: MotionEvent) {
     lastAbsolutePositionX = GestureUtils.getLastPointerX(adaptedTransformedEvent, true)
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
     lastEventOffsetY = adaptedTransformedEvent.rawY - adaptedTransformedEvent.y
+  }
 
-    if (sourceEvent.action == MotionEvent.ACTION_DOWN ||
+  // The pointer beginning the gesture names its type; adapted, its event is `ACTION_DOWN`, a second finger's too.
+  private fun updatePointerType(adaptedSourceEvent: MotionEvent, sourceEvent: MotionEvent) {
+    if (adaptedSourceEvent.actionMasked == MotionEvent.ACTION_DOWN ||
       sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
       sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE
     ) {
-      setPointerType(sourceEvent)
-    }
-
-    if (sourceEvent.isHoverAction()) {
-      onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
-    } else {
-      onHandle(adaptedTransformedEvent, adaptedSourceEvent)
-    }
-    if (adaptedTransformedEvent != transformedEvent) {
-      adaptedTransformedEvent.recycle()
-    }
-    if (adaptedSourceEvent != sourceEvent) {
-      adaptedSourceEvent.recycle()
+      setPointerType(adaptedSourceEvent)
     }
   }
 
@@ -527,6 +562,14 @@ open class GestureHandler {
     if (event.actionMasked == MotionEvent.ACTION_DOWN ||
       event.actionMasked == MotionEvent.ACTION_POINTER_DOWN
     ) {
+      // A touch callback can activate the handler before `handle()` runs, so its report describes this touch first.
+      adaptEvents(event, sourceEvent)?.let { adaptedEvents ->
+        val (adaptedEvent, adaptedSourceEvent) = adaptedEvents
+        updatePointerCountAndPosition(adaptedEvent)
+        updateLastPosition(adaptedEvent)
+        updatePointerType(adaptedSourceEvent, sourceEvent)
+        recycleAdaptedEvents(adaptedEvents, event, sourceEvent)
+      }
       dispatchTouchDownEvent(event, sourceEvent)
       dispatchTouchMoveEvent(event, sourceEvent)
     } else if (event.actionMasked == MotionEvent.ACTION_UP ||
@@ -875,10 +918,21 @@ open class GestureHandler {
     onReset()
   }
 
-  fun withMarkedAsInBounds(closure: () -> Unit) {
+  // An activation no pointer drives, a confirm key's or an accessibility service's click, reports no pointer
+  // (https://www.w3.org/TR/pointerevents3/#event-attributes) and happens inside the view, at its visible center.
+  fun prepareActivationWithoutPointer(pointerType: Int) {
+    isActivatedWithoutPointer = true
     isWithinBounds = true
-    closure()
-    isWithinBounds = false
+    numberOfPointers = 0
+    this.pointerType = pointerType
+    val centerView = coordinateView ?: return
+    lastAbsolutePositionX = centerView.width / 2f
+    lastAbsolutePositionY = centerView.height / 2f
+    tempPoint[0] = lastAbsolutePositionX
+    tempPoint[1] = lastAbsolutePositionY
+    mapPointToScreen(centerView, tempPoint)
+    lastEventOffsetX = tempPoint[0] - lastAbsolutePositionX
+    lastEventOffsetY = tempPoint[1] - lastAbsolutePositionY
   }
 
   private fun setPointerType(event: MotionEvent) {
@@ -1044,6 +1098,9 @@ open class GestureHandler {
     const val POINTER_TYPE_KEY = 3
     const val POINTER_TYPE_OTHER = 4
     private const val MAX_POINTERS_COUNT = 17
+    private val tempPoint = FloatArray(2)
+    private val tempRootOrigin = FloatArray(2)
+    private val tempLocationOnScreen = IntArray(2)
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
@@ -1061,6 +1118,30 @@ open class GestureHandler {
 
     private var nextEventCoalescingKey: Short = 0
     private fun hitSlopSet(value: Float): Boolean = !java.lang.Float.isNaN(value)
+
+    // Maps a point in the view's coordinates to the screen through every ancestor's transform and scroll, the way
+    // View.getLocationOnScreen maps the view's origin; the root view's own screen location carries the window's offset.
+    private fun mapPointToScreen(view: View, point: FloatArray) {
+      var current = view
+      while (true) {
+        if (!current.matrix.isIdentity) {
+          current.matrix.mapPoints(point)
+        }
+        val parent = current.parent as? View ?: break
+        point[0] += current.left - parent.scrollX
+        point[1] += current.top - parent.scrollY
+        current = parent
+      }
+      // `getLocationOnScreen` maps the root view's origin through the same matrix the point took.
+      tempRootOrigin[0] = 0f
+      tempRootOrigin[1] = 0f
+      if (!current.matrix.isIdentity) {
+        current.matrix.mapPoints(tempRootOrigin)
+      }
+      current.getLocationOnScreen(tempLocationOnScreen)
+      point[0] += tempLocationOnScreen[0] - tempRootOrigin[0]
+      point[1] += tempLocationOnScreen[1] - tempRootOrigin[1]
+    }
 
     fun stateToString(state: Int): String? {
       when (state) {

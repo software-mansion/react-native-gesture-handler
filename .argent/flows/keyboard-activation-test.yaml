@@ -1,0 +1,191 @@
+# Android only: a hardware Enter presses each kind of focused gesture-handler
+# control once, as a key with no pointer, where a tap would land; a touch that
+# activates its gesture reports its own pointer and where it lands, after a key
+# too; and a gesture its touch activates still takes that touch from React
+# Native. Tab
+# moves focus in view order, so after the taps and the console clear the counts
+# below reach the inner default Pressable, then each control after it.
+steps:
+  - echo: Launching Expo Example
+  - launch: com.example.ExpoExample
+  - await: { visible: { text: "Empty Example" }, timeout: 15000 }
+  - when: { platform: android }
+    steps:
+      - echo: "On the Home list, search for the keyboard activation example"
+      - type: { text: "keyboard activation", into: { id: "search-examples" } }
+      - await: { visible: { text: "Keyboard activation" } }
+      - echo: "Tap the example to open it"
+      - tap: { text: "Keyboard activation" }
+      - await: { visible: { id: "scaled-touchable" } }
+      - await: { idle: true }
+
+      - echo: "Clear console"
+      - await: { visible: { id: "open-console-button" } }
+      - tap: { id: "open-console-button" }
+      - await: { visible: { id: "clear-console-button" } }
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Tap the inner state-machine and legacy Pressables, the RectButton, the scaled Touchable and the RawButton its touch activates"
+      - tap: { id: "stateful-inner" }
+      - tap: { id: "legacy-inner" }
+      - tap: { id: "rect-button" }
+      - tap: { id: "scaled-touchable" }
+      - tap: { id: "touch-activated-button" }
+      - await: { idle: true }
+
+      - echo: "Each tap presses only its own control"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: { matches: '^3\. \[stateful inner\] onPress$' } } }
+      - assert: { visible: { text: { matches: '^6\. \[legacy inner\] onPress$' } } }
+      - assert: { visible: { text: { matches: '^7\. \[rect button\] onBegin TOUCH with 1 pointers$' } } }
+      - assert: { visible: { text: { matches: '^9\. \[scaled\] tap$' } } }
+      - assert: { visible: { text: { matches: '^10\. \[touch activated button\] onActivate TOUCH with 1 pointers at its touch$' } } }
+      - assert: { hidden: { text: "outer]" } }
+
+      - echo: "Clear console"
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Tab to the inner default Pressable, which no pointer has touched, and press Enter"
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: enter }
+      - echo: "Tab to the state-machine Pressable whose inner was tapped, and press Enter"
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: enter }
+      - echo: "Tab past its inner to the legacy Pressable whose inner was tapped, and press Enter"
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: enter }
+      - echo: "Each Enter presses its Pressable once, the parent of a tapped one included"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: { matches: '^11\. \[pressable inner\] onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^12\. \[pressable inner\] onPressOut$' } } }
+      - assert: { visible: { text: { matches: '^13\. \[pressable inner\] onPress$' } } }
+      - assert: { visible: { text: { matches: '^14\. \[stateful outer\] onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^15\. \[stateful outer\] onPressOut$' } } }
+      - assert: { visible: { text: { matches: '^16\. \[stateful outer\] onPress$' } } }
+      - assert: { visible: { text: { matches: '^17\. \[legacy outer\] onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^18\. \[legacy outer\] onPressOut$' } } }
+      - assert: { visible: { text: { matches: '^19\. \[legacy outer\] onPress$' } } }
+      - assert: { hidden: { text: "[pressable outer]" } }
+      - assert: { hidden: { text: { matches: '^20\. ' } } }
+
+      - echo: "Clear console"
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Tab to the RectButton, the seventh control, and press Enter"
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: enter }
+      - echo: "Tab to the scaled Touchable and press Enter"
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: enter }
+      - echo: "Tab to the RawButton its touch activates and press Enter"
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: enter }
+
+      - echo: "Enter reports a key with no pointer, and lands where the tap did"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: { matches: '^20\. \[rect button\] onBegin KEY with 0 pointers$' } } }
+      - assert: { visible: { text: { matches: '^21\. \[rect button\] onPress$' } } }
+      - assert: { visible: { text: { matches: '^22\. \[scaled\] key press lands on the tap$' } } }
+      - assert: { visible: { text: { matches: '^23\. \[touch activated button\] onActivate KEY with 0 pointers$' } } }
+      - assert: { hidden: { text: { matches: '^24\. ' } } }
+
+      - echo: "Clear console"
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Tap the RawButton, whose touch activates it before the button reads the touch"
+      - tap: { id: "touch-activated-button" }
+      - await: { idle: true }
+
+      - echo: "The activation reports the touch, not the key before it"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: { matches: '^24\. \[touch activated button\] onActivate TOUCH with 1 pointers at its touch$' } } }
+      - assert: { hidden: { text: { matches: '^25\. ' } } }
+
+      - echo: "Clear console"
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Tap React Native's Pressable inside the long press its touch activates, the first touch it gets"
+      - tap: { id: "react-native-pressable" }
+      - await: { idle: true }
+
+      - echo: "The touch's activation takes the touch from React Native's Pressable, which never presses"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: { matches: '^25\. \[react native pressable\] onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^26\. \[react native pressable\] onPressOut$' } } }
+      - assert: { hidden: { text: { matches: '^27\. ' } } }
+
+      - echo: "Clear console"
+      - tap: { id: "clear-console-button" }
+      - tap: { id: "close-console-button" }
+      - await: { hidden: { id: "close-console-button" } }
+      - await: { idle: true }
+
+      - echo: "Tap the input inside the ScrollView, so the soft keyboard is up for it, then Tab to the Pressable beside it and press Enter"
+      - tap: { id: "typing-input" }
+      - await: { idle: true }
+      - tool: keyboard
+        args: { key: tab }
+      - tool: keyboard
+        args: { key: enter }
+
+      - echo: "A key press is no tap dismissing the keyboard, so it presses the Pressable once"
+      - tap: { id: "open-console-button" }
+      - await: { idle: true }
+      - await: { visible: { id: "close-console-button" } }
+      - assert: { visible: { text: { matches: '^27\. \[typing pressable\] onPressIn$' } } }
+      - assert: { visible: { text: { matches: '^28\. \[typing pressable\] onPressOut$' } } }
+      - assert: { visible: { text: { matches: '^29\. \[typing pressable\] onPress$' } } }
+      - assert: { hidden: { text: { matches: '^30\. ' } } }

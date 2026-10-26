@@ -127,8 +127,10 @@ export const Touchable = (props: TouchableProps) => {
       // PressIn opens every press sequence; capture the verdict once per
       // sequence so a re-entry PressIn (with cancelOnLeave={false}) doesn't
       // overwrite it after the keyboard is already dismissed.
-      dropKeyboardTapRef.current ??=
-        isKeyboardDismissingTap(jsResponderContext);
+      dropKeyboardTapRef.current ??= isKeyboardDismissingTap(
+        jsResponderContext,
+        e.nativeEvent
+      );
 
       if (dropKeyboardTapRef.current) {
         return;

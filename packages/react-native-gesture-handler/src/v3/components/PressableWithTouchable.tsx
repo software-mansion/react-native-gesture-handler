@@ -9,6 +9,7 @@ import type {
 } from '../../components/Pressable/PressableProps';
 import {
   addInsets,
+  isActivatedWithoutPointer,
   isTouchWithinInset,
   numberAsInset,
 } from '../../components/Pressable/utils';
@@ -169,12 +170,14 @@ const PressableWithTouchable = (props: PressableProps) => {
   };
 
   const handlePressIn = (event: ButtonEvent) => {
-    // A down in the retention-only zone is held by the button but isn't a press.
-    isActive.current = isTouchWithinInset(
-      dimensions.current,
-      normalizedHitSlop,
-      buttonToInner(event)
-    );
+    // A down in the retention-only zone is held by the button but isn't a press; a press with no pointer has no down.
+    isActive.current =
+      isActivatedWithoutPointer(event) ||
+      isTouchWithinInset(
+        dimensions.current,
+        normalizedHitSlop,
+        buttonToInner(event)
+      );
 
     if (!isActive.current) {
       return;

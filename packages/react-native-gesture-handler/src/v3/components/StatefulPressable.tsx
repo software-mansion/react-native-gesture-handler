@@ -28,6 +28,7 @@ import {
   addInsets,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
+  isActivatedWithoutPointer,
   isTouchWithinInset,
   numberAsInset,
   viewCenterToPressableEvent,
@@ -91,6 +92,8 @@ const StatefulPressable = (props: PressableProps) => {
   const isOnPressAllowed = useRef<boolean>(true);
   const jsResponderContext = use(JSResponderContext);
   const isCurrentlyPressed = useRef<boolean>(false);
+  // Whether the press in progress began with no pointer, which decides how it ends.
+  const isPressWithoutPointer = useRef<boolean>(false);
   const dimensions = useRef<PressableDimensions>({
     width: 0,
     height: 0,
@@ -162,15 +165,22 @@ const StatefulPressable = (props: PressableProps) => {
 
   const handleFinalize = useCallback(() => {
     isCurrentlyPressed.current = false;
+    isPressWithoutPointer.current = false;
     dropKeyboardTapRef.current = null;
     cancelLongPress();
     cancelDelayedPress();
     setPressedState(false);
   }, [cancelDelayedPress, cancelLongPress]);
 
-  const captureKeyboardDismiss = useCallback(() => {
-    dropKeyboardTapRef.current ??= isKeyboardDismissingTap(jsResponderContext);
-  }, [jsResponderContext]);
+  const captureKeyboardDismiss = useCallback(
+    (press: { numberOfPointers: number }) => {
+      dropKeyboardTapRef.current ??= isKeyboardDismissingTap(
+        jsResponderContext,
+        press
+      );
+    },
+    [jsResponderContext]
+  );
 
   const handlePressIn = useCallback(
     (event: PressableEvent, skipBoundsCheck = false) => {
@@ -297,7 +307,7 @@ const StatefulPressable = (props: PressableProps) => {
     maxDistance: INT32_MAX, // Stops long press from cancelling on touch move
     cancelsTouchesInView: false,
     onTouchesDown: (event) => {
-      captureKeyboardDismiss();
+      captureKeyboardDismiss({ numberOfPointers: event.numberOfTouches });
 
       if (dropKeyboardTapRef.current) {
         return;
@@ -322,6 +332,9 @@ const StatefulPressable = (props: PressableProps) => {
       handlePressOut(pressableEvent, false);
     },
     onFinalize: (event) => {
+      // A touch ends here even when it never pressed in, so its keyboard verdict ends with it.
+      dropKeyboardTapRef.current = null;
+
       if (Platform.OS !== 'web') {
         return;
       }
@@ -351,19 +364,20 @@ const StatefulPressable = (props: PressableProps) => {
         handlePressOut(pressableEvent, false);
       }
     },
-    onBegin: () => {
-      captureKeyboardDismiss();
+    onBegin: (event) => {
+      isPressWithoutPointer.current = isActivatedWithoutPointer(event);
+      captureKeyboardDismiss(event);
 
       if (dropKeyboardTapRef.current) {
         return;
       }
 
-      if (Platform.isTV) {
-        // tvOS drives this native gesture from the focus-engine Select press.
-        // The press state machine is touch-based and never
-        // receives LONG_PRESS_TOUCHES_DOWN here, so bypass it and drive the press handlers directly.
-        // A focus-driven press has no coordinates, so skip the hit-slop bounds check entirely.
-        handlePressIn(viewCenterToPressableEvent(dimensions.current), true);
+      if (isPressWithoutPointer.current) {
+        // Android drives this native gesture from a key or an accessibility service with no pointer, iOS from a
+        // press no touch drives, and tvOS from the focus-engine Select press. The press state machine is
+        // touch-based and never receives LONG_PRESS_TOUCHES_DOWN here, so bypass it and drive the press handlers
+        // directly. The hit-slop bounds check tests where a pointer went down, and a press with no pointer has none.
+        handlePressIn(gestureToPressableEvent(event), true);
         return;
       }
       if (Platform.OS === 'android' && isScreenReaderEnabled) {
@@ -387,11 +401,8 @@ const StatefulPressable = (props: PressableProps) => {
         return;
       }
 
-      if (Platform.isTV) {
-        handlePressOut(
-          viewCenterToPressableEvent(dimensions.current),
-          !event.canceled
-        );
+      if (isPressWithoutPointer.current) {
+        handlePressOut(gestureToPressableEvent(event), !event.canceled);
         handleFinalize();
         return;
       }
