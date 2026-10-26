@@ -188,6 +188,7 @@ const StatefulPressable = (props: PressableProps) => {
       }
 
       isCurrentlyPressed.current = true;
+      pressInEventRef.current = event;
       if (unstable_pressDelay) {
         pressDelayTimeoutRef.current = setTimeout(() => {
           innerHandlePressIn(event);
@@ -305,7 +306,6 @@ const StatefulPressable = (props: PressableProps) => {
       }
 
       const pressableEvent = gestureTouchToPressableEvent(event);
-      pressInEventRef.current = pressableEvent;
       stateMachine.handleEvent(
         StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
         pressableEvent
