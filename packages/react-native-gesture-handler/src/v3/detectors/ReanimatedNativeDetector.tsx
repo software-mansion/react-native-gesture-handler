@@ -60,14 +60,21 @@ function LeanReanimatedNativeDetector(
     ]
   );
 
+  const committedProps = useRef(reaProps);
+
   useEffect(() => {
+    committedProps.current = reaProps;
+    prevProps.current = null;
     const nativeTag = findNodeHandle(viewRef.current) ?? -1;
     // @ts-expect-error Reanimated expects __nativeTag to be present on the ref
     viewRef.__nativeTag = nativeTag;
     // @ts-expect-error NativeEventsManager should be defined here, if it isn't, we should
     // go the fallback way and use Reanimated's createAnimatedComponent
     eventManager.current = new NativeEventsManagerImpl({
-      props: reaProps,
+      // NativeEventsManager reads this object again when handlers change.
+      get props() {
+        return committedProps.current;
+      },
       _componentRef: viewRef,
       _componentViewTag: nativeTag,
       getComponentViewTag: () => nativeTag,
@@ -80,6 +87,7 @@ function LeanReanimatedNativeDetector(
   }, []);
 
   useEffect(() => {
+    committedProps.current = reaProps;
     if (prevProps.current) {
       eventManager.current?.updateEvents(prevProps.current);
     }
