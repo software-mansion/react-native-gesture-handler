@@ -125,7 +125,6 @@ const StatefulPressable = (props: PressableProps) => {
     if (longPressTimeoutRef.current) {
       clearTimeout(longPressTimeoutRef.current);
       longPressTimeoutRef.current = null;
-      isOnPressAllowed.current = true;
     }
   }, []);
 
@@ -141,6 +140,7 @@ const StatefulPressable = (props: PressableProps) => {
       if (onLongPress) {
         cancelLongPress();
         longPressTimeoutRef.current = setTimeout(() => {
+          longPressTimeoutRef.current = null;
           isOnPressAllowed.current = false;
           onLongPress(event);
         }, delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
@@ -188,6 +188,7 @@ const StatefulPressable = (props: PressableProps) => {
       }
 
       isCurrentlyPressed.current = true;
+      isOnPressAllowed.current = true;
       pressInEventRef.current = event;
       if (unstable_pressDelay) {
         pressDelayTimeoutRef.current = setTimeout(() => {
@@ -310,6 +311,11 @@ const StatefulPressable = (props: PressableProps) => {
         StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
         pressableEvent
       );
+    },
+    onTouchesUp: () => {
+      // The button may still be waiting for another gesture; a long press
+      // must not fire after the finger lifted
+      cancelLongPress();
     },
     onTouchesCancel: (event) => {
       const pressableEvent = gestureTouchToPressableEvent(event);
