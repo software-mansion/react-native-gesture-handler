@@ -409,7 +409,7 @@ describe('[API v3] Components', () => {
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(virtualChild.props.onStartShouldSetResponder()).toBe(false);
+      expect(virtualChild.props.onStartShouldSetResponderCapture()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
     });
 
@@ -431,7 +431,7 @@ describe('[API v3] Components', () => {
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(virtualChild.props.onStartShouldSetResponder()).toBe(false);
+      expect(virtualChild.props.onStartShouldSetResponderCapture()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );

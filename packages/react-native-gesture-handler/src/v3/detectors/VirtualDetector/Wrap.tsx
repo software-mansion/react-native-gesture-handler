@@ -10,13 +10,13 @@ export type { WrapRef };
 
 export type WrapProps = PropsWithChildren<{
   ref?: WrapRef;
-  onStartShouldSetResponder?: (event: GestureResponderEvent) => boolean;
+  onStartShouldSetResponderCapture?: (event: GestureResponderEvent) => boolean;
 }>;
 
 export const Wrap: React.FunctionComponent<WrapProps> = ({
   ref,
   children,
-  onStartShouldSetResponder,
+  onStartShouldSetResponderCapture,
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let child: any;
@@ -61,20 +61,20 @@ export const Wrap: React.FunctionComponent<WrapProps> = ({
     [childRef, ref]
   );
 
-  const childOnStartShouldSetResponder =
+  const childOnStartShouldSetResponderCapture =
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    child.props.onStartShouldSetResponder as
+    child.props.onStartShouldSetResponderCapture as
       | ((event: GestureResponderEvent) => boolean)
       | undefined;
 
-  // Marks the responder event for the scroll view interop, then defers to the
-  // child's own handler.
-  const handleStartShouldSetResponder = useCallback(
+  // Marks in the capture phase: RN Text replaces its own press handling with
+  // any passed `onStartShouldSetResponder`, which would kill its `onPress`.
+  const handleStartShouldSetResponderCapture = useCallback(
     (event: GestureResponderEvent) => {
-      onStartShouldSetResponder?.(event);
-      return childOnStartShouldSetResponder?.(event) ?? false;
+      onStartShouldSetResponderCapture?.(event);
+      return childOnStartShouldSetResponderCapture?.(event) ?? false;
     },
-    [onStartShouldSetResponder, childOnStartShouldSetResponder]
+    [onStartShouldSetResponderCapture, childOnStartShouldSetResponderCapture]
   );
 
   return React.cloneElement(
@@ -82,7 +82,7 @@ export const Wrap: React.FunctionComponent<WrapProps> = ({
     {
       collapsable: false,
       ref: attachRef,
-      onStartShouldSetResponder: handleStartShouldSetResponder,
+      onStartShouldSetResponderCapture: handleStartShouldSetResponderCapture,
     },
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     child.props.children

@@ -158,7 +158,7 @@ export function VirtualDetector<
   return (
     <Wrap
       ref={handleRef}
-      onStartShouldSetResponder={handleStartShouldSetResponder}>
+      onStartShouldSetResponderCapture={handleStartShouldSetResponder}>
       {props.children}
     </Wrap>
   );
