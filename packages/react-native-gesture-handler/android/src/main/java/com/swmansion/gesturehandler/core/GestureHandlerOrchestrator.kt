@@ -101,7 +101,7 @@ class GestureHandlerOrchestrator(
 
   private fun cleanupFinishedHandlers() {
     for (handler in gestureHandlers.asReversed()) {
-      if (isFinished(handler.state) && !handler.isAwaiting) {
+      if (GestureHandler.isFinished(handler.state) && !handler.isAwaiting) {
         handler.reset()
         handler.apply {
           isActive = false
@@ -111,13 +111,13 @@ class GestureHandlerOrchestrator(
       }
     }
 
-    gestureHandlers.removeAll { isFinished(it.state) && !it.isAwaiting }
+    gestureHandlers.removeAll { GestureHandler.isFinished(it.state) && !it.isAwaiting }
 
     finishedHandlersCleanupScheduled = false
   }
 
   private fun hasOtherHandlerToWaitFor(handler: GestureHandler) =
-    gestureHandlers.any { !isFinished(it.state) && shouldHandlerWaitForOther(handler, it) }
+    gestureHandlers.any { !GestureHandler.isFinished(it.state) && shouldHandlerWaitForOther(handler, it) }
 
   private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler) =
     gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
@@ -167,7 +167,7 @@ class GestureHandlerOrchestrator(
       handler.isAwaiting = false
     }
 
-    if (isFinished(newState)) {
+    if (GestureHandler.isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
       // while iterating over its elements
       val currentlyAwaitingHandlers = awaitingHandlers.toList()
@@ -366,19 +366,23 @@ class GestureHandlerOrchestrator(
   }
 
   private inline fun cancelHandlersMatching(predicate: (GestureHandler) -> Boolean) {
-    val handlersToProcess = obtainHandlerList()
-    handlersToProcess.addAll(gestureHandlers)
+    val handlersToCancel = obtainHandlerList()
+    gestureHandlers.filterTo(handlersToCancel, predicate)
 
     try {
-      handlersToProcess.forEach {
-        if (predicate(it)) {
-          it.cancel()
+      // Cancelling a handler activates the handlers awaiting its failure. Drop the batch from the
+      // awaiting pool first, so cancelling one member cannot activate another before its turn.
+      for (handler in handlersToCancel) {
+        if (awaitingHandlersTags.remove(handler.tag)) {
+          awaitingHandlers.remove(handler)
         }
       }
 
+      handlersToCancel.forEach { it.cancel() }
+
       scheduleFinishedHandlersCleanup()
     } finally {
-      recycleHandlerList(handlersToProcess)
+      recycleHandlerList(handlersToCancel)
     }
   }
 
@@ -390,10 +394,27 @@ class GestureHandlerOrchestrator(
   }
 
   /**
-   * Cancels handlers whose view opted out of surviving a native view taking over the touch stream.
+   * Cancels handlers that shouldn't survive a native view taking over the touch stream: handlers
+   * whose view opted out through its hook (buttons), and handlers attached through a detector that
+   * haven't activated, native gestures included.
    */
-  fun cancelHandlersOnNativeTouchGrab(grabbedMidGesture: Boolean) = cancelHandlersMatching {
-    it is NativeViewGestureHandler && it.shouldCancelOnNativeTouchGrab(grabbedMidGesture)
+  fun cancelHandlersOnNativeTouchGrab(grabbedMidGesture: Boolean, downTime: Long) = cancelHandlersMatching {
+    val cancelledByHook = it is NativeViewGestureHandler && it.shouldCancelOnNativeTouchGrab(grabbedMidGesture)
+    val cancelledByDetector = !it.isActive &&
+      GestureHandler.usesNativeOrVirtualDetector(it.actionType) &&
+      it.hostDetectorView?.shouldCancelOnNativeTouchGrab(grabbedMidGesture, downTime) == true
+
+    cancelledByHook || cancelledByDetector
+  }
+
+  /**
+   * Cancels pending detector handlers whose detector got ACTION_CANCEL from the native dispatch of
+   * the event with `eventTime`. Unlike a disallow-intercept request, the CANCEL names its target.
+   */
+  fun cancelHandlersOnNativeTouchCancel(eventTime: Long) = cancelHandlersMatching {
+    !it.isActive &&
+      GestureHandler.usesNativeOrVirtualDetector(it.actionType) &&
+      it.hostDetectorView?.shouldCancelOnNativeTouchCancel(eventTime) == true
   }
 
   /**
@@ -641,9 +662,12 @@ class GestureHandlerOrchestrator(
     }
 
     // if the pointer is inside the view but it overflows its parent, handlers attached to the parent
-    // might not have been extracted (pointer might be in a child, but may be outside parent)
-    if (coords[0] in 0f..view.width.toFloat() &&
-      coords[1] in 0f..view.height.toFloat() &&
+    // might not have been extracted (pointer might be in a child, but may be outside parent).
+    // Checked against the same bounds as the handlers above: a detector frame widened to cover a
+    // transformed child overflows its parent, but a pointer in the area the child vacated is not
+    // over its content and must not record the ancestors ahead of the views behind it.
+    if (boundsX in 0f..boundsView.width.toFloat() &&
+      boundsY in 0f..boundsView.height.toFloat() &&
       isViewOverflowingParent(view) &&
       extractAncestorHandlers(view, coords, pointerId, event)
     ) {
@@ -767,6 +791,7 @@ class GestureHandlerOrchestrator(
         continue
       }
       view.onTouchEvent(cancelEvent)
+      view.stopNestedScroll()
     }
 
     cancelEvent.recycle()
@@ -1027,9 +1052,5 @@ class GestureHandlerOrchestrator(
         true
       }
     }
-
-    private fun isFinished(state: Int) = state == GestureHandler.STATE_CANCELLED ||
-      state == GestureHandler.STATE_FAILED ||
-      state == GestureHandler.STATE_END
   }
 }

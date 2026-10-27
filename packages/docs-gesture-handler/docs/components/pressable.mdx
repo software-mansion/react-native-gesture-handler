@@ -52,7 +52,7 @@ Either view styles or a function that receives a boolean reflecting whether the 
 onPress?: null | ((event: PressableEvent) => void);
 ```
 
-Called after [`onPressOut`](#onpressout) when a single tap gesture is detected. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
+Called when a single tap gesture is detected. It follows [`onPressOut`](#onpressout), unless [`immediatePressOut`](#immediatepressout) is off and the platform deferred a quick tap. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
 ### onPressIn
 
@@ -68,7 +68,7 @@ Called before `onPress` when a touch is engaged. Details about the event object 
 onPressOut?: null | ((event: PressableEvent) => void);
 ```
 
-Called before `onPress` when a touch is released (before [`onPress`](#onpress)). Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
+Called when a touch is released. Unless [`immediatePressOut`](#immediatepressout) is set to `true`, a quick tap the platform deferred calls it after [`onPress`](#onpress). Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
 ### onLongPress
 
@@ -200,6 +200,20 @@ needsOffscreenAlphaCompositing?: boolean;
 ```
 
 Whether the view should render with an offscreen alpha-compositing buffer when its `opacity` is less than `1`. Defaults to `false`.
+
+<Badges platforms={['android', 'ios']} version="3.4.0">
+### immediatePressOut [A][I]
+</Badges>
+
+```ts
+immediatePressOut?: boolean;
+```
+
+In some cases the platform defers the press, so a quick tap would call `onPressIn` and `onPressOut` almost at the same time and the `pressed` state would never show up. By default, `onPressOut` for such a tap is held back so that `pressed` lasts at least 130 ms, matching React Native's `Pressable`. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
+
+When set to `true`, `onPressOut` is called as soon as the press ends, even for such a tap.
+
+By default set to `false`. Has no effect on web, where presses are never deferred, or when `simultaneousWith`, `requireToFail` or `block` is passed.
 
 ### testOnly_pressed
 

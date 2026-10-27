@@ -34,7 +34,9 @@ import PanExample from './simple/pan';
 import PinchExample from './simple/pinch';
 import RotationExample from './simple/rotation';
 import TapExample from './simple/tap';
+import ButtonChildOrderExample from './tests/buttonChildOrder';
 import KeyboardShouldPersistTapsExample from './tests/keyboardShouldPersistTaps';
+import NativeInterceptCancellationExample from './tests/nativeInterceptCancellation';
 import NestedPressablesExample from './tests/nestedPressables';
 import NestedRootViewExample from './tests/nestedRootView';
 import NestedTouchablesExample from './tests/nestedTouchables';
@@ -130,6 +132,12 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Modal with Nested Root View', component: NestedRootViewExample },
       { name: 'Nested pressables', component: NestedPressablesExample },
       { name: 'Nested touchables', component: NestedTouchablesExample },
+      { name: 'Button child order', component: ButtonChildOrderExample },
+      {
+        name: 'Native intercept cancellation',
+        component: NativeInterceptCancellationExample,
+        unsupportedPlatforms: new Set(['ios', 'macos', 'web']),
+      },
       { name: 'Pressable', component: PressableExample },
       {
         name: 'RN responder cancellation',

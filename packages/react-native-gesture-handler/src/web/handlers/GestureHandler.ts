@@ -376,10 +376,12 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    this.tryToSendTouchEvent(event);
+    event.eventType = EventTypes.MOVE;
+    this.onPointerOutOfBounds(event);
   }
   protected onPointerEnter(event: AdaptedEvent): void {
-    this.tryToSendTouchEvent(event);
+    event.eventType = EventTypes.MOVE;
+    this.onPointerMove(event);
   }
   protected onPointerCancel(_event: AdaptedEvent): void {
     // No need to send a cancel touch event explicitly here. `cancel` will
@@ -579,8 +581,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   private transformTouchEvent(
     event: AdaptedEvent
   ): ResultEvent<GestureTouchEvent> | undefined {
-    const rect = this.delegate.measureView();
-
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
 
@@ -599,8 +599,8 @@ export default abstract class GestureHandler implements IGestureHandler {
 
       all.push({
         id: id,
-        x: element.abosoluteCoords.x - rect.pageX,
-        y: element.abosoluteCoords.y - rect.pageY,
+        x: element.relativeCoords.x,
+        y: element.relativeCoords.y,
         absoluteX: element.abosoluteCoords.x,
         absoluteY: element.abosoluteCoords.y,
       });
@@ -611,8 +611,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (event.eventType !== EventTypes.CANCEL) {
       changed.push({
         id: this.tracker.getMappedTouchEventId(event.pointerId),
-        x: event.x - rect.pageX,
-        y: event.y - rect.pageY,
+        x: event.offsetX,
+        y: event.offsetY,
         absoluteX: event.x,
         absoluteY: event.y,
       });
@@ -622,8 +622,8 @@ export default abstract class GestureHandler implements IGestureHandler {
 
         changed.push({
           id: id,
-          x: element.abosoluteCoords.x - rect.pageX,
-          y: element.abosoluteCoords.y - rect.pageY,
+          x: element.relativeCoords.x,
+          y: element.relativeCoords.y,
           absoluteX: element.abosoluteCoords.x,
           absoluteY: element.abosoluteCoords.y,
         });
@@ -677,7 +677,6 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private cancelTouches(): void {
     this.ensurePropsRef();
-    const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
@@ -693,16 +692,16 @@ export default abstract class GestureHandler implements IGestureHandler {
 
       all.push({
         id: id,
-        x: element.abosoluteCoords.x - rect.pageX,
-        y: element.abosoluteCoords.y - rect.pageY,
+        x: element.relativeCoords.x,
+        y: element.relativeCoords.y,
         absoluteX: element.abosoluteCoords.x,
         absoluteY: element.abosoluteCoords.y,
       });
 
       changed.push({
         id: id,
-        x: element.abosoluteCoords.x - rect.pageX,
-        y: element.abosoluteCoords.y - rect.pageY,
+        x: element.relativeCoords.x,
+        y: element.relativeCoords.y,
         absoluteX: element.abosoluteCoords.x,
         absoluteY: element.abosoluteCoords.y,
       });
@@ -959,10 +958,17 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.needsPointerData = false;
     this.forAnimated = false;
     this.forReanimated = false;
-    this.enableContextMenu = false;
     this._activeCursor = undefined;
-    this._touchAction = undefined;
-    this._userSelect = undefined;
+
+    // On the v3 path these belong to the detector, which sends them (or their
+    // defaults) through partial updates only. Legacy handlers carry them in the
+    // full config and still get the reset.
+    if (!this.usesNativeOrVirtualDetector()) {
+      this.enableContextMenu = false;
+      this._touchAction = undefined;
+      this._userSelect = undefined;
+    }
+
     this.needsDOMUpdate = true;
   }
 
@@ -1014,6 +1020,10 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public get pointerType(): PointerType {
     return this._pointerType;
+  }
+
+  protected set pointerType(value: PointerType) {
+    this._pointerType = value;
   }
 
   public get active() {

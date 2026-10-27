@@ -89,6 +89,10 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     rootHelper?.activateNativeHandlers(view)
   }
 
+  fun onNativeTouchCancelled() {
+    rootHelper?.onNativeTouchCancelled()
+  }
+
   fun isRootViewEnabled() = rootViewEnabled
 
   fun setUnstableForceActive(active: Boolean) {

@@ -29,6 +29,20 @@ function hash(str: string) {
 
 export const SHARED_VALUE_OFFSET = 1.618;
 
+const UNREACHABLE_OFFSET = 1e9;
+
+export function splitSingleOffset(value: number): [number, number] {
+  'worklet';
+  return value < 0 ? [value, UNREACHABLE_OFFSET] : [-UNREACHABLE_OFFSET, value];
+}
+
+const PAN_OFFSET_KEYS = new Set([
+  'activeOffsetX',
+  'activeOffsetY',
+  'failOffsetX',
+  'failOffsetY',
+]);
+
 // Don't transfer entire NativeProxy to the UI thread
 const { updateGestureHandlerConfig } = NativeProxy;
 
@@ -49,12 +63,15 @@ export function bindSharedValues<
   const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
   const { shouldUseReanimatedDetector } = config;
 
-  const attachListener = (sharedValue: SharedValue, configKey: string) => {
+  const attachListener = <T>(
+    sharedValue: SharedValue<T>,
+    configKey: string
+  ) => {
     'worklet';
     const keyHash = hash(configKey);
     const listenerId = baseListenerId + keyHash;
 
-    sharedValue.addListener(listenerId, (value) => {
+    const sendUpdate = (value: T) => {
       if (configKey === 'runOnJS') {
         updateGestureHandlerConfig(handlerTag, {
           dispatchesReanimatedEvents: shouldUseReanimatedDetector && !value,
@@ -69,8 +86,25 @@ export function bindSharedValues<
         return;
       }
 
+      if (PAN_OFFSET_KEYS.has(configKey)) {
+        const [start, end] = splitSingleOffset(value as number);
+        updateGestureHandlerConfig(handlerTag, {
+          [`${configKey}Start`]: start,
+          [`${configKey}End`]: end,
+        });
+        return;
+      }
+
       updateGestureHandlerConfig(handlerTag, { [configKey]: value });
-    });
+    };
+
+    sharedValue.addListener(listenerId, sendUpdate);
+
+    // The full config carries the value read on the JS thread, which can be
+    // stale by the time it lands. Re-send the current value from here so it is
+    // the last write for this key and a change made before the listener
+    // existed is not lost.
+    sendUpdate(sharedValue.value);
   };
 
   for (const [key, maybeSharedValue] of Object.entries(config)) {

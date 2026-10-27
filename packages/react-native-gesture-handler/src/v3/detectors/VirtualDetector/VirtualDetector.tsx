@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { ComponentType, ReactElement } from 'react';
+import {
+  Children,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { findNodeHandle, Platform } from 'react-native';
 
 import { tagMessage } from '../../../utils';
@@ -14,6 +22,17 @@ import {
   useInterceptingDetectorContext,
 } from './useInterceptingDetectorContext';
 import { Wrap } from './Wrap';
+
+function getChildName(children: unknown) {
+  const { type } = Children.only(children) as ReactElement<
+    unknown,
+    string | ComponentType<unknown>
+  >;
+
+  return typeof type === 'string'
+    ? type
+    : (type.displayName ?? type.name ?? 'Unknown');
+}
 
 function useRequiredInterceptingDetectorContext() {
   const context = useInterceptingDetectorContext();
@@ -61,6 +80,24 @@ export function VirtualDetector<
   );
 
   useNativeGestureRole(viewRef, props.children);
+
+  // Dev-only: no host instance after a commit means the child did not hand
+  // its `ref` to one. A child that renders null first is reported as well.
+  const reportedRef = useRef(false);
+
+  useEffect(() => {
+    if (!__DEV__ || reportedRef.current || viewRef.current) {
+      return;
+    }
+
+    reportedRef.current = true;
+
+    console.error(
+      tagMessage(
+        `VirtualGestureDetector could not attach to its child (${getChildName(props.children)}). The child must be a host view or forward its \`ref\` to one.`
+      )
+    );
+  });
 
   const handlerTags = useMemo(
     () =>

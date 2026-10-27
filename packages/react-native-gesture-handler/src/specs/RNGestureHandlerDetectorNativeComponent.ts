@@ -1,4 +1,4 @@
-import type { CodegenTypes, HostComponent, ViewProps } from 'react-native';
+import type { CodegenTypes, ViewProps } from 'react-native';
 import { codegenNativeComponent } from 'react-native';
 
 type GestureHandlerEvent = Readonly<{
@@ -41,7 +41,7 @@ export interface VirtualChildrenProps {
   viewTag: CodegenTypes.Int32;
 }
 
-// @ts-expect-error WithDefault adds `| null` to the type, which doesn't align with ViewProps.pointerEvents
+/** @ts-expect-error WithDefault adds `| null` to the type, which doesn't align with ViewProps.pointerEvents */
 // Using Exclude to remove null from the type makes the error go away, but breaks codegen.
 export interface NativeProps extends ViewProps {
   onGestureHandlerEvent?:
@@ -78,4 +78,4 @@ export interface NativeProps extends ViewProps {
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerDetector', {
   interfaceOnly: true,
-}) as HostComponent<NativeProps>;
+});

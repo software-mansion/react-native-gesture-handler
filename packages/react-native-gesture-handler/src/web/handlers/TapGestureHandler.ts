@@ -7,7 +7,7 @@ import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 500;
-const DEFAULT_MAX_DELAY_MS = 500;
+const DEFAULT_MAX_DELAY_MS = 200;
 const DEFAULT_NUMBER_OF_TAPS = 1;
 const DEFAULT_MIN_NUMBER_OF_POINTERS = 1;
 

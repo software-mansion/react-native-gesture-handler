@@ -151,7 +151,25 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
+#if !TARGET_OS_OSX
+  // Same check as the default `UIView` implementation this replaces.
+  react_native_assert(childComponentView.superview == nil && "Attempt to mount already mounted component view");
+
+  // `_buttonView.layer` keeps the underlay layer at sublayer index 0, and
+  // `-[UIView insertSubview:atIndex:]` counts every sublayer, not only those
+  // backing subviews. Inserting at Fabric's index would therefore place the
+  // child one position too low, i.e. *below* the sibling it should cover (e.g.
+  // a label hoisted out of a flattened background View ends up behind it).
+  // Insert relative to the sibling subview instead, which ignores the underlay.
+  NSArray<RNGHUIView *> *subviews = _buttonView.subviews;
+  if (index < (NSInteger)subviews.count) {
+    [_buttonView insertSubview:childComponentView belowSubview:subviews[index]];
+  } else {
+    [_buttonView addSubview:childComponentView];
+  }
+#else
   [_buttonView mountChildComponentView:childComponentView index:index];
+#endif
 }
 
 - (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView
@@ -546,6 +564,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   _buttonView.tapAnimationInDuration = newProps.tapAnimationInDuration > 0 ? newProps.tapAnimationInDuration : 0;
   _buttonView.tapAnimationOutDuration = newProps.tapAnimationOutDuration > 0 ? newProps.tapAnimationOutDuration : 0;
   _buttonView.longPressDuration = newProps.longPressDuration;
+  _buttonView.immediatePressOut = newProps.immediatePressOut;
   _buttonView.longPressAnimationOutDuration = newProps.longPressAnimationOutDuration;
   _buttonView.activeOpacity = newProps.activeOpacity;
   _buttonView.defaultOpacity = newProps.defaultOpacity;

@@ -132,23 +132,49 @@
   return self;
 }
 
-- (void)updateConfig:(NSDictionary *)config
+- (void)resetConfig
 {
-  [super updateConfig:config];
-  _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
-  _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
-  _yieldsToContinuousGestures = [RCTConvert BOOL:config[@"yieldsToContinuousGestures"]];
+  [super resetConfig];
+  _shouldActivateOnStart = NO;
+  _disallowInterruption = NO;
+  _yieldsToContinuousGestures = NO;
+  _delaysChildPressedState = YES;
+  [self applyDelaysChildPressedState];
+}
 
-  id delaysChildPressedState = config[@"delaysChildPressedState"];
-  _delaysChildPressedState = delaysChildPressedState == nil ? YES : [RCTConvert BOOL:delaysChildPressedState];
-
+- (void)applyDelaysChildPressedState
+{
 #if !TARGET_OS_OSX
-  // Config may be updated after the handler is bound to a view — re-apply to the connected
-  // scroll view if there is one.
   if (self.recognizer.view != nil) {
     [self retrieveScrollView:self.recognizer.view].delaysContentTouches = _delaysChildPressedState;
   }
 #endif
+}
+
+- (void)updateConfig:(NSDictionary *)config
+{
+  [super updateConfig:config];
+
+  id prop = config[@"shouldActivateOnStart"];
+  if (prop != nil) {
+    _shouldActivateOnStart = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"disallowInterruption"];
+  if (prop != nil) {
+    _disallowInterruption = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"yieldsToContinuousGestures"];
+  if (prop != nil) {
+    _yieldsToContinuousGestures = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"delaysChildPressedState"];
+  if (prop != nil) {
+    _delaysChildPressedState = [RCTConvert BOOL:prop];
+    [self applyDelaysChildPressedState];
+  }
 }
 
 - (void)bindToView:(RNGHUIView *)view

@@ -1,3 +1,6 @@
+// jestSetup.js stubs the install; this test exercises the real one.
+jest.unmock('../handlers/gestures/installUIRuntimeBindings');
+
 type RuntimeProviders = {
   worklets?: {
     getUIRuntimeHolder?: () => object;

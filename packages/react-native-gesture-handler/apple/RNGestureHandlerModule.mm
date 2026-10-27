@@ -98,7 +98,7 @@ RCT_EXPORT_MODULE()
   _rnRuntime = &rnRuntime;
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
+  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
@@ -209,6 +209,11 @@ RCT_EXPORT_MODULE()
   return _uiRuntimeDecorated ? @1 : @0;
 }
 
+- (nonnull NSNumber *)getModuleId
+{
+  return @(_moduleId);
+}
+
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
 {
   if (RCTIsMainQueue()) {
@@ -240,12 +245,18 @@ RCT_EXPORT_MODULE()
     } else if (state == 3) { // CANCELLED
       handler.recognizer.state = RNGHGestureRecognizerStateCancelled;
     } else if (state == 4) { // ACTIVE
-      // We don't allow activation of gestures which haven't received any touches
-      if (handler.lastState == RNGestureHandlerStateUndetermined) {
+      if (handler.lastState == RNGestureHandlerStateUndetermined && handler.pointerTracker.trackedPointersCount > 0) {
+        [handler handleGesture:handler.recognizer inState:RNGestureHandlerStateBegan fromManualStateChange:YES];
+      }
+
+      if (handler.lastState != RNGestureHandlerStateBegan) {
         return;
       }
+
       [handler stopActivationBlocker];
       handler.recognizer.state = RNGHGestureRecognizerStateBegan;
+      // Don't wait for the next touch move to report ACTIVE.
+      [handler handleGesture:handler.recognizer inState:RNGestureHandlerStateActive fromManualStateChange:YES];
     } else if (state == 5) { // ENDED
       handler.recognizer.state = RNGHGestureRecognizerStateEnded;
     }

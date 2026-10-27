@@ -1,9 +1,4 @@
-import type {
-  CodegenTypes,
-  ColorValue,
-  HostComponent,
-  ViewProps,
-} from 'react-native';
+import type { CodegenTypes, ColorValue, ViewProps } from 'react-native';
 import { codegenNativeComponent } from 'react-native';
 
 export type ButtonEvent = Readonly<{
@@ -16,7 +11,7 @@ export type ButtonEvent = Readonly<{
   pointerType: CodegenTypes.Int32;
 }>;
 
-// @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it
+/** @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it */
 interface NativeProps extends ViewProps {
   // The events are namespaced with `Button` because the base view config on iOS
   // already registers `topPress` as a bubbling event — a direct event with the
@@ -60,6 +55,7 @@ interface NativeProps extends ViewProps {
   tapAnimationInDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, 50>;
   tapAnimationOutDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, 100>;
   longPressDuration?: CodegenTypes.WithDefault<CodegenTypes.Int32, -1>;
+  immediatePressOut?: CodegenTypes.WithDefault<boolean, true>;
   longPressAnimationOutDuration?: CodegenTypes.WithDefault<
     CodegenTypes.Int32,
     -1
@@ -130,6 +126,4 @@ interface NativeProps extends ViewProps {
   borderStartStartRadius?: CodegenTypes.UnsafeMixed;
 }
 
-export default codegenNativeComponent<NativeProps>(
-  'RNGestureHandlerButton'
-) as HostComponent<NativeProps>;
+export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');

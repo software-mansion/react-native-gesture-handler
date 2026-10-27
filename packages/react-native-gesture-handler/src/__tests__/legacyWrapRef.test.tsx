@@ -2,6 +2,8 @@ import { cleanup, render } from '@testing-library/react-native';
 import React from 'react';
 import { findNodeHandle, View } from 'react-native';
 
+import * as refreshesAnimatableRef from '../handlers/gestures/GestureDetector/refreshesAnimatableRef';
+import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 import { Gesture, GestureDetector, GestureHandlerRootView } from '../index';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 
@@ -130,6 +132,65 @@ describe('Legacy GestureDetector ref forwarding', () => {
 
     expect(firstRef).toHaveBeenCalledWith(null);
     expect(secondRef).toHaveBeenCalledWith(childInstance);
+  });
+
+  describe('animatable ref for Reanimated', () => {
+    let refreshSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      refreshSpy = jest.spyOn(
+        refreshesAnimatableRef,
+        'reanimatedRefreshesAnimatableRef'
+      );
+    });
+
+    afterEach(() => {
+      refreshSpy.mockRestore();
+    });
+
+    test('exposes the child host instance when Reanimated re-resolves it on update', () => {
+      refreshSpy.mockReturnValue(true);
+      const wrapRef = React.createRef<Wrap>();
+      const childRef = React.createRef<ChildWithHostInstance>();
+
+      render(
+        <Wrap ref={wrapRef}>
+          <ChildWithHostInstance ref={childRef} />
+        </Wrap>
+      );
+
+      expect(childRef.current).not.toBeNull();
+      expect(wrapRef.current?.getAnimatableRef()).toBe(childRef.current);
+    });
+
+    test('falls back to itself without a host instance', () => {
+      refreshSpy.mockReturnValue(true);
+      const wrapRef = React.createRef<Wrap>();
+
+      render(
+        <Wrap ref={wrapRef}>
+          <ChildIgnoringRef />
+        </Wrap>
+      );
+
+      expect(wrapRef.current).not.toBeNull();
+      expect(wrapRef.current?.getAnimatableRef()).toBe(wrapRef.current);
+    });
+
+    test('returns itself when Reanimated caches the animatable ref', () => {
+      refreshSpy.mockReturnValue(false);
+      const wrapRef = React.createRef<Wrap>();
+      const childRef = React.createRef<ChildWithHostInstance>();
+
+      render(
+        <Wrap ref={wrapRef}>
+          <ChildWithHostInstance ref={childRef} />
+        </Wrap>
+      );
+
+      expect(childRef.current).not.toBeNull();
+      expect(wrapRef.current?.getAnimatableRef()).toBe(wrapRef.current);
+    });
   });
 
   test('does not reattach gestures on re-render', () => {
