@@ -20,7 +20,6 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private val jsGestureHandler: GestureHandler?
   val rootView: ViewGroup
   private var shouldIntercept = false
-  private var wasIntercepting = false
   private var passingTouch = false
   private var passingNativeTouch = false
   private var nativeTouchGrabRequested = false
@@ -56,7 +55,6 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       RNViewConfigurationHelper(),
       rootView,
       onJSResponderCancelListener,
-      ::onTouchEventProcessed,
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
@@ -116,6 +114,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) = handleEvent(event)
 
     override fun onCancel() {
+      // On the transition into interception, cancel the native views the pointers landed on - the
+      // framework's ACTION_CANCEL never reaches them since RNGH ignores `onInterceptTouchEvent`.
+      if (!shouldIntercept) {
+        orchestrator?.scheduleInterceptedViewsCancel()
+      }
       shouldIntercept = true
     }
   }
@@ -187,16 +190,6 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     passingTouch = false
 
     return shouldIntercept
-  }
-
-  private fun onTouchEventProcessed(event: MotionEvent) {
-    // On the transition into interception, cancel the native views the pointers landed on - the
-    // framework's ACTION_CANCEL never reaches them since RNGH ignores `onInterceptTouchEvent`.
-    // Keep this inside the orchestrator's dispatch so its own CANCEL is not a native touch grab.
-    if (shouldIntercept && !wasIntercepting) {
-      orchestrator!!.cancelTouchesInInterceptedViews(event)
-    }
-    wasIntercepting = shouldIntercept
   }
 
   fun activateNativeHandlers(view: View) {
