@@ -1022,6 +1022,10 @@ export default abstract class GestureHandler implements IGestureHandler {
     return this._pointerType;
   }
 
+  protected set pointerType(value: PointerType) {
+    this._pointerType = value;
+  }
+
   public get active() {
     return this._active;
   }

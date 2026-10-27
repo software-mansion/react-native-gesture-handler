@@ -91,6 +91,7 @@ const StatefulPressable = (props: PressableProps) => {
   const isOnPressAllowed = useRef<boolean>(true);
   const jsResponderContext = use(JSResponderContext);
   const isCurrentlyPressed = useRef<boolean>(false);
+  const pressInEventRef = useRef<PressableEvent | null>(null);
   const dimensions = useRef<PressableDimensions>({
     width: 0,
     height: 0,
@@ -124,7 +125,6 @@ const StatefulPressable = (props: PressableProps) => {
     if (longPressTimeoutRef.current) {
       clearTimeout(longPressTimeoutRef.current);
       longPressTimeoutRef.current = null;
-      isOnPressAllowed.current = true;
     }
   }, []);
 
@@ -140,6 +140,7 @@ const StatefulPressable = (props: PressableProps) => {
       if (onLongPress) {
         cancelLongPress();
         longPressTimeoutRef.current = setTimeout(() => {
+          longPressTimeoutRef.current = null;
           isOnPressAllowed.current = false;
           onLongPress(event);
         }, delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
@@ -187,6 +188,8 @@ const StatefulPressable = (props: PressableProps) => {
       }
 
       isCurrentlyPressed.current = true;
+      isOnPressAllowed.current = true;
+      pressInEventRef.current = event;
       if (unstable_pressDelay) {
         pressDelayTimeoutRef.current = setTimeout(() => {
           innerHandlePressIn(event);
@@ -310,11 +313,9 @@ const StatefulPressable = (props: PressableProps) => {
       );
     },
     onTouchesUp: () => {
-      if (Platform.OS === 'android' && !isScreenReaderEnabled) {
-        // Prevents potential soft-locks
-        stateMachine.reset();
-        handleFinalize();
-      }
+      // The button may still be waiting for another gesture; a long press
+      // must not fire after the finger lifted
+      cancelLongPress();
     },
     onTouchesCancel: (event) => {
       const pressableEvent = gestureTouchToPressableEvent(event);
@@ -399,6 +400,17 @@ const StatefulPressable = (props: PressableProps) => {
       stateMachine.handleEvent(
         event.canceled ? StateMachineEvent.CANCEL : StateMachineEvent.FINALIZE
       );
+
+      // The button's cancel can land before the long press's touch cancel,
+      // or without one, so deliver the press-out here
+      if (event.canceled && isCurrentlyPressed.current) {
+        handlePressOut(
+          pressInEventRef.current ??
+            viewCenterToPressableEvent(dimensions.current),
+          false
+        );
+        return;
+      }
 
       handleFinalize();
     },
