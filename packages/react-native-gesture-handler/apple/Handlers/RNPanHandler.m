@@ -37,11 +37,18 @@
 #endif
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
+- (CGPoint)reportedVelocityInView:(RNGHUIView *)view;
 
 @end
 
+// A pointer that sent no move for this long is treated as stopped, like in
+// Android's VelocityTracker and the web tracker.
+static const NSTimeInterval pointerStoppedInterval = 0.04;
+
 @implementation RNBetterPanGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
+  NSTimeInterval _lastMoveTimestamp;
+  BOOL _restedBeforeRelease;
 #if TARGET_OS_OSX
   BOOL _blockAutomaticActivation;
 #else
@@ -135,6 +142,11 @@
     [_gestureHandler reset];
   }
 
+  if (self.state == UIGestureRecognizerStatePossible) {
+    _lastMoveTimestamp = event.timestamp;
+    _restedBeforeRelease = NO;
+  }
+
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   if (_hasCustomActivationCriteria) {
     // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
@@ -169,6 +181,7 @@
 
 - (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  _lastMoveTimestamp = event.timestamp;
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
   if (self.state == UIGestureRecognizerStatePossible && [self shouldFailUnderCustomCriteria]) {
@@ -210,6 +223,13 @@
 
   [self tryUpdateStylusData:event];
 #endif
+}
+
+// Velocity for the event payload: zero on release when the pointer rested
+// before lifting, the recognizer's estimate otherwise.
+- (CGPoint)reportedVelocityInView:(RNGHUIView *)view
+{
+  return self.state == UIGestureRecognizerStateEnded && _restedBeforeRelease ? CGPointZero : [self velocityInView:view];
 }
 
 - (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -264,6 +284,8 @@
 
 - (void)mouseUp:(NSEvent *)event
 {
+  _restedBeforeRelease = event.timestamp - _lastMoveTimestamp > pointerStoppedInterval;
+
   [super mouseUp:event];
   [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
 }
@@ -286,6 +308,8 @@
 
 - (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  _restedBeforeRelease = event.timestamp - _lastMoveTimestamp > pointerStoppedInterval;
+
   [super touchesEnded:touches withEvent:event];
   [self interactionsEnded:touches withEvent:event];
 }
@@ -306,6 +330,7 @@
 #if TARGET_OS_OSX
   _blockAutomaticActivation = NO;
 #endif
+  _restedBeforeRelease = NO;
   [super reset];
   [_gestureHandler reset];
 
@@ -486,13 +511,16 @@
 #if TARGET_OS_OSX
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSPanGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:self.coordinateView]
-                           withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
-                                withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
-                                   withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
-                            withNumberOfTouches:1
-                                withPointerType:RNGestureHandlerMouse
-                                 withStylusData:nil];
+  RNBetterPanGestureRecognizer *panRecognizer = (RNBetterPanGestureRecognizer *)recognizer;
+
+  return
+      [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:self.coordinateView]
+                        withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
+                             withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
+                                withVelocity:[panRecognizer reportedVelocityInView:recognizer.view.window.contentView]
+                         withNumberOfTouches:1
+                             withPointerType:RNGestureHandlerMouse
+                              withStylusData:nil];
 }
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
@@ -503,7 +531,7 @@
                     forPan:[recognizer locationInView:self.coordinateView]
       withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
            withTranslation:[recognizer translationInView:recognizer.view.window]
-              withVelocity:[recognizer velocityInView:recognizer.view.window]
+              withVelocity:[panRecognizer reportedVelocityInView:recognizer.view.window]
        withNumberOfTouches:recognizer.numberOfTouches
            withPointerType:_pointerType
 #if !TARGET_OS_TV
