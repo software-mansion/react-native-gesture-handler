@@ -97,9 +97,9 @@ Full changes are as follows:
 | `waitFor`              | `requireToFail`        |
 | `blocksHandlers`       | `block`                |
 
-## Migrating components relying on view hierarchy
+## Migrating to virtual detectors
 
-Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/core-components/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector).
+In Gesture Handler 3, `GestureDetector` is a host view. This has two consequences: it disrupts components that depend on the view hierarchy, such as `SVG`, and it is detached and reattached when its place in the hierarchy changes, which cancels an active gesture. To handle both cases, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/core-components/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector).
 
 :::danger Detectors order
 `VirtualGestureDetector` has to be a descendant of `InterceptingGestureDetector`.
@@ -108,6 +108,10 @@ Certain components, such as `SVG`, depend on the view hierarchy to function corr
 ### Migrating SVG
 
 In Gesture Handler 2, it was possible to use `GestureDetector` directly on `SVG`. In Gesture Handler 3, the correct way to interact with `SVG` is to use `InterceptingGestureDetector` and `VirtualGestureDetector`.
+
+### Migrating views reordered during a gesture
+
+In Gesture Handler 2, a gesture on Android survived its view being reordered mid-gesture, for example a drag-to-reorder list putting the held row at a new index. To keep that behavior, use `InterceptingGestureDetector` and `VirtualGestureDetector`. See [Views reordered during a gesture](/docs/core-components/gesture-detectors#views-reordered-during-a-gesture) for details.
 
 ## Old components
 

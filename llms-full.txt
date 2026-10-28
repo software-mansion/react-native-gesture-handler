@@ -1601,6 +1601,14 @@ You can combine `VirtualGestureDetector` with [`react-native-svg`](https://githu
 
 You can use `VirtualGestureDetector` to add gesture handling to specific parts of a `Text` component.
 
+#### Views reordered during a gesture
+
+When a re-render changes `GestureDetector`'s place in the view hierarchy (e.g., a drag-to-reorder list puts the held row at a new index), the renderer may detach the view and reattach it, which cancels the active gesture.
+
+On Android, you can keep the gesture alive by wrapping the list in `InterceptingGestureDetector` and using `VirtualGestureDetector` for each row. The gesture is then attached through the list's detector, which stays in place.
+
+On iOS and web the system cancels the gesture of a reattached view regardless of the detector used.
+
 ## Properties
 
 ### gesture
@@ -4280,9 +4288,9 @@ Full changes are as follows:
 | `waitFor`              | `requireToFail`        |
 | `blocksHandlers`       | `block`                |
 
-## Migrating components relying on view hierarchy
+## Migrating to virtual detectors
 
-Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/core-components/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector).
+In Gesture Handler 3, `GestureDetector` is a host view. This has two consequences: it disrupts components that depend on the view hierarchy, such as `SVG`, and it is detached and reattached when its place in the hierarchy changes, which cancels an active gesture. To handle both cases, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/core-components/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector).
 
 :::danger Detectors order
 `VirtualGestureDetector` has to be a descendant of `InterceptingGestureDetector`.
@@ -4291,6 +4299,10 @@ Certain components, such as `SVG`, depend on the view hierarchy to function corr
 ### Migrating SVG
 
 In Gesture Handler 2, it was possible to use `GestureDetector` directly on `SVG`. In Gesture Handler 3, the correct way to interact with `SVG` is to use `InterceptingGestureDetector` and `VirtualGestureDetector`.
+
+### Migrating views reordered during a gesture
+
+In Gesture Handler 2, a gesture on Android survived its view being reordered mid-gesture, for example a drag-to-reorder list putting the held row at a new index. To keep that behavior, use `InterceptingGestureDetector` and `VirtualGestureDetector`. See [Views reordered during a gesture](/docs/core-components/gesture-detectors#views-reordered-during-a-gesture) for details.
 
 ## Old components
 

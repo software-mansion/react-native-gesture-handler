@@ -60,6 +60,14 @@ You can combine `VirtualGestureDetector` with [`react-native-svg`](https://githu
 
 You can use `VirtualGestureDetector` to add gesture handling to specific parts of a `Text` component.
 
+#### Views reordered during a gesture
+
+When a re-render changes `GestureDetector`'s place in the view hierarchy (e.g., a drag-to-reorder list puts the held row at a new index), the renderer may detach the view and reattach it, which cancels the active gesture.
+
+On Android, you can keep the gesture alive by wrapping the list in `InterceptingGestureDetector` and using `VirtualGestureDetector` for each row. The gesture is then attached through the list's detector, which stays in place.
+
+On iOS and web the system cancels the gesture of a reattached view regardless of the detector used.
+
 ## Properties
 
 ### gesture
