@@ -418,3 +418,45 @@ describe('PanGestureHandler pointer leaving and entering the view', () => {
     expect(handler.state).toBe(State.CANCELLED);
   });
 });
+
+describe('PanGestureHandler velocity at release', () => {
+  function timedEvent(eventType: EventTypes, y: number, time: number) {
+    return { ...pointerEvent(eventType, y), time };
+  }
+
+  // Four moves 8ms apart, 10px each: 1250px/s downwards.
+  function dragThenRelease(releaseTime: number) {
+    const handler = createHandler();
+
+    handler.setGestureConfig({ enabled: true, minDist: 0 });
+    handler.pointerDown(timedEvent(EventTypes.DOWN, 20, 0));
+    for (let move = 1; move <= 4; move++) {
+      handler.pointerMove(
+        timedEvent(EventTypes.MOVE, 20 + 10 * move, 8 * move)
+      );
+    }
+    expect(handler.state).toBe(State.ACTIVE);
+
+    handler.pointerUp(timedEvent(EventTypes.UP, 60, releaseTime));
+    expect(handler.state).toBe(State.END);
+
+    return handler.nativeEvent();
+  }
+
+  test('a pointer released at its last move keeps the velocity of the drag', () => {
+    expect(dragThenRelease(32).velocityY).toBeCloseTo(1250, -2);
+  });
+
+  test('a pointer that rested before release reports zero velocity', () => {
+    expect(dragThenRelease(532).velocityY).toBe(0);
+  });
+
+  // The last move is at 32ms, the pointer counts as stopped after 40ms.
+  test('a pointer released at the stopped threshold keeps its velocity', () => {
+    expect(dragThenRelease(72).velocityY).toBeCloseTo(1250, -2);
+  });
+
+  test('a pointer released past the stopped threshold reports zero velocity', () => {
+    expect(dragThenRelease(73).velocityY).toBe(0);
+  });
+});
