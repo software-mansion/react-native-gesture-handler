@@ -267,6 +267,40 @@ describe('[API v3] Components', () => {
     expect(pressFn).toHaveBeenCalledTimes(1);
   });
 
+  // BaseButton adds plain JS callbacks of its own, so a worklet passed by the
+  // user must not move the gesture to the Reanimated detector (#4628).
+  test('Rect Button with a worklet callback stays on the JS thread', () => {
+    const pressFn = jest.fn();
+    const onTouchesDown = Object.assign(jest.fn(), { __workletHash: 1 });
+
+    render(
+      <GestureHandlerRootView>
+        <RectButton
+          testID="btn"
+          // @ts-expect-error Reanimated config is not part of the wrapper props.
+          disableReanimated={false}
+          onTouchesDown={onTouchesDown}
+          onPress={pressFn}
+        />
+      </GestureHandlerRootView>
+    );
+
+    const nativeGesture = getByGestureTestId('btn');
+
+    expect(nativeGesture.config.shouldUseReanimatedDetector).toBe(false);
+    expect(nativeGesture.config.disableReanimated).toBe(true);
+
+    act(() => {
+      fireGestureHandler(nativeGesture, [
+        { oldState: State.UNDETERMINED, state: State.BEGAN },
+        { oldState: State.BEGAN, state: State.ACTIVE },
+        { oldState: State.ACTIVE, state: State.END },
+      ]);
+    });
+
+    expect(pressFn).toHaveBeenCalledTimes(1);
+  });
+
   describe('ScrollView', () => {
     test('handles responder event passed through Pressable for keyboardShouldPersistTaps handled', async () => {
       const { UNSAFE_getAllByType } = render(

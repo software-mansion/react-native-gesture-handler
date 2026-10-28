@@ -113,12 +113,15 @@ export const PropsWhiteLists = new Map<
 
 export const EMPTY_WHITE_LIST = new Set<string>();
 
+// `disableReanimated` and `runOnJS` are not wrapper props, but route them to
+// the gesture (where the wrapper overrides them) instead of the wrapped view.
 export const NativeWrapperProps = new Set<
-  keyof NativeWrapperProperties<unknown>
+  keyof NativeWrapperProperties<unknown> | 'disableReanimated' | 'runOnJS'
 >([
   ...CommonConfig,
   ...HandlerCallbacks,
   ...NativeHandlerNativeProperties,
   ...ExternalRelationsConfig,
   'disableReanimated',
+  'runOnJS',
 ]);
