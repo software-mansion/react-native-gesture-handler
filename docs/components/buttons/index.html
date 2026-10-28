@@ -21,7 +21,7 @@
 
 <script>!function(){try{var e=location.pathname;if(["/react-native-gesture-handler/search"].some(function(t){return e===t||0===e.indexOf(t+"/")}))return;var t=localStorage.getItem("swm.topbarbanner.v1.react-native-gesture-handler-topbar-1.ea15c4216158c4097b65fe6504a4b3b7");if(!t)return;var r=JSON.parse(t);if(!r||"number"!=typeof r.height||r.height<5)return;if(Date.now()-r.timestamp>=2592e6)return;var a=document.documentElement;a.style.setProperty("--banner-height-react-native-gesture-handler-topbar-1-ea15c4216158c4097b65fe6504a4b3b7",r.height+"px"),"string"==typeof r.bgColor&&a.style.setProperty("--banner-bg-react-native-gesture-handler-topbar-1-ea15c4216158c4097b65fe6504a4b3b7",r.bgColor)}catch(e){}}()</script>
 <script src="/react-native-gesture-handler/js/snack-helpers.js" async></script><link rel="stylesheet" href="/react-native-gesture-handler/assets/css/styles.61cace59.css">
-<script src="/react-native-gesture-handler/assets/js/runtime~main.cc70378b.js" defer="defer"></script>
+<script src="/react-native-gesture-handler/assets/js/runtime~main.add9a35a.js" defer="defer"></script>
 <script src="/react-native-gesture-handler/assets/js/main.67d0bc2b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -44,6 +44,7 @@
 <li><a href="#borderlessbutton"><code>BorderlessButton</code></a></li>
 </ul>
 <p>On top of that all the buttons are wrapped with <a href="/react-native-gesture-handler/docs/gestures/use-native-gesture"><code>Native gesture</code></a> and therefore allow for all its <a href="/react-native-gesture-handler/docs/gestures/use-native-gesture#config">properties</a> to be applied to them.</p>
+<p>Button callbacks always run on the JS thread. The Reanimated-specific configuration (<a href="/react-native-gesture-handler/docs/fundamentals/reanimated-interactions#disablereanimated"><code>disableReanimated</code></a>, <a href="/react-native-gesture-handler/docs/fundamentals/reanimated-interactions#runonjs"><code>runOnJS</code></a>) is not available on buttons, and passing a worklet as a callback does not move it to the UI thread.</p>
 <h2 class="anchor _anchorWithHideOnScrollNavbar_1jjlx_10" id="rawbutton">RawButton<a href="#rawbutton" class="hash-link" aria-label="Direct link to RawButton" title="Direct link to RawButton">​</a></h2>
 <p>The most basic button component does not provide any feedback and lacks props such as <code>onPress</code>. It serves as a foundation for other button components and is ideal if you wish to implement your own custom interactions for when the button is pressed.</p>
 <p><code>RawButton</code> accepts all <a href="/react-native-gesture-handler/docs/gestures/use-native-gesture#config"><code>Native gesture</code> props</a>, <a href="https://reactnative.dev/docs/accessibility#accessibility-properties" target="_blank" rel="noopener noreferrer">accessibility props</a>, along with the following additional properties:</p>

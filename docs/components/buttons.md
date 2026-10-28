@@ -13,6 +13,8 @@ Gesture Handler library exposes components that render native touchable elements
 
 On top of that all the buttons are wrapped with [`Native gesture`](/docs/gestures/use-native-gesture) and therefore allow for all its [properties](/docs/gestures/use-native-gesture#config) to be applied to them.
 
+Button callbacks always run on the JS thread. The Reanimated-specific configuration ([`disableReanimated`](/docs/fundamentals/reanimated-interactions#disablereanimated), [`runOnJS`](/docs/fundamentals/reanimated-interactions#runonjs)) is not available on buttons, and passing a worklet as a callback does not move it to the UI thread.
+
 ## RawButton
 
 The most basic button component does not provide any feedback and lacks props such as `onPress`. It serves as a foundation for other button components and is ideal if you wish to implement your own custom interactions for when the button is pressed.
