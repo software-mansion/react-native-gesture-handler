@@ -56,6 +56,7 @@ class GestureHandlerOrchestrator(
     private set
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
+  private var interceptedViewsCancelScheduled = false
   private var activationIndex = 0
 
   /**
@@ -74,6 +75,11 @@ class GestureHandlerOrchestrator(
       cancelAll()
     }
     deliverEventToGestureHandlers(event)
+    if (interceptedViewsCancelScheduled) {
+      interceptedViewsCancelScheduled = false
+      cancelTouchesInInterceptedViews(event)
+    }
+    releasePointerDownPoints(event)
     isHandlingTouch = false
     if (finishedHandlersCleanupScheduled && handlingChangeSemaphore == 0) {
       cleanupFinishedHandlers()
@@ -759,18 +765,26 @@ class GestureHandlerOrchestrator(
   }
 
   private fun trackPointerDownPoints(event: MotionEvent) {
-    val index = event.actionIndex
-    when (event.actionMasked) {
-      MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN ->
-        pointerDownPoints.put(event.getPointerId(index), PointF(event.getX(index), event.getY(index)))
-      MotionEvent.ACTION_POINTER_UP ->
-        pointerDownPoints.remove(event.getPointerId(index))
-      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
-        pointerDownPoints.clear()
+    val action = event.actionMasked
+    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+      val index = event.actionIndex
+      pointerDownPoints.put(event.getPointerId(index), PointF(event.getX(index), event.getY(index)))
     }
   }
 
-  fun cancelTouchesInInterceptedViews(event: MotionEvent) {
+  // Runs after the event is handled, so a sweep started by a lifting pointer still sees it.
+  private fun releasePointerDownPoints(event: MotionEvent) {
+    when (event.actionMasked) {
+      MotionEvent.ACTION_POINTER_UP -> pointerDownPoints.remove(event.getPointerId(event.actionIndex))
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> pointerDownPoints.clear()
+    }
+  }
+
+  fun scheduleInterceptedViewsCancel() {
+    interceptedViewsCancelScheduled = true
+  }
+
+  private fun cancelTouchesInInterceptedViews(event: MotionEvent) {
     viewsToCancel.clear()
     for (i in 0 until pointerDownPoints.size()) {
       val point = pointerDownPoints.valueAt(i)
