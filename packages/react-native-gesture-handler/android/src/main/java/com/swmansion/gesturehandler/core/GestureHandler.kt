@@ -258,7 +258,7 @@ open class GestureHandler {
     trackedPointersIDsCount--
   }
 
-  private fun isTrackingPointer(pointerId: Int) = trackedPointerIDs[pointerId] != -1
+  fun isTrackingPointer(pointerId: Int) = trackedPointerIDs[pointerId] != -1
 
   private fun needAdapt(event: MotionEvent): Boolean {
     if (event.pointerCount != trackedPointersIDsCount) {
