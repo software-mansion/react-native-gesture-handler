@@ -170,6 +170,7 @@ android {
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 24)
         targetSdkVersion safeExtGet('targetSdkVersion', 33)
+        consumerProguardFiles 'consumer-rules.pro'
 
         externalNativeBuild {
             cmake {
