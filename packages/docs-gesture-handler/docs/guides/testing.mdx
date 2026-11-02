@@ -31,6 +31,19 @@ In order to load mocks provided by RNGH, add the following to your jest config:
 "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
 ```
 
+<Badges version="3.4.1">
+### Rendering without GestureHandlerRootView
+</Badges>
+
+`GestureDetector` throws in development when it is not rendered inside `GestureHandlerRootView`, and this includes `Jest`. Wrap rendered trees in `GestureHandlerRootView`, or skip the check by adding the following file to `setupFiles`:
+
+```json
+"setupFiles": [
+  ...,
+  "./node_modules/react-native-gesture-handler/jest-setup/disableRootViewCheck.js"
+]
+```
+
 ### Example jest config
 
 <Tabs groupId="package-managers">
