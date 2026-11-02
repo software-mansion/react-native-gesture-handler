@@ -50,6 +50,7 @@
     "ReanimatedDrawerLayout/",
     "README.md",
     "jestSetup.js",
+    "jest-setup/",
     "RNGestureHandler.podspec",
     "react-native.config.js"
   ],
