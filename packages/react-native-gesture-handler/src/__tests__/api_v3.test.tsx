@@ -10,7 +10,13 @@ import { Keyboard, TextInput, View } from 'react-native';
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
-import { Pressable, RectButton, ScrollView, Touchable } from '../v3/components';
+import {
+  Pressable,
+  RectButton,
+  RefreshControl,
+  ScrollView,
+  Touchable,
+} from '../v3/components';
 import {
   GestureDetector,
   InterceptingGestureDetector,
@@ -498,7 +504,7 @@ describe('[API v3] Components', () => {
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
     });
 
-    test('does not handle responder event passed through InterceptingGestureDetector for native gestures', async () => {
+    test('handles responder event passed through InterceptingGestureDetector for native gestures', async () => {
       const { UNSAFE_getAllByType } = render(
         <GestureHandlerRootView>
           <ScrollView keyboardShouldPersistTaps="handled">
@@ -521,6 +527,24 @@ describe('[API v3] Components', () => {
       expect(interceptingDetector?.props.onStartShouldSetResponder()).toBe(
         false
       );
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+    });
+
+    test('does not handle responder event passed through the native gesture of ScrollView itself', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled" />
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const [scrollViewDetector] = getNativeDetectors(UNSAFE_getAllByType);
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+
+      expect(scrollViewDetector).toBeDefined();
+      expect(scrollViewResponder).toBeDefined();
+      expect(scrollViewDetector?.props.onStartShouldSetResponder()).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );
@@ -641,6 +665,35 @@ describe('[API v3] Components', () => {
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
       expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
+        false
+      );
+    });
+
+    test('does not handle responder event passed through RefreshControl', async () => {
+      const { UNSAFE_root, UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            refreshControl={<RefreshControl refreshing={false} />}
+          />
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      // The native mock drops the props, so look at the element RN renders
+      const refreshControl = UNSAFE_root.find(
+        ({ props }) =>
+          props.refreshing !== undefined &&
+          props.onStartShouldSetResponderCapture
+      );
+
+      expect(scrollViewResponder).toBeDefined();
+      expect(refreshControl.props.onStartShouldSetResponderCapture()).toBe(
+        false
+      );
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );

@@ -21,11 +21,11 @@ function isSupportedGesture<
   TExtendedHandlerData extends THandlerData,
 >(
   gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>,
-  allowNative: boolean
+  countNativeAsHandled: boolean
 ): boolean {
   if (isComposedGesture(gesture)) {
     return gesture.gestures.some((child) =>
-      isSupportedGesture(child, allowNative)
+      isSupportedGesture(child, countNativeAsHandled)
     );
   }
 
@@ -40,7 +40,7 @@ function isSupportedGesture<
     case SingleGestureName.Hover:
       return true;
     case SingleGestureName.Native:
-      return allowNative;
+      return countNativeAsHandled;
     default:
       return false;
   }
@@ -52,11 +52,9 @@ export function useJSResponderHandler<
   TExtendedHandlerData extends THandlerData,
 >(
   gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData> | undefined,
-  // Whether a Native gesture counts as handling the tap. True for buttons and
-  // other wrapped controls. InterceptingGestureDetector passes false, since
-  // ScrollView and FlatList are intercepting detectors with a Native gesture
-  // and a touch on a scroller should not keep the keyboard open.
-  allowNative = true
+  // Whether a tap on a Native gesture counts as handled. Scrollers and other
+  // non-tap-targets turn it off so touching them doesn't keep the keyboard open.
+  countNativeAsHandled = true
 ) {
   const jsResponderContext = use(JSResponderContext);
   const [enabledSharedValueRevision, setEnabledSharedValueRevision] =
@@ -128,8 +126,10 @@ export function useJSResponderHandler<
 
   const shouldHandleJSResponderEvent = useCallback(() => {
     void enabledSharedValueRevision;
-    return gesture !== undefined && isSupportedGesture(gesture, allowNative);
-  }, [enabledSharedValueRevision, gesture, allowNative]);
+    return (
+      gesture !== undefined && isSupportedGesture(gesture, countNativeAsHandled)
+    );
+  }, [enabledSharedValueRevision, gesture, countNativeAsHandled]);
 
   const handleStartShouldSetResponder = useCallback(() => {
     if (shouldHandleJSResponderEvent()) {

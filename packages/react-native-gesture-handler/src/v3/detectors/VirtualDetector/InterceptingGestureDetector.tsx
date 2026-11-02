@@ -40,7 +40,20 @@ interface StrippedVirtualChildren {
   enableContextMenu?: boolean;
 }
 
-export function InterceptingGestureDetector<
+type InterceptingGestureDetectorBaseProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+> = InterceptingGestureDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData
+> & {
+  countNativeAsHandled?: boolean;
+};
+
+// Internal: `countNativeAsHandled` is not part of the public detector API.
+export function InterceptingGestureDetectorBase<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
@@ -50,7 +63,8 @@ export function InterceptingGestureDetector<
   touchAction,
   userSelect,
   enableContextMenu,
-}: InterceptingGestureDetectorProps<
+  countNativeAsHandled,
+}: InterceptingGestureDetectorBaseProps<
   TConfig,
   THandlerData,
   TExtendedHandlerData
@@ -58,7 +72,7 @@ export function InterceptingGestureDetector<
   useEnsureGestureHandlerRootView();
   const { handleStartShouldSetResponder } = useJSResponderHandler(
     gesture,
-    false
+    countNativeAsHandled
   );
 
   const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
@@ -312,4 +326,18 @@ export function InterceptingGestureDetector<
       </NativeDetectorComponent>
     </InterceptingDetectorContext>
   );
+}
+
+export function InterceptingGestureDetector<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  props: InterceptingGestureDetectorProps<
+    TConfig,
+    THandlerData,
+    TExtendedHandlerData
+  >
+) {
+  return <InterceptingGestureDetectorBase {...props} />;
 }

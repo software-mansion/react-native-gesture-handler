@@ -35,7 +35,9 @@ export const RefreshControl: React.ComponentType<
     disallowInterruption: true,
     shouldCancelWhenOutside: false,
   },
-  GestureDetectorType.Virtual
+  GestureDetectorType.Virtual,
+  // On Android it is the parent of the whole list, so it must not mark taps
+  false
 );
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -50,7 +52,8 @@ const GHScrollView = createNativeWrapper<
     disallowInterruption: true,
     shouldCancelWhenOutside: false,
   },
-  GestureDetectorType.Intercepting
+  GestureDetectorType.Intercepting,
+  false
 );
 
 export const ScrollView = (
