@@ -4,6 +4,7 @@ import { GestureDetectorType, InterceptingGestureDetector } from './detectors';
 import { NativeDetector } from './detectors/NativeDetector';
 import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
 import { useNativeGesture } from './hooks/gestures';
+import type { NativeGestureConfig } from './hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from './hooks/utils';
 import type {
   NativeWrapperProperties,
@@ -36,7 +37,7 @@ export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
         return res;
       },
       {
-        gestureHandlerProps: { ...config }, // Watch out not to modify config
+        gestureHandlerProps: { ...config } as NativeGestureConfig, // Watch out not to modify config
         childProps: {
           enabled: props.enabled,
           hitSlop: props.hitSlop,
@@ -45,9 +46,10 @@ export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
       }
     );
 
-    if (gestureHandlerProps.disableReanimated === undefined) {
-      gestureHandlerProps.disableReanimated = true;
-    }
+    // Components built on top of the wrapper (e.g. BaseButton) add plain JS
+    // callbacks of their own, so the gesture must never use the Reanimated
+    // detector, whatever the caller passed.
+    gestureHandlerProps.disableReanimated = true;
 
     const native = useNativeGesture(gestureHandlerProps);
 

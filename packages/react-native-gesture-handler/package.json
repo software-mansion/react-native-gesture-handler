@@ -34,6 +34,7 @@
     "android/build.gradle",
     "android/gradle.properties",
     "android/CMakeLists.txt",
+    "android/consumer-rules.pro",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
     "android/src/main/jni/",

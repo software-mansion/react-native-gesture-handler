@@ -92,6 +92,17 @@ export default class VelocityTracker {
     return [0, 0];
   }
 
+  // Velocity at `time`: zero once no sample arrived within the stopped
+  // window, the current estimate otherwise.
+  public velocityAt(time: number): [number, number] {
+    const newest = this.samples.get(this.samples.size - 1);
+
+    return !newest ||
+      time - newest.time > this.assumePointerMoveStoppedMilliseconds
+      ? [0, 0]
+      : this.velocity;
+  }
+
   public reset(): void {
     this.samples.clear();
   }

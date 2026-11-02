@@ -261,6 +261,12 @@ export default class PanGestureHandler extends GestureHandler {
   protected override onPointerUp(event: AdaptedEvent): void {
     this.stylusData = event.stylusData;
 
+    // A pointer that rested before lifting reports zero velocity instead of
+    // the velocity of its last move.
+    const velocity = this.tracker.getVelocityAt(event.pointerId, event.time);
+    this.velocityX = velocity?.x ?? 0;
+    this.velocityY = velocity?.y ?? 0;
+
     super.onPointerUp(event);
     if (this.state === State.ACTIVE) {
       const lastCoords = this.tracker.getAbsoluteCoordsAverage();

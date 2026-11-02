@@ -4,7 +4,6 @@ import VelocityTracker from './VelocityTracker';
 export interface TrackerElement {
   abosoluteCoords: Point;
   relativeCoords: Point;
-  timestamp: number;
   velocityX: number;
   velocityY: number;
 }
@@ -43,7 +42,6 @@ export default class PointerTracker {
     const newElement: TrackerElement = {
       abosoluteCoords: { x: event.x, y: event.y },
       relativeCoords: { x: event.offsetX, y: event.offsetY },
-      timestamp: event.time,
       velocityX: 0,
       velocityY: 0,
     };
@@ -120,6 +118,15 @@ export default class PointerTracker {
           y: pointerData.velocityY,
         }
       : null;
+  }
+
+  public getVelocityAt(pointerId: number, time: number) {
+    if (!this.trackedPointers.has(pointerId)) {
+      return null;
+    }
+
+    const [x, y] = this.velocityTracker.velocityAt(time);
+    return { x, y };
   }
 
   public getLastAbsoluteCoords(pointerId?: number) {

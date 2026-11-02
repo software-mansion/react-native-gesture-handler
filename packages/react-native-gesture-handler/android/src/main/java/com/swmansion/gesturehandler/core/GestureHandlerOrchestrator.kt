@@ -56,6 +56,7 @@ class GestureHandlerOrchestrator(
     private set
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
+  private var interceptedViewsCancelScheduled = false
   private var activationIndex = 0
 
   /**
@@ -74,6 +75,11 @@ class GestureHandlerOrchestrator(
       cancelAll()
     }
     deliverEventToGestureHandlers(event)
+    if (interceptedViewsCancelScheduled) {
+      interceptedViewsCancelScheduled = false
+      cancelTouchesInInterceptedViews(event)
+    }
+    releasePointerDownPoints(event)
     isHandlingTouch = false
     if (finishedHandlersCleanupScheduled && handlingChangeSemaphore == 0) {
       cleanupFinishedHandlers()
@@ -533,7 +539,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  fun recordHandlerIfNotPresent(handler: GestureHandler, view: View?) {
+  fun recordHandlerIfNotPresent(handler: GestureHandler, view: View?, pointerId: Int = -1) {
     if (gestureHandlers.contains(handler)) {
       return
     }
@@ -543,7 +549,9 @@ class GestureHandlerOrchestrator(
     handler.activationIndex = Int.MAX_VALUE
     handler.prepare(view, this)
 
-    if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
+    // Only handlers extracted for the same pointer (they already track it) may block this one
+    val recorded = if (pointerId >= 0) gestureHandlers.filter { it.isTrackingPointer(pointerId) } else emptyList()
+    if (!handler.shouldBeginWithRecordedHandlers(recorded)) {
       handler.cancel()
     }
 
@@ -589,7 +597,7 @@ class GestureHandlerOrchestrator(
 
               if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
                 found = true
-                recordHandlerIfNotPresent(handler, parentViewGroup)
+                recordHandlerIfNotPresent(handler, parentViewGroup, pointerId)
                 handler.startTrackingPointer(pointerId)
               }
             }
@@ -654,7 +662,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          recordHandlerIfNotPresent(handler, view)
+          recordHandlerIfNotPresent(handler, view, pointerId)
           handler.startTrackingPointer(pointerId)
           found = true
         }
@@ -691,7 +699,7 @@ class GestureHandlerOrchestrator(
                 continue
               }
 
-              recordHandlerIfNotPresent(handler, view)
+              recordHandlerIfNotPresent(handler, view, pointerId)
               handler.startTrackingPointer(pointerId)
               found = true
             }
@@ -759,18 +767,26 @@ class GestureHandlerOrchestrator(
   }
 
   private fun trackPointerDownPoints(event: MotionEvent) {
-    val index = event.actionIndex
-    when (event.actionMasked) {
-      MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN ->
-        pointerDownPoints.put(event.getPointerId(index), PointF(event.getX(index), event.getY(index)))
-      MotionEvent.ACTION_POINTER_UP ->
-        pointerDownPoints.remove(event.getPointerId(index))
-      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
-        pointerDownPoints.clear()
+    val action = event.actionMasked
+    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+      val index = event.actionIndex
+      pointerDownPoints.put(event.getPointerId(index), PointF(event.getX(index), event.getY(index)))
     }
   }
 
-  fun cancelTouchesInInterceptedViews(event: MotionEvent) {
+  // Runs after the event is handled, so a sweep started by a lifting pointer still sees it.
+  private fun releasePointerDownPoints(event: MotionEvent) {
+    when (event.actionMasked) {
+      MotionEvent.ACTION_POINTER_UP -> pointerDownPoints.remove(event.getPointerId(event.actionIndex))
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> pointerDownPoints.clear()
+    }
+  }
+
+  fun scheduleInterceptedViewsCancel() {
+    interceptedViewsCancelScheduled = true
+  }
+
+  private fun cancelTouchesInInterceptedViews(event: MotionEvent) {
     viewsToCancel.clear()
     for (i in 0 until pointerDownPoints.size()) {
       val point = pointerDownPoints.valueAt(i)

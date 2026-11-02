@@ -454,8 +454,14 @@ const DrawerLayout = function DrawerLayout(
   );
 
   const handleRelease = useCallback(
-    (event: PanGestureActiveEvent) => {
+    (event: PanGestureActiveEvent & { canceled: boolean }) => {
       'worklet';
+      if (event.canceled) {
+        // Settle the drawer where it rested before the gesture.
+        animateDrawer(isDrawerOpen.value ? drawerWidth : 0, 0);
+        return;
+      }
+
       let { translationX: dragX, velocityX, x: touchX } = event;
 
       if (drawerPosition !== DrawerPosition.LEFT) {

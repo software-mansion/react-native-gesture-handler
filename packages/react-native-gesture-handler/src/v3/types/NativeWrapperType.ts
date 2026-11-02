@@ -16,7 +16,12 @@ export type WrapperSpecificProperties<T = unknown> = {
   ) => void;
 };
 
-export type NativeWrapperProperties<T = unknown> = CommonGestureConfig &
+// Wrapped components always run their callbacks on the JS thread, so the
+// Reanimated-only config has no effect on them.
+export type NativeWrapperProperties<T = unknown> = Omit<
+  CommonGestureConfig,
+  'disableReanimated' | 'runOnJS'
+> &
   GestureCallbacks<NativeHandlerData> &
   NativeGestureNativeProperties &
   ExternalRelations &
