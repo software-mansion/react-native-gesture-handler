@@ -1633,6 +1633,10 @@ static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
 {
   NSMutableString *str = nil;
   for (UIView *subview in view.subviews) {
+    if (subview.accessibilityElementsHidden) {
+      continue;
+    }
+
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RNGHRecursiveAccessibilityLabel(subview);
