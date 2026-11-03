@@ -1,19 +1,13 @@
-import { use, useCallback, useEffect, useRef, useState } from 'react';
+import { use, useCallback } from 'react';
 
-import { Worklets } from '../../handlers/gestures/reanimatedWrapper';
 import {
   JSResponderContext,
   updateResponderEventValue,
 } from '../scrollViewInterop';
-import { type Gesture, type SharedValue, SingleGestureName } from '../types';
+import { type Gesture, SingleGestureName } from '../types';
 import { isComposedGesture, maybeUnpackValue } from './utils';
-import {
-  getEnabledSharedValues,
-  SHARED_VALUE_OFFSET,
-} from './utils/reanimatedUtils';
 
-// adding 0.5 to not call Math.random and to make sure that listener ID is not an integer to avoid conflicts
-let nextJSResponderContextListenerId = SHARED_VALUE_OFFSET + 0.5;
+const ignoreResponderEvent = () => false;
 
 function isSupportedGesture<
   TConfig,
@@ -57,90 +51,23 @@ export function useJSResponderHandler<
   countNativeAsHandled = true
 ) {
   const jsResponderContext = use(JSResponderContext);
-  const [enabledSharedValueRevision, setEnabledSharedValueRevision] =
-    useState(0);
-  const listenerIdRef = useRef<number | null>(null);
 
-  if (listenerIdRef.current === null) {
-    listenerIdRef.current = nextJSResponderContextListenerId++;
-  }
-
-  useEffect(() => {
-    if (gesture === undefined) {
-      return;
-    }
-
-    const enabledSharedValues = getEnabledSharedValues(gesture);
-
-    if (Worklets === undefined || enabledSharedValues.length === 0) {
-      return;
-    }
-
-    const listenerId = listenerIdRef.current;
-    if (listenerId === null) {
-      return;
-    }
-
-    const { scheduleOnUI, scheduleOnRN } = Worklets;
-
-    const notifyEnabledChanged = () => {
-      setEnabledSharedValueRevision((revision) => revision + 1);
-    };
-
-    const attachListeners = (
-      sharedValues: SharedValue<boolean>[],
-      id: number,
-      notify: () => void
-    ) => {
-      'worklet';
-      const listener = () => {
-        scheduleOnRN(notify);
-      };
-
-      for (const sharedValue of sharedValues) {
-        sharedValue.addListener(id, listener);
-      }
-    };
-
-    const detachListeners = (
-      sharedValues: SharedValue<boolean>[],
-      id: number
-    ) => {
-      'worklet';
-      for (const sharedValue of sharedValues) {
-        sharedValue.removeListener(id);
-      }
-    };
-
-    scheduleOnUI(
-      attachListeners,
-      enabledSharedValues,
-      listenerId,
-      notifyEnabledChanged
-    );
-
-    return () => {
-      scheduleOnUI(detachListeners, enabledSharedValues, listenerId);
-    };
-  }, [gesture]);
-
-  const shouldHandleJSResponderEvent = useCallback(() => {
-    void enabledSharedValueRevision;
-    return (
-      gesture !== undefined && isSupportedGesture(gesture, countNativeAsHandled)
-    );
-  }, [enabledSharedValueRevision, gesture, countNativeAsHandled]);
-
+  // `enabled` is read when the touch starts, so a SharedValue is always current
   const handleStartShouldSetResponder = useCallback(() => {
-    if (shouldHandleJSResponderEvent()) {
+    if (
+      gesture !== undefined &&
+      isSupportedGesture(gesture, countNativeAsHandled)
+    ) {
       updateResponderEventValue(jsResponderContext, true);
     }
 
     return false;
-  }, [jsResponderContext, shouldHandleJSResponderEvent]);
+  }, [jsResponderContext, gesture, countNativeAsHandled]);
 
   return {
     handleStartShouldSetResponder:
-      jsResponderContext == null ? () => false : handleStartShouldSetResponder,
+      jsResponderContext == null
+        ? ignoreResponderEvent
+        : handleStartShouldSetResponder,
   };
 }
