@@ -258,6 +258,16 @@ describe('[API v3] Components', () => {
     );
   };
 
+  const VirtualNativeDetectorExample = () => {
+    const native = useNativeGesture({ disableReanimated: true });
+
+    return (
+      <VirtualGestureDetector gesture={native}>
+        <View testID="virtual-child" />
+      </VirtualGestureDetector>
+    );
+  };
+
   const InterceptingTapDetectorExample = () => {
     const tap = useTapGesture({ disableReanimated: true });
 
@@ -436,6 +446,28 @@ describe('[API v3] Components', () => {
         <GestureHandlerRootView>
           <ScrollView keyboardShouldPersistTaps="handled">
             <VirtualTapDetectorExample />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const scrollViewResponder = getScrollViewResponder(UNSAFE_getAllByType);
+      const virtualChild = screen.getByTestId('virtual-child');
+
+      expect(scrollViewResponder).toBeDefined();
+      expect(
+        scrollViewResponder?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
+      expect(virtualChild.props.onStartShouldSetResponderCapture()).toBe(false);
+      expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
+    });
+
+    test('handles responder event passed through VirtualDetector for native gestures', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <VirtualNativeDetectorExample />
           </ScrollView>
         </GestureHandlerRootView>
       );
@@ -673,6 +705,9 @@ describe('[API v3] Components', () => {
     });
 
     test('does not handle responder event passed through RefreshControl', async () => {
+      const warn = jest
+        .spyOn(console, 'warn')
+        .mockImplementation(() => undefined);
       const { UNSAFE_root, UNSAFE_getAllByType } = render(
         <GestureHandlerRootView>
           <ScrollView
@@ -699,6 +734,11 @@ describe('[API v3] Components', () => {
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );
+      // The opt-out is an internal config prop, it must not reach the native side
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('countNativeAsHandled')
+      );
+      warn.mockRestore();
     });
   });
 
