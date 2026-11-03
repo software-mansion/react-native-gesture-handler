@@ -16,8 +16,7 @@ export const ScrollView = createNativeWrapper(
   {
     disallowInterruption: false,
   },
-  GestureDetectorType.Intercepting,
-  false
+  GestureDetectorType.Intercepting
 );
 
 export const Switch = createNativeWrapper(RNSwitch, {

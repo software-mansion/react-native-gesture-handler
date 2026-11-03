@@ -52,8 +52,7 @@ const GHScrollView = createNativeWrapper<
     disallowInterruption: true,
     shouldCancelWhenOutside: false,
   },
-  GestureDetectorType.Intercepting,
-  false
+  GestureDetectorType.Intercepting
 );
 
 export const ScrollView = (

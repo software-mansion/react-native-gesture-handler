@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 
-import { GestureDetectorType } from './detectors';
+import { GestureDetectorType, InterceptingGestureDetector } from './detectors';
 import { NativeDetector } from './detectors/NativeDetector';
-import { InterceptingGestureDetectorBase } from './detectors/VirtualDetector/InterceptingGestureDetector';
 import { VirtualDetectorBase } from './detectors/VirtualDetector/VirtualDetector';
 import { useNativeGesture } from './hooks/gestures';
 import type { NativeGestureConfig } from './hooks/gestures/native/NativeTypes';
@@ -18,7 +17,7 @@ export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
     Omit<NativeWrapperProperties<TRef>, keyof WrapperSpecificProperties<TRef>>
   > = {},
   detectorType: GestureDetectorType = GestureDetectorType.Native,
-  // Ignored by the Native detector, see `useJSResponderHandler`
+  // Virtual detector only, see `useJSResponderHandler`
   countNativeAsHandled = true
 ) {
   const ComponentWrapper = (
@@ -60,23 +59,23 @@ export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
       onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(native);
     }, [native, onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER]);
 
-    if (detectorType === GestureDetectorType.Native) {
+    if (detectorType === GestureDetectorType.Virtual) {
       return (
-        <NativeDetector gesture={native}>
+        <VirtualDetectorBase
+          gesture={native}
+          countNativeAsHandled={countNativeAsHandled}>
           <Component {...childProps} ref={ref} />
-        </NativeDetector>
+        </VirtualDetectorBase>
       );
     }
 
     const DetectorComponent =
       detectorType === GestureDetectorType.Intercepting
-        ? InterceptingGestureDetectorBase
-        : VirtualDetectorBase;
+        ? InterceptingGestureDetector
+        : NativeDetector;
 
     return (
-      <DetectorComponent
-        gesture={native}
-        countNativeAsHandled={countNativeAsHandled}>
+      <DetectorComponent gesture={native}>
         <Component {...childProps} ref={ref} />
       </DetectorComponent>
     );
