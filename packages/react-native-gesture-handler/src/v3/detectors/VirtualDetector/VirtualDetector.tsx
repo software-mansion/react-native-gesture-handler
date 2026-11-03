@@ -46,22 +46,11 @@ function useRequiredInterceptingDetectorContext() {
   return context;
 }
 
-type VirtualDetectorBaseProps<
+export function VirtualDetector<
   TConfig,
   THandlerData,
   TExtendedHandlerData extends THandlerData,
-> = VirtualDetectorProps<TConfig, THandlerData, TExtendedHandlerData> & {
-  countNativeAsHandled?: boolean;
-};
-
-// Internal: `countNativeAsHandled` is not part of the public detector API.
-export function VirtualDetectorBase<
-  TConfig,
-  THandlerData,
-  TExtendedHandlerData extends THandlerData,
->(
-  props: VirtualDetectorBaseProps<TConfig, THandlerData, TExtendedHandlerData>
-) {
+>(props: VirtualDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
   // Don't memoize virtual detectors to be able to listen to changes in children
   // TODO: replace with MutationObserver when it rolls out in React Native
   'use no memo';
@@ -69,8 +58,7 @@ export function VirtualDetectorBase<
   const { register, unregister, setMode } =
     useRequiredInterceptingDetectorContext();
   const { handleStartShouldSetResponder } = useJSResponderHandler(
-    props.gesture,
-    props.countNativeAsHandled
+    props.gesture
   );
 
   const viewRef = useRef(null);
@@ -174,12 +162,4 @@ export function VirtualDetectorBase<
       {props.children}
     </Wrap>
   );
-}
-
-export function VirtualDetector<
-  TConfig,
-  THandlerData,
-  TExtendedHandlerData extends THandlerData,
->(props: VirtualDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
-  return <VirtualDetectorBase {...props} />;
 }

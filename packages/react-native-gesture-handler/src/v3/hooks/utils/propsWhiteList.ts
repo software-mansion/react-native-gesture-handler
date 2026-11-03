@@ -71,6 +71,7 @@ export const PropsToFilter = new Set<
   'changeEventCalculator',
   'disableReanimated',
   'shouldUseReanimatedDetector',
+  'countNativeAsHandled',
   'useAnimated',
   'runOnJS',
 

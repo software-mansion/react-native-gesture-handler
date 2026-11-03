@@ -40,7 +40,9 @@ function isSupportedGesture<
     case SingleGestureName.Hover:
       return true;
     case SingleGestureName.Native:
-      return countNativeAsHandled;
+      return (
+        countNativeAsHandled && gesture.config.countNativeAsHandled !== false
+      );
     default:
       return false;
   }

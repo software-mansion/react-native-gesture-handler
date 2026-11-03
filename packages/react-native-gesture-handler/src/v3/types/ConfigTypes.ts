@@ -63,6 +63,9 @@ export type InternalConfigProps<TExtendedHandlerData> = {
   fillInDefaultValues?:
     | ((event: GestureEvent<TExtendedHandlerData>) => void)
     | undefined;
+  // Set to false by native wrappers of components that are not tap targets,
+  // see `useJSResponderHandler`
+  countNativeAsHandled?: boolean | undefined;
 };
 
 export type CommonGestureConfig = {

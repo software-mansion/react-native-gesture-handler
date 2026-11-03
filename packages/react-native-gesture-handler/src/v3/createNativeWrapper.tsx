@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 
 import { GestureDetectorType, InterceptingGestureDetector } from './detectors';
 import { NativeDetector } from './detectors/NativeDetector';
-import { VirtualDetectorBase } from './detectors/VirtualDetector/VirtualDetector';
+import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
 import { useNativeGesture } from './hooks/gestures';
 import type { NativeGestureConfig } from './hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from './hooks/utils';
+import type { InternalConfigProps } from './types';
 import type {
   NativeWrapperProperties,
   WrapperSpecificProperties,
@@ -17,7 +18,8 @@ export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
     Omit<NativeWrapperProperties<TRef>, keyof WrapperSpecificProperties<TRef>>
   > = {},
   detectorType: GestureDetectorType = GestureDetectorType.Native,
-  // Virtual detector only, see `useJSResponderHandler`
+  // Whether a tap on the wrapped component counts as handled, see
+  // `useJSResponderHandler`
   countNativeAsHandled = true
 ) {
   const ComponentWrapper = (
@@ -53,26 +55,24 @@ export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
     // detector, whatever the caller passed.
     gestureHandlerProps.disableReanimated = true;
 
+    if (!countNativeAsHandled) {
+      (
+        gestureHandlerProps as InternalConfigProps<unknown>
+      ).countNativeAsHandled = false;
+    }
+
     const native = useNativeGesture(gestureHandlerProps);
 
     useEffect(() => {
       onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(native);
     }, [native, onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER]);
 
-    if (detectorType === GestureDetectorType.Virtual) {
-      return (
-        <VirtualDetectorBase
-          gesture={native}
-          countNativeAsHandled={countNativeAsHandled}>
-          <Component {...childProps} ref={ref} />
-        </VirtualDetectorBase>
-      );
-    }
-
     const DetectorComponent =
       detectorType === GestureDetectorType.Intercepting
         ? InterceptingGestureDetector
-        : NativeDetector;
+        : detectorType === GestureDetectorType.Virtual
+          ? VirtualDetector
+          : NativeDetector;
 
     return (
       <DetectorComponent gesture={native}>
