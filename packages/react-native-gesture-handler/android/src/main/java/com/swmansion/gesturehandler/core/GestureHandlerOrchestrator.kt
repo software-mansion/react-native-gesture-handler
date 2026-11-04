@@ -630,9 +630,11 @@ class GestureHandlerOrchestrator(
   }
 
   // Likewise only the handlers that use scroll events get them, and not while they follow a pointer
-  // stream. Anything else would begin and never end, since a scroll has no up event.
+  // stream. Anything else would begin and never end, since a scroll has no up event. A handler a
+  // scroll drives takes no other events, so it isn't recorded for them either: tracking their
+  // pointers would let it cancel the handlers of the views beneath it.
   private fun shouldHandlerSkipScrollEvents(handler: GestureHandler, event: MotionEvent) =
-    event.isScrollAction() && !handler.canHandleScroll
+    if (event.isScrollAction()) !handler.canHandleScroll else handler.isHandlingScroll
 
   private fun shouldHandlerSkipEvent(handler: GestureHandler, event: MotionEvent) =
     shouldHandlerSkipHoverEvents(handler, event) || shouldHandlerSkipScrollEvents(handler, event)

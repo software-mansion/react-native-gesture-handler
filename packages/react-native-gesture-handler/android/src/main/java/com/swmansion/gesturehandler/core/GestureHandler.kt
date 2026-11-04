@@ -180,7 +180,17 @@ open class GestureHandler {
     cancelsJSResponder = DEFAULT_CANCELS_JS_RESPONDER
   }
 
+  // Begun or active on touches, mouse buttons and the like, rather than on scrolls.
+  private val isFollowingPointers: Boolean
+    get() = !isHandlingScroll && (state == STATE_BEGAN || state == STATE_ACTIVE)
+
   fun hasCommonPointers(other: GestureHandler): Boolean {
+    // A scroll isn't a pointer: a gesture it drives shares none with one following a pointer stream,
+    // even when the mouse and a finger report the same pointer id.
+    if (isHandlingScroll && other.isFollowingPointers || other.isHandlingScroll && isFollowingPointers) {
+      return false
+    }
+
     for (i in trackedPointerIDs.indices) {
       if (trackedPointerIDs[i] != -1 && other.trackedPointerIDs[i] != -1) {
         return true
