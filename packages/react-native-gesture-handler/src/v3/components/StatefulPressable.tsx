@@ -51,6 +51,7 @@ import { PureNativeButton } from './GestureButtons';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
+const noop = () => undefined;
 
 const StatefulPressable = (props: PressableProps) => {
   const {
@@ -461,9 +462,11 @@ const StatefulPressable = (props: PressableProps) => {
 
   const tvProps = getTVProps(remainingProps);
 
-  // The callbacks reach testing-library through the `testOnly_*` props. A
-  // disabled button never fires them, so they're withheld while disabled.
-  const exposeTestOnlyHandlers = IS_TEST_ENV && disabled !== true;
+  // Testing-library calls the `testOnly_*` props in place of the native press
+  // events. A disabled button never fires them, so it gets no-ops. Unset props
+  // would let testing-library fall back to handlers further up the tree.
+  const testOnlyHandler = <T,>(handler: T) =>
+    IS_TEST_ENV ? (disabled === true ? noop : handler) : undefined;
 
   return (
     <GestureDetector gesture={gesture}>
@@ -481,12 +484,12 @@ const StatefulPressable = (props: PressableProps) => {
         borderless={android_ripple?.borderless ?? undefined}
         foreground={android_ripple?.foreground ?? undefined}
         style={[pointerStyle, styleProp]}
-        testOnly_onPress={exposeTestOnlyHandlers ? onPress : undefined}
-        testOnly_onPressIn={exposeTestOnlyHandlers ? onPressIn : undefined}
-        testOnly_onPressOut={exposeTestOnlyHandlers ? onPressOut : undefined}
-        testOnly_onLongPress={exposeTestOnlyHandlers ? onLongPress : undefined}
-        testOnly_onHoverIn={exposeTestOnlyHandlers ? onHoverIn : undefined}
-        testOnly_onHoverOut={exposeTestOnlyHandlers ? onHoverOut : undefined}>
+        testOnly_onPress={testOnlyHandler(onPress)}
+        testOnly_onPressIn={testOnlyHandler(onPressIn)}
+        testOnly_onPressOut={testOnlyHandler(onPressOut)}
+        testOnly_onLongPress={testOnlyHandler(onLongPress)}
+        testOnly_onHoverIn={testOnlyHandler(onHoverIn)}
+        testOnly_onHoverOut={testOnlyHandler(onHoverOut)}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
