@@ -13,6 +13,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import com.swmansion.gesturehandler.react.isHoverAction
+import com.swmansion.gesturehandler.react.isScrollAction
 import java.util.*
 
 class GestureHandlerOrchestrator(
@@ -68,7 +69,8 @@ class GestureHandlerOrchestrator(
     trackPointerDownPoints(event)
     if (action == MotionEvent.ACTION_DOWN ||
       action == MotionEvent.ACTION_POINTER_DOWN ||
-      action == MotionEvent.ACTION_HOVER_MOVE
+      action == MotionEvent.ACTION_HOVER_MOVE ||
+      action == MotionEvent.ACTION_SCROLL
     ) {
       extractGestureHandlers(event)
     } else if (action == MotionEvent.ACTION_CANCEL) {
@@ -454,6 +456,10 @@ class GestureHandlerOrchestrator(
 
   fun isAnyHandlerActive() = gestureHandlers.any { it.state == GestureHandler.STATE_ACTIVE }
 
+  fun isAnyHandlerHandlingScroll() = gestureHandlers.any {
+    it.isHandlingScroll && (it.state == GestureHandler.STATE_BEGAN || it.state == GestureHandler.STATE_ACTIVE)
+  }
+
   /**
    * Transforms an event in the coordinates of wrapperView into the coordinate space of the received view.
    *
@@ -591,7 +597,7 @@ class GestureHandlerOrchestrator(
         handlerRegistry.getHandlersForView(parent)?.let {
           synchronized(it) {
             for (handler in it) {
-              if (shouldHandlerSkipHoverEvents(handler, event)) {
+              if (shouldHandlerSkipEvent(handler, event)) {
                 continue
               }
 
@@ -622,6 +628,14 @@ class GestureHandlerOrchestrator(
 
     return shouldSkipHoverEvents && event.isHoverAction()
   }
+
+  // Likewise only the handlers that use scroll events get them. Anything else would begin and
+  // never end, since a scroll has no up event.
+  private fun shouldHandlerSkipScrollEvents(handler: GestureHandler, event: MotionEvent) =
+    event.isScrollAction() && !handler.wantsScrollEvents
+
+  private fun shouldHandlerSkipEvent(handler: GestureHandler, event: MotionEvent) =
+    shouldHandlerSkipHoverEvents(handler, event) || shouldHandlerSkipScrollEvents(handler, event)
 
   private fun recordViewHandlersForPointer(
     view: View,
@@ -658,7 +672,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          if (shouldHandlerSkipHoverEvents(handler, event)) {
+          if (shouldHandlerSkipEvent(handler, event)) {
             continue
           }
 
@@ -695,7 +709,7 @@ class GestureHandlerOrchestrator(
         handlerRegistry.getHandlersForViewWithTag(tagForCoords)?.let {
           synchronized(it) {
             for (handler in it) {
-              if (shouldHandlerSkipHoverEvents(handler, event)) {
+              if (shouldHandlerSkipEvent(handler, event)) {
                 continue
               }
 

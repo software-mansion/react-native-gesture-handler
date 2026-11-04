@@ -3,9 +3,11 @@ package com.swmansion.gesturehandler.core
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
+import androidx.core.view.ViewConfigurationCompat
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
@@ -27,6 +29,10 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
 
   private val defaultMinDist: Float
   private var minDist = MAX_VALUE_IGNORE
+
+  // Pixels moved per unit of a scroll axis, as a ScrollView reads them.
+  private val horizontalScrollFactor: Float
+  private val verticalScrollFactor: Float
 
   // Config updates may be partial (e.g. a single key sent when a shared value used in the config
   // changes), so both of these need to persist between updateConfig calls - deriving them from the
@@ -58,8 +64,20 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
   private var lastY = 0f
   private var velocityTracker: VelocityTracker? = null
   private var averageTouches = false
+  private var enableTrackpadTwoFingerGesture = false
   private var activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
   private val activateDelayed = Runnable { activate() }
+  private val endScroll = Runnable {
+    // A scroll has no up event, so the gesture ends once the scrolls stop. The content is at rest
+    // by then, so it reports no velocity.
+    velocityX = 0f
+    velocityY = 0f
+    if (state == STATE_ACTIVE) {
+      end()
+    } else {
+      fail()
+    }
+  }
   private val handler = Handler(Looper.getMainLooper())
   var stylusData: StylusData = StylusData()
     private set
@@ -80,7 +98,12 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     val vc = ViewConfiguration.get(context!!)
     defaultMinDist = vc.scaledTouchSlop.toFloat()
     minDist = defaultMinDist
+    horizontalScrollFactor = ViewConfigurationCompat.getScaledHorizontalScrollFactor(vc, context)
+    verticalScrollFactor = ViewConfigurationCompat.getScaledVerticalScrollFactor(vc, context)
   }
+
+  override val wantsScrollEvents: Boolean
+    get() = enableTrackpadTwoFingerGesture
 
   override fun resetConfig() {
     super.resetConfig()
@@ -102,6 +125,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     maxPointers = DEFAULT_MAX_POINTERS
     activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
     averageTouches = DEFAULT_AVERAGE_TOUCHES
+    enableTrackpadTwoFingerGesture = DEFAULT_ENABLE_TRACKPAD_TWO_FINGER_GESTURE
   }
 
   private fun shouldActivate(): Boolean {
@@ -238,6 +262,63 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
         activate()
       }
     }
+  }
+
+  /**
+   * A mouse wheel or trackpad scroll pans like a two-finger trackpad swipe does on iOS: it begins
+   * and activates at once, moves the translation by the scrolled distance, and ends when no scroll
+   * has followed for [SCROLL_END_TIMEOUT_MS]. The pointer itself staying put or moving changes
+   * nothing, so x and y follow it while the translation counts only the scrolls.
+   */
+  override fun onHandleScroll(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (state != STATE_UNDETERMINED && !isHandlingScroll) {
+      // Already following a drag.
+      return
+    }
+
+    // Signs as ScrollView and HorizontalScrollView read the axes, where Shift turns the wheel
+    // sideways, flipped so the content follows the scroll as it would follow two fingers.
+    val vScroll = sourceEvent.getAxisValue(MotionEvent.AXIS_VSCROLL)
+    val hScroll = sourceEvent.getAxisValue(MotionEvent.AXIS_HSCROLL)
+    val shift = (sourceEvent.metaState and KeyEvent.META_SHIFT_ON) != 0
+    val dx = (if (shift) vScroll - hScroll else -hScroll) * horizontalScrollFactor
+    val dy = (if (shift) 0f else vScroll) * verticalScrollFactor
+
+    lastX = sourceEvent.x
+    lastY = sourceEvent.y
+
+    if (state == STATE_UNDETERMINED) {
+      initialize(event, sourceEvent)
+      isHandlingScroll = true
+      begin()
+    }
+
+    startX = lastX
+    startY = lastY
+    offsetX += dx
+    offsetY += dy
+
+    // The tracker follows the translation, not the pointer.
+    val movement = MotionEvent.obtain(
+      sourceEvent.downTime,
+      sourceEvent.eventTime,
+      MotionEvent.ACTION_MOVE,
+      offsetX,
+      offsetY,
+      0,
+    )
+    velocityTracker!!.addMovement(movement)
+    movement.recycle()
+    velocityTracker!!.computeCurrentVelocity(1000)
+    velocityX = velocityTracker!!.xVelocity
+    velocityY = velocityTracker!!.yVelocity
+
+    if (state == STATE_BEGAN) {
+      activate()
+    }
+
+    handler.removeCallbacks(endScroll)
+    handler.postDelayed(endScroll, SCROLL_END_TIMEOUT_MS)
   }
 
   override fun activate(force: Boolean) {
@@ -383,6 +464,9 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
       if (config.hasKey(KEY_ACTIVATE_AFTER_LONG_PRESS)) {
         handler.activateAfterLongPress = config.getInt(KEY_ACTIVATE_AFTER_LONG_PRESS).toLong()
       }
+      if (config.hasKey(KEY_ENABLE_TRACKPAD_TWO_FINGER_GESTURE)) {
+        handler.enableTrackpadTwoFingerGesture = config.getBoolean(KEY_ENABLE_TRACKPAD_TWO_FINGER_GESTURE)
+      }
     }
 
     override fun createEventBuilder(handler: PanGestureHandler) = PanGestureHandlerEventDataBuilder(handler)
@@ -404,6 +488,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
       private const val KEY_MAX_POINTERS = "maxPointers"
       private const val KEY_AVG_TOUCHES = "avgTouches"
       private const val KEY_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
+      private const val KEY_ENABLE_TRACKPAD_TWO_FINGER_GESTURE = "enableTrackpadTwoFingerGesture"
     }
   }
 
@@ -414,6 +499,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     private const val DEFAULT_MAX_POINTERS = 10
     private const val DEFAULT_ACTIVATE_AFTER_LONG_PRESS = 0L
     private const val DEFAULT_AVERAGE_TOUCHES = false
+    private const val DEFAULT_ENABLE_TRACKPAD_TWO_FINGER_GESTURE = false
     private const val DEFAULT_ACTIVE_OFFSET_X_START = MIN_VALUE_IGNORE
     private const val DEFAULT_ACTIVE_OFFSET_X_END = MAX_VALUE_IGNORE
     private const val DEFAULT_FAIL_OFFSET_X_START = MAX_VALUE_IGNORE
@@ -425,6 +511,10 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     private const val DEFAULT_MIN_VELOCITY_X = MIN_VALUE_IGNORE
     private const val DEFAULT_MIN_VELOCITY_Y = MIN_VALUE_IGNORE
     private const val DEFAULT_MIN_VELOCITY = MIN_VALUE_IGNORE
+
+    // Longer than the gap between the scroll events of a wheel turned briskly, so one turn makes
+    // one gesture.
+    private const val SCROLL_END_TIMEOUT_MS = 100L
 
     /**
      * This method adds movement to {@class VelocityTracker} first resetting offset of the event so

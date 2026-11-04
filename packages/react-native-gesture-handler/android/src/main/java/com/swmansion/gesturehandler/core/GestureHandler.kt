@@ -20,6 +20,7 @@ import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEve
 import com.swmansion.gesturehandler.react.findActivity
 import com.swmansion.gesturehandler.react.getPointerType
 import com.swmansion.gesturehandler.react.isHoverAction
+import com.swmansion.gesturehandler.react.isScrollAction
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -116,6 +117,14 @@ open class GestureHandler {
   private var lastEventOffsetY = 0f
   var numberOfPointers = 0
     protected set
+
+  // Set while a mouse wheel or trackpad scroll drives the gesture rather than a pointer stream.
+  var isHandlingScroll = false
+    protected set
+
+  // Whether mouse wheel and trackpad scrolls (ACTION_SCROLL) are delivered to `onHandleScroll`.
+  open val wantsScrollEvents: Boolean
+    get() = false
   protected var shouldCancelWhenOutside = false
   protected var orchestrator: GestureHandlerOrchestrator? = null
   var onTouchEventListener: OnTouchEventListener? = null
@@ -401,6 +410,8 @@ open class GestureHandler {
 
     numberOfPointers = when (adaptedTransformedEvent.actionMasked) {
       MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
+      // A scroll has no pointers down, as on iOS.
+      MotionEvent.ACTION_SCROLL -> 0
       else -> adaptedTransformedEvent.pointerCount
     }
 
@@ -426,13 +437,16 @@ open class GestureHandler {
 
     if (sourceEvent.action == MotionEvent.ACTION_DOWN ||
       sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
-      sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE
+      sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE ||
+      sourceEvent.action == MotionEvent.ACTION_SCROLL
     ) {
       setPointerType(sourceEvent)
     }
 
     if (sourceEvent.isHoverAction()) {
       onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
+    } else if (sourceEvent.isScrollAction()) {
+      onHandleScroll(adaptedTransformedEvent, adaptedSourceEvent)
     } else {
       onHandle(adaptedTransformedEvent, adaptedSourceEvent)
     }
@@ -646,6 +660,16 @@ open class GestureHandler {
       return false
     }
 
+    // Scrolls reach only the handlers that take them, and a gesture driven by one takes nothing
+    // else: a hover or click by the same mouse must not move or end it.
+    if (event.isScrollAction()) {
+      if (!wantsScrollEvents) {
+        return false
+      }
+    } else if (isHandlingScroll) {
+      return false
+    }
+
     if (event.actionMasked == MotionEvent.ACTION_MOVE) {
       for (i in 0 until event.pointerCount) {
         if (isTrackingPointer(event.getPointerId(i))) {
@@ -803,6 +827,8 @@ open class GestureHandler {
 
   protected open fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) {}
 
+  protected open fun onHandleScroll(event: MotionEvent, sourceEvent: MotionEvent) {}
+
   protected open fun onStateChange(newState: Int, previousState: Int) {}
   protected open fun onReset() {}
   protected open fun onCancel() {}
@@ -872,6 +898,7 @@ open class GestureHandler {
     trackedPointersCount = 0
     trackedPointers.fill(null)
     touchEventType = RNGestureHandlerTouchEvent.EVENT_UNDETERMINED
+    isHandlingScroll = false
     onReset()
   }
 

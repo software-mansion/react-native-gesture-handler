@@ -192,6 +192,18 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     return shouldIntercept
   }
 
+  /**
+   * Delivers a mouse wheel or trackpad scroll to the gesture handlers. Returns whether one of them
+   * took it; when none did, the scroll should go on to the views, so a ScrollView still scrolls.
+   */
+  fun dispatchScrollEvent(event: MotionEvent): Boolean {
+    passingTouch = true
+    orchestrator!!.onTouchEvent(event)
+    passingTouch = false
+
+    return orchestrator.isAnyHandlerHandlingScroll()
+  }
+
   fun activateNativeHandlers(view: View) {
     orchestrator?.activateNativeHandlersForView(view)
   }

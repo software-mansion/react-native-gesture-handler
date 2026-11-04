@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.view.Display
+import android.view.InputDevice
 import android.view.MotionEvent
 import android.view.accessibility.AccessibilityManager
 import com.facebook.react.bridge.ReactContext
@@ -31,6 +32,11 @@ fun MotionEvent.isHoverAction(): Boolean = action == MotionEvent.ACTION_HOVER_MO
 
 fun MotionEvent.isButtonAction(): Boolean = actionMasked == MotionEvent.ACTION_BUTTON_PRESS ||
   actionMasked == MotionEvent.ACTION_BUTTON_RELEASE
+
+// A mouse wheel or trackpad scroll. Joysticks and rotary encoders send ACTION_SCROLL too, but from
+// sources without a pointer position.
+fun MotionEvent.isScrollAction(): Boolean = actionMasked == MotionEvent.ACTION_SCROLL &&
+  isFromSource(InputDevice.SOURCE_CLASS_POINTER)
 
 // Defaults to the first pointer, which is the one every single-pointer stream
 // (hover included) describes.
