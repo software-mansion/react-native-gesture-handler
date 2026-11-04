@@ -276,7 +276,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     val vScroll = sourceEvent.getAxisValue(MotionEvent.AXIS_VSCROLL)
     val hScroll = sourceEvent.getAxisValue(MotionEvent.AXIS_HSCROLL)
     val shift = (sourceEvent.metaState and KeyEvent.META_SHIFT_ON) != 0
-    val dx = (if (shift) vScroll - hScroll else -hScroll) * horizontalScrollFactor
+    val dx = (if (shift) vScroll else -hScroll) * horizontalScrollFactor
     val dy = (if (shift) 0f else vScroll) * verticalScrollFactor
 
     lastX = sourceEvent.x
