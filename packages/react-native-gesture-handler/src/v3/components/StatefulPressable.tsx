@@ -461,6 +461,10 @@ const StatefulPressable = (props: PressableProps) => {
 
   const tvProps = getTVProps(remainingProps);
 
+  // The callbacks reach testing-library through the `testOnly_*` props. A
+  // disabled button never fires them, so they're withheld while disabled.
+  const exposeTestOnlyHandlers = IS_TEST_ENV && disabled !== true;
+
   return (
     <GestureDetector gesture={gesture}>
       <PureNativeButton
@@ -477,12 +481,12 @@ const StatefulPressable = (props: PressableProps) => {
         borderless={android_ripple?.borderless ?? undefined}
         foreground={android_ripple?.foreground ?? undefined}
         style={[pointerStyle, styleProp]}
-        testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
-        testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
-        testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
-        testOnly_onLongPress={IS_TEST_ENV ? onLongPress : undefined}
-        testOnly_onHoverIn={IS_TEST_ENV ? onHoverIn : undefined}
-        testOnly_onHoverOut={IS_TEST_ENV ? onHoverOut : undefined}>
+        testOnly_onPress={exposeTestOnlyHandlers ? onPress : undefined}
+        testOnly_onPressIn={exposeTestOnlyHandlers ? onPressIn : undefined}
+        testOnly_onPressOut={exposeTestOnlyHandlers ? onPressOut : undefined}
+        testOnly_onLongPress={exposeTestOnlyHandlers ? onLongPress : undefined}
+        testOnly_onHoverIn={exposeTestOnlyHandlers ? onHoverIn : undefined}
+        testOnly_onHoverOut={exposeTestOnlyHandlers ? onHoverOut : undefined}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />

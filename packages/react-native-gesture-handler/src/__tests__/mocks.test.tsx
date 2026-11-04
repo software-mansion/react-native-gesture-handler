@@ -221,3 +221,53 @@ test('StatefulPressable exposes its press and hover handlers to testing-library'
   expect(button.props.testOnly_onHoverIn).toBe(onHoverIn);
   expect(button.props.testOnly_onHoverOut).toBe(onHoverOut);
 });
+
+// Fresh mocks for every callback `Pressable` forwards as a `testOnly_*` prop.
+const pressableCallbacks = () => ({
+  onPress: jest.fn(),
+  onPressIn: jest.fn(),
+  onPressOut: jest.fn(),
+  onLongPress: jest.fn(),
+  onHoverIn: jest.fn(),
+  onHoverOut: jest.fn(),
+});
+
+// Names of the `testOnly_*` handlers testing-library could call on the element.
+function exposedTestOnlyHandlers(testID: string) {
+  const { props } = screen.getByTestId(testID);
+
+  return Object.keys(props).filter(
+    (key) => key.startsWith('testOnly_on') && typeof props[key] === 'function'
+  );
+}
+
+test('disabled Pressable does not expose its handlers to testing-library', () => {
+  // On a device, `disabled` turns the native button off, so none of these
+  // callbacks fire. The `testOnly_*` props have to follow suit, otherwise
+  // `fireEvent(element, 'press')` still calls `onPress` in a test environment.
+  render(
+    <GestureHandlerRootView>
+      <Pressable testID="pressable" disabled {...pressableCallbacks()}>
+        <Text>Press Me</Text>
+      </Pressable>
+    </GestureHandlerRootView>
+  );
+
+  expect(exposedTestOnlyHandlers('pressable')).toEqual([]);
+});
+
+test('disabled StatefulPressable does not expose its handlers to testing-library', () => {
+  render(
+    <GestureHandlerRootView>
+      <Pressable
+        testID="pressable"
+        disabled
+        simultaneousWith={[]}
+        {...pressableCallbacks()}>
+        <Text>Press Me</Text>
+      </Pressable>
+    </GestureHandlerRootView>
+  );
+
+  expect(exposedTestOnlyHandlers('pressable')).toEqual([]);
+});
