@@ -67,10 +67,12 @@ class GestureHandlerOrchestrator(
     isHandlingTouch = true
     val action = event.actionMasked
     trackPointerDownPoints(event)
+    // Like a DOWN, only the first scroll of a burst picks the handlers. Later ones go to the gesture
+    // it started, so a handler cancelled when another one activated isn't picked again mid-burst.
     if (action == MotionEvent.ACTION_DOWN ||
       action == MotionEvent.ACTION_POINTER_DOWN ||
       action == MotionEvent.ACTION_HOVER_MOVE ||
-      action == MotionEvent.ACTION_SCROLL
+      (action == MotionEvent.ACTION_SCROLL && !isAnyHandlerHandlingScroll())
     ) {
       extractGestureHandlers(event)
     } else if (action == MotionEvent.ACTION_CANCEL) {
