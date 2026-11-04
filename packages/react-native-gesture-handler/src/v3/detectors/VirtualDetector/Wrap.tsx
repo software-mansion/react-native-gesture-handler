@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import React, { useCallback } from 'react';
+import type { GestureResponderEvent } from 'react-native';
 
 import type { WrapRef } from '../../../hostInstance';
 import { assignRef, preferHostInstance } from '../../../hostInstance';
@@ -7,9 +8,16 @@ import { tagMessage } from '../../../utils';
 
 export type { WrapRef };
 
-export type WrapProps = PropsWithChildren<{ ref?: WrapRef }>;
+export type WrapProps = PropsWithChildren<{
+  ref?: WrapRef;
+  onStartShouldSetResponderCapture?: (event: GestureResponderEvent) => boolean;
+}>;
 
-export const Wrap: React.FunctionComponent<WrapProps> = ({ ref, children }) => {
+export const Wrap: React.FunctionComponent<WrapProps> = ({
+  ref,
+  children,
+  onStartShouldSetResponderCapture,
+}) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let child: any;
   try {
@@ -53,9 +61,29 @@ export const Wrap: React.FunctionComponent<WrapProps> = ({ ref, children }) => {
     [childRef, ref]
   );
 
+  const childOnStartShouldSetResponderCapture =
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    child.props.onStartShouldSetResponderCapture as
+      | ((event: GestureResponderEvent) => boolean)
+      | undefined;
+
+  // Marks in the capture phase: RN Text replaces its own press handling with
+  // any passed `onStartShouldSetResponder`, which would kill its `onPress`.
+  const handleStartShouldSetResponderCapture = useCallback(
+    (event: GestureResponderEvent) => {
+      onStartShouldSetResponderCapture?.(event);
+      return childOnStartShouldSetResponderCapture?.(event) ?? false;
+    },
+    [onStartShouldSetResponderCapture, childOnStartShouldSetResponderCapture]
+  );
+
   return React.cloneElement(
     child,
-    { collapsable: false, ref: attachRef },
+    {
+      collapsable: false,
+      ref: attachRef,
+      onStartShouldSetResponderCapture: handleStartShouldSetResponderCapture,
+    },
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     child.props.children
   );

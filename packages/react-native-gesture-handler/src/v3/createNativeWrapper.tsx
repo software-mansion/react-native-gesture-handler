@@ -6,6 +6,7 @@ import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
 import { useNativeGesture } from './hooks/gestures';
 import type { NativeGestureConfig } from './hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from './hooks/utils';
+import type { InternalConfigProps } from './types';
 import type {
   NativeWrapperProperties,
   WrapperSpecificProperties,
@@ -16,7 +17,10 @@ export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
   config: Readonly<
     Omit<NativeWrapperProperties<TRef>, keyof WrapperSpecificProperties<TRef>>
   > = {},
-  detectorType: GestureDetectorType = GestureDetectorType.Native
+  detectorType: GestureDetectorType = GestureDetectorType.Native,
+  // Whether a tap on the wrapped component counts as handled, see
+  // `useJSResponderHandler`
+  countNativeAsHandled = true
 ) {
   const ComponentWrapper = (
     props: TProps & NativeWrapperProperties<TRef | null>
@@ -50,6 +54,12 @@ export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
     // callbacks of their own, so the gesture must never use the Reanimated
     // detector, whatever the caller passed.
     gestureHandlerProps.disableReanimated = true;
+
+    if (!countNativeAsHandled) {
+      (
+        gestureHandlerProps as InternalConfigProps<unknown>
+      ).countNativeAsHandled = false;
+    }
 
     const native = useNativeGesture(gestureHandlerProps);
 
