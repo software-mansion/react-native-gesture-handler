@@ -126,10 +126,12 @@ open class GestureHandler {
   open val wantsScrollEvents: Boolean
     get() = false
 
-  // A scroll may reach this handler unless it is following a pointer stream. Finished states don't
-  // block it: a handler keeps its last state after reset, until it is recorded again.
+  // A scroll may reach this handler unless it is following a pointer stream, begun or still short of
+  // its required pointers. Finished states don't block it: a handler keeps its last state after
+  // reset, until it is recorded again.
   val canHandleScroll: Boolean
-    get() = wantsScrollEvents && (isHandlingScroll || (state != STATE_BEGAN && state != STATE_ACTIVE))
+    get() = wantsScrollEvents &&
+      (isHandlingScroll || (numberOfPointers == 0 && state != STATE_BEGAN && state != STATE_ACTIVE))
 
   protected var shouldCancelWhenOutside = false
   protected var orchestrator: GestureHandlerOrchestrator? = null
@@ -902,6 +904,7 @@ open class GestureHandler {
     Arrays.fill(trackedPointerIDs, -1)
     trackedPointersIDsCount = 0
     trackedPointersCount = 0
+    numberOfPointers = 0
     trackedPointers.fill(null)
     touchEventType = RNGestureHandlerTouchEvent.EVENT_UNDETERMINED
     isHandlingScroll = false
