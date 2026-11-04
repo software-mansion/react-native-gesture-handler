@@ -3,6 +3,7 @@ import type { HoverEffect } from '../../../../HoverEffect';
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEndEvent,
   GestureEvent,
   SingleGesture,
   WithSharedValue,
@@ -66,8 +67,13 @@ export type HoverGestureInternalConfig = BaseGestureConfig<
   HoverExtendedHandlerData
 >;
 
-export type HoverGestureEvent = GestureEvent<HoverHandlerData>;
+export type HoverGestureBeginEvent = GestureEvent<HoverHandlerData>;
 export type HoverGestureActiveEvent = GestureEvent<HoverExtendedHandlerData>;
+export type HoverGestureDeactivateEvent =
+  GestureEndEvent<HoverExtendedHandlerData>;
+export type HoverGestureFinalizeEvent = GestureEndEvent<HoverHandlerData>;
+/** @deprecated Use `HoverGestureBeginEvent` instead. */
+export type HoverGestureEvent = HoverGestureBeginEvent;
 
 export type HoverGesture = SingleGesture<
   HoverGestureInternalProperties,

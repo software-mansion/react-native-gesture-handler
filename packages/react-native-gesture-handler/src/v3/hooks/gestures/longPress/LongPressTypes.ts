@@ -1,6 +1,7 @@
 import type {
   BaseDiscreteGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEndEvent,
   GestureEvent,
   SingleGesture,
   WithSharedValue,
@@ -63,8 +64,14 @@ export type LongPressGestureInternalConfig = BaseDiscreteGestureConfig<
   LongPressHandlerData
 >;
 
-export type LongPressGestureEvent = GestureEvent<LongPressHandlerData>;
-export type LongPressGestureActiveEvent = LongPressGestureEvent;
+export type LongPressGestureBeginEvent = GestureEvent<LongPressHandlerData>;
+export type LongPressGestureActiveEvent = LongPressGestureBeginEvent;
+export type LongPressGestureDeactivateEvent =
+  GestureEndEvent<LongPressHandlerData>;
+export type LongPressGestureFinalizeEvent =
+  GestureEndEvent<LongPressHandlerData>;
+/** @deprecated Use `LongPressGestureBeginEvent` instead. */
+export type LongPressGestureEvent = LongPressGestureBeginEvent;
 
 export type LongPressGesture = SingleGesture<
   LongPressGestureProperties,

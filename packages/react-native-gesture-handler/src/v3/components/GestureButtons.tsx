@@ -5,17 +5,18 @@ import { Animated, Platform, StyleSheet } from 'react-native';
 import GestureHandlerButton from '../../components/GestureHandlerButton';
 import { getTVProps } from '../../components/utils';
 import createNativeWrapper from '../createNativeWrapper';
-import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
-import type { GestureEndEvent, GestureEvent } from '../types';
+import type {
+  NativeGestureActiveEvent,
+  NativeGestureBeginEvent,
+  NativeGestureDeactivateEvent,
+  NativeGestureFinalizeEvent,
+} from '../hooks/gestures';
 import type {
   BaseButtonProps,
   BorderlessButtonProps,
   RawButtonProps,
   RectButtonProps,
 } from './GestureButtonsProps';
-
-type CallbackEventType = GestureEvent<NativeHandlerData>;
-type EndCallbackEventType = GestureEndEvent<NativeHandlerData>;
 
 type RawButtonInnerProps = RawButtonProps & {
   needsOffscreenAlphaCompositing?: boolean | undefined;
@@ -54,7 +55,7 @@ export const BaseButton = (props: BaseButtonProps) => {
     onLongPress?.();
   };
 
-  const onBegin = (e: CallbackEventType) => {
+  const onBegin = (e: NativeGestureBeginEvent) => {
     if (!e.pointerInside) {
       return;
     }
@@ -69,7 +70,7 @@ export const BaseButton = (props: BaseButtonProps) => {
     props.onBegin?.(e);
   };
 
-  const onActivate = (e: CallbackEventType) => {
+  const onActivate = (e: NativeGestureActiveEvent) => {
     if (!e.pointerInside && longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
@@ -78,11 +79,11 @@ export const BaseButton = (props: BaseButtonProps) => {
     props.onActivate?.(e);
   };
 
-  const onDeactivate = (e: EndCallbackEventType) => {
+  const onDeactivate = (e: NativeGestureDeactivateEvent) => {
     props.onDeactivate?.(e);
   };
 
-  const onFinalize = (e: EndCallbackEventType) => {
+  const onFinalize = (e: NativeGestureFinalizeEvent) => {
     onActiveStateChange?.(false);
 
     if (!e.canceled && !longPressDetected.current) {

@@ -2,6 +2,7 @@ import type {
   BaseDiscreteGestureConfig,
   DiscreteSingleGesture,
   ExcludeInternalConfigProps,
+  GestureEndEvent,
   GestureEvent,
   WithSharedValue,
 } from '../../../types';
@@ -96,8 +97,12 @@ export type TapGestureInternalConfig = BaseDiscreteGestureConfig<
   TapHandlerData
 >;
 
-export type TapGestureEvent = GestureEvent<TapHandlerData>;
-export type TapGestureActiveEvent = TapGestureEvent;
+export type TapGestureBeginEvent = GestureEvent<TapHandlerData>;
+export type TapGestureActiveEvent = TapGestureBeginEvent;
+export type TapGestureDeactivateEvent = GestureEndEvent<TapHandlerData>;
+export type TapGestureFinalizeEvent = GestureEndEvent<TapHandlerData>;
+/** @deprecated Use `TapGestureBeginEvent` instead. */
+export type TapGestureEvent = TapGestureBeginEvent;
 
 export type TapGesture = DiscreteSingleGesture<
   TapGestureInternalProperties,

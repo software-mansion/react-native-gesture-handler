@@ -1,6 +1,7 @@
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEndEvent,
   GestureEvent,
   SingleGesture,
 } from '../../../types';
@@ -19,8 +20,12 @@ export type ManualGestureInternalConfig = BaseGestureConfig<
 export type ManualGestureConfig =
   ExcludeInternalConfigProps<ManualGestureInternalConfig>;
 
-export type ManualGestureEvent = GestureEvent<ManualHandlerData>;
-export type ManualGestureActiveEvent = ManualGestureEvent;
+export type ManualGestureBeginEvent = GestureEvent<ManualHandlerData>;
+export type ManualGestureActiveEvent = ManualGestureBeginEvent;
+export type ManualGestureDeactivateEvent = GestureEndEvent<ManualHandlerData>;
+export type ManualGestureFinalizeEvent = GestureEndEvent<ManualHandlerData>;
+/** @deprecated Use `ManualGestureBeginEvent` instead. */
+export type ManualGestureEvent = ManualGestureBeginEvent;
 
 export type ManualGesture = SingleGesture<
   ManualGestureProperties,

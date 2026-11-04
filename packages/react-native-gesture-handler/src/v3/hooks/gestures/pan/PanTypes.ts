@@ -2,6 +2,7 @@ import type { StylusData } from '../../../../handlers/gestureHandlerCommon';
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEndEvent,
   GestureEvent,
   SingleGesture,
   WithSharedValue,
@@ -179,8 +180,12 @@ export type PanGestureInternalConfig = BaseGestureConfig<
   PanExtendedHandlerData
 >;
 
-export type PanGestureEvent = GestureEvent<PanHandlerData>;
+export type PanGestureBeginEvent = GestureEvent<PanHandlerData>;
 export type PanGestureActiveEvent = GestureEvent<PanExtendedHandlerData>;
+export type PanGestureDeactivateEvent = GestureEndEvent<PanExtendedHandlerData>;
+export type PanGestureFinalizeEvent = GestureEndEvent<PanHandlerData>;
+/** @deprecated Use `PanGestureBeginEvent` instead. */
+export type PanGestureEvent = PanGestureBeginEvent;
 
 export type PanGesture = SingleGesture<
   PanGestureInternalProperties,
