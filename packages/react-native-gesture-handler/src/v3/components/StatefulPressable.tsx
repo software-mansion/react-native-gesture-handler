@@ -463,10 +463,12 @@ const StatefulPressable = (props: PressableProps) => {
   const tvProps = getTVProps(remainingProps);
 
   // Testing-library calls the `testOnly_*` props in place of the native press
-  // events. A disabled button never fires them, so it gets no-ops. Unset props
-  // would let testing-library fall back to handlers further up the tree.
+  // events. A disabled button never fires them, so each callback given is
+  // swapped for a no-op rather than dropped: an unset prop would let
+  // testing-library fall back to handlers further up the tree. Callbacks that
+  // weren't given stay unset, as on an enabled button.
   const testOnlyHandler = <T,>(handler: T) =>
-    IS_TEST_ENV ? (disabled === true ? noop : handler) : undefined;
+    IS_TEST_ENV ? (handler && disabled === true ? noop : handler) : undefined;
 
   return (
     <GestureDetector gesture={gesture}>

@@ -244,7 +244,7 @@ test.each([
       onHoverOut: jest.fn(),
     };
 
-    render(
+    const { rerender } = render(
       <GestureHandlerRootView>
         <Pressable testID="pressable" disabled {...engineProps} {...callbacks}>
           <Text>Press Me</Text>
@@ -263,6 +263,23 @@ test.each([
 
     for (const callback of Object.values(callbacks)) {
       expect(callback).not.toHaveBeenCalled();
+    }
+
+    // Callbacks that weren't given stay unset, as on an enabled button, so
+    // testing-library keeps looking further up the tree, e.g. for an enabled
+    // `Pressable` around this one.
+    rerender(
+      <GestureHandlerRootView>
+        <Pressable testID="pressable" disabled {...engineProps}>
+          <Text>Press Me</Text>
+        </Pressable>
+      </GestureHandlerRootView>
+    );
+
+    const { props: propsWithoutCallbacks } = screen.getByTestId('pressable');
+
+    for (const name of Object.keys(callbacks)) {
+      expect(propsWithoutCallbacks[`testOnly_${name}`]).toBeUndefined();
     }
   }
 );
