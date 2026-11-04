@@ -277,7 +277,9 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    if (handler.cancelsJSResponder) {
+    // A scroll takes no touch away from the JS responder, and nothing would end the native gesture
+    // this starts: RN would keep dropping pointer events until an unrelated up or hover exit.
+    if (handler.cancelsJSResponder && !handler.isHandlingScroll) {
       onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
     }
 
