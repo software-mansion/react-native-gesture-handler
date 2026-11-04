@@ -629,10 +629,10 @@ class GestureHandlerOrchestrator(
     return shouldSkipHoverEvents && event.isHoverAction()
   }
 
-  // Likewise only the handlers that use scroll events get them. Anything else would begin and
-  // never end, since a scroll has no up event.
+  // Likewise only the handlers that use scroll events get them, and not while they follow a pointer
+  // stream. Anything else would begin and never end, since a scroll has no up event.
   private fun shouldHandlerSkipScrollEvents(handler: GestureHandler, event: MotionEvent) =
-    event.isScrollAction() && !handler.wantsScrollEvents
+    event.isScrollAction() && !handler.canHandleScroll
 
   private fun shouldHandlerSkipEvent(handler: GestureHandler, event: MotionEvent) =
     shouldHandlerSkipHoverEvents(handler, event) || shouldHandlerSkipScrollEvents(handler, event)

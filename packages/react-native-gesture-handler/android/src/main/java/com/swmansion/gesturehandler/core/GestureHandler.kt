@@ -125,6 +125,12 @@ open class GestureHandler {
   // Whether mouse wheel and trackpad scrolls (ACTION_SCROLL) are delivered to `onHandleScroll`.
   open val wantsScrollEvents: Boolean
     get() = false
+
+  // A scroll may reach this handler unless it is following a pointer stream. Finished states don't
+  // block it: a handler keeps its last state after reset, until it is recorded again.
+  val canHandleScroll: Boolean
+    get() = wantsScrollEvents && (isHandlingScroll || (state != STATE_BEGAN && state != STATE_ACTIVE))
+
   protected var shouldCancelWhenOutside = false
   protected var orchestrator: GestureHandlerOrchestrator? = null
   var onTouchEventListener: OnTouchEventListener? = null
@@ -663,7 +669,7 @@ open class GestureHandler {
     // Scrolls reach only the handlers that take them, and a gesture driven by one takes nothing
     // else: a hover or click by the same mouse must not move or end it.
     if (event.isScrollAction()) {
-      if (!wantsScrollEvents) {
+      if (!canHandleScroll) {
         return false
       }
     } else if (isHandlingScroll) {

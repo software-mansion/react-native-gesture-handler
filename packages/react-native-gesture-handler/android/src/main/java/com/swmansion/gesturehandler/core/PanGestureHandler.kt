@@ -271,11 +271,6 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
    * nothing, so x and y follow it while the translation counts only the scrolls.
    */
   override fun onHandleScroll(event: MotionEvent, sourceEvent: MotionEvent) {
-    if (state != STATE_UNDETERMINED && !isHandlingScroll) {
-      // Already following a drag.
-      return
-    }
-
     // Signs as ScrollView and HorizontalScrollView read the axes, where Shift turns the wheel
     // sideways, flipped so the content follows the scroll as it would follow two fingers.
     val vScroll = sourceEvent.getAxisValue(MotionEvent.AXIS_VSCROLL)
