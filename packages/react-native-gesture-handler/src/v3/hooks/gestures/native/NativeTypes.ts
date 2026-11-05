@@ -1,6 +1,7 @@
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEndEvent,
   GestureEvent,
   SingleGesture,
   WithSharedValue,
@@ -73,8 +74,12 @@ export type NativeGestureInternalConfig = BaseGestureConfig<
 export type NativeGestureConfig =
   ExcludeInternalConfigProps<NativeGestureInternalConfig>;
 
-export type NativeGestureEvent = GestureEvent<NativeHandlerData>;
-export type NativeGestureActiveEvent = NativeGestureEvent;
+export type NativeGestureBeginEvent = GestureEvent<NativeHandlerData>;
+export type NativeGestureActiveEvent = NativeGestureBeginEvent;
+export type NativeGestureDeactivateEvent = GestureEndEvent<NativeHandlerData>;
+export type NativeGestureFinalizeEvent = GestureEndEvent<NativeHandlerData>;
+/** @deprecated Use `NativeGestureBeginEvent` instead. */
+export type NativeGestureEvent = NativeGestureBeginEvent;
 
 export type NativeGesture = SingleGesture<
   NativeGestureProperties,

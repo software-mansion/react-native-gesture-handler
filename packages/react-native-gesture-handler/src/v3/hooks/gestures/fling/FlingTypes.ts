@@ -1,6 +1,7 @@
 import type {
   BaseDiscreteGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEndEvent,
   GestureEvent,
   SingleGesture,
   WithSharedValue,
@@ -51,8 +52,12 @@ export type FlingGestureInternalConfig = BaseDiscreteGestureConfig<
 export type FlingGestureConfig =
   ExcludeInternalConfigProps<FlingGestureInternalConfig>;
 
-export type FlingGestureEvent = GestureEvent<FlingHandlerData>;
-export type FlingGestureActiveEvent = FlingGestureEvent;
+export type FlingGestureBeginEvent = GestureEvent<FlingHandlerData>;
+export type FlingGestureActiveEvent = FlingGestureBeginEvent;
+export type FlingGestureDeactivateEvent = GestureEndEvent<FlingHandlerData>;
+export type FlingGestureFinalizeEvent = GestureEndEvent<FlingHandlerData>;
+/** @deprecated Use `FlingGestureBeginEvent` instead. */
+export type FlingGestureEvent = FlingGestureBeginEvent;
 
 export type FlingGesture = SingleGesture<
   FlingGestureProperties,
