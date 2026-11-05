@@ -340,7 +340,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   protected onPointerDown(event: AdaptedEvent): void {
-    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(this);
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(
+      this,
+      event.pointerId
+    );
     this._pointerType = event.pointerType;
 
     if (this.pointerType === PointerType.TOUCH) {

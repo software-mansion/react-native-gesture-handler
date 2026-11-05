@@ -32,8 +32,12 @@ export default class PointerTracker {
     }
   }
 
+  public isTrackingPointer(pointerId: number): boolean {
+    return this.trackedPointers.has(pointerId);
+  }
+
   public addToTracker(event: AdaptedEvent): void {
-    if (this.trackedPointers.has(event.pointerId)) {
+    if (this.isTrackingPointer(event.pointerId)) {
       return;
     }
 
@@ -121,7 +125,7 @@ export default class PointerTracker {
   }
 
   public getVelocityAt(pointerId: number, time: number) {
-    if (!this.trackedPointers.has(pointerId)) {
+    if (!this.isTrackingPointer(pointerId)) {
       return null;
     }
 
