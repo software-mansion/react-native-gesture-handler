@@ -19,6 +19,11 @@
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _shouldSendBeginEvent = YES;
+#if !TARGET_OS_OSX
+    // The recognizer never leaves Possible on its own, so UIKit would hold the touch-up of
+    // a UIControl under it forever
+    self.delaysTouchesEnded = NO;
+#endif
   }
 
   return self;
