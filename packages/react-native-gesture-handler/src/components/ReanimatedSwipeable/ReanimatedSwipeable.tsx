@@ -26,7 +26,10 @@ import {
 
 import { tagMessage } from '../../utils';
 import { GestureDetector } from '../../v3/detectors';
-import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
+import type {
+  PanGestureActiveEvent,
+  PanGestureDeactivateEvent,
+} from '../../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../../v3/hooks/gestures';
 import {
   maybeUnpackValue,
@@ -507,7 +510,7 @@ const Swipeable = (props: SwipeableProps) => {
   );
 
   const handleRelease = useCallback(
-    (event: PanGestureActiveEvent & { canceled: boolean }) => {
+    (event: PanGestureDeactivateEvent) => {
       'worklet';
       if (event.canceled) {
         // Restore the row to where it rested before the gesture.

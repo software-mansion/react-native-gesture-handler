@@ -4,7 +4,7 @@ import CodeBlock from '@theme/CodeBlock';
 
 {
 <CodeBlock className="language-ts">
-    {`onBegin: (event: ${props.gesture}HandlerData) => void`}
+    {`onBegin: (event: ${props.gesture}GestureBeginEvent) => void`}
 </CodeBlock>
 }
 
@@ -14,7 +14,7 @@ Set the callback that is being called when given gesture handler starts receivin
 
 {
 <CodeBlock className="language-ts">
-    {`onActivate: (event: ${props.gesture}HandlerData) => void`}
+    {`onActivate: (event: ${props.gesture}GestureActiveEvent) => void`}
 </CodeBlock>
 }
 
@@ -24,7 +24,7 @@ Set the callback that is being called when the gesture is recognized by the hand
 
 {
 <CodeBlock className="language-ts">
-    {`onDeactivate: (event: ${props.gesture}HandlerData & { canceled: boolean }) => void`}
+    {`onDeactivate: (event: ${props.gesture}GestureDeactivateEvent) => void`}
 </CodeBlock>
 }
 
@@ -34,7 +34,7 @@ Set the callback that is being called when the gesture that was recognized by th
 
 {
 <CodeBlock className="language-ts">
-    {`onFinalize: (event: ${props.gesture}HandlerData & { canceled: boolean }) => void`}
+    {`onFinalize: (event: ${props.gesture}GestureFinalizeEvent) => void`}
 </CodeBlock>
 }
 

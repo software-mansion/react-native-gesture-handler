@@ -1,6 +1,7 @@
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEndEvent,
   GestureEvent,
   SingleGesture,
 } from '../../../types';
@@ -30,9 +31,14 @@ export type RotationGestureInternalConfig = BaseGestureConfig<
 export type RotationGestureConfig =
   ExcludeInternalConfigProps<RotationGestureInternalConfig>;
 
-export type RotationGestureEvent = GestureEvent<RotationHandlerData>;
+export type RotationGestureBeginEvent = GestureEvent<RotationHandlerData>;
 export type RotationGestureActiveEvent =
   GestureEvent<RotationExtendedHandlerData>;
+export type RotationGestureDeactivateEvent =
+  GestureEndEvent<RotationExtendedHandlerData>;
+export type RotationGestureFinalizeEvent = GestureEndEvent<RotationHandlerData>;
+/** @deprecated Use `RotationGestureBeginEvent` instead. */
+export type RotationGestureEvent = RotationGestureBeginEvent;
 
 export type RotationGesture = SingleGesture<
   RotationGestureProperties,
