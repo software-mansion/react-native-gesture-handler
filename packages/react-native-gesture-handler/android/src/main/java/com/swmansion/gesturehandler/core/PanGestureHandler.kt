@@ -72,6 +72,8 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     // by then, so it reports no velocity.
     velocityX = 0f
     velocityY = 0f
+    // A pan still waiting for another gesture to fail ends too, rather than cancelling: if that
+    // gesture fails, the orchestrator replays the activation, so the scroll isn't lost.
     if (state == STATE_ACTIVE) {
       end()
     } else {
