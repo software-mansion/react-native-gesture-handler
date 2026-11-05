@@ -19,10 +19,12 @@ Low-level `TouchEvent` callbacks are tied to raw pointer activity. Drag out of t
 
 ## Callbacks
 
+The signatures below use the [`Pan`](/docs/gestures/use-pan-gesture) gesture as an example. Other gestures export analogous types, for example `TapGestureBeginEvent` for the [`onBegin`](#onbegin) callback of the [`Tap`](/docs/gestures/use-tap-gesture) gesture. See [Gesture events](#gesture-events).
+
 ### onBegin
 
 ```ts
-onBegin: (event: GestureEvent<HandlerData>) => void
+onBegin: (event: PanGestureBeginEvent) => void
 ```
 
 Called when a handler begins to recognize gestures. If `onBegin` was called, it is guaranteed that `onFinalize` will be called later.
@@ -30,7 +32,7 @@ Called when a handler begins to recognize gestures. If `onBegin` was called, it 
 ### onActivate
 
 ```ts
-onActivate: (event: GestureEvent<HandlerData>) => void
+onActivate: (event: PanGestureActiveEvent) => void
 ```
 
 Called when activation criteria for the handler are met. If `onActivate` was called, it is guaranteed that `onDeactivate` will be called later.
@@ -38,7 +40,7 @@ Called when activation criteria for the handler are met. If `onActivate` was cal
 ### onUpdate
 
 ```ts
-onUpdate: (event: GestureEvent<HandlerData>) => void
+onUpdate: (event: PanGestureActiveEvent) => void
 ```
 
 Called each time a pointer tracked by the gesture changes state, typically due to movement, after the gesture has been activated.
@@ -46,7 +48,7 @@ Called each time a pointer tracked by the gesture changes state, typically due t
 ### onDeactivate
 
 ```ts
-onDeactivate: (event: GestureEndEvent<HandlerData>) => void
+onDeactivate: (event: PanGestureDeactivateEvent) => void
 ```
 
 Called when handler stops recognizing gestures, but only if the handler activated. It is called before `onFinalize`. The event object contains a `canceled` property — if the gesture was interrupted, `canceled` is set to `true`. Otherwise it is set to `false`.
@@ -54,7 +56,7 @@ Called when handler stops recognizing gestures, but only if the handler activate
 ### onFinalize
 
 ```ts
-onFinalize: (event: GestureEndEvent<HandlerData>) => void
+onFinalize: (event: PanGestureFinalizeEvent) => void
 ```
 
 Called when handler stops recognizing gestures. The event object contains a `canceled` property — if the handler failed to activate or was interrupted, `canceled` is set to `true`. If the handler managed to activate and completed successfully, `canceled` is set to `false` and `onFinalize` will be called right after `onDeactivate`.
@@ -93,13 +95,15 @@ Called when there will be no more information about this pointer. It may be call
 
 ## Events
 
-### GestureEvent
+### Gesture events
 
-`GestureEvent` contains properties common to all gestures (`handlerTag`, `numberOfPointers`, `pointerType`) along with gesture-specific data defined in each gesture's documentation.
+Each gesture exports one event type per callback. For example, the [`Pan`](/docs/gestures/use-pan-gesture) gesture exports `PanGestureBeginEvent`, `PanGestureActiveEvent`, `PanGestureDeactivateEvent` and `PanGestureFinalizeEvent`. Other gestures follow the same pattern, such as `TapGestureBeginEvent` for [`Tap`](/docs/gestures/use-tap-gesture). [`onUpdate`](#onupdate) receives the same event type as [`onActivate`](#onactivate).
 
-### GestureEndEvent
+All of them share the shape below, shown for `PanGestureBeginEvent`, along with the gesture-specific data listed on each gesture's page:
 
-`GestureEndEvent` extends `GestureEvent` with a `canceled` property. It is used in the [`onDeactivate`](#ondeactivate) and [`onFinalize`](#onfinalize) callbacks. When `canceled` is `true`, the gesture was interrupted or failed to activate. When `false`, the gesture completed successfully.
+[`onBegin`](#onbegin) and [`onFinalize`](#onfinalize) receive only the data available before the gesture activates. [`onActivate`](#onactivate), [`onUpdate`](#onupdate) and [`onDeactivate`](#ondeactivate) additionally carry the data computed while the gesture is active, such as [`translationX`](/docs/gestures/use-pan-gesture#translationx) of [`Pan`](/docs/gestures/use-pan-gesture) or [`scale`](/docs/gestures/use-pinch-gesture#scale) of [`Pinch`](/docs/gestures/use-pinch-gesture).
+
+Events passed to [`onDeactivate`](#ondeactivate) and [`onFinalize`](#onfinalize) also contain a `canceled` property. When `canceled` is `true`, the gesture was interrupted or failed to activate.
 
 ### TouchEvent
 

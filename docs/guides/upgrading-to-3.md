@@ -49,7 +49,7 @@ The `state` and `oldState` properties are no longer available in event objects. 
 
 ### Event types
 
-The types of events have been unified for all callbacks. Each event falls into one of two categories: [`GestureEvent`](/docs/fundamentals/callbacks-events#gestureevent) for gesture callbacks, or [`GestureTouchEvent`](/docs/fundamentals/callbacks-events#touchevent) for `TouchEvent` callbacks.
+The types of events have been unified for all callbacks. Each event falls into one of two categories: a [gesture-specific event type](/docs/fundamentals/callbacks-events#gesture-events) such as `PanGestureBeginEvent` for gesture callbacks, or [`GestureTouchEvent`](/docs/fundamentals/callbacks-events#touchevent) for `TouchEvent` callbacks.
 
 ### StateManager
 
