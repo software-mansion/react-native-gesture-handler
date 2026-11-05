@@ -9,8 +9,10 @@ import type {
   HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
 } from '../../handlers/GestureHandlerEventPayload';
-import type { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
-import type { HoverGestureActiveEvent } from '../../v3/hooks';
+import type {
+  HoverGestureBeginEvent,
+  HoverGestureFinalizeEvent,
+} from '../../v3';
 import type {
   InnerPressableEvent,
   PressableDimensions,
@@ -52,9 +54,8 @@ const gestureToPressEvent = (
     | GestureStateChangeEvent<
         HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
       >
-    | HoverGestureEvent
-    | HoverGestureActiveEvent
-    | LongPressGestureEvent,
+    | HoverGestureBeginEvent
+    | HoverGestureFinalizeEvent,
   timestamp: number,
   targetId: number
 ): InnerPressableEvent => ({
@@ -84,9 +85,8 @@ const gestureToPressableEvent = (
     | GestureStateChangeEvent<
         HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
       >
-    | HoverGestureEvent
-    | HoverGestureActiveEvent
-    | LongPressGestureEvent
+    | HoverGestureBeginEvent
+    | HoverGestureFinalizeEvent
 ): PressableEvent => {
   const timestamp = Date.now();
 

@@ -45,7 +45,7 @@ import {
   InterceptingGestureDetector,
   VirtualGestureDetector,
 } from '../v3/detectors';
-import type { PanGestureActiveEvent } from '../v3/hooks/gestures';
+import type { PanGestureDeactivateEvent } from '../v3/hooks/gestures';
 import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
 import type { WithSharedValue } from '../v3/types';
 
@@ -454,7 +454,7 @@ const DrawerLayout = function DrawerLayout(
   );
 
   const handleRelease = useCallback(
-    (event: PanGestureActiveEvent & { canceled: boolean }) => {
+    (event: PanGestureDeactivateEvent) => {
       'worklet';
       if (event.canceled) {
         // Settle the drawer where it rested before the gesture.
