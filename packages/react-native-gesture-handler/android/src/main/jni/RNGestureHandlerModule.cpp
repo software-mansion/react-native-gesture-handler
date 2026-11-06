@@ -1,5 +1,4 @@
 #include <RNGHRuntimeDecorator.h>
-#include <react/renderer/uimanager/primitives.h>
 
 #include "RNGestureHandlerModule.h"
 

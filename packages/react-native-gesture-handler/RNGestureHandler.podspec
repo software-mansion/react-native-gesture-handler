@@ -25,6 +25,11 @@ Pod::Spec.new do |s|
   s.xcconfig = {
     "OTHER_CFLAGS" => "$(inherited) #{compilation_metadata_generation_flag} #{worklets_flag}"
   }
+  
+  # RNGHRuntimeDecorator uses Text shadow nodes and Bridging<ShadowNode>, "for frameworks" RN APIs.
+  s.pod_target_xcconfig = {
+    "GCC_PREPROCESSOR_DEFINITIONS" => "$(inherited) RN_ALLOW_FRAMEWORKS=1"
+  }
 
   install_modules_dependencies(s);
 

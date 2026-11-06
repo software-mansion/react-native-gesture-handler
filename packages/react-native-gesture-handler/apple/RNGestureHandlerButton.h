@@ -31,7 +31,11 @@ typedef NS_ENUM(NSInteger, RNGHButtonEventType) {
 
 #if TARGET_OS_OSX
 
+#if __has_include(<React/RendererCore.h>)
+#include <React/RendererCore.h>
+#else
 #include <react/renderer/core/LayoutMetrics.h>
+#endif
 
 @protocol RCTComponentViewProtocol;
 

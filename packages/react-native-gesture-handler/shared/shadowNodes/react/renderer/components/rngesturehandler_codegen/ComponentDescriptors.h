@@ -11,9 +11,15 @@
 
 #pragma once
 
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/rngesturehandler_codegen/ShadowNodes.h>
+
+#if __has_include(<React/RendererCore.h>)
+#include <React/ComponentRegistry.h>
+#include <React/RendererCore.h>
+#else
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#endif
 
 #include <react/renderer/components/rngesturehandler_codegen/RNGestureHandlerDetectorComponentDescriptor.h>
 
