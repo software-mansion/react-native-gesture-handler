@@ -268,6 +268,8 @@ class NativeViewGestureHandler : GestureHandler() {
 
   override fun wantsToAttachDirectlyToView() = true
 
+  override fun wantsTrackpadScroll() = true
+
   fun shouldCancelOnNativeTouchGrab(grabbedMidGesture: Boolean): Boolean =
     hook.shouldCancelOnNativeTouchGrab(grabbedMidGesture)
 

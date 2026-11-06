@@ -13,6 +13,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import com.swmansion.gesturehandler.react.isHoverAction
+import com.swmansion.gesturehandler.react.isTrackpadScroll
 import java.util.*
 
 class GestureHandlerOrchestrator(
@@ -591,7 +592,7 @@ class GestureHandlerOrchestrator(
         handlerRegistry.getHandlersForView(parent)?.let {
           synchronized(it) {
             for (handler in it) {
-              if (shouldHandlerSkipHoverEvents(handler, event)) {
+              if (shouldHandlerSkipEvent(handler, event)) {
                 continue
               }
 
@@ -622,6 +623,10 @@ class GestureHandlerOrchestrator(
 
     return shouldSkipHoverEvents && event.isHoverAction()
   }
+
+  private fun shouldHandlerSkipEvent(handler: GestureHandler, event: MotionEvent): Boolean =
+    shouldHandlerSkipHoverEvents(handler, event) ||
+      (event.isTrackpadScroll() && !handler.wantsTrackpadScroll())
 
   private fun recordViewHandlersForPointer(
     view: View,
@@ -658,7 +663,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          if (shouldHandlerSkipHoverEvents(handler, event)) {
+          if (shouldHandlerSkipEvent(handler, event)) {
             continue
           }
 
@@ -695,7 +700,7 @@ class GestureHandlerOrchestrator(
         handlerRegistry.getHandlersForViewWithTag(tagForCoords)?.let {
           synchronized(it) {
             for (handler in it) {
-              if (shouldHandlerSkipHoverEvents(handler, event)) {
+              if (shouldHandlerSkipEvent(handler, event)) {
                 continue
               }
 

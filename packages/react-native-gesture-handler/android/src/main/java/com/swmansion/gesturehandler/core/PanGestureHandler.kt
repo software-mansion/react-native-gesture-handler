@@ -11,6 +11,7 @@ import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
 import com.swmansion.gesturehandler.react.events.eventbuilders.PanGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.isTrackpadScroll
 import kotlin.math.abs
 
 class PanGestureHandler(context: Context?) : GestureHandler() {
@@ -59,6 +60,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
   private var velocityTracker: VelocityTracker? = null
   private var averageTouches = false
   private var activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
+  private var enableTrackpadTwoFingerGesture = DEFAULT_ENABLE_TRACKPAD_TWO_FINGER_GESTURE
   private val activateDelayed = Runnable { activate() }
   private val handler = Handler(Looper.getMainLooper())
   var stylusData: StylusData = StylusData()
@@ -102,7 +104,10 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     maxPointers = DEFAULT_MAX_POINTERS
     activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
     averageTouches = DEFAULT_AVERAGE_TOUCHES
+    enableTrackpadTwoFingerGesture = DEFAULT_ENABLE_TRACKPAD_TWO_FINGER_GESTURE
   }
+
+  override fun wantsTrackpadScroll() = enableTrackpadTwoFingerGesture
 
   private fun shouldActivate(): Boolean {
     val dx = lastX - startX + offsetX
@@ -194,7 +199,8 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
       lastX = getLastPointerX(sourceEvent, averageTouches)
       lastY = getLastPointerY(sourceEvent, averageTouches)
     }
-    if (state == STATE_UNDETERMINED && sourceEvent.pointerCount >= minPointers) {
+    // A trackpad scroll is one fake finger standing in for two, so minPointers does not apply (as on iOS).
+    if (state == STATE_UNDETERMINED && (sourceEvent.pointerCount >= minPointers || sourceEvent.isTrackpadScroll())) {
       initialize(event, sourceEvent)
       addVelocityMovement(velocityTracker, sourceEvent)
       begin()
@@ -383,6 +389,9 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
       if (config.hasKey(KEY_ACTIVATE_AFTER_LONG_PRESS)) {
         handler.activateAfterLongPress = config.getInt(KEY_ACTIVATE_AFTER_LONG_PRESS).toLong()
       }
+      if (config.hasKey(KEY_ENABLE_TRACKPAD_TWO_FINGER_GESTURE)) {
+        handler.enableTrackpadTwoFingerGesture = config.getBoolean(KEY_ENABLE_TRACKPAD_TWO_FINGER_GESTURE)
+      }
     }
 
     override fun createEventBuilder(handler: PanGestureHandler) = PanGestureHandlerEventDataBuilder(handler)
@@ -404,6 +413,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
       private const val KEY_MAX_POINTERS = "maxPointers"
       private const val KEY_AVG_TOUCHES = "avgTouches"
       private const val KEY_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
+      private const val KEY_ENABLE_TRACKPAD_TWO_FINGER_GESTURE = "enableTrackpadTwoFingerGesture"
     }
   }
 
@@ -413,6 +423,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     private const val DEFAULT_MIN_POINTERS = 1
     private const val DEFAULT_MAX_POINTERS = 10
     private const val DEFAULT_ACTIVATE_AFTER_LONG_PRESS = 0L
+    private const val DEFAULT_ENABLE_TRACKPAD_TWO_FINGER_GESTURE = false
     private const val DEFAULT_AVERAGE_TOUCHES = false
     private const val DEFAULT_ACTIVE_OFFSET_X_START = MIN_VALUE_IGNORE
     private const val DEFAULT_ACTIVE_OFFSET_X_END = MAX_VALUE_IGNORE

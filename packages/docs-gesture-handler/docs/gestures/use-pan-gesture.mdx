@@ -232,8 +232,8 @@ averageTouches: boolean | SharedValue<boolean>;
 
 Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This modifier allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
 
-<Badges platforms={['ios', 'web']}>
-### enableTrackpadTwoFingerGesture [I][W]
+<Badges platforms={['android', 'ios', 'web']}>
+### enableTrackpadTwoFingerGesture [A][I][W]
 </Badges>
 
 ```ts
@@ -241,6 +241,8 @@ enableTrackpadTwoFingerGesture: boolean | SharedValue<boolean>;
 ```
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+
+On Android this requires Android 14 or newer, where the system delivers two-finger touchpad swipes as scroll gestures. Mouse wheels are not covered. A two-finger swipe reports `numberOfPointers` as `0` and ignores `minPointers`, like a trackpad gesture on iOS.
 
 <MouseButtonProp />
 

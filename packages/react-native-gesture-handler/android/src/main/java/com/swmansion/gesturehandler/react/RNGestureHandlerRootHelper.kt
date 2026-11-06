@@ -21,6 +21,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   val rootView: ViewGroup
   private var shouldIntercept = false
   private var passingTouch = false
+  private var pendingTrackpadDown: MotionEvent? = null
   private var passingNativeTouch = false
   private var nativeTouchGrabRequested = false
   private var nativeTouchCancelled = false
@@ -65,6 +66,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   fun tearDown() {
+    pendingTrackpadDown?.recycle()
+    pendingTrackpadDown = null
     val registry =
       RNGestureHandlerModule.registries[moduleId]
         ?: throw Exception("Tried to access a non-existent registry for module $moduleId")
@@ -84,6 +87,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
   internal inner class RootViewGestureHandler(handlerTag: Int) : GestureHandler() {
     override val isContinuous = true
+
+    override fun wantsTrackpadScroll() = true
 
     init {
       this.tag = handlerTag
@@ -182,14 +187,38 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   fun dispatchTouchEvent(event: MotionEvent): Boolean {
+    // Android 14+ announces a touchpad contact that stops a fling with a DOWN + CANCEL pair that
+    // carries the two-finger classification. It is not a gesture, so a trackpad DOWN is held back
+    // until the next event shows whether a swipe follows; a real swipe sends its first MOVE in the
+    // same batch, so nothing observable is delayed.
+    if (event.isTrackpadScroll() && event.actionMasked == MotionEvent.ACTION_DOWN) {
+      pendingTrackpadDown?.recycle()
+      pendingTrackpadDown = MotionEvent.obtain(event)
+      return shouldIntercept
+    }
+    pendingTrackpadDown?.let { down ->
+      pendingTrackpadDown = null
+      val stopsFling = event.actionMasked == MotionEvent.ACTION_CANCEL &&
+        (event.flags and MotionEvent.FLAG_CANCELED) != 0
+      if (stopsFling) {
+        down.recycle()
+        return shouldIntercept
+      }
+      passTouchEvent(down)
+      down.recycle()
+    }
+    passTouchEvent(event)
+
+    return shouldIntercept
+  }
+
+  private fun passTouchEvent(event: MotionEvent) {
     // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so that we can tell
     // if `requestDisallow` has been called as a result of a normal gesture handling process or
     // as a result of one of the gesture handlers activating
     passingTouch = true
     orchestrator!!.onTouchEvent(event)
     passingTouch = false
-
-    return shouldIntercept
   }
 
   fun activateNativeHandlers(view: View) {

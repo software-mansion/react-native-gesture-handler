@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
 import android.view.Display
 import android.view.MotionEvent
 import android.view.accessibility.AccessibilityManager
@@ -31,6 +32,14 @@ fun MotionEvent.isHoverAction(): Boolean = action == MotionEvent.ACTION_HOVER_MO
 
 fun MotionEvent.isButtonAction(): Boolean = actionMasked == MotionEvent.ACTION_BUTTON_PRESS ||
   actionMasked == MotionEvent.ACTION_BUTTON_RELEASE
+
+// MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE, which needs compileSdk 34.
+private const val CLASSIFICATION_TWO_FINGER_SWIPE = 3
+
+// Android 14+ turns a two-finger touchpad swipe into a single fake-finger touch stream
+// carrying this classification; mouse wheels arrive as ACTION_SCROLL instead.
+fun MotionEvent.isTrackpadScroll(): Boolean =
+  Build.VERSION.SDK_INT >= 34 && classification == CLASSIFICATION_TWO_FINGER_SWIPE
 
 // Defaults to the first pointer, which is the one every single-pointer stream
 // (hover included) describes.

@@ -20,6 +20,7 @@ import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEve
 import com.swmansion.gesturehandler.react.findActivity
 import com.swmansion.gesturehandler.react.getPointerType
 import com.swmansion.gesturehandler.react.isHoverAction
+import com.swmansion.gesturehandler.react.isTrackpadScroll
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -399,8 +400,10 @@ open class GestureHandler {
       }
     }
 
-    numberOfPointers = when (adaptedTransformedEvent.actionMasked) {
-      MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
+    numberOfPointers = when {
+      // iOS reports no touches for a trackpad-driven pan.
+      adaptedTransformedEvent.isTrackpadScroll() -> 0
+      adaptedTransformedEvent.actionMasked == MotionEvent.ACTION_POINTER_UP -> adaptedTransformedEvent.pointerCount - 1
       else -> adaptedTransformedEvent.pointerCount
     }
 
@@ -886,6 +889,10 @@ open class GestureHandler {
   }
 
   open fun wantsToAttachDirectlyToView() = false
+
+  // Whether a two-finger touchpad swipe (see MotionEvent.isTrackpadScroll) is recorded for this
+  // handler. As on iOS, only a Pan that opted in and the native handlers see it.
+  open fun wantsTrackpadScroll() = false
 
   override fun toString(): String {
     val viewString = testID ?: view?.javaClass?.simpleName
