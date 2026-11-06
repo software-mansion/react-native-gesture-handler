@@ -6129,8 +6129,8 @@ __metadata:
     react: "npm:19.3.0"
     react-native: "npm:0.89.0-rc.0"
     react-native-gesture-handler: "workspace:*"
-    react-native-reanimated: "npm:4.7.1"
-    react-native-worklets: "npm:0.13.0"
+    react-native-reanimated: "patch:react-native-reanimated@npm%3A4.7.1#~/.yarn/patches/react-native-reanimated-npm-4.7.1-dbfb143762.patch"
+    react-native-worklets: "patch:react-native-worklets@npm%3A0.13.0#~/.yarn/patches/react-native-worklets-npm-0.13.0-217167a1b5.patch"
     react-test-renderer: "npm:19.3.0"
     typescript: "npm:~6.0.3"
   languageName: unknown
@@ -6396,9 +6396,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001819":
-  version: 1.0.30001822
-  resolution: "caniuse-lite@npm:1.0.30001822"
-  checksum: 10c0/8f888b97cb88c42ec654a056a872478d69cb30a1f2dec60d1f8024be7752c5930e7a043b299e3d2df555bc53d8f5c2072a9fc9a3253039f4a0ec1f3fbce0d8f1
+  version: 1.0.30001823
+  resolution: "caniuse-lite@npm:1.0.30001823"
+  checksum: 10c0/7bf8e621d117f83cf4f8e2063f483c430bb13582f188e0f92e8d3e1625aa8fab3567bdc5bf27be92a025800748d7d13513a67178b634113e48457efa35898be5
   languageName: node
   linkType: hard
 
@@ -6732,11 +6732,11 @@ __metadata:
     prettier: "npm:3.3.3"
     react-native-gesture-handler: "workspace:*"
     react-native-pager-view: "npm:^8.0.2"
-    react-native-reanimated: "npm:4.7.1"
+    react-native-reanimated: "patch:react-native-reanimated@npm%3A4.7.1#~/.yarn/patches/react-native-reanimated-npm-4.7.1-dbfb143762.patch"
     react-native-safe-area-context: "npm:~5.7.0"
     react-native-screens: "npm:4.25.2"
     react-native-svg: "npm:15.15.4"
-    react-native-worklets: "npm:0.13.0"
+    react-native-worklets: "patch:react-native-worklets@npm%3A0.13.0#~/.yarn/patches/react-native-worklets-npm-0.13.0-217167a1b5.patch"
     react-test-renderer: "npm:19.0.0"
     typescript: "npm:~6.0.3"
   peerDependencies:
@@ -7449,9 +7449,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.464":
-  version: 1.5.477
-  resolution: "electron-to-chromium@npm:1.5.477"
-  checksum: 10c0/62ab0c627a732480ddba412ee8577fff359cbf3b209814efdfdea5387fb2efa974bc0cc37dd5a1978b5a0a2e1c5f40daea39ecb52f5ae5662083f22518dcf41c
+  version: 1.5.478
+  resolution: "electron-to-chromium@npm:1.5.478"
+  checksum: 10c0/74788bceafee9860412f4ff2a0f7de4cfc7a2ac910c1afcf8c6dec0df9f0642f92a5b52a9468d5f50004290b70a663ecc7c4714c3465296d5217616043039b7b
   languageName: node
   linkType: hard
 
@@ -8580,12 +8580,12 @@ __metadata:
     react-native: "npm:0.88.0"
     react-native-gesture-handler: "workspace:*"
     react-native-pager-view: "npm:9.0.7"
-    react-native-reanimated: "npm:4.7.1"
+    react-native-reanimated: "patch:react-native-reanimated@npm%3A4.7.1#~/.yarn/patches/react-native-reanimated-npm-4.7.1-dbfb143762.patch"
     react-native-safe-area-context: "npm:~5.10.1"
     react-native-screens: "npm:~4.30.0"
     react-native-svg: "npm:15.16.0"
     react-native-web: "npm:^0.21.0"
-    react-native-worklets: "npm:0.13.0"
+    react-native-worklets: "patch:react-native-worklets@npm%3A0.13.0#~/.yarn/patches/react-native-worklets-npm-0.13.0-217167a1b5.patch"
     typescript: "npm:~6.0.3"
   languageName: unknown
   linkType: soft
@@ -9353,13 +9353,13 @@ __metadata:
   linkType: hard
 
 "glob@npm:^13.0.0":
-  version: 13.0.6
-  resolution: "glob@npm:13.0.6"
+  version: 13.0.7
+  resolution: "glob@npm:13.0.7"
   dependencies:
     minimatch: "npm:^10.2.2"
     minipass: "npm:^7.1.3"
     path-scurry: "npm:^2.0.2"
-  checksum: 10c0/269c236f11a9b50357fe7a8c6aadac667e01deb5242b19c84975628f05f4438d8ee1354bb62c5d6c10f37fd59911b54d7799730633a2786660d8c69f1d18120a
+  checksum: 10c0/e32f4b9029a28f2b2d3610a55758fef37aa9c7098a5ba118628a5332eddd5299c7261d09ed9812e35afac117bc5f1f528ea3a8f4df2d941e38e0bc4f169221f8
   languageName: node
   linkType: hard
 
@@ -13895,8 +13895,8 @@ __metadata:
     react: "npm:19.3.0"
     react-native: "npm:0.89.0-rc.0"
     react-native-builder-bob: "npm:^0.40.13"
-    react-native-reanimated: "npm:4.7.1"
-    react-native-worklets: "npm:0.13.0"
+    react-native-reanimated: "patch:react-native-reanimated@npm%3A4.7.1#~/.yarn/patches/react-native-reanimated-npm-4.7.1-dbfb143762.patch"
+    react-native-worklets: "patch:react-native-worklets@npm%3A0.13.0#~/.yarn/patches/react-native-worklets-npm-0.13.0-217167a1b5.patch"
     react-test-renderer: "npm:19.3.0"
     typescript: "npm:~6.0.3"
   peerDependencies:
@@ -14022,6 +14022,20 @@ __metadata:
     react-native: 0.81 - 0.85
     react-native-worklets: 0.8.x
   checksum: 10c0/970800550322d6c052ad109b9be4d92c04b3cf326305b3f8175f64afb215a2cda6fc1978c0029f8039ad5a7e324616038148adbd3bdc967283851941caaaaafc
+  languageName: node
+  linkType: hard
+
+"react-native-reanimated@patch:react-native-reanimated@npm%3A4.7.1#~/.yarn/patches/react-native-reanimated-npm-4.7.1-dbfb143762.patch":
+  version: 4.7.1
+  resolution: "react-native-reanimated@patch:react-native-reanimated@npm%3A4.7.1#~/.yarn/patches/react-native-reanimated-npm-4.7.1-dbfb143762.patch::version=4.7.1&hash=5e56a0"
+  dependencies:
+    react-native-is-edge-to-edge: "npm:^1.3.1"
+    semver: "npm:^7.7.3"
+  peerDependencies:
+    react: "*"
+    react-native: 0.86 - 0.88
+    react-native-worklets: 0.13.x
+  checksum: 10c0/228b14288a2f56cf0ef02d791d84aeb0f3cecc86a2c016bdb9c9f3162425d4763f591bf75e30c211018820538c8380493f5ff89406d0b907f93afb855bbf33c7
   languageName: node
   linkType: hard
 
@@ -14167,6 +14181,35 @@ __metadata:
     react: "*"
     react-native: 0.81 - 0.85
   checksum: 10c0/a82edbd65b09a31d973497dac899adcd618677b56f7e5c460fd9f3b1b4ef1547b7bfd2edaa644d1ebf866bf70658bdbd1314c9d0ab2856e98c6975d0e97fd449
+  languageName: node
+  linkType: hard
+
+"react-native-worklets@patch:react-native-worklets@npm%3A0.13.0#~/.yarn/patches/react-native-worklets-npm-0.13.0-217167a1b5.patch":
+  version: 0.13.0
+  resolution: "react-native-worklets@patch:react-native-worklets@npm%3A0.13.0#~/.yarn/patches/react-native-worklets-npm-0.13.0-217167a1b5.patch::version=0.13.0&hash=779327"
+  dependencies:
+    "@babel/generator": "npm:^7.27.1"
+    "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
+    "@babel/plugin-transform-class-properties": "npm:^7.28.6"
+    "@babel/plugin-transform-classes": "npm:^7.28.6"
+    "@babel/plugin-transform-nullish-coalescing-operator": "npm:^7.28.6"
+    "@babel/plugin-transform-optional-chaining": "npm:^7.28.6"
+    "@babel/plugin-transform-shorthand-properties": "npm:^7.27.1"
+    "@babel/plugin-transform-template-literals": "npm:^7.27.1"
+    "@babel/plugin-transform-unicode-regex": "npm:^7.27.1"
+    "@babel/preset-typescript": "npm:^7.28.5"
+    "@babel/traverse": "npm:^7.27.1"
+    "@babel/types": "npm:^7.27.1"
+    "@jridgewell/remapping": "npm:^2.3.5"
+    convert-source-map: "npm:^2.0.0"
+    semver: "npm:^7.7.4"
+    whatwg-fetch: "npm:^3.6.20"
+  peerDependencies:
+    "@babel/core": "*"
+    "@react-native/metro-config": "*"
+    react: "*"
+    react-native: 0.86 - 0.88
+  checksum: 10c0/ae85af685908d65b629a1f323bb97d42ce01de3723b8ea4235214b98754c359dad0b00579ecf06f27ae8b6b5638e4d98f4c046395825908ccab958039c83ca7b
   languageName: node
   linkType: hard
 

@@ -1,0 +1,956 @@
+diff --git a/Common/NativeView/react/renderer/components/rnreanimated/ComponentDescriptors.h b/Common/NativeView/react/renderer/components/rnreanimated/ComponentDescriptors.h
+index 94b485f85a9a28ba5b5569d1241c6101d284eec7..2ff8c7c6ab942d43f57b2a3c00df7c155a0c4328 100644
+--- a/Common/NativeView/react/renderer/components/rnreanimated/ComponentDescriptors.h
++++ b/Common/NativeView/react/renderer/components/rnreanimated/ComponentDescriptors.h
+@@ -12,7 +12,11 @@
+ #pragma once
+ 
+ #include <react/renderer/components/rnreanimated/ShadowNodes.h>
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ConcreteComponentDescriptor.h>
++#endif
+ 
+ #include "REASharedTransitionBoundaryComponentDescriptor.h"
+ 
+diff --git a/Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryComponentDescriptor.h b/Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryComponentDescriptor.h
+index e2ab5b9754b75f5d7c7ecc44e7c6f2632dbc1773..e030c438167e0617f96e17afb9714a2cb08af4ab 100644
+--- a/Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryComponentDescriptor.h
++++ b/Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryComponentDescriptor.h
+@@ -11,7 +11,11 @@
+ 
+ #pragma once
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ConcreteComponentDescriptor.h>
++#endif
+ 
+ #include "REASharedTransitionBoundaryShadowNode.h"
+ 
+diff --git a/Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.h b/Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.h
+index c30878cfcb61e191b69213f9d16881baf886dce8..e7c1802a9732bfae3e185eb8937acd250bc7e181 100644
+--- a/Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.h
++++ b/Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.h
+@@ -3,8 +3,16 @@
+ #include <jsi/jsi.h>
+ #include <react/renderer/components/rnreanimated/EventEmitters.h>
+ #include <react/renderer/components/rnreanimated/Props.h>
++#if __has_include(<React/View.h>)
++#include <React/View.h>
++#else
+ #include <react/renderer/components/view/ConcreteViewShadowNode.h>
++#endif
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/LayoutContext.h>
++#endif
+ 
+ #include "REASharedTransitionBoundaryState.h"
+ 
+diff --git a/Common/cpp/reanimated/AnimatedSensor/AnimatedSensorModule.cpp b/Common/cpp/reanimated/AnimatedSensor/AnimatedSensorModule.cpp
+index 356cbfe765e292d485cfe2f105b79430a2caed48..5c67df248ce2b0e4f12a85ca842ce20474358f29 100644
+--- a/Common/cpp/reanimated/AnimatedSensor/AnimatedSensorModule.cpp
++++ b/Common/cpp/reanimated/AnimatedSensor/AnimatedSensorModule.cpp
+@@ -1,4 +1,8 @@
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <reanimated/AnimatedSensor/AnimatedSensorModule.h>
+ 
+ #include <memory>
+diff --git a/Common/cpp/reanimated/CSS/common/values/CSSValue.h b/Common/cpp/reanimated/CSS/common/values/CSSValue.h
+index d053b16d59119593355b92c78db6f29a482a95d4..f9d63f9cd00bb966bd9ba4b66c075ec8e5a64853 100644
+--- a/Common/cpp/reanimated/CSS/common/values/CSSValue.h
++++ b/Common/cpp/reanimated/CSS/common/values/CSSValue.h
+@@ -2,7 +2,11 @@
+ 
+ #include <reanimated/CSS/common/definitions.h>
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ShadowNode.h>
++#endif
+ 
+ #include <memory>
+ #include <string>
+diff --git a/Common/cpp/reanimated/CSS/core/CSSAnimationObserver.h b/Common/cpp/reanimated/CSS/core/CSSAnimationObserver.h
+index c3ad7cfb8e87a53203bfc951381f1c94439f7523..8db0952f84cc42c0958645dd815ade3a600f6950 100644
+--- a/Common/cpp/reanimated/CSS/core/CSSAnimationObserver.h
++++ b/Common/cpp/reanimated/CSS/core/CSSAnimationObserver.h
+@@ -2,7 +2,11 @@
+ 
+ #include <reanimated/CSS/events/CSSEvent.h>
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ReactPrimitives.h>
++#endif
+ 
+ #include <string>
+ 
+diff --git a/Common/cpp/reanimated/CSS/core/CSSAnimationsGroup.h b/Common/cpp/reanimated/CSS/core/CSSAnimationsGroup.h
+index 33dc65ef0cf0904eff4b481239d2c3c37155bb0c..e2b24b28d58a0aa95657be74aa98901246b5bd30 100644
+--- a/Common/cpp/reanimated/CSS/core/CSSAnimationsGroup.h
++++ b/Common/cpp/reanimated/CSS/core/CSSAnimationsGroup.h
+@@ -4,7 +4,11 @@
+ #include <reanimated/CSS/core/CSSAnimation.h>
+ 
+ #include <folly/dynamic.h>
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ShadowNode.h>
++#endif
+ 
+ #include <memory>
+ #include <vector>
+diff --git a/Common/cpp/reanimated/CSS/core/CSSPlatformAnimationFactory.h b/Common/cpp/reanimated/CSS/core/CSSPlatformAnimationFactory.h
+index e824083feea4042bf969076be05a03c7c2413bc7..2ecc92de65a98d62e523966778778b7177780d85 100644
+--- a/Common/cpp/reanimated/CSS/core/CSSPlatformAnimationFactory.h
++++ b/Common/cpp/reanimated/CSS/core/CSSPlatformAnimationFactory.h
+@@ -4,7 +4,11 @@
+ #include <reanimated/CSS/configs/CSSKeyframesConfig.h>
+ #include <reanimated/CSS/core/CSSPlatformAnimation.h>
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ReactPrimitives.h>
++#endif
+ 
+ #include <memory>
+ #include <string>
+diff --git a/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionBackend.h b/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionBackend.h
+index caf2c5c9a3f8319f4fa6f339f36595e7ea68d175..46c6399179cd91d10911bdd8cf572dcfae6e4398 100644
+--- a/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionBackend.h
++++ b/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionBackend.h
+@@ -3,7 +3,11 @@
+ #include <reanimated/CSS/easing/EasingConfigs.h>
+ #include <reanimated/CSS/utils/platform.h>
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ReactPrimitives.h>
++#endif
+ 
+ #include <string>
+ 
+diff --git a/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.cpp b/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.cpp
+index f6f71d804a19d06c90b7f679c17d42d228065ad1..ae5e68fd21133d92cc6ab8ca90195b927ed8061a 100644
+--- a/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.cpp
++++ b/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.cpp
+@@ -1,6 +1,10 @@
+ #include <reanimated/CSS/core/transition/CSSPlatformTransitionProxy.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <utility>
+ 
+diff --git a/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.h b/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.h
+index c18867341326585d451befe7f6521a885fba3a7d..b2c0f4d70739f5c1b53319e3223126002ee9412d 100644
+--- a/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.h
++++ b/Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.h
+@@ -8,7 +8,11 @@
+ 
+ #include <folly/dynamic.h>
+ #include <jsi/jsi.h>
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ReactPrimitives.h>
++#endif
+ 
+ #include <memory>
+ #include <optional>
+diff --git a/Common/cpp/reanimated/CSS/core/transition/CSSTransition.h b/Common/cpp/reanimated/CSS/core/transition/CSSTransition.h
+index eed69536b5e68f60f80247ba83060863a05f1b52..4e71013a35f307db33a49d261fb98b6c620954e4 100644
+--- a/Common/cpp/reanimated/CSS/core/transition/CSSTransition.h
++++ b/Common/cpp/reanimated/CSS/core/transition/CSSTransition.h
+@@ -7,7 +7,11 @@
+ #include <reanimated/CSS/misc/ViewStylesRepository.h>
+ #include <reanimated/Fabric/updates/OperationsLoop.h>
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ShadowNode.h>
++#endif
+ 
+ #include <folly/dynamic.h>
+ #include <jsi/jsi.h>
+diff --git a/Common/cpp/reanimated/CSS/events/CSSEvent.h b/Common/cpp/reanimated/CSS/events/CSSEvent.h
+index 890fb276c3d0fa4d9d1d107d47981327b6d27045..acd510e2d79b6687a891db0e0f9f1d30aad23c3f 100644
+--- a/Common/cpp/reanimated/CSS/events/CSSEvent.h
++++ b/Common/cpp/reanimated/CSS/events/CSSEvent.h
+@@ -1,7 +1,15 @@
+ #pragma once
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ReactPrimitives.h>
++#endif
+ 
+ #include <cstdint>
+ #include <limits>
+diff --git a/Common/cpp/reanimated/CSS/events/CSSEventsEmitter.h b/Common/cpp/reanimated/CSS/events/CSSEventsEmitter.h
+index d6e71b5719a1dac352a686c8bb9b99247723ddad..71e6f31981ce0106f1636813327abbcc4ae20207 100644
+--- a/Common/cpp/reanimated/CSS/events/CSSEventsEmitter.h
++++ b/Common/cpp/reanimated/CSS/events/CSSEventsEmitter.h
+@@ -2,7 +2,11 @@
+ 
+ #include <reanimated/CSS/events/CSSEvent.h>
+ 
++#if __has_include(<React/CallInvoker.h>)
++#include <React/CallInvoker.h>
++#else
+ #include <ReactCommon/CallInvoker.h>
++#endif
+ #include <jsi/jsi.h>
+ 
+ #include <memory>
+diff --git a/Common/cpp/reanimated/CSS/misc/ViewStylesRepository.h b/Common/cpp/reanimated/CSS/misc/ViewStylesRepository.h
+index ac1ba1cdef7e47429e5aae62e0150383c4cb0ced..c7bc9bc7cc8843968397681115e7e4cdb16b19cd 100644
+--- a/Common/cpp/reanimated/CSS/misc/ViewStylesRepository.h
++++ b/Common/cpp/reanimated/CSS/misc/ViewStylesRepository.h
+@@ -5,8 +5,16 @@
+ #include <reanimated/Fabric/updates/AnimatedPropsRegistry.h>
+ 
+ #include <react/renderer/components/root/RootShadowNode.h>
++#if __has_include(<React/View.h>)
++#include <React/View.h>
++#else
+ #include <react/renderer/components/view/ViewProps.h>
++#endif
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/LayoutableShadowNode.h>
++#endif
+ #include <react/renderer/dom/DOM.h>
+ #include <react/renderer/uimanager/UIManager.h>
+ 
+diff --git a/Common/cpp/reanimated/CSS/registries/CSSAnimationsRegistry.cpp b/Common/cpp/reanimated/CSS/registries/CSSAnimationsRegistry.cpp
+index be6a8e1ce08df8dd48547d6d6dd02cd96c47e168..ca21d386d8c07e9039a0d539d3c7193e8a74f5c3 100644
+--- a/Common/cpp/reanimated/CSS/registries/CSSAnimationsRegistry.cpp
++++ b/Common/cpp/reanimated/CSS/registries/CSSAnimationsRegistry.cpp
+@@ -1,7 +1,11 @@
+ #include <reanimated/CSS/registries/CSSAnimationsRegistry.h>
+ #include <reanimated/Fabric/updates/UpdatesRegistryManager.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <memory>
+ #include <string>
+diff --git a/Common/cpp/reanimated/CSS/registries/CSSKeyframesRegistry.cpp b/Common/cpp/reanimated/CSS/registries/CSSKeyframesRegistry.cpp
+index a83d6c7240b19b7dc0ba02de26b5282ba9794f21..ba5878c24c5ff48468ce4416f8549a202bd03fc7 100644
+--- a/Common/cpp/reanimated/CSS/registries/CSSKeyframesRegistry.cpp
++++ b/Common/cpp/reanimated/CSS/registries/CSSKeyframesRegistry.cpp
+@@ -1,7 +1,11 @@
+ #include <reanimated/CSS/registries/CSSKeyframesRegistry.h>
+ #include <reanimated/Fabric/updates/UpdatesRegistryManager.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <string>
+ #include <utility>
+diff --git a/Common/cpp/reanimated/CSS/registries/CSSTransitionsRegistry.cpp b/Common/cpp/reanimated/CSS/registries/CSSTransitionsRegistry.cpp
+index b7a842c87277275c118a0135a8a4a7178669ed82..fcedfb8f50a679dff56d4367c5640026c32e959a 100644
+--- a/Common/cpp/reanimated/CSS/registries/CSSTransitionsRegistry.cpp
++++ b/Common/cpp/reanimated/CSS/registries/CSSTransitionsRegistry.cpp
+@@ -1,7 +1,11 @@
+ #include <reanimated/CSS/registries/CSSTransitionsRegistry.h>
+ #include <reanimated/Fabric/updates/UpdatesRegistryManager.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <memory>
+ #include <string>
+diff --git a/Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.cpp b/Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.cpp
+index 18f0dd23cdca647ea2c1f3ad7e7a9b71ee80096c..526c3502615cf267f0eeeca508324476ddb14429 100644
+--- a/Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.cpp
++++ b/Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.cpp
+@@ -1,7 +1,11 @@
+ #include <reanimated/CSS/registries/StaticPropsRegistry.h>
+ #include <reanimated/Fabric/updates/UpdatesRegistryManager.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ namespace reanimated::css {
+ 
+diff --git a/Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.h b/Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.h
+index d157b2a5cfa9c01a943f32d2928dd4bfcaad0bf2..8787c29aafb69f9f09db76daa885fed9811723b0 100644
+--- a/Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.h
++++ b/Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.h
+@@ -1,6 +1,10 @@
+ #pragma once
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ShadowNode.h>
++#endif
+ 
+ #include <unordered_map>
+ 
+diff --git a/Common/cpp/reanimated/Compat/ReactNativeFeatureFlagsCompat.h b/Common/cpp/reanimated/Compat/ReactNativeFeatureFlagsCompat.h
+index 60a7f716f96790b14f4ca087601fcfe0b474aa68..94f1b1d57bde5cf45858852cdbcb12792e7c2596 100644
+--- a/Common/cpp/reanimated/Compat/ReactNativeFeatureFlagsCompat.h
++++ b/Common/cpp/reanimated/Compat/ReactNativeFeatureFlagsCompat.h
+@@ -1,6 +1,13 @@
+ #pragma once
+ 
++// ReactNativeFeatureFlags is a private RN header with no public replacement; borrow RN's own
++// build exemption for this one include so it compiles under RN_STRICT_API.
++#pragma push_macro("RN_BUILDING")
++#ifndef RN_BUILDING
++#define RN_BUILDING 1
++#endif
+ #include <react/featureflags/ReactNativeFeatureFlags.h>
++#pragma pop_macro("RN_BUILDING")
+ 
+ #include <concepts>
+ 
+diff --git a/Common/cpp/reanimated/Fabric/ReanimatedCommitShadowNode.h b/Common/cpp/reanimated/Fabric/ReanimatedCommitShadowNode.h
+index 526392157fdc78ede23cc1517d8b065c4636cad8..0a2be5a31b9c01009559ff37e262a3b8408027a3 100644
+--- a/Common/cpp/reanimated/Fabric/ReanimatedCommitShadowNode.h
++++ b/Common/cpp/reanimated/Fabric/ReanimatedCommitShadowNode.h
+@@ -1,6 +1,10 @@
+ #pragma once
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ShadowNode.h>
++#endif
+ 
+ using namespace facebook::react;
+ 
+diff --git a/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h b/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h
+index 3fae1431bd1ae7cfcc11ca2221c6caf724cdf8d6..b57a1731e2604d728c642d3f2b957cac43a5de08 100644
+--- a/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h
++++ b/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h
+@@ -1,7 +1,11 @@
+ #pragma once
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/PropsParserContext.h>
+ #include <react/renderer/core/ShadowNodeFamily.h>
++#endif
+ #include <react/renderer/uimanager/UIManager.h>
+ 
+ #include <unordered_map>
+diff --git a/Common/cpp/reanimated/Fabric/updates/AnimatedPropsRegistry.cpp b/Common/cpp/reanimated/Fabric/updates/AnimatedPropsRegistry.cpp
+index f9b1b6d641a6095504685f823b7e0a1770ddbff1..3934b57d3c1a439c3db612f2be22fdb2d7d82e17 100644
+--- a/Common/cpp/reanimated/Fabric/updates/AnimatedPropsRegistry.cpp
++++ b/Common/cpp/reanimated/Fabric/updates/AnimatedPropsRegistry.cpp
+@@ -2,7 +2,11 @@
+ #include <reanimated/Fabric/updates/UpdatesRegistryManager.h>
+ #include <reanimated/Tools/FeatureFlags.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <functional>
+ #include <memory>
+diff --git a/Common/cpp/reanimated/Fabric/updates/PropsLayoutFilter.h b/Common/cpp/reanimated/Fabric/updates/PropsLayoutFilter.h
+index 4365733aa06ce02e5d465b90d085d1657e662358..5815ab364da3605c91feb04f18fb66bbbf5d5bf7 100644
+--- a/Common/cpp/reanimated/Fabric/updates/PropsLayoutFilter.h
++++ b/Common/cpp/reanimated/Fabric/updates/PropsLayoutFilter.h
+@@ -2,7 +2,7 @@
+ 
+ #include <jsi/jsi.h>
+ 
+-#include <react/featureflags/ReactNativeFeatureFlags.h>
++#include <reanimated/Compat/ReactNativeFeatureFlagsCompat.h>
+ #include <reanimated/Fabric/updates/propNameFromString.h>
+ 
+ #include <react/renderer/animationbackend/AnimatedProps.h>
+diff --git a/Common/cpp/reanimated/Fabric/updates/SynchronousWritesTracker.h b/Common/cpp/reanimated/Fabric/updates/SynchronousWritesTracker.h
+index c7d7203a9e27ad68f09938fda0b8da6f42ee8892..ecd7d9807dd38f3819f314989f89f7f25290ee99 100644
+--- a/Common/cpp/reanimated/Fabric/updates/SynchronousWritesTracker.h
++++ b/Common/cpp/reanimated/Fabric/updates/SynchronousWritesTracker.h
+@@ -3,7 +3,11 @@
+ #include <reanimated/Fabric/updates/UpdatesRegistry.h>
+ 
+ #include <react/renderer/components/root/RootShadowNode.h>
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ShadowNodeFamily.h>
++#endif
+ 
+ #include <cstdint>
+ #include <deque>
+diff --git a/Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.cpp b/Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.cpp
+index 0faac4e2f824dd4f1f2cf1cfa9c9e11bb8d1f488..47d04cd8dfa04e7b9c66f5bf1f85a5384109d146 100644
+--- a/Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.cpp
++++ b/Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.cpp
+@@ -3,7 +3,11 @@
+ #include <reanimated/Fabric/updates/PropsLayoutFilter.h>
+ #include <reanimated/Fabric/updates/UpdatesRegistryManager.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <jsi/jsi.h>
+ #include <memory>
+diff --git a/Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.h b/Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.h
+index 32b299d97046a4443af095e001b9d04bdd4ed436..46dfd8b1b2f79b2ddf9c82e89d77503a8383de74 100644
+--- a/Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.h
++++ b/Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.h
+@@ -1,7 +1,11 @@
+ #pragma once
+ 
+ #include <jsi/jsi.h>
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ShadowNode.h>
++#endif
+ #include <reanimated/Fabric/ShadowTreeCloner.h>
+ 
+ #include <react/renderer/animationbackend/AnimatedProps.h>
+diff --git a/Common/cpp/reanimated/Fabric/updates/UpdatesRegistryManager.cpp b/Common/cpp/reanimated/Fabric/updates/UpdatesRegistryManager.cpp
+index 46b729060be13b8c48fdf9c13e7785a12153e716..860e7e678c23c5f8368303534c5c1f172c28aaac 100644
+--- a/Common/cpp/reanimated/Fabric/updates/UpdatesRegistryManager.cpp
++++ b/Common/cpp/reanimated/Fabric/updates/UpdatesRegistryManager.cpp
+@@ -1,7 +1,11 @@
+ #include <reanimated/Fabric/updates/UpdatesRegistryManager.h>
+ #include <reanimated/Tools/FeatureFlags.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <memory>
+ #include <utility>
+diff --git a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.cpp b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.cpp
+index f95de038b54521cad2ebf2f0507532c6adc8ca95..2331f15d66abf950dc28e1fbeafad9e1d902c9e8 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.cpp
++++ b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.cpp
+@@ -1,6 +1,10 @@
+ #include <reanimated/LayoutAnimations/LayoutAnimationsManager.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <memory>
+ #include <unordered_map>
+diff --git a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.h b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.h
+index 32030b5b682ff1698d36808dd0659f15b6501f30..3a7a8f8ee0ece518eebc952be853cc858110bd45 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.h
++++ b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.h
+@@ -1,6 +1,10 @@
+ #pragma once
+ 
++#if __has_include(<React/Graphics.h>)
++#include <React/Graphics.h>
++#else
+ #include <react/renderer/graphics/Transform.h>
++#endif
+ #include <react/renderer/mounting/ShadowView.h>
+ #include <reanimated/Compat/WorkletsApi.h>
+ #include <reanimated/LayoutAnimations/LayoutAnimationType.h>
+diff --git a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp
+index c0825bb47a6fac02331138b5e0a0e5bbb52df0fa..23a453fe5ccafaa9a904a4c4ba7df6c979243500 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp
++++ b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp
+@@ -1,4 +1,8 @@
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <react/renderer/mounting/Differentiator.h>
+ #include <react/renderer/mounting/MountingCoordinator.h>
+ #include <react/renderer/mounting/ShadowTree.h>
+diff --git a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.h b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.h
+index ed4df225d5a496087fbb0b6364dbd0c86beadb6a..b79dec07719122f21be3b88b5893b34ba2632b2b 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.h
++++ b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.h
+@@ -8,7 +8,11 @@
+ #include <reanimated/Tools/PlatformDepMethodsHolder.h>
+ 
+ #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
++#if __has_include(<React/Graphics.h>)
++#include <React/Graphics.h>
++#else
+ #include <react/renderer/graphics/Transform.h>
++#endif
+ #include <react/renderer/mounting/MountingOverrideDelegate.h>
+ #include <react/renderer/mounting/ShadowTreeRevision.h>
+ #include <react/renderer/mounting/ShadowView.h>
+diff --git a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.cpp b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.cpp
+index 0742d063666ac5579232b2f53e4117f427b7177d..b70887f7bbb3727eb896d8d295c72c0ab1970b1c 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.cpp
++++ b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.cpp
+@@ -1,9 +1,17 @@
+ #ifdef ANDROID
++#if __has_include(<React/CallInvoker.h>)
++#include <React/CallInvoker.h>
++#else
+ #include <ReactCommon/CallInvoker.h>
++#endif
+ #include <reanimated/Fabric/ShadowTreeCloner.h>
+ #endif
+ #include <folly/dynamic.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.h>
+ #include <reanimated/LayoutAnimations/PropsDiffer.h>
+ 
+diff --git a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.h b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.h
+index 037e850ad627a6dbb36b3f6615d9a5615d7080d7..379ac365a67a76eeab6ef74fafb21a47d7f2cb5d 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.h
++++ b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.h
+@@ -2,7 +2,11 @@
+ 
+ #include <jsi/jsi.h>
+ #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
++#if __has_include(<React/Graphics.h>)
++#include <React/Graphics.h>
++#else
+ #include <react/renderer/graphics/Point.h>
++#endif
+ #include <react/renderer/mounting/MountingOverrideDelegate.h>
+ #include <react/renderer/mounting/ShadowTree.h>
+ #include <react/renderer/mounting/ShadowView.h>
+diff --git a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy_Legacy.cpp b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy_Legacy.cpp
+index 969f2aa2b84d8041fda0bf7600e5e67d80744e72..3d848943444872f3fc18cd53e88ea34c258a63e9 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy_Legacy.cpp
++++ b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy_Legacy.cpp
+@@ -6,7 +6,11 @@
+ #include <reanimated/Compat/ReactNativeFeatureFlagsCompat.h>
+ #endif // ANDROID
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <react/renderer/mounting/ShadowTree.h>
+ #include <react/renderer/mounting/ShadowViewMutation.h>
+ 
+diff --git a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.h b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.h
+index 675b1b7d890971d0c43522f59106f1cf20b0fe1a..7bf29372b6aed95734700f47a52bb1ac56856d9e 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.h
++++ b/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.h
+@@ -1,9 +1,17 @@
+ #pragma once
+ 
+ #include <folly/dynamic.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <react/renderer/components/rnreanimated/Props.h>
++#if __has_include(<React/View.h>)
++#include <React/View.h>
++#else
+ #include <react/renderer/components/view/ViewProps.h>
++#endif
+ #include <react/renderer/mounting/MountingOverrideDelegate.h>
+ #include <react/renderer/mounting/ShadowView.h>
+ #include <reanimated/LayoutAnimations/LayoutAnimationsManager.h>
+diff --git a/Common/cpp/reanimated/LayoutAnimations/PropsDiffer.cpp b/Common/cpp/reanimated/LayoutAnimations/PropsDiffer.cpp
+index 61b746eb80764bfcb350a4993f347d8e91a34779..eca50e8e0a0f17a9456a62b8e427527e01920b45 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/PropsDiffer.cpp
++++ b/Common/cpp/reanimated/LayoutAnimations/PropsDiffer.cpp
+@@ -1,6 +1,18 @@
++#if __has_include(<React/View.h>)
++#include <React/View.h>
++#else
+ #include <react/renderer/components/view/ViewProps.h>
++#endif
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/graphicsConversions.h>
++#endif
++#if __has_include(<React/Graphics.h>)
++#include <React/Graphics.h>
++#else
+ #include <react/renderer/graphics/Transform.h>
++#endif
+ #include <reanimated/LayoutAnimations/PropsDiffer.h>
+ 
+ #include <string>
+diff --git a/Common/cpp/reanimated/LayoutAnimations/PropsDiffer.h b/Common/cpp/reanimated/LayoutAnimations/PropsDiffer.h
+index 6d19786a80d2e0879448b8ed7278db8705172cc8..59ad6aa09f9e03e65340b5b6427a902c616586e0 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/PropsDiffer.h
++++ b/Common/cpp/reanimated/LayoutAnimations/PropsDiffer.h
+@@ -1,6 +1,14 @@
+ #pragma once
++#if __has_include(<React/View.h>)
++#include <React/View.h>
++#else
+ #include <react/renderer/components/view/ViewProps.h>
++#endif
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/graphicsConversions.h>
++#endif
+ #include <react/renderer/mounting/ShadowView.h>
+ #include <reanimated/LayoutAnimations/LayoutAnimationsUtils.h>
+ 
+diff --git a/Common/cpp/reanimated/LayoutAnimations/SharedTransitions.cpp b/Common/cpp/reanimated/LayoutAnimations/SharedTransitions.cpp
+index e0e5230e644c91bfa5d85ffe3f959654a0c16cc7..f2ecb5d87c411560d55550056762ba8211658c1c 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/SharedTransitions.cpp
++++ b/Common/cpp/reanimated/LayoutAnimations/SharedTransitions.cpp
+@@ -1,5 +1,9 @@
+ #include <folly/dynamic.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <react/renderer/components/rnreanimated/Props.h>
+ #include <react/renderer/components/scrollview/ScrollViewState.h>
+ #include <reanimated/LayoutAnimations/LayoutAnimationsProxy.h>
+diff --git a/Common/cpp/reanimated/LayoutAnimations/StaleSynchronousPropsTracker.h b/Common/cpp/reanimated/LayoutAnimations/StaleSynchronousPropsTracker.h
+index cbf608740f258bec679284a9d02b2ebd88417095..8c4992291d7c83eba783cebaad19e2f91aeda360 100644
+--- a/Common/cpp/reanimated/LayoutAnimations/StaleSynchronousPropsTracker.h
++++ b/Common/cpp/reanimated/LayoutAnimations/StaleSynchronousPropsTracker.h
+@@ -4,7 +4,11 @@
+ #include <reanimated/LayoutAnimations/LayoutAnimationsUtils.h>
+ 
+ #include <folly/dynamic.h>
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ReactPrimitives.h>
++#endif
+ 
+ #include <memory>
+ #include <optional>
+diff --git a/Common/cpp/reanimated/NativeModules/PropValueProcessor.h b/Common/cpp/reanimated/NativeModules/PropValueProcessor.h
+index 94288c4473ea2f95a0e0ab19c8e2ad131452f4e6..6033cdbf4d5c82339feb51b55da9ac6f85ebeccf 100644
+--- a/Common/cpp/reanimated/NativeModules/PropValueProcessor.h
++++ b/Common/cpp/reanimated/NativeModules/PropValueProcessor.h
+@@ -1,9 +1,21 @@
+ #pragma once
+ 
++#if __has_include(<React/View.h>)
++#include <React/View.h>
++#else
+ #include <react/renderer/components/view/ViewProps.h>
++#endif
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/LayoutableShadowNode.h>
+ #include <react/renderer/core/ShadowNode.h>
++#endif
++#if __has_include(<React/Graphics.h>)
++#include <React/Graphics.h>
++#else
+ #include <react/renderer/graphics/BackgroundImage.h>
++#endif
+ 
+ #include <memory>
+ #include <string>
+diff --git a/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp b/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
+index 1c45066664dd432d4b4409b9221f433b2a2c4095..a547d8ceef592325fbf9412977035a808db33ff9 100644
+--- a/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
++++ b/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
+@@ -1,8 +1,16 @@
+ #include <jsi/JSIDynamic.h>
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
+-#include <react/featureflags/ReactNativeFeatureFlags.h>
++#endif
++#include <reanimated/Compat/ReactNativeFeatureFlagsCompat.h>
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/RawProps.h>
++#endif
+ #include <react/renderer/scheduler/Scheduler.h>
+ #include <react/renderer/uimanager/UIManagerBinding.h>
+ #include <react/renderer/uimanager/primitives.h>
+diff --git a/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h b/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
+index 5a7452283f87230afe3e3a302f2d03d2652d28cb..dcf08b6d1906ee2b131b374e77046feb7396d2e4 100644
+--- a/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
++++ b/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
+@@ -1,8 +1,16 @@
+ #pragma once
+ 
++#if __has_include(<React/CallInvoker.h>)
++#include <React/CallInvoker.h>
++#else
+ #include <ReactCommon/CallInvoker.h>
++#endif
+ #include <react/renderer/componentregistry/componentNameByReactViewName.h>
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ShadowNode.h>
++#endif
+ #include <react/renderer/uimanager/UIManager.h>
+ #include <reanimated/AnimatedSensor/AnimatedSensorModule.h>
+ #include <reanimated/CSS/core/CSSAnimation.h>
+diff --git a/Common/cpp/reanimated/NativeModules/SynchronousPropsBufferSerializer.cpp b/Common/cpp/reanimated/NativeModules/SynchronousPropsBufferSerializer.cpp
+index f5d8d3b7cb2bd8a4c705156974816b5f7869dd17..a7bee7e356921c0b2d6ba24137536b2fbee2d0f3 100644
+--- a/Common/cpp/reanimated/NativeModules/SynchronousPropsBufferSerializer.cpp
++++ b/Common/cpp/reanimated/NativeModules/SynchronousPropsBufferSerializer.cpp
+@@ -2,7 +2,11 @@
+ 
+ #ifdef ANDROID
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <cstdint>
+ #include <stdexcept>
+diff --git a/Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.cpp b/Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.cpp
+index f536e4dcc9d47c8f1c0941b24bde691f77f8face..c45077fe37b0c9dcbb56235ef41628695e0816f8 100644
+--- a/Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.cpp
++++ b/Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.cpp
+@@ -1,6 +1,10 @@
+ #include <reanimated/PseudoStyles/PseudoStylesRegistry.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <string>
+ #include <utility>
+diff --git a/Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.h b/Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.h
+index 4b4ea37939988ce448194f01edea61fc0b42e4e0..ae723dd2275ebb834f48d034b9b55d2e704813de 100644
+--- a/Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.h
++++ b/Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.h
+@@ -6,7 +6,11 @@
+ #include <reanimated/PseudoStyles/PseudoSelector.h>
+ #include <reanimated/Tools/PlatformDepMethodsHolder.h>
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ShadowNode.h>
++#endif
+ 
+ #include <folly/dynamic.h>
+ #include <array>
+diff --git a/Common/cpp/reanimated/Tools/PlatformDepMethodsHolder.h b/Common/cpp/reanimated/Tools/PlatformDepMethodsHolder.h
+index 08c3c9b893b2622ac056cae4c2d85476b5356c72..16a23b1b58d2cd7c46c1c9cd81d993bcef0b1f4e 100644
+--- a/Common/cpp/reanimated/Tools/PlatformDepMethodsHolder.h
++++ b/Common/cpp/reanimated/Tools/PlatformDepMethodsHolder.h
+@@ -6,8 +6,12 @@
+ 
+ #include <folly/dynamic.h>
+ #include <jsi/jsi.h>
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/Props.h>
+ #include <react/renderer/core/ReactPrimitives.h>
++#endif
+ 
+ #include <memory>
+ #include <string>
+diff --git a/Common/cpp/reanimated/Tools/ReaJSIUtils.h b/Common/cpp/reanimated/Tools/ReaJSIUtils.h
+index 2a7cbfc0ccd25999d066c539f7c08aba5aacb139..76897a86d3c71926bbf6cd02eddcaa5423d8cd9a 100644
+--- a/Common/cpp/reanimated/Tools/ReaJSIUtils.h
++++ b/Common/cpp/reanimated/Tools/ReaJSIUtils.h
+@@ -1,7 +1,11 @@
+ #pragma once
+ 
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <concepts>
+ #include <memory>
+diff --git a/Common/cpp/reanimated/Tools/SingleInstanceChecker.h b/Common/cpp/reanimated/Tools/SingleInstanceChecker.h
+index 03ca591e097133bef5b6230f58399aa49cd7c071..afe5fab19cdc0294f96c4797c6ce921cca8fe73c 100644
+--- a/Common/cpp/reanimated/Tools/SingleInstanceChecker.h
++++ b/Common/cpp/reanimated/Tools/SingleInstanceChecker.h
+@@ -2,7 +2,11 @@
+ 
+ #ifndef NDEBUG
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <cxxabi.h>
+ 
+diff --git a/RNReanimated.podspec b/RNReanimated.podspec
+index 38a036f08f5e0352decf1061326729bf37039056..f19597cf826a2730844b9dfc3297cc682ee9a73d 100644
+--- a/RNReanimated.podspec
++++ b/RNReanimated.podspec
+@@ -70,8 +70,8 @@ Pod::Spec.new do |s|
+     ].join(' '),
+     "FRAMEWORK_SEARCH_PATHS" => '"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes"',
+     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+-    "GCC_PREPROCESSOR_DEFINITIONS[config=*Debug*]" => '$(inherited)',
+-    "GCC_PREPROCESSOR_DEFINITIONS[config=*Release*]" => '$(inherited)',
++    "GCC_PREPROCESSOR_DEFINITIONS[config=*Debug*]" => '$(inherited) RN_ALLOW_FRAMEWORKS=1',
++    "GCC_PREPROCESSOR_DEFINITIONS[config=*Release*]" => '$(inherited) RN_ALLOW_FRAMEWORKS=1',
+   }
+   s.compiler_flags = boost_compiler_flags
+   s.xcconfig = {
+diff --git a/android/CMakeLists.txt b/android/CMakeLists.txt
+index e2a5bfdf37565ba2d564fa4a48d05de7d86a9a63..c5c0abf3e5aa872c12f4af0ad4be1661e113b0e4 100644
+--- a/android/CMakeLists.txt
++++ b/android/CMakeLists.txt
+@@ -64,6 +64,8 @@ target_compile_options(
+ 
+ include("${REACT_NATIVE_DIR}/ReactCommon/cmake-utils/react-native-flags.cmake")
+ target_compile_reactnative_options(reanimated PUBLIC)
++# Reanimated uses mounting/scheduler/uimanager headers, "for frameworks" RN APIs.
++target_compile_definitions(reanimated PRIVATE RN_ALLOW_FRAMEWORKS)
+ 
+ target_include_directories(
+   reanimated
+diff --git a/android/src/main/cpp/ReanimatedPCH.h b/android/src/main/cpp/ReanimatedPCH.h
+index 6f8e23b160cd8b2e565d56533250eaf3e3707e3a..c8ca885a1bb3847d1cdbe3f85e0f8e68fa61dfee 100644
+--- a/android/src/main/cpp/ReanimatedPCH.h
++++ b/android/src/main/cpp/ReanimatedPCH.h
+@@ -36,10 +36,18 @@
+ // react-native renderer (Fabric)
+ #include <react/renderer/components/root/RootProps.h>
+ #include <react/renderer/components/root/RootShadowNode.h>
++#if __has_include(<React/View.h>)
++#include <React/View.h>
++#else
+ #include <react/renderer/components/view/BaseViewProps.h>
+ #include <react/renderer/components/view/ViewProps.h>
++#endif
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/EventDispatcher.h>
+ #include <react/renderer/core/ShadowNode.h>
++#endif
+ #include <react/renderer/mounting/ShadowTree.h>
+ #include <react/renderer/uimanager/UIManager.h>
+ 
+diff --git a/android/src/main/cpp/reanimated/android/CSS/CSSPlatformTransitions.h b/android/src/main/cpp/reanimated/android/CSS/CSSPlatformTransitions.h
+index bf0db420c7c32f7bdaa9628ee7e9451e98b19265..7bf2bc86d22a4d8d81af4a25f5a5f834bad7ec72 100644
+--- a/android/src/main/cpp/reanimated/android/CSS/CSSPlatformTransitions.h
++++ b/android/src/main/cpp/reanimated/android/CSS/CSSPlatformTransitions.h
+@@ -5,7 +5,11 @@
+ #include <reanimated/CSS/utils/platform.h>
+ #include <reanimated/android/CSS/CSSPlatformEasings.h>
+ 
++#if __has_include(<React/RendererCore.h>)
++#include <React/RendererCore.h>
++#else
+ #include <react/renderer/core/ReactPrimitives.h>
++#endif
+ 
+ #include <functional>
+ #include <memory>
+diff --git a/apple/reanimated/apple/CSS/REACSSPlatformTransitions.h b/apple/reanimated/apple/CSS/REACSSPlatformTransitions.h
+index 7832335b9b509b6c966868c817d250aee3d77be1..e1539b6b985acaa018380d40cd31393dd852ae2d 100644
+--- a/apple/reanimated/apple/CSS/REACSSPlatformTransitions.h
++++ b/apple/reanimated/apple/CSS/REACSSPlatformTransitions.h
+@@ -5,7 +5,11 @@
+ 
+ #import <React/RCTSurfacePresenter.h>
+ 
++#if __has_include(<React/RendererCore.h>)
++#import <React/RendererCore.h>
++#else
+ #import <react/renderer/core/ReactPrimitives.h>
++#endif
+ 
+ #import <Foundation/Foundation.h>
+ 
+diff --git a/apple/reanimated/apple/REAAssertJavaScriptQueue.h b/apple/reanimated/apple/REAAssertJavaScriptQueue.h
+index a401c866496b4c690b49248075421c888e19f032..9be8abf1b01faa011ac62a2cca7be11dcf5355e7 100644
+--- a/apple/reanimated/apple/REAAssertJavaScriptQueue.h
++++ b/apple/reanimated/apple/REAAssertJavaScriptQueue.h
+@@ -1,5 +1,9 @@
+ #import <Foundation/Foundation.h>
++#if __has_include(<React/Debug.h>)
++#import <React/Debug.h>
++#else
+ #import <react/debug/react_native_assert.h>
++#endif
+ 
+ // Copied from RCTJSThreadManager.mm
+ static NSString *const RCTJSThreadName = @"com.facebook.react.runtime.JavaScript";
+diff --git a/apple/reanimated/apple/REAAssertTurboModuleManagerQueue.h b/apple/reanimated/apple/REAAssertTurboModuleManagerQueue.h
+index b7ee0050ba180d67bdcfbd62c4b39807a676e28b..3bdaf74373471832f83183d5c797f1aa723a1bfc 100644
+--- a/apple/reanimated/apple/REAAssertTurboModuleManagerQueue.h
++++ b/apple/reanimated/apple/REAAssertTurboModuleManagerQueue.h
+@@ -2,7 +2,11 @@
+ 
+ #import <cstring>
+ 
++#if __has_include(<React/Debug.h>)
++#import <React/Debug.h>
++#else
+ #import <react/debug/react_native_assert.h>
++#endif
+ 
+ constexpr auto turboModuleManagerQueueLabel = "com.meta.react.turbomodulemanager.queue";
+ 

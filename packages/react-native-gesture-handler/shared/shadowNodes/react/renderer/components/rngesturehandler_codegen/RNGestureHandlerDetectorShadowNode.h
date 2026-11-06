@@ -14,8 +14,14 @@
 #include <jsi/jsi.h>
 #include <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #include <react/renderer/components/rngesturehandler_codegen/Props.h>
+
+#if __has_include(<React/RendererCore.h>)
+#include <React/RendererCore.h>
+#include <React/View.h>
+#else
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
+#endif
 
 #include "RNGestureHandlerDetectorState.h"
 

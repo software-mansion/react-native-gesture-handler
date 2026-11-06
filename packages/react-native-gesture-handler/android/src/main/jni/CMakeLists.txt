@@ -36,6 +36,9 @@ find_package(fbjni REQUIRED CONFIG)
 
 target_compile_reactnative_options(${PACKAGE_NAME} PRIVATE)
 
+# RNGHRuntimeDecorator uses the Bridging<ShadowNode> specialization, a "for frameworks" RN API.
+target_compile_definitions(${PACKAGE_NAME} PRIVATE RN_ALLOW_FRAMEWORKS)
+
 target_link_libraries(
   ${PACKAGE_NAME}
   ReactAndroid::reactnative
