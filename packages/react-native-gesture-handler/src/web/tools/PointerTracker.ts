@@ -11,7 +11,10 @@ export interface TrackerElement {
 const MAX_POINTERS = 20;
 
 export default class PointerTracker {
-  private velocityTracker = new VelocityTracker();
+  private readonly velocityTrackers: Map<number, VelocityTracker> = new Map<
+    number,
+    VelocityTracker
+  >();
   private readonly _trackedPointers: Map<number, TrackerElement> = new Map<
     number,
     TrackerElement
@@ -59,6 +62,7 @@ export default class PointerTracker {
 
   public removeFromTracker(pointerId: number): void {
     this.trackedPointers.delete(pointerId);
+    this.velocityTrackers.delete(pointerId);
     this.removeMappedTouchId(pointerId);
   }
 
@@ -71,8 +75,16 @@ export default class PointerTracker {
 
     this.lastMovedPointerId = event.pointerId;
 
-    this.velocityTracker.add(event);
-    const [velocityX, velocityY] = this.velocityTracker.velocity;
+    // Each pointer has its own tracker, so samples of different pointers are
+    // never mixed into one velocity estimate.
+    let velocityTracker = this.velocityTrackers.get(event.pointerId);
+    if (!velocityTracker) {
+      velocityTracker = new VelocityTracker();
+      this.velocityTrackers.set(event.pointerId, velocityTracker);
+    }
+
+    velocityTracker.add(event);
+    const [velocityX, velocityY] = velocityTracker.velocity;
 
     pointerData.velocityX = velocityX;
     pointerData.velocityY = velocityY;
@@ -129,7 +141,8 @@ export default class PointerTracker {
       return null;
     }
 
-    const [x, y] = this.velocityTracker.velocityAt(time);
+    const velocityTracker = this.velocityTrackers.get(pointerId);
+    const [x, y] = velocityTracker ? velocityTracker.velocityAt(time) : [0, 0];
     return { x, y };
   }
 
@@ -203,7 +216,7 @@ export default class PointerTracker {
   }
 
   public resetTracker(): void {
-    this.velocityTracker.reset();
+    this.velocityTrackers.clear();
     this.trackedPointers.clear();
     this.lastMovedPointerId = NaN;
 
