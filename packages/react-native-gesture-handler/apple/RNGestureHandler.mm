@@ -410,6 +410,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return;
   }
 
+  // UIKit can invoke the action synchronously during removeGestureRecognizer:, after clearing view.
+  // unbindFromView already finalizes the gesture while attached, therefore we can ignore the stale callback.
+  if (recognizer.view == nil) {
+    return;
+  }
+
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
