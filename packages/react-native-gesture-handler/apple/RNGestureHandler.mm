@@ -411,7 +411,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 
   // UIKit can invoke the action synchronously during removeGestureRecognizer:, after clearing view.
-  // unbindFromView already finalizes the gesture while attached; ignore the stale callback for every API.
+  // unbindFromView already finalizes the gesture while attached, therefore we can ignore the stale callback.
   if (recognizer.view == nil) {
     return;
   }
