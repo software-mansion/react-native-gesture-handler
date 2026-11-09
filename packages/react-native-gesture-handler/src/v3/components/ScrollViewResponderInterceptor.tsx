@@ -5,6 +5,7 @@ import type {
   GestureResponderEvent,
   KeyboardEvent,
   ScrollViewProps as RNScrollViewProps,
+  ViewProps,
 } from 'react-native';
 import { Keyboard, Platform, StyleSheet, TextInput, View } from 'react-native';
 
@@ -64,6 +65,7 @@ function unsubscribeFromKeyboardVisibility() {
 
 type ScrollViewResponderInterceptorProps = PropsWithChildren<{
   keyboardShouldPersistTaps?: RNScrollViewProps['keyboardShouldPersistTaps'];
+  disableScrollViewPanResponder?: RNScrollViewProps['disableScrollViewPanResponder'];
 }>;
 
 // Mirrors ScrollView's `_keyboardIsDismissible` + `_softKeyboardIsDetached`
@@ -95,9 +97,12 @@ function keyboardIsDismissible(): boolean {
 export const ScrollViewResponderProvider = ({
   children,
   keyboardShouldPersistTaps,
+  disableScrollViewPanResponder,
 }: ScrollViewResponderInterceptorProps) => {
   const isRNGHResponderEvent = useRef(false);
   const claimedForKeyboardDismissal = useRef(false);
+  const isTouching = useRef(false);
+  const observedScrollSinceBecomingResponder = useRef(false);
   const contextValue = useMemo(
     () => ({ isRNGHResponderEvent, keyboardShouldPersistTaps }),
     [isRNGHResponderEvent, keyboardShouldPersistTaps]
@@ -115,6 +120,8 @@ export const ScrollViewResponderProvider = ({
 
   const handleStartShouldSetResponder = useCallback(
     (event: GestureResponderEvent) => {
+      observedScrollSinceBecomingResponder.current = false;
+
       if (isRNGHResponderEvent.current) {
         // Claim marked events so outer keyboard-dismissing responders can't —
         // release does nothing and the keyboard stays open.
@@ -134,7 +141,39 @@ export const ScrollViewResponderProvider = ({
     []
   );
 
+  // `disableScrollViewPanResponder` also drops RN's scroll claim, which is what
+  // terminates a child's press once the list scrolls (#4677). Mirrored here,
+  // touch-gated like RN's `_isTouching` so momentum scrolls can't claim.
+  const handleTouchStart = useCallback(() => {
+    isTouching.current = true;
+  }, []);
+
+  const handleTouchEnd = useCallback((event: GestureResponderEvent) => {
+    isTouching.current = event.nativeEvent.touches.length !== 0;
+  }, []);
+
+  const handleTouchCancel = useCallback(() => {
+    isTouching.current = false;
+  }, []);
+
+  // `topScroll` is a direct event, so this claim is the only scroll signal
+  // the wrapper gets — it doubles as RN's `_observedScrollSinceBecomingResponder`.
+  const handleScrollShouldSetResponder = useCallback(() => {
+    if (!isTouching.current) {
+      return false;
+    }
+    observedScrollSinceBecomingResponder.current = true;
+    return true;
+  }, []);
+
+  // Like RN: once the list moved, don't hand the touch to an ancestor.
+  const handleResponderTerminationRequest = useCallback(
+    () => !observedScrollSinceBecomingResponder.current,
+    []
+  );
+
   const handleResponderRelease = useCallback((event: GestureResponderEvent) => {
+    observedScrollSinceBecomingResponder.current = false;
     if (!claimedForKeyboardDismissal.current) {
       return;
     }
@@ -154,9 +193,20 @@ export const ScrollViewResponderProvider = ({
   // `_observedScrollSinceBecomingResponder` guard by skipping the dismissal.
   const handleResponderTerminate = useCallback(() => {
     claimedForKeyboardDismissal.current = false;
+    observedScrollSinceBecomingResponder.current = false;
   }, []);
 
   const isHandledMode = keyboardShouldPersistTaps === 'handled';
+  // A caller opting out of RN's pan responder keeps that opt-out here too.
+  const claimsOnScroll =
+    isHandledMode && disableScrollViewPanResponder !== true;
+
+  // Works on any host view but is missing from RN's `ViewProps` type.
+  const scrollProps = claimsOnScroll
+    ? ({
+        onScrollShouldSetResponder: handleScrollShouldSetResponder,
+      } as ViewProps)
+    : undefined;
 
   return (
     <JSResponderContext value={contextValue}>
@@ -169,6 +219,13 @@ export const ScrollViewResponderProvider = ({
         }
         onStartShouldSetResponder={
           isHandledMode ? handleStartShouldSetResponder : undefined
+        }
+        onTouchStart={claimsOnScroll ? handleTouchStart : undefined}
+        onTouchEnd={claimsOnScroll ? handleTouchEnd : undefined}
+        onTouchCancel={claimsOnScroll ? handleTouchCancel : undefined}
+        {...scrollProps}
+        onResponderTerminationRequest={
+          claimsOnScroll ? handleResponderTerminationRequest : undefined
         }
         onResponderRelease={isHandledMode ? handleResponderRelease : undefined}
         onResponderTerminate={
