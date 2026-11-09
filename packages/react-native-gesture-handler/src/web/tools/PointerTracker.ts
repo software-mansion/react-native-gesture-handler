@@ -11,7 +11,10 @@ export interface TrackerElement {
 const MAX_POINTERS = 20;
 
 export default class PointerTracker {
-  private velocityTracker = new VelocityTracker();
+  private readonly velocityTrackers: Map<number, VelocityTracker> = new Map<
+    number,
+    VelocityTracker
+  >();
   private readonly _trackedPointers: Map<number, TrackerElement> = new Map<
     number,
     TrackerElement
@@ -51,6 +54,7 @@ export default class PointerTracker {
     };
 
     this.trackedPointers.set(event.pointerId, newElement);
+    this.velocityTrackers.set(event.pointerId, new VelocityTracker());
     this.mapTouchEventId(event.pointerId);
 
     this.cachedAbsoluteAverages = this.getAbsoluteCoordsAverage();
@@ -59,20 +63,22 @@ export default class PointerTracker {
 
   public removeFromTracker(pointerId: number): void {
     this.trackedPointers.delete(pointerId);
+    this.velocityTrackers.delete(pointerId);
     this.removeMappedTouchId(pointerId);
   }
 
   public track(event: AdaptedEvent): void {
     const pointerData = this.trackedPointers.get(event.pointerId);
+    const velocityTracker = this.velocityTrackers.get(event.pointerId);
 
-    if (!pointerData) {
+    if (!pointerData || !velocityTracker) {
       return;
     }
 
     this.lastMovedPointerId = event.pointerId;
 
-    this.velocityTracker.add(event);
-    const [velocityX, velocityY] = this.velocityTracker.velocity;
+    velocityTracker.add(event);
+    const [velocityX, velocityY] = velocityTracker.velocity;
 
     pointerData.velocityX = velocityX;
     pointerData.velocityY = velocityY;
@@ -129,7 +135,8 @@ export default class PointerTracker {
       return null;
     }
 
-    const [x, y] = this.velocityTracker.velocityAt(time);
+    const velocityTracker = this.velocityTrackers.get(pointerId);
+    const [x, y] = velocityTracker ? velocityTracker.velocityAt(time) : [0, 0];
     return { x, y };
   }
 
@@ -203,7 +210,7 @@ export default class PointerTracker {
   }
 
   public resetTracker(): void {
-    this.velocityTracker.reset();
+    this.velocityTrackers.clear();
     this.trackedPointers.clear();
     this.lastMovedPointerId = NaN;
 
