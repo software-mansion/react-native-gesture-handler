@@ -23,6 +23,14 @@
   "main": "lib/module/index.js",
   "module": "lib/module/index.js",
   "types": "lib/typescript/index.d.ts",
+  "sideEffects": [
+    "./src/index.ts",
+    "./lib/module/index.js",
+    "./src/handlers/createHandler.tsx",
+    "./lib/module/handlers/createHandler.js",
+    "./src/handlers/gestures/reanimatedWrapper.ts",
+    "./lib/module/handlers/gestures/reanimatedWrapper.js"
+  ],
   "files": [
     "Package.swift",
     "include/",
