@@ -65,6 +65,7 @@ function unsubscribeFromKeyboardVisibility() {
 
 type ScrollViewResponderInterceptorProps = PropsWithChildren<{
   keyboardShouldPersistTaps?: RNScrollViewProps['keyboardShouldPersistTaps'];
+  disableScrollViewPanResponder?: RNScrollViewProps['disableScrollViewPanResponder'];
 }>;
 
 // Mirrors ScrollView's `_keyboardIsDismissible` + `_softKeyboardIsDetached`
@@ -96,6 +97,7 @@ function keyboardIsDismissible(): boolean {
 export const ScrollViewResponderProvider = ({
   children,
   keyboardShouldPersistTaps,
+  disableScrollViewPanResponder,
 }: ScrollViewResponderInterceptorProps) => {
   const isRNGHResponderEvent = useRef(false);
   const claimedForKeyboardDismissal = useRef(false);
@@ -195,9 +197,12 @@ export const ScrollViewResponderProvider = ({
   }, []);
 
   const isHandledMode = keyboardShouldPersistTaps === 'handled';
+  // A caller opting out of RN's pan responder keeps that opt-out here too.
+  const claimsOnScroll =
+    isHandledMode && disableScrollViewPanResponder !== true;
 
   // Works on any host view but is missing from RN's `ViewProps` type.
-  const scrollProps = isHandledMode
+  const scrollProps = claimsOnScroll
     ? ({
         onScrollShouldSetResponder: handleScrollShouldSetResponder,
       } as ViewProps)
@@ -215,12 +220,12 @@ export const ScrollViewResponderProvider = ({
         onStartShouldSetResponder={
           isHandledMode ? handleStartShouldSetResponder : undefined
         }
-        onTouchStart={isHandledMode ? handleTouchStart : undefined}
-        onTouchEnd={isHandledMode ? handleTouchEnd : undefined}
-        onTouchCancel={isHandledMode ? handleTouchCancel : undefined}
+        onTouchStart={claimsOnScroll ? handleTouchStart : undefined}
+        onTouchEnd={claimsOnScroll ? handleTouchEnd : undefined}
+        onTouchCancel={claimsOnScroll ? handleTouchCancel : undefined}
         {...scrollProps}
         onResponderTerminationRequest={
-          isHandledMode ? handleResponderTerminationRequest : undefined
+          claimsOnScroll ? handleResponderTerminationRequest : undefined
         }
         onResponderRelease={isHandledMode ? handleResponderRelease : undefined}
         onResponderTerminate={

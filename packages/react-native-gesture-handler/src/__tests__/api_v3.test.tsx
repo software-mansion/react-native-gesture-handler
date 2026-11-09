@@ -402,6 +402,28 @@ describe('[API v3] Components', () => {
       expect(responder?.onScrollShouldSetResponder()).toBe(false);
     });
 
+    test('does not claim on scroll when the caller disables the pan responder for keyboardShouldPersistTaps handled', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            disableScrollViewPanResponder>
+            <Pressable testID="pressable" />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const responder = getScrollViewResponder(UNSAFE_getAllByType)?.props;
+
+      // The keyboard half of 'handled' still runs, the scroll claim does not.
+      expect(responder?.onStartShouldSetResponder).toBeDefined();
+      expect(responder?.onScrollShouldSetResponder).toBeUndefined();
+      expect(responder?.onTouchStart).toBeUndefined();
+      expect(responder?.onResponderTerminationRequest).toBeUndefined();
+    });
+
     test('refuses termination requests after claiming on scroll for keyboardShouldPersistTaps handled', async () => {
       const { UNSAFE_getAllByType } = render(
         <GestureHandlerRootView>

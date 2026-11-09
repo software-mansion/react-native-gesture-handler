@@ -82,7 +82,8 @@ export const ScrollView = (
 
   return (
     <ScrollViewResponderProvider
-      keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
+      keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+      disableScrollViewPanResponder={rest.disableScrollViewPanResponder}>
       <GHScrollView
         {...rest}
         ref={props.ref}
