@@ -373,6 +373,59 @@ describe('[API v3] Components', () => {
   });
 
   describe('ScrollView', () => {
+    test('claims the responder on scroll only while a touch is active for keyboardShouldPersistTaps handled', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <Pressable testID="pressable" />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const responder = getScrollViewResponder(UNSAFE_getAllByType)?.props;
+
+      expect(responder?.onScrollShouldSetResponder()).toBe(false);
+
+      responder?.onTouchStart();
+      expect(responder?.onScrollShouldSetResponder()).toBe(true);
+
+      responder?.onTouchEnd({ nativeEvent: { touches: [{}] } });
+      expect(responder?.onScrollShouldSetResponder()).toBe(true);
+
+      responder?.onTouchEnd({ nativeEvent: { touches: [] } });
+      expect(responder?.onScrollShouldSetResponder()).toBe(false);
+
+      responder?.onTouchStart();
+      responder?.onTouchCancel();
+      expect(responder?.onScrollShouldSetResponder()).toBe(false);
+    });
+
+    test('refuses termination requests after claiming on scroll for keyboardShouldPersistTaps handled', async () => {
+      const { UNSAFE_getAllByType } = render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <Pressable testID="pressable" />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+
+      await act(flushImmediate);
+
+      const responder = getScrollViewResponder(UNSAFE_getAllByType)?.props;
+
+      responder?.onTouchStart();
+      expect(responder?.onResponderTerminationRequest()).toBe(true);
+
+      expect(responder?.onScrollShouldSetResponder()).toBe(true);
+      expect(responder?.onResponderTerminationRequest()).toBe(false);
+
+      // Release ends the sequence; the next touch starts over.
+      responder?.onResponderRelease({ target: null });
+      expect(responder?.onResponderTerminationRequest()).toBe(true);
+    });
+
     test('handles responder event passed through Pressable for keyboardShouldPersistTaps handled', async () => {
       const { UNSAFE_getAllByType } = render(
         <GestureHandlerRootView>
