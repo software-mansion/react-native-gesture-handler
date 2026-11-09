@@ -54,6 +54,7 @@ export default class PointerTracker {
     };
 
     this.trackedPointers.set(event.pointerId, newElement);
+    this.velocityTrackers.set(event.pointerId, new VelocityTracker());
     this.mapTouchEventId(event.pointerId);
 
     this.cachedAbsoluteAverages = this.getAbsoluteCoordsAverage();
@@ -68,20 +69,13 @@ export default class PointerTracker {
 
   public track(event: AdaptedEvent): void {
     const pointerData = this.trackedPointers.get(event.pointerId);
+    const velocityTracker = this.velocityTrackers.get(event.pointerId);
 
-    if (!pointerData) {
+    if (!pointerData || !velocityTracker) {
       return;
     }
 
     this.lastMovedPointerId = event.pointerId;
-
-    // Each pointer has its own tracker, so samples of different pointers are
-    // never mixed into one velocity estimate.
-    let velocityTracker = this.velocityTrackers.get(event.pointerId);
-    if (!velocityTracker) {
-      velocityTracker = new VelocityTracker();
-      this.velocityTrackers.set(event.pointerId, velocityTracker);
-    }
 
     velocityTracker.add(event);
     const [velocityX, velocityY] = velocityTracker.velocity;
