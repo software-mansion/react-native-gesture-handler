@@ -23,7 +23,7 @@
     "expo-status-bar": "~58.0.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0",
+    "react-native": "0.88.1",
     "react-native-gesture-handler": "workspace:*",
     "react-native-pager-view": "9.0.7",
     "react-native-reanimated": "patch:react-native-reanimated@npm%3A4.7.1#~/.yarn/patches/react-native-reanimated-npm-4.7.1-dbfb143762.patch",

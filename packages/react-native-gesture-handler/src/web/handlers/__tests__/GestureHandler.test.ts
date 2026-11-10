@@ -231,6 +231,103 @@ describe('GestureHandlerOrchestrator idle handlers', () => {
   });
 });
 
+describe('GestureHandlerOrchestrator recorded handlers passed to a new one', () => {
+  // Mimics a button: refuses to begin next to any handler it was told about.
+  class ExclusiveTestGestureHandler extends TestGestureHandler {
+    public override shouldBeginWithRecordedHandlers(
+      recorded: IGestureHandler[]
+    ): boolean {
+      return recorded.length === 0;
+    }
+  }
+
+  const delegate = {
+    onEnabledChange: jest.fn(),
+    onCancel: jest.fn(),
+    reset: jest.fn(),
+  } as unknown as GestureHandlerDelegate<unknown, IGestureHandler>;
+
+  const pointerDown = (pointerId: number): AdaptedEvent => ({
+    x: 10,
+    y: 10,
+    offsetX: 10,
+    offsetY: 10,
+    pointerId,
+    eventType: EventTypes.DOWN,
+    pointerType: PointerType.TOUCH,
+    time: 0,
+  });
+
+  function setup() {
+    const other = new TestGestureHandler(delegate);
+    const button = new ExclusiveTestGestureHandler(delegate);
+    other.setGestureConfig({ enabled: true });
+    button.setGestureConfig({ enabled: true });
+    other.sendEvent = jest.fn();
+    button.sendEvent = jest.fn();
+    const cancel = jest.spyOn(button, 'cancel');
+
+    return { other, button, cancel };
+  }
+
+  afterEach(() => {
+    (
+      GestureHandlerOrchestrator.instance as unknown as {
+        gestureHandlers: IGestureHandler[];
+      }
+    ).gestureHandlers = [];
+  });
+
+  test('a handler left in BEGAN with no pointers does not block a new one', () => {
+    const { other, button, cancel } = setup();
+
+    other.tracker.addToTracker(pointerDown(1));
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(other, 1);
+    other.begin();
+    other.tracker.removeFromTracker(1);
+
+    button.tracker.addToTracker(pointerDown(1));
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(button, 1);
+
+    expect(cancel).not.toHaveBeenCalled();
+  });
+
+  test('a handler tracking another pointer does not block a new one', () => {
+    const { other, button, cancel } = setup();
+
+    other.tracker.addToTracker(pointerDown(1));
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(other, 1);
+
+    button.tracker.addToTracker(pointerDown(2));
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(button, 2);
+
+    expect(cancel).not.toHaveBeenCalled();
+  });
+
+  test('a handler tracking the same pointer is passed to the new one', () => {
+    const { other, button, cancel } = setup();
+
+    other.tracker.addToTracker(pointerDown(1));
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(other, 1);
+
+    button.tracker.addToTracker(pointerDown(1));
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(button, 1);
+
+    expect(cancel).toHaveBeenCalledTimes(1);
+  });
+
+  test('recording without a pointer passes no handlers', () => {
+    const { other, button, cancel } = setup();
+
+    other.tracker.addToTracker(pointerDown(1));
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(other, 1);
+
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(button);
+
+    expect(cancel).not.toHaveBeenCalled();
+  });
+});
+
 describe('GestureHandler web touch events', () => {
   afterEach(() => {
     (

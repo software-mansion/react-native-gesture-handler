@@ -291,7 +291,10 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  public recordHandlerIfNotPresent(handler: IGestureHandler): void {
+  public recordHandlerIfNotPresent(
+    handler: IGestureHandler,
+    pointerId?: number
+  ): void {
     this.dropIdleHandlers();
 
     if (this.isHandlerRecorded(handler)) {
@@ -302,7 +305,16 @@ export default class GestureHandlerOrchestrator {
     handler.awaiting = false;
     handler.activationIndex = Number.MAX_SAFE_INTEGER;
 
-    if (!handler.shouldBeginWithRecordedHandlers(this.gestureHandlers)) {
+    // Only handlers recorded for the same pointer (they already track it) may
+    // block this one
+    const recorded =
+      pointerId === undefined
+        ? []
+        : this.gestureHandlers.filter((other) =>
+            other.tracker.isTrackingPointer(pointerId)
+          );
+
+    if (!handler.shouldBeginWithRecordedHandlers(recorded)) {
       handler.cancel();
     }
 
