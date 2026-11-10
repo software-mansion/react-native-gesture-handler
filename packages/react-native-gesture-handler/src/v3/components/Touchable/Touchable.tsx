@@ -9,6 +9,7 @@ import { getTVProps } from '../../../components/utils';
 import { getNextHandlerTag } from '../../../handlers/getNextHandlerTag';
 import { getModuleId } from '../../../moduleId';
 import {
+  dismissKeyboardForDroppedTap,
   isKeyboardDismissingTap,
   JSResponderContext,
   updateResponderEventValue,
@@ -19,6 +20,21 @@ const isAndroid = Platform.OS === 'android';
 const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 const DEFAULT_IN_DURATION_MS = 50;
 const DEFAULT_OUT_DURATION_MS = 100;
+
+// Whether the current press is the tap dismissing the keyboard whose callbacks are swallowed.
+enum KeyboardTapState {
+  Undecided,
+  Passed,
+  Dropped,
+  DroppedAfterLongPress,
+}
+
+function isDropped(state: KeyboardTapState): boolean {
+  return (
+    state === KeyboardTapState.Dropped ||
+    state === KeyboardTapState.DroppedAfterLongPress
+  );
+}
 
 // Clamp user-supplied durations to finite, non-negative milliseconds.
 // Negative, NaN, or Infinity values would produce invalid CSS transitions
@@ -97,7 +113,7 @@ export const Touchable = (props: TouchableProps) => {
   const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
   const jsResponderContext = use(JSResponderContext);
-  const dropKeyboardTapRef = useRef<boolean | null>(null);
+  const keyboardTapRef = useRef(KeyboardTapState.Undecided);
 
   // The button handles presses natively, without a NativeDetector, so it has
   // to mark its responder events as RNGH-handled itself — otherwise a tap on
@@ -113,7 +129,8 @@ export const Touchable = (props: TouchableProps) => {
 
   const internalOnPress = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
-      if (dropKeyboardTapRef.current) {
+      if (isDropped(keyboardTapRef.current)) {
+        dismissKeyboardForDroppedTap();
         return;
       }
 
@@ -127,10 +144,13 @@ export const Touchable = (props: TouchableProps) => {
       // PressIn opens every press sequence; capture the verdict once per
       // sequence so a re-entry PressIn (with cancelOnLeave={false}) doesn't
       // overwrite it after the keyboard is already dismissed.
-      dropKeyboardTapRef.current ??=
-        isKeyboardDismissingTap(jsResponderContext);
+      if (keyboardTapRef.current === KeyboardTapState.Undecided) {
+        keyboardTapRef.current = isKeyboardDismissingTap(jsResponderContext)
+          ? KeyboardTapState.Dropped
+          : KeyboardTapState.Passed;
+      }
 
-      if (dropKeyboardTapRef.current) {
+      if (isDropped(keyboardTapRef.current)) {
         return;
       }
 
@@ -141,7 +161,7 @@ export const Touchable = (props: TouchableProps) => {
 
   const internalOnPressOut = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
-      if (dropKeyboardTapRef.current) {
+      if (isDropped(keyboardTapRef.current)) {
         return;
       }
 
@@ -152,7 +172,8 @@ export const Touchable = (props: TouchableProps) => {
 
   const internalOnLongPress = useCallback(
     (e: NativeSyntheticEvent<ButtonEvent>) => {
-      if (dropKeyboardTapRef.current) {
+      if (isDropped(keyboardTapRef.current)) {
+        keyboardTapRef.current = KeyboardTapState.DroppedAfterLongPress;
         return;
       }
 
@@ -183,7 +204,11 @@ export const Touchable = (props: TouchableProps) => {
   // InteractionFinished is dispatched after the terminal PressOut/Press
   // events, so resetting synchronously here is safe.
   const internalOnInteractionFinished = useCallback(() => {
-    dropKeyboardTapRef.current = null;
+    if (keyboardTapRef.current === KeyboardTapState.DroppedAfterLongPress) {
+      dismissKeyboardForDroppedTap();
+    }
+
+    keyboardTapRef.current = KeyboardTapState.Undecided;
   }, []);
 
   const rippleProps = shouldUseNativeRipple

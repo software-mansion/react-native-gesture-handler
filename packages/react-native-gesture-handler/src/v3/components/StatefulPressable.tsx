@@ -44,6 +44,7 @@ import {
   useSimultaneousGestures,
 } from '../hooks';
 import {
+  dismissKeyboardForDroppedTap,
   isKeyboardDismissingTap,
   JSResponderContext,
 } from '../scrollViewInterop';
@@ -411,6 +412,10 @@ const StatefulPressable = (props: PressableProps) => {
           false
         );
         return;
+      }
+
+      if (!event.canceled && dropKeyboardTapRef.current) {
+        dismissKeyboardForDroppedTap();
       }
 
       handleFinalize();

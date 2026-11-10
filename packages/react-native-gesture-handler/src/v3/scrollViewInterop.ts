@@ -60,3 +60,13 @@ export function isKeyboardDismissingTap(
       TextInput.State.currentlyFocusedInput?.() != null)
   );
 }
+
+// A button activating mid-press cancels the JS responder, so RN ScrollView's
+// release-time blur never runs - the button that dropped the press dismisses
+export function dismissKeyboardForDroppedTap() {
+  const focusedInput = TextInput.State.currentlyFocusedInput?.();
+
+  if (focusedInput != null) {
+    TextInput.State.blurTextInput(focusedInput);
+  }
+}
