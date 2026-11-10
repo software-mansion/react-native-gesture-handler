@@ -3,9 +3,9 @@ buildscript {
         buildToolsVersion = "37.0.0"
         minSdkVersion = 24
         compileSdkVersion = 37
-        targetSdkVersion = 36
+        targetSdkVersion = 37
         ndkVersion = "28.2.13676358"
-        kotlinVersion = "2.2.0"
+        kotlinVersion = "2.3.21"
         isGHExampleApp = true
     }
     repositories {
