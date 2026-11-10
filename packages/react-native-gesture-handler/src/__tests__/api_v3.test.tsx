@@ -966,6 +966,66 @@ describe('[API v3] Components', () => {
       focusSpy.mockRestore();
     });
 
+    test('Touchable dismisses the keyboard itself when a dropped press completes with the input still focused', async () => {
+      const addListenerSpy = jest.spyOn(Keyboard, 'addListener');
+      const focusedInput = {} as ReturnType<
+        typeof TextInput.State.currentlyFocusedInput
+      >;
+      const focusSpy = jest
+        .spyOn(TextInput.State, 'currentlyFocusedInput')
+        .mockReturnValue(focusedInput);
+      const blurSpy = jest
+        .spyOn(TextInput.State, 'blurTextInput')
+        .mockImplementation(() => undefined);
+      const onPress = jest.fn();
+      const onLongPress = jest.fn();
+
+      render(
+        <GestureHandlerRootView>
+          <ScrollView keyboardShouldPersistTaps="never">
+            <Touchable
+              testID="touchable"
+              onPress={onPress}
+              onLongPress={onLongPress}
+            />
+          </ScrollView>
+        </GestureHandlerRootView>
+      );
+      await act(flushImmediate);
+      showKeyboard(addListenerSpy);
+
+      const button = screen.getByTestId('touchable');
+
+      // A cancelled press (e.g. a scroll took over) leaves the keyboard alone.
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent());
+      fireEvent(button, 'buttonInteractionFinished', buttonEvent());
+      expect(blurSpy).not.toHaveBeenCalled();
+
+      // The button activated mid-press and cancelled the JS responder, so the
+      // input is still focused when the press completes.
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonPressOut', buttonEvent());
+      fireEvent(button, 'buttonPress', buttonEvent());
+      fireEvent(button, 'buttonInteractionFinished', buttonEvent());
+      expect(blurSpy).toHaveBeenCalledTimes(1);
+      expect(blurSpy).toHaveBeenCalledWith(focusedInput);
+
+      // No Press follows a long press - the dismissal waits for the release.
+      fireEvent(button, 'buttonPressIn', buttonEvent());
+      fireEvent(button, 'buttonLongPress', buttonEvent());
+      expect(blurSpy).toHaveBeenCalledTimes(1);
+      fireEvent(button, 'buttonPressOut', buttonEvent());
+      fireEvent(button, 'buttonInteractionFinished', buttonEvent());
+      expect(blurSpy).toHaveBeenCalledTimes(2);
+
+      expect(onPress).not.toHaveBeenCalled();
+      expect(onLongPress).not.toHaveBeenCalled();
+      addListenerSpy.mockRestore();
+      focusSpy.mockRestore();
+      blurSpy.mockRestore();
+    });
+
     test('Touchable fires onPress in never mode when the keyboard is not visible', async () => {
       const onPress = jest.fn();
 
