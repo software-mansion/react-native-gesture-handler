@@ -44,7 +44,7 @@ export interface Config extends Record<string, ConfigArgs> {
   userSelect?: UserSelect | undefined;
   activeCursor?: ActiveCursor | undefined;
   mouseButton?: MouseButton | undefined;
-  enableContextMenu?: boolean | undefined;
+  enableContextMenu?: boolean | null | undefined;
   touchAction?: TouchAction | undefined;
   manualActivation?: boolean | undefined;
   dispatchesAnimatedEvents?: false | undefined;

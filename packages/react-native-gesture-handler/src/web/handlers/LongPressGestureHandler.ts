@@ -1,12 +1,6 @@
-import type { ActionType } from '../../ActionType';
 import { State } from '../../State';
 import { SingleGestureName } from '../../v3/types';
-import type {
-  AdaptedEvent,
-  Config,
-  HostDetector,
-  PropsRef,
-} from '../interfaces';
+import type { AdaptedEvent, Config } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
@@ -38,17 +32,10 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.name = SingleGestureName.LongPress;
   }
 
-  public override init(
-    ref: number,
-    propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType,
-    hostDetector: HostDetector | null = null
-  ) {
-    if (this.enableContextMenu === undefined) {
-      this.enableContextMenu = false;
-    }
-
-    super.init(ref, propsRef, actionType, hostDetector);
+  // A long press opens the context menu on touch devices, so block it unless
+  // `enableContextMenu` is set.
+  protected override get defaultEnableContextMenu() {
+    return false;
   }
 
   protected override transformNativeEvent() {

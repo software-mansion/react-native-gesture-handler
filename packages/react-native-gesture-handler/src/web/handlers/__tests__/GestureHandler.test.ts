@@ -112,10 +112,32 @@ describe('GestureHandler web config reset', () => {
 
     expect(handler.touchAction).toBe('none');
     expect(handler.userSelect).toBe('none');
-    expect(handler.enableContextMenu).toBe(false);
+    expect(handler.enableContextMenu).toBeUndefined();
     // The initial full set enabled the handler (`onEnabledChange`); the two
     // partial updates refresh the DOM directly.
     expect(delegate.updateDOM).toHaveBeenCalledTimes(2);
+  });
+
+  test('enableContextMenu stays unset unless it is given', () => {
+    const delegate = {
+      onEnabledChange: jest.fn(),
+      updateDOM: jest.fn(),
+      reset: jest.fn(),
+    };
+    const handler = new TestGestureHandler(
+      delegate as unknown as GestureHandlerDelegate<unknown, IGestureHandler>
+    );
+    handler.setGestureConfig({ enabled: true });
+
+    // Unset keeps the browser's context menu, as in v2 (#4687).
+    expect(handler.enableContextMenu).toBeUndefined();
+
+    handler.setGestureConfig({ enabled: true, enableContextMenu: false });
+    expect(handler.enableContextMenu).toBe(false);
+
+    // A legacy full config replace without it goes back to unset.
+    handler.setGestureConfig({ enabled: true });
+    expect(handler.enableContextMenu).toBeUndefined();
   });
 
   test('the web delegate ignores DOM updates before init', () => {
