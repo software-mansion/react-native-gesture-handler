@@ -94,26 +94,54 @@ describe('GestureHandlerWebDelegate styles on a shared element', () => {
     attach(TAGS[0], view, 'pan-x');
     attach(TAGS[1], view, 'pan-x');
 
-    NodeManager.dropGestureHandler(TAGS[1]);
+    NodeManager.getHandler(TAGS[1]).detach();
 
     expect(view.style.touchAction).toBe('pan-x');
   });
 
-  test('the last enabled handler still restores the element defaults', () => {
+  test('disabling a handler applies the styles of the enabled one', () => {
+    const view = new FakeHTMLElement();
+    attach(TAGS[0], view, 'pan-x');
+    attach(TAGS[1], view, 'pan-y');
+    expect(view.style.touchAction).toBe('pan-y');
+
+    RNGestureHandlerModule.updateGestureHandlerConfig(TAGS[1], {
+      enabled: false,
+    });
+
+    expect(view.style.touchAction).toBe('pan-x');
+  });
+
+  test('the last enabled handler restores the element defaults', () => {
     const view = new FakeHTMLElement();
     view.style.touchAction = 'auto';
     attach(TAGS[0], view, DEFAULT_TOUCH_ACTION);
     attach(TAGS[1], view, DEFAULT_TOUCH_ACTION);
     expect(view.style.touchAction).toBe(DEFAULT_TOUCH_ACTION);
 
-    RNGestureHandlerModule.updateGestureHandlerConfig(TAGS[1], {
+    // The first handler goes first, so the second one must not restore the
+    // styles it found on the element when it attached.
+    RNGestureHandlerModule.updateGestureHandlerConfig(TAGS[0], {
       enabled: false,
     });
     expect(view.style.touchAction).toBe(DEFAULT_TOUCH_ACTION);
 
-    RNGestureHandlerModule.updateGestureHandlerConfig(TAGS[0], {
+    RNGestureHandlerModule.updateGestureHandlerConfig(TAGS[1], {
       enabled: false,
     });
+    expect(view.style.touchAction).toBe('auto');
+  });
+
+  test('the last detached handler restores the element defaults', () => {
+    const view = new FakeHTMLElement();
+    view.style.touchAction = 'auto';
+    attach(TAGS[0], view, DEFAULT_TOUCH_ACTION);
+    attach(TAGS[1], view, DEFAULT_TOUCH_ACTION);
+
+    NodeManager.getHandler(TAGS[0]).detach();
+    expect(view.style.touchAction).toBe(DEFAULT_TOUCH_ACTION);
+
+    NodeManager.getHandler(TAGS[1]).detach();
     expect(view.style.touchAction).toBe('auto');
   });
 });
