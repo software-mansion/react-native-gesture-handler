@@ -8,7 +8,7 @@ import AnimatedScrollViewExample from '!!raw-loader!.//\_examples/AnimatedScroll
 
 `ScrollView` handles touches on its own, outside of Gesture Handler. If there is a gesture attached to one of its children or to one of its parents, the `ScrollView` and the gesture compete for the same touch, and scrolling usually wins. To coordinate them, the `ScrollView` needs a [`Native`](/docs/gestures/use-native-gesture) gesture. Once it has one, it takes part in gesture [relations](/docs/composition/overview) like any other gesture.
 
-This guide covers the most common layouts: gestures on list items, a `ScrollView` inside a view with a gesture, and Reanimated's `Animated.ScrollView`. It ends with a [photo gallery](#example-photo-gallery) that puts them together.
+This guide covers the most common layouts: gestures on list items, a `ScrollView` inside a view with a gesture, and Reanimated's `Animated.ScrollView`. It ends with a [photo gallery](#example) that puts them together.
 
 ## Choosing a ScrollView
 
@@ -463,13 +463,14 @@ function Photo({ color, label, scrollGesture, scrollEnabled }: PhotoProps) {
 
   // Always running, so that pinch and pan switch without lifting all fingers.
   // It moves the photo only while zoomed; with one finger on an unzoomed
-  // photo it does nothing and the ScrollView scrolls.
+  // photo it does nothing and the ScrollView scrolls. While a zoom-out runs
+  // the photo is still enlarged, but a drag must not interrupt the springs.
   const pan = usePanGesture({
     simultaneousWith: scrollGesture,
     averageTouches: true,
     minDistance: 1,
     onUpdate: (e) => {
-      if (!isZoomedNow()) {
+      if ((animating.value && !zoomed.value) || !isZoomedNow()) {
         return;
       }
       translation.value = {

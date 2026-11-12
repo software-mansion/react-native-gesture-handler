@@ -237,13 +237,14 @@ function Photo({ color, label, scrollGesture, scrollEnabled }: PhotoProps) {
 
   // Always running, so that pinch and pan switch without lifting all fingers.
   // It moves the photo only while zoomed; with one finger on an unzoomed
-  // photo it does nothing and the ScrollView scrolls.
+  // photo it does nothing and the ScrollView scrolls. While a zoom-out runs
+  // the photo is still enlarged, but a drag must not interrupt the springs.
   const pan = usePanGesture({
     simultaneousWith: scrollGesture,
     averageTouches: true,
     minDistance: 1,
     onUpdate: (e) => {
-      if (!isZoomedNow()) {
+      if ((animating.value && !zoomed.value) || !isZoomedNow()) {
         return;
       }
       translation.value = {
