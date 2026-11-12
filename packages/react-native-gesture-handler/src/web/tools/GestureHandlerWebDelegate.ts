@@ -19,6 +19,7 @@ import type {
   MeasureResult,
 } from './GestureHandlerDelegate';
 import KeyboardEventManager from './KeyboardEventManager';
+import NodeManager from './NodeManager';
 import PointerEventManager from './PointerEventManager';
 import ScrollEventManager from './ScrollEventManager';
 import WheelEventManager from './WheelEventManager';
@@ -107,6 +108,10 @@ export class GestureHandlerWebDelegate
 
   restoreDefaultViewStyles(): void {
     this.ensureView(this.view);
+
+    if (this.isViewUsedByEnabledHandler()) {
+      return;
+    }
 
     this.setViewStyle('userSelect', this.defaultViewStyles.userSelect);
     this.setViewStyle('webkitUserSelect', this.defaultViewStyles.userSelect);
@@ -235,6 +240,10 @@ export class GestureHandlerWebDelegate
 
     this.ensureView(this.view);
 
+    if (!this.gestureHandler.enabled && this.isViewUsedByEnabledHandler()) {
+      return;
+    }
+
     const value = this.gestureHandler.enabled
       ? (userSelect ?? DEFAULT_USER_SELECT)
       : this.defaultViewStyles.userSelect;
@@ -248,12 +257,28 @@ export class GestureHandlerWebDelegate
 
     this.ensureView(this.view);
 
+    if (!this.gestureHandler.enabled && this.isViewUsedByEnabledHandler()) {
+      return;
+    }
+
     const value = this.gestureHandler.enabled
       ? (touchAction ?? DEFAULT_TOUCH_ACTION)
       : this.defaultViewStyles.touchAction;
 
     this.setViewStyle('touchAction', value);
     this.setViewStyle('WebkitTouchCallout', value);
+  }
+
+  // Handlers sharing an element all write its styles, so a handler that is
+  // disabled or detached must not reset what an enabled one still needs.
+  private isViewUsedByEnabledHandler(): boolean {
+    return Object.values(NodeManager.nodes).some(
+      (handler) =>
+        handler !== this.gestureHandler &&
+        handler.attached &&
+        !!handler.enabled &&
+        handler.delegate.view === this.view
+    );
   }
 
   private setContextMenu() {
