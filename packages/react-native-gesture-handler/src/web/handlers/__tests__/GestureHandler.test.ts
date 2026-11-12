@@ -1,4 +1,5 @@
 import { ActionType } from '../../../ActionType';
+import { MouseButton } from '../../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../../PointerType';
 import { State } from '../../../State';
 import {
@@ -138,6 +139,25 @@ describe('GestureHandler web config reset', () => {
     // A legacy full config replace without it goes back to unset.
     handler.setGestureConfig({ enabled: true });
     expect(handler.enableContextMenu).toBeUndefined();
+  });
+
+  test('a mouseButton update refreshes the DOM', () => {
+    const delegate = {
+      onEnabledChange: jest.fn(),
+      updateDOM: jest.fn(),
+      reset: jest.fn(),
+    };
+    const handler = new TestGestureHandler(
+      delegate as unknown as GestureHandlerDelegate<unknown, IGestureHandler>
+    );
+    handler.setGestureConfig({ enabled: true });
+    delegate.updateDOM.mockClear();
+
+    // The context menu listener depends on the button when enableContextMenu
+    // is not set.
+    handler.updateGestureConfig({ mouseButton: MouseButton.RIGHT });
+
+    expect(delegate.updateDOM).toHaveBeenCalledTimes(1);
   });
 
   test('the web delegate ignores DOM updates before init', () => {

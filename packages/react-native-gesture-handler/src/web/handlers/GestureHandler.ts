@@ -822,6 +822,9 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (config.mouseButton !== undefined) {
       this.mouseButton = config.mouseButton;
+      // Without `enableContextMenu`, the button decides whether the context
+      // menu is blocked, so the listener has to follow it.
+      this.needsDOMUpdate = true;
     }
 
     if (config.needsPointerData !== undefined) {
