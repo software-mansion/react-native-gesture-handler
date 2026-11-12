@@ -1,0 +1,213 @@
+---
+id: gestures-and-scrollview
+title: Gestures and ScrollView
+sidebar_position: 6
+---
+
+import AnimatedScrollViewExample from '!!raw-loader!.//\_examples/AnimatedScrollViewExample';
+
+`ScrollView` handles touches on its own, outside of Gesture Handler. If there is a gesture attached to one of its children or to one of its parents, the `ScrollView` and the gesture compete for the same touch, and scrolling usually wins. To coordinate them, the `ScrollView` needs a [`Native`](/docs/gestures/use-native-gesture) gesture. Once it has one, it takes part in gesture [relations](/docs/composition/overview) like any other gesture.
+
+This guide covers the most common layouts: gestures on list items, a `ScrollView` inside a view with a `Pan`, and Reanimated's `Animated.ScrollView`.
+
+## Choosing a ScrollView
+
+### ScrollView exported by Gesture Handler
+
+`ScrollView` and `FlatList` exported by `react-native-gesture-handler` are [wrapped components](/docs/components/wrapped-components) with a [`Native`](/docs/gestures/use-native-gesture) gesture pre-applied. They accept relation properties directly:
+
+```jsx
+import { ScrollView } from 'react-native-gesture-handler';
+
+<ScrollView requireToFail={pan}>{children}</ScrollView>;
+```
+
+To refer to the `ScrollView` gesture in relations of other gestures, for example `block` on a gesture inside the list, read it from the [`onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER`](/docs/components/wrapped-components#ongestureupdate_can_cause_infinite_rerender) callback and pass it down. Store it in a ref or compare handler tags before calling `setState`, otherwise the callback triggers an infinite loop of re-renders.
+
+Callbacks of the pre-applied gesture always run on the JS thread, and the Reanimated-specific configuration is not available.
+
+### Wrapping ScrollView with GestureDetector
+
+Any other scrollable component, for example `Animated.ScrollView` from Reanimated, `FlashList` or a pager, can be wrapped in a [`GestureDetector`](/docs/core-components/gesture-detectors#gesture-detector) with [`useNativeGesture`](/docs/gestures/use-native-gesture). The scrollable component must be the direct child of the detector.
+
+If the children of the `ScrollView` use [`VirtualGestureDetector`](/docs/core-components/gesture-detectors#virtualgesturedetector), wrap it with [`InterceptingGestureDetector`](/docs/core-components/gesture-detectors#interceptinggesturedetector) instead.
+
+```jsx
+import { ScrollView } from 'react-native';
+import {
+  GestureDetector,
+  useNativeGesture,
+} from 'react-native-gesture-handler';
+
+function List({ children }) {
+  const scrollGesture = useNativeGesture({});
+
+  return (
+    <GestureDetector gesture={scrollGesture}>
+      <ScrollView>{children}</ScrollView>
+    </GestureDetector>
+  );
+}
+```
+
+The `Native` gesture does not affect scrolling. It only makes the `ScrollView` a gesture that other gestures can refer to. `scrollGesture` is available from the first render, so there is no callback to wait for.
+
+### Which one to choose
+
+- Use the exported `ScrollView` or `FlatList` when the relations are set on the `ScrollView` itself, for example a list that waits for a gesture around it.
+- Wrap with `GestureDetector` when the scrollable component comes from another library, or when gestures inside the list need its gesture at render time.
+
+Use one of the two, never both. Wrapping a component exported by Gesture Handler attaches a second `Native` gesture, which results in undefined behavior.
+
+:::tip
+When the list contains gestures or components from Gesture Handler, we recommend the `ScrollView` exported by the library. It takes part in gesture recognition out of the box, with no extra setup.
+:::
+
+On web, the `Native` gesture cannot block scrolling. For swipeable rows, set [`touchAction`](/docs/core-components/gesture-detectors#touchaction) on the detector, see [Custom swipeable components inside ScrollView (web)](/docs/guides/swipe-and-scroll).
+
+## Gestures inside the list
+
+A `ScrollView` with rows, where each row has its own gesture, for example a horizontal `Pan`. The row's gesture should win when it is recognized, otherwise the `ScrollView` should scroll. In other words, the `ScrollView` has to wait for the row's gesture to fail.
+
+Pass the `ScrollView`'s gesture to [`block`](/docs/composition/block) on the row's gesture:
+
+```jsx
+function Row({ scrollGesture }) {
+  const pan = usePanGesture({
+    activeOffsetX: [-20, 20],
+    failOffsetY: [-10, 10],
+    // highlight-next-line
+    block: scrollGesture,
+    onUpdate: (e) => {
+      // ...
+    },
+  });
+
+  return (
+    <GestureDetector gesture={pan}>
+      <Animated.View>{/* ... */}</Animated.View>
+    </GestureDetector>
+  );
+}
+```
+
+`block` is a many-to-one relation: every row points to the single `ScrollView`, and the list does not have to keep track of its rows. This makes it suitable for lists with a dynamic number of items. The same relation can be set from the other side with [`requireToFail`](/docs/composition/require-to-fail) on the `Native` gesture (`useNativeGesture({ requireToFail: pan })`), which is convenient when there is a single gesture inside the list, created in the same component.
+
+Nothing scrolls until the row's gesture activates or fails, so it has to fail quickly on the movement the list owns. This is what `failOffsetY` does in the example above.
+
+### Pinch on list items
+
+This case requires [Reanimated](https://docs.swmansion.com/react-native-reanimated/), as the solution relies on passing a [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) to the gesture configuration, see [Using SharedValue in gesture config](/docs/fundamentals/reanimated-interactions#using-sharedvalue-in-gesture-config).
+
+A two-finger `Pinch` on a list item is a different case. The `ScrollView` starts scrolling with the first finger, before the second one touches the screen, and once it is scrolling the `Pinch` cannot activate. `block` does not help here: a `Pinch` does not fail while a single finger moves, it waits for the second finger until the touch ends. A `ScrollView` waiting for it would not scroll with one finger at all.
+
+Instead, use [`simultaneousWith`](/docs/composition/simultaneous-with) so that the `Pinch` can activate while the scroll is in progress, and disable the `ScrollView` gesture while the `Pinch` is active. Pass a `SharedValue` as `enabled` of the `Native` gesture and set it to `false` when the `Pinch` begins. The `ScrollView` stops as soon as the `Pinch` begins, and scrolling with one finger is not affected.
+
+```jsx
+function Item({ scrollGesture, scrollEnabled }) {
+  const scale = useSharedValue(1);
+
+  const pinch = usePinchGesture({
+    // highlight-start
+    simultaneousWith: scrollGesture,
+    onBegin: () => {
+      scrollEnabled.value = false;
+    },
+    // highlight-end
+    onUpdate: (e) => {
+      scale.value = e.scale;
+    },
+    onDeactivate: () => {
+      scale.value = withSpring(1);
+    },
+    // highlight-start
+    onFinalize: () => {
+      scrollEnabled.value = true;
+    },
+    // highlight-end
+  });
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <GestureDetector gesture={pinch}>
+      <Animated.View style={style}>{/* ... */}</Animated.View>
+    </GestureDetector>
+  );
+}
+
+function Gallery() {
+  const scrollEnabled = useSharedValue(true);
+  // highlight-next-line
+  const scrollGesture = useNativeGesture({ enabled: scrollEnabled });
+
+  return (
+    <GestureDetector gesture={scrollGesture}>
+      <ScrollView horizontal>
+        {ITEMS.map((item) => (
+          <Item
+            key={item}
+            scrollGesture={scrollGesture}
+            scrollEnabled={scrollEnabled}
+          />
+        ))}
+      </ScrollView>
+    </GestureDetector>
+  );
+}
+```
+
+The same works with the `ScrollView` exported by Gesture Handler: pass the shared value to its `enabled` prop and read the gesture for `simultaneousWith` from the [`onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER`](/docs/components/wrapped-components#ongestureupdate_can_cause_infinite_rerender) callback.
+
+## ScrollView inside a gesture
+
+The opposite layout: a view with a gesture attached, for example a drawer or a draggable card with a `Pan`, contains a `ScrollView`. Usually the `ScrollView` should take precedence, and the outer gesture should activate only when the scroll cannot, for example on a vertical drag over a horizontal list.
+
+`requireToFail: scrollGesture` on the outer gesture does not work in this case. The `Native` gesture of a `ScrollView` does not fail while the finger is down, it stays in the `BEGAN` state until the view takes over the drag or the touch ends. A gesture waiting for it cannot activate during the drag.
+
+Instead, give the outer gesture activation criteria that fail quickly on the movement the list owns, and no relation. For a `Pan` over a horizontal list:
+
+```jsx
+function Card({ children }) {
+  const scrollGesture = useNativeGesture({});
+
+  const pan = usePanGesture({
+    // highlight-start
+    activeOffsetY: [-10, 10],
+    failOffsetX: [-10, 10],
+    // highlight-end
+    onUpdate: (e) => {
+      // ...
+    },
+  });
+
+  return (
+    <GestureDetector gesture={pan}>
+      <Animated.View>
+        <GestureDetector gesture={scrollGesture}>
+          <ScrollView horizontal>{children}</ScrollView>
+        </GestureDetector>
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+```
+
+A horizontal drag fails the `Pan` after a few points and the list scrolls. A vertical drag activates it, which cancels the `ScrollView` gesture, because the two are not simultaneous. The `Native` gesture on the `ScrollView` is still needed: it makes the scroll a gesture that the outer one can cancel.
+
+For the opposite behavior, where the outer gesture wins and the `ScrollView` scrolls only when it fails, use a relation: `requireToFail` on the `Native` gesture, or `block: scrollGesture` on the outer gesture. Its activation criteria still matter, because the `ScrollView` cannot start until the gesture activates or fails.
+
+## Reanimated's Animated.ScrollView
+
+`Animated.ScrollView` from Reanimated is the React Native `ScrollView` with an animated `onScroll`. Everything above applies to it without changes. Wrap it in a `GestureDetector` with a `Native` gesture, keep `useAnimatedScrollHandler` on it and set relations on the surrounding gestures. Scroll handlers still run as worklets on the UI thread.
+
+<CollapsibleCode
+  label="Show full example"
+  expandedLabel="Hide full example"
+  lineBounds={[51, 74]}
+  src={AnimatedScrollViewExample}
+/>
+
+Swiping a row horizontally moves it, and the list does not scroll. Dragging vertically scrolls the list, and `onBeginDrag` and `onEndDrag` are called as usual. Neither `createNativeWrapper` nor the `ScrollView` from Gesture Handler is needed.
