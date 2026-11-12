@@ -19,6 +19,7 @@ import type {
   MeasureResult,
 } from './GestureHandlerDelegate';
 import KeyboardEventManager from './KeyboardEventManager';
+import NodeManager from './NodeManager';
 import PointerEventManager from './PointerEventManager';
 import ScrollEventManager from './ScrollEventManager';
 import WheelEventManager from './WheelEventManager';
@@ -59,10 +60,20 @@ export class GestureHandlerWebDelegate
         ? (viewRef as unknown as HTMLElement)
         : (findNodeHandle(viewRef) as unknown as HTMLElement);
 
-    this.defaultViewStyles = {
-      userSelect: this.view.style.userSelect,
-      touchAction: this.view.style.touchAction,
-    };
+    // A handler already on this view may have overwritten the styles, so take
+    // the original snapshot from it instead of reading the view.
+    const alreadyAttachedHandler = this.findOtherHandlerOnView(
+      (handler) => handler.attached
+    );
+    this.defaultViewStyles = alreadyAttachedHandler
+      ? {
+          ...(alreadyAttachedHandler.delegate as GestureHandlerWebDelegate)
+            .defaultViewStyles,
+        }
+      : {
+          userSelect: this.view.style.userSelect,
+          touchAction: this.view.style.touchAction,
+        };
 
     const shouldSendHoverEvents = handler.name === SingleGestureName.Hover;
     const shouldSendWheelEvents = handler.name === SingleGestureName.Pan;
@@ -107,6 +118,13 @@ export class GestureHandlerWebDelegate
 
   restoreDefaultViewStyles(): void {
     this.ensureView(this.view);
+
+    // Another enabled handler on this view still needs its styles.
+    const enabledHandler = this.findOtherEnabledHandlerOnView();
+    if (enabledHandler) {
+      enabledHandler.delegate.updateDOM();
+      return;
+    }
 
     this.setViewStyle('userSelect', this.defaultViewStyles.userSelect);
     this.setViewStyle('webkitUserSelect', this.defaultViewStyles.userSelect);
@@ -231,12 +249,12 @@ export class GestureHandlerWebDelegate
   }
 
   private setUserSelect() {
-    const userSelect = this.gestureHandler.userSelect;
+    const styleOwner = this.findStyleOwner();
 
     this.ensureView(this.view);
 
-    const value = this.gestureHandler.enabled
-      ? (userSelect ?? DEFAULT_USER_SELECT)
+    const value = styleOwner
+      ? (styleOwner.userSelect ?? DEFAULT_USER_SELECT)
       : this.defaultViewStyles.userSelect;
 
     this.setViewStyle('userSelect', value);
@@ -244,16 +262,46 @@ export class GestureHandlerWebDelegate
   }
 
   private setTouchAction() {
-    const touchAction = this.gestureHandler.touchAction;
+    const styleOwner = this.findStyleOwner();
 
     this.ensureView(this.view);
 
-    const value = this.gestureHandler.enabled
-      ? (touchAction ?? DEFAULT_TOUCH_ACTION)
+    const value = styleOwner
+      ? (styleOwner.touchAction ?? DEFAULT_TOUCH_ACTION)
       : this.defaultViewStyles.touchAction;
 
     this.setViewStyle('touchAction', value);
     this.setViewStyle('WebkitTouchCallout', value);
+  }
+
+  // The handler whose styles the view shows. Handlers sharing a view all write
+  // its styles, so a disabled handler defers to an enabled one and restores
+  // the defaults only when none is left.
+  private findStyleOwner(): IGestureHandler | null {
+    return this.gestureHandler.enabled
+      ? this.gestureHandler
+      : this.findOtherEnabledHandlerOnView();
+  }
+
+  private findOtherEnabledHandlerOnView(): IGestureHandler | null {
+    return this.findOtherHandlerOnView(
+      (handler) => handler.attached && !!handler.enabled
+    );
+  }
+
+  private findOtherHandlerOnView(
+    predicate: (handler: IGestureHandler) => boolean
+  ): IGestureHandler | null {
+    // The registry holds the concrete handler classes, which NodeManager also
+    // exposes as the interface.
+    return (
+      (Object.values(NodeManager.nodes) as IGestureHandler[]).find(
+        (handler) =>
+          handler !== this.gestureHandler &&
+          handler.delegate.view === this.view &&
+          predicate(handler)
+      ) ?? null
+    );
   }
 
   private setContextMenu() {
