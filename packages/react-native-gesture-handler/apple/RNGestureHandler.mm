@@ -239,7 +239,19 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #if !TARGET_OS_OSX
 - (void)setCurrentPointerTypeForEvent:(UIEvent *)event
 {
-  UITouch *touch = [[event allTouches] anyObject];
+  // Use this recognizer's own touch (a Pencil first), not any touch in the event: with a palm or finger resting
+  // elsewhere on the screen, `allTouches` holds it too and `anyObject` may pick it.
+  UITouch *touch = nil;
+  NSSet<UITouch *> *ownTouches = [event touchesForGestureRecognizer:_recognizer];
+  for (UITouch *candidate in ownTouches) {
+    if (candidate.type == UITouchTypePencil) {
+      touch = candidate;
+      break;
+    }
+  }
+  if (touch == nil) {
+    touch = [ownTouches anyObject] ?: [[event allTouches] anyObject];
+  }
 
   switch (touch.type) {
     case UITouchTypeDirect:
