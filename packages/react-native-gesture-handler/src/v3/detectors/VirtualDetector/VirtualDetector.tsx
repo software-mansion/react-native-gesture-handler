@@ -12,6 +12,7 @@ import { findNodeHandle, Platform } from 'react-native';
 import { tagMessage } from '../../../utils';
 import { useJSResponderHandler } from '../../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
+import { warnIfNativeGestureWrapsNativeWrapper } from '../../nativeWrapperGuard';
 import type { DetectorCallbacks, VirtualChild } from '../../types';
 import type { VirtualDetectorProps } from '../common';
 import { useDetectorAttachmentGuard } from '../useDetectorAttachmentGuard';
@@ -80,6 +81,7 @@ export function VirtualDetector<
   );
 
   useNativeGestureRole(viewRef, props.children);
+  warnIfNativeGestureWrapsNativeWrapper(props.gesture, props.children);
 
   // Dev-only: no host instance after a commit means the child did not hand
   // its `ref` to one. A child that renders null first is reported as well.
