@@ -32,7 +32,7 @@ export default interface IGestureHandler {
   shouldResetProgress: boolean;
   readonly enabled: boolean | null;
   readonly pointerType: PointerType;
-  enableContextMenu: boolean;
+  readonly enableContextMenu: boolean | undefined;
   readonly activeCursor?: ActiveCursor | undefined;
   readonly touchAction?: TouchAction | undefined;
   readonly userSelect?: UserSelect | undefined;

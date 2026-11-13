@@ -88,3 +88,27 @@ describe('LongPressGestureHandler config reset', () => {
     expect(handler.state).toBe(State.BEGAN);
   });
 });
+
+describe('LongPressGestureHandler context menu', () => {
+  afterEach(() => {
+    (
+      GestureHandlerOrchestrator.instance as unknown as {
+        gestureHandlers: IGestureHandler[];
+      }
+    ).gestureHandlers = [];
+  });
+
+  test('blocks the context menu unless enableContextMenu is set', () => {
+    const handler = createHandler();
+    handler.setGestureConfig({ enabled: true });
+
+    expect(handler.enableContextMenu).toBe(false);
+
+    handler.updateGestureConfig({ enabled: true, enableContextMenu: true });
+    expect(handler.enableContextMenu).toBe(true);
+
+    // The detector sends `null` once the prop is removed.
+    handler.updateGestureConfig({ enabled: true, enableContextMenu: null });
+    expect(handler.enableContextMenu).toBe(false);
+  });
+});
