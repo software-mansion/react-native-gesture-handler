@@ -594,7 +594,7 @@ Whether the touch should be canceled when the pointer leaves the component. By d
 immediatePressOut?: boolean;
 ```
 
-In some cases the platform defers the press, so a quick tap calls `onPressIn` and `onPressOut` almost at the same time and feedback driven from these callbacks never shows up.
+Custom press feedback (e.g. an animation) typically starts in `onPressIn` and ends in `onPressOut`, so it is visible only for the time between the two calls. In some cases, for example inside a scrollable container, the platform reports a press late, and on a quick tap both callbacks are called one right after the other. With no time left between them, the feedback never becomes visible.
 
 When set to `false`, `onPressOut` for such a tap is held back until the press-in animation (see [`animationDuration`](#animationduration)) finishes. `onPress` is never delayed, so on such a tap it is called before `onPressOut`. Longer presses and presses that were not deferred by the platform keep the usual order.
 
