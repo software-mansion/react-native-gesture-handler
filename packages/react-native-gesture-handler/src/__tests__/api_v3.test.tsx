@@ -5,7 +5,7 @@ import {
   screen,
 } from '@testing-library/react-native';
 import { act } from 'react';
-import { Keyboard, TextInput, View } from 'react-native';
+import { Keyboard, Text, TextInput, View } from 'react-native';
 
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
@@ -205,7 +205,7 @@ describe('[API v3] Components', () => {
     views: ReturnType<typeof render>['UNSAFE_getAllByType']
   ) => {
     return views(View).filter(
-      ({ props }) => props.handlerTags && props.onStartShouldSetResponder
+      ({ props }) => props.handlerTags && props.onStartShouldSetResponderCapture
     );
   };
 
@@ -512,7 +512,9 @@ describe('[API v3] Components', () => {
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponderCapture()).toBe(
+        false
+      );
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
     });
 
@@ -605,9 +607,9 @@ describe('[API v3] Components', () => {
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(interceptingDetector?.props.onStartShouldSetResponder()).toBe(
-        false
-      );
+      expect(
+        interceptingDetector?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
     });
 
@@ -631,9 +633,9 @@ describe('[API v3] Components', () => {
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(interceptingDetector?.props.onStartShouldSetResponder()).toBe(
-        false
-      );
+      expect(
+        interceptingDetector?.props.onStartShouldSetResponderCapture()
+      ).toBe(false);
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );
@@ -653,7 +655,9 @@ describe('[API v3] Components', () => {
 
       expect(scrollViewDetector).toBeDefined();
       expect(scrollViewResponder).toBeDefined();
-      expect(scrollViewDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(scrollViewDetector?.props.onStartShouldSetResponderCapture()).toBe(
+        false
+      );
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );
@@ -678,7 +682,9 @@ describe('[API v3] Components', () => {
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponderCapture()).toBe(
+        false
+      );
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );
@@ -750,7 +756,9 @@ describe('[API v3] Components', () => {
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponderCapture()).toBe(
+        false
+      );
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(true);
     });
 
@@ -773,7 +781,9 @@ describe('[API v3] Components', () => {
       expect(
         scrollViewResponder?.props.onStartShouldSetResponderCapture()
       ).toBe(false);
-      expect(nativeDetector?.props.onStartShouldSetResponder()).toBe(false);
+      expect(nativeDetector?.props.onStartShouldSetResponderCapture()).toBe(
+        false
+      );
       expect(scrollViewResponder?.props.onStartShouldSetResponder()).toBe(
         false
       );
@@ -1099,6 +1109,50 @@ describe('[API v3] Components', () => {
 
       expect(longPressFn).toHaveBeenCalledTimes(1);
       expect(pressFn).not.toHaveBeenCalled();
+    });
+
+    // testing-library drops a press when the nearest host view with a
+    // bubble-phase `onStartShouldSetResponder` returns false (#4689)
+    test('fireEvent.press reaches onPress from inside an InterceptingGestureDetector', () => {
+      const pressFn = jest.fn();
+
+      render(
+        <GestureHandlerRootView>
+          <Touchable onPress={pressFn}>
+            <InterceptingGestureDetector>
+              <Text>Press me</Text>
+            </InterceptingGestureDetector>
+          </Touchable>
+        </GestureHandlerRootView>
+      );
+
+      fireEvent.press(screen.getByText('Press me'));
+
+      expect(pressFn).toHaveBeenCalledTimes(1);
+    });
+
+    test('fireEvent.press reaches onPress from inside a GestureDetector', () => {
+      const pressFn = jest.fn();
+
+      const Example = () => {
+        const pan = usePanGesture({ disableReanimated: true });
+
+        return (
+          <GestureHandlerRootView>
+            <Touchable onPress={pressFn}>
+              <GestureDetector gesture={pan}>
+                <Text>Press me</Text>
+              </GestureDetector>
+            </Touchable>
+          </GestureHandlerRootView>
+        );
+      };
+
+      render(<Example />);
+
+      fireEvent.press(screen.getByText('Press me'));
+
+      expect(pressFn).toHaveBeenCalledTimes(1);
     });
   });
 });
