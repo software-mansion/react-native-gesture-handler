@@ -20,6 +20,7 @@ import createNativeWrapper from '../createNativeWrapper';
 import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { NativeWrapperProps } from '../hooks/utils';
+import { registerNativeWrappers } from '../nativeWrapperGuard';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
 import { ScrollViewResponderProvider } from './ScrollViewResponderInterceptor';
 
@@ -214,3 +215,11 @@ export const FlatList = ((props) => {
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type FlatList<ItemT = any> = typeof FlatList & RNFlatList<ItemT>;
+
+registerNativeWrappers({
+  ScrollView,
+  FlatList,
+  Switch,
+  TextInput,
+  RefreshControl,
+});

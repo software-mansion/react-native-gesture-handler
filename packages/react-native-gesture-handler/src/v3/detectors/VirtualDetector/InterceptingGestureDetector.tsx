@@ -10,6 +10,7 @@ import { getModuleId } from '../../../moduleId';
 import { tagMessage } from '../../../utils';
 import { useJSResponderHandler } from '../../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
+import { warnIfNativeGestureWrapsNativeWrapper } from '../../nativeWrapperGuard';
 import type {
   DetectorCallbacks,
   GestureHandlerEventWithHandlerData,
@@ -234,6 +235,7 @@ export function InterceptingGestureDetector<
     Reanimated?.useComposedEventHandler(reanimatedEvents);
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
+  warnIfNativeGestureWrapsNativeWrapper(gesture, children);
 
   useGestureRelationsUpdater(gesture);
 

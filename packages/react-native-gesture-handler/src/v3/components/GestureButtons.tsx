@@ -11,6 +11,7 @@ import type {
   NativeGestureDeactivateEvent,
   NativeGestureFinalizeEvent,
 } from '../hooks/gestures';
+import { registerNativeWrappers } from '../nativeWrapperGuard';
 import type {
   BaseButtonProps,
   BorderlessButtonProps,
@@ -200,5 +201,7 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
     </AnimatedBaseButton>
   );
 };
+
+registerNativeWrappers({ RawButton, BaseButton, RectButton, BorderlessButton });
 
 export { default as PureNativeButton } from '../../components/GestureHandlerButton';
