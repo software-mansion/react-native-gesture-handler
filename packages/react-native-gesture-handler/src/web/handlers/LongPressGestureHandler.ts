@@ -32,12 +32,6 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.name = SingleGestureName.LongPress;
   }
 
-  // A long press opens the context menu on touch devices, so block it unless
-  // `enableContextMenu` is set.
-  protected override get defaultEnableContextMenu() {
-    return false;
-  }
-
   protected override transformNativeEvent() {
     return {
       ...super.transformNativeEvent(),
@@ -179,5 +173,11 @@ export default class LongPressGestureHandler extends GestureHandler {
     } else {
       this.fail();
     }
+  }
+
+  // A long press opens the context menu on touch devices, so block it unless
+  // `enableContextMenu` is set.
+  protected override get defaultEnableContextMenu() {
+    return false;
   }
 }
