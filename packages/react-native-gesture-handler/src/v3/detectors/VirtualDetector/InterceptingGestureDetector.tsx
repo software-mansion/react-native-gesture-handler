@@ -306,7 +306,9 @@ export function InterceptingGestureDetector<
             : undefined
         }
         handlerTags={handlerTags}
-        onStartShouldSetResponder={handleStartShouldSetResponder}
+        // Capture phase: a bubble-phase handler returning `false` makes
+        // testing-library treat presses on the children as declined (#4689)
+        onStartShouldSetResponderCapture={handleStartShouldSetResponder}
         style={nativeDetectorStyles.detector}
         virtualChildren={strippedVirtualChildren}
         moduleId={getModuleId()}>
