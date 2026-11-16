@@ -6,4 +6,6 @@ export const NATIVE_GESTURE_ROLE_ATTRIBUTE = 'rngh-role';
 // not set.
 export const DEFAULT_TOUCH_ACTION = 'none';
 export const DEFAULT_USER_SELECT = 'none';
-export const DEFAULT_ENABLE_CONTEXT_MENU = false;
+// `null` clears `enableContextMenu`, so the handler decides: the browser menu
+// stays unless the gesture listens to the right mouse button.
+export const DEFAULT_ENABLE_CONTEXT_MENU = null;

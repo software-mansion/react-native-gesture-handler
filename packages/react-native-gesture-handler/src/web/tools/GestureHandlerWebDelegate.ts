@@ -222,13 +222,16 @@ export class GestureHandlerWebDelegate
     }
   }
 
-  private disableContextMenu(this: void, e: MouseEvent): void {
+  // Arrow functions, so that each delegate registers its own listener. With a
+  // shared prototype method, handlers on the same view would add one listener
+  // between them, and the first to remove it would remove it for all.
+  private disableContextMenu = (e: MouseEvent): void => {
     e.preventDefault();
-  }
+  };
 
-  private enableContextMenu(this: void, e: MouseEvent): void {
+  private enableContextMenu = (e: MouseEvent): void => {
     e.stopPropagation();
-  }
+  };
 
   private setUserSelect() {
     const userSelect = this.gestureHandler.userSelect;
