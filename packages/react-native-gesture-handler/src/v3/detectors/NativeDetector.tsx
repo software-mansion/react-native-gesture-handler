@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import { getModuleId } from '../../moduleId';
 import { useJSResponderHandler } from '../hooks/useJSResponderHandler';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
+import { warnIfNativeGestureWrapsNativeWrapper } from '../nativeWrapperGuard';
 import type { NativeDetectorProps } from './common';
 import { AnimatedNativeDetector, nativeDetectorStyles } from './common';
 import HostGestureDetector, {
@@ -36,6 +37,7 @@ export function NativeDetector<
   ) as React.FunctionComponent<RNGestureHandlerDetectorNativeComponentProps>;
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
+  warnIfNativeGestureWrapsNativeWrapper(gesture, children);
   useGestureRelationsUpdater(gesture);
 
   const handlerTags = useMemo(() => {

@@ -10,6 +10,7 @@ import {
 
 import createNativeWrapper from '../createNativeWrapper';
 import { GestureDetectorType } from '../detectors';
+import { registerNativeWrappers } from '../nativeWrapperGuard';
 
 export const ScrollView = createNativeWrapper(
   RNScrollView,
@@ -43,3 +44,11 @@ export const FlatList = <ItemT,>(props: FlatListProps<ItemT>) => (
     renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
   />
 );
+
+registerNativeWrappers({
+  ScrollView,
+  FlatList,
+  Switch,
+  TextInput,
+  RefreshControl,
+});
