@@ -109,11 +109,14 @@
 - (void)mouseUp:(NSEvent *)event
 {
   [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
-  // AppKit, unlike UIKit, doesn't end a recognizer when the mouse goes up. Left Began, it kept
-  // the window's gestures busy until AppKit's stuck-gesture timer, and the next click on any
-  // other view, such as a button, was failed.
-  if (self.state == NSGestureRecognizerStateBegan || self.state == NSGestureRecognizerStateChanged) {
-    self.state = NSGestureRecognizerStateEnded;
+
+  // The recognizer turns Began on mouseDown even when the gesture hasn't been activated, and AppKit
+  // doesn't end it when the mouse goes up. While it stays Began, AppKit treats it as in progress and
+  // fails the next click on any other view. A gesture that was activated stays active until it's
+  // ended through the state manager.
+  if (_gestureHandler.lastState != RNGestureHandlerStateActive &&
+      (self.state == NSGestureRecognizerStateBegan || self.state == NSGestureRecognizerStateChanged)) {
+    self.state = NSGestureRecognizerStateCancelled;
   }
 }
 
