@@ -99,7 +99,7 @@ Nothing scrolls until the row's gesture activates or fails, so it has to fail qu
 
 ### Pinch on list items
 
-A two-finger `Pinch` on a list item is a different case. The `ScrollView` starts scrolling with the first finger, before the second one touches the screen, and once it is scrolling the `Pinch` cannot activate. `block` does not help here: a `Pinch` does not fail while a single finger moves, it waits for the second finger until the touch ends. A `ScrollView` waiting for it would not scroll with one finger at all.
+A two-finger `Pinch` on a list item is a different case. The `ScrollView` starts scrolling with the first finger, before the second one touches the screen, and once it is scrolling the `Pinch` cannot activate. `block` does not help here. A `Pinch` does not fail while a single finger moves, it waits for the second finger until the touch ends. On iOS the `ScrollView` waits for it and does not scroll with one finger at all. On Android the `ScrollView` scrolls anyway and keeps the gesture, so a `Pinch` that begins with the second finger never activates.
 
 The solution below requires [Reanimated](https://docs.swmansion.com/react-native-reanimated/), as it relies on passing a [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) to the gesture configuration, see [Using SharedValue in gesture config](/docs/fundamentals/reanimated-interactions#using-sharedvalue-in-gesture-config).
 
