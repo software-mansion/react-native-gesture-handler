@@ -27,6 +27,9 @@ require_relative '../../../scripts/clangd-add-xcode-step.rb'
 
 ENV['GH_EXAMPLE_APP_NAME'] = 'BasicExample'
 
+# Build with the C++ stable API enforced. Run `RN_STRICT_API=0 pod install` to opt out.
+ENV['RN_STRICT_API'] ||= '1'
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 

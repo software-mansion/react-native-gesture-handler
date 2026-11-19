@@ -7,8 +7,12 @@
 #import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
+#if __has_include(<React/View.h>)
+#import <React/View.h>
+#else
 #import <react/renderer/components/view/BaseViewProps.h>
 #import <react/renderer/components/view/ViewProps.h>
+#endif
 
 #import "RNGestureHandlerButton.h"
 #import "RNGestureHandlerModule.h"

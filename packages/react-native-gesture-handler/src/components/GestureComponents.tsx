@@ -156,11 +156,9 @@ export const LegacyFlatList = <ItemT,>(
     // https://github.com/microsoft/TypeScript/issues/26255
     if ((nativeViewProps as readonly string[]).includes(propName)) {
       // @ts-ignore - this function cannot have generic type so we have to ignore this error
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       scrollViewProps[propName] = value;
     } else {
       // @ts-ignore - this function cannot have generic type so we have to ignore this error
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       flatListProps[propName] = value;
     }
   }
