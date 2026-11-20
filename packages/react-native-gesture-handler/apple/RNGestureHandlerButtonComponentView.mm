@@ -539,6 +539,18 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 }
 #endif
 
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+// _buttonView is the contentView, so RCTViewComponentView reports the wrapper
+// as an accessibility element too, and VoiceOver stops on a button twice: once
+// on the wrapper (with the switch/radio state) and once on _buttonView (without
+// it). _buttonView carries label, traits, value and actions, so keep the wrapper
+// a plain container.
+- (BOOL)isAccessibilityElement
+{
+  return NO;
+}
+#endif
+
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
@@ -607,6 +619,14 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   [super updateProps:props oldProps:oldProps];
 
 #if !TARGET_OS_TV && !TARGET_OS_OSX
+  // React Native computes the spoken state of a switch, checkbox or radio
+  // ("1", "radio button, checked") on the wrapper only. Copy it to _buttonView,
+  // the one element VoiceOver should stop on (see isAccessibilityElement).
+  _buttonView.accessibilityValue = [super accessibilityValue];
+  // Custom actions too. Their target stays the wrapper, which emits
+  // onAccessibilityAction; the rest are forwarded by RNGestureHandlerButton.
+  _buttonView.accessibilityCustomActions = [super accessibilityCustomActions];
+
   // super's updateProps sets self.accessibilityIdentifier from testID via the
   // standard Fabric mechanism. However, setAccessibilityProps already forwards
   // testID to _buttonView.accessibilityIdentifier (the actual button element).
