@@ -543,7 +543,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 // _buttonView is the contentView, so RCTViewComponentView reports the wrapper
 // as an accessibility element too, and VoiceOver stops on a button twice: once
 // on the wrapper (with the switch/radio state) and once on _buttonView (without
-// it). _buttonView already carries label, traits and value, so keep the wrapper
+// it). _buttonView carries label, traits, value and actions, so keep the wrapper
 // a plain container.
 - (BOOL)isAccessibilityElement
 {
@@ -623,6 +623,9 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   // ("1", "radio button, checked") on the wrapper only. Copy it to _buttonView,
   // the one element VoiceOver should stop on (see isAccessibilityElement).
   _buttonView.accessibilityValue = [super accessibilityValue];
+  // Custom actions too. Their target stays the wrapper, which emits
+  // onAccessibilityAction; the rest are forwarded by RNGestureHandlerButton.
+  _buttonView.accessibilityCustomActions = [super accessibilityCustomActions];
 
   // super's updateProps sets self.accessibilityIdentifier from testID via the
   // standard Fabric mechanism. However, setAccessibilityProps already forwards
