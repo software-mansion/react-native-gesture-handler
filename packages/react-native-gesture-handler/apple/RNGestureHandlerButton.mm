@@ -1571,7 +1571,16 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       CGPoint pointInView = [self convertPoint:point toView:handler.recognizer.view];
       gestureRecognizerWantsEvent = [handler wantsToHandleEventsAtPoint:pointInView];
     } else {
+#if !TARGET_OS_OSX
+      // A recognizer that does not cancel touches only observes them, so it
+      // never takes the touch from the button. UIKit leaves one such recognizer
+      // (_UIFeedbackGeneratorGestureRecognizer) on a text view after
+      // `selectable` is turned off, and Fabric recycles that view into other
+      // <Text> components.
+      gestureRecognizerWantsEvent = recognizer.cancelsTouchesInView;
+#else
       gestureRecognizerWantsEvent = YES;
+#endif
     }
     if (gestureRecognizerWantsEvent) {
       break;
