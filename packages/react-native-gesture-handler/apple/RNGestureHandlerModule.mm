@@ -45,7 +45,10 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
-static std::unordered_map<int, RNGestureHandlerManager *> _managers;
+// Intentionally never destroyed. A static with a destructor is torn down by exit() (e.g. from
+// -[NSApplication terminate:]) while the mounting queue may still be in flushOperations, which
+// reads this map - a use-after-free at quit. The OS reclaims the memory at exit.
+static auto &_managers = *new std::unordered_map<int, RNGestureHandlerManager *>();
 
 + (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId
 {
