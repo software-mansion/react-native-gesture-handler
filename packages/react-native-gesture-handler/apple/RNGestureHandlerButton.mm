@@ -1547,8 +1547,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 }
 
 - (BOOL)shouldHandleTouch:(RNGHUIView *)view
-                       atPoint:(CGPoint)point
-    ignoringPassiveRecognizers:(BOOL)ignoringPassiveRecognizers
+                             atPoint:(CGPoint)point
+    ignoringPassiveSystemRecognizers:(BOOL)ignoringPassiveSystemRecognizers
 {
   if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
     RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
@@ -1574,12 +1574,16 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       gestureRecognizerWantsEvent = [handler wantsToHandleEventsAtPoint:pointInView];
     } else {
 #if !TARGET_OS_OSX
-      // A recognizer that does not cancel touches only observes them, so it
-      // never takes the touch from the button. UIKit leaves one such recognizer
+      // UIKit leaves a private recognizer that does not cancel touches
       // (_UIFeedbackGeneratorGestureRecognizer) on a text view after
       // `selectable` is turned off, and Fabric recycles that view into other
-      // <Text> components.
-      gestureRecognizerWantsEvent = !ignoringPassiveRecognizers || recognizer.cancelsTouchesInView;
+      // <Text> components. It only observes touches, so it must not take the
+      // touch from the button. A public or app-defined recognizer can act on
+      // the touches it sees even when it does not cancel them, so it still
+      // counts.
+      BOOL isPassiveSystemRecognizer =
+          !recognizer.cancelsTouchesInView && [NSStringFromClass([recognizer class]) hasPrefix:@"_"];
+      gestureRecognizerWantsEvent = !(ignoringPassiveSystemRecognizers && isPassiveSystemRecognizer);
 #else
       gestureRecognizerWantsEvent = YES;
 #endif
@@ -1605,16 +1609,16 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   if (pointerEvents == RNGestureHandlerPointerEventsBoxNone) {
-    // The button never takes the touch here, so a passive recognizer still
-    // counts: returning its view lets the recognizers on its ancestors see the
-    // touch.
+    // The button never takes the touch here, so a passive system recognizer
+    // still counts: returning its view lets the recognizers on its ancestors
+    // see the touch.
     for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
       if (!subview.isHidden && subview.alpha > 0) {
         CGPoint convertedPoint = [subview convertPoint:point fromView:self];
         UIView *hitView = [subview hitTest:convertedPoint withEvent:event];
         if (hitView != nil &&
             ([hitView isKindOfClass:[RNGestureHandlerButton class]] ||
-             [self shouldHandleTouch:hitView atPoint:point ignoringPassiveRecognizers:NO])) {
+             [self shouldHandleTouch:hitView atPoint:point ignoringPassiveSystemRecognizers:NO])) {
           return hitView;
         }
       }
@@ -1627,7 +1631,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   RNGHUIView *inner = [super hitTest:point withEvent:event];
-  while (inner && inner != self && ![self shouldHandleTouch:inner atPoint:point ignoringPassiveRecognizers:YES]) {
+  while (inner && inner != self && ![self shouldHandleTouch:inner atPoint:point ignoringPassiveSystemRecognizers:YES]) {
     inner = inner.superview;
   }
   return inner;
