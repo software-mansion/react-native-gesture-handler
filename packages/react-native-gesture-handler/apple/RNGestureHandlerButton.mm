@@ -1546,7 +1546,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   [super cancelTrackingWithEvent:event];
 }
 
-- (BOOL)shouldHandleTouch:(RNGHUIView *)view atPoint:(CGPoint)point
+- (BOOL)shouldHandleTouch:(RNGHUIView *)view
+                       atPoint:(CGPoint)point
+    ignoringPassiveRecognizers:(BOOL)ignoringPassiveRecognizers
 {
   if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
     RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
@@ -1577,7 +1579,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       // (_UIFeedbackGeneratorGestureRecognizer) on a text view after
       // `selectable` is turned off, and Fabric recycles that view into other
       // <Text> components.
-      gestureRecognizerWantsEvent = recognizer.cancelsTouchesInView;
+      gestureRecognizerWantsEvent = !ignoringPassiveRecognizers || recognizer.cancelsTouchesInView;
 #else
       gestureRecognizerWantsEvent = YES;
 #endif
@@ -1603,13 +1605,16 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   if (pointerEvents == RNGestureHandlerPointerEventsBoxNone) {
+    // The button never takes the touch here, so a passive recognizer still
+    // counts: returning its view lets the recognizers on its ancestors see the
+    // touch.
     for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
       if (!subview.isHidden && subview.alpha > 0) {
         CGPoint convertedPoint = [subview convertPoint:point fromView:self];
         UIView *hitView = [subview hitTest:convertedPoint withEvent:event];
         if (hitView != nil &&
             ([hitView isKindOfClass:[RNGestureHandlerButton class]] ||
-             [self shouldHandleTouch:hitView atPoint:point])) {
+             [self shouldHandleTouch:hitView atPoint:point ignoringPassiveRecognizers:NO])) {
           return hitView;
         }
       }
@@ -1622,7 +1627,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   RNGHUIView *inner = [super hitTest:point withEvent:event];
-  while (inner && inner != self && ![self shouldHandleTouch:inner atPoint:point]) {
+  while (inner && inner != self && ![self shouldHandleTouch:inner atPoint:point ignoringPassiveRecognizers:YES]) {
     inner = inner.superview;
   }
   return inner;
