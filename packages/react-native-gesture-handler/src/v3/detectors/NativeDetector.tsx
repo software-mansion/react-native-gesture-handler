@@ -74,7 +74,9 @@ export function NativeDetector<
 
   return (
     <NativeDetectorComponent
-      onStartShouldSetResponder={handleStartShouldSetResponder}
+      // Capture phase: a bubble-phase handler returning `false` makes
+      // testing-library treat presses on the children as declined (#4689)
+      onStartShouldSetResponderCapture={handleStartShouldSetResponder}
       touchAction={touchAction}
       userSelect={userSelect}
       enableContextMenu={enableContextMenu}

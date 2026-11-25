@@ -114,7 +114,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)resetConfig
 {
-  self.enabled = YES;
+  // Only the stored value is reset here. The recognizer is synced once the new config is applied,
+  // see `syncRecognizerEnabled`.
+  _enabled = YES;
   self.testID = nil;
   _manualActivation = NO;
   _shouldCancelWhenOutside = NO;
@@ -139,7 +141,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   id prop = config[@"enabled"];
   if (prop != nil) {
-    self.enabled = [RCTConvert BOOL:prop];
+    _enabled = [RCTConvert BOOL:prop];
   }
 
   prop = config[@"testID"];
@@ -202,6 +204,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   } else if (prop != nil) {
     _hitSlop = RNGHHitSlopEmpty;
   }
+
+  [self syncRecognizerEnabled];
 }
 
 - (void)updateRelations:(NSDictionary *)relations
@@ -215,6 +219,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   _enabled = enabled;
   self.recognizer.enabled = enabled;
+}
+
+// Disabling an active recognizer cancels it synchronously, and the cancellation event is sent right away.
+// The recognizer is therefore synced at the end of `updateConfig:`, once `dispatchesAnimatedEvents` and
+// `dispatchesReanimatedEvents` hold their new values, so that the event reaches the right handler type.
+- (void)syncRecognizerEnabled
+{
+  if (self.recognizer.enabled != _enabled) {
+    self.recognizer.enabled = _enabled;
+  }
 }
 
 - (void)setCurrentPointerType:(RNGestureHandlerPointerType)pointerType

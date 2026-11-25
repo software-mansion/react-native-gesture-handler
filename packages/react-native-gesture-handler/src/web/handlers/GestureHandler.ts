@@ -60,7 +60,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private needsPointerData: boolean = false;
   private _tracker: PointerTracker = new PointerTracker();
 
-  private _enableContextMenu: boolean = false;
+  private _enableContextMenu?: boolean | undefined = undefined;
   private _activeCursor?: ActiveCursor | undefined = undefined;
   private _touchAction?: TouchAction | undefined = undefined;
   private _userSelect?: UserSelect | undefined = undefined;
@@ -822,6 +822,9 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (config.mouseButton !== undefined) {
       this.mouseButton = config.mouseButton;
+      // Without `enableContextMenu`, the button decides whether the context
+      // menu is blocked, so the listener has to follow it.
+      this.needsDOMUpdate = true;
     }
 
     if (config.needsPointerData !== undefined) {
@@ -836,8 +839,9 @@ export default abstract class GestureHandler implements IGestureHandler {
       this._activeCursor = config.activeCursor;
     }
 
+    // An explicit `null` clears the value, so the handler's default applies again.
     if (config.enableContextMenu !== undefined) {
-      this.enableContextMenu = config.enableContextMenu;
+      this.enableContextMenu = config.enableContextMenu ?? undefined;
       this.needsDOMUpdate = true;
     }
 
@@ -967,7 +971,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     // defaults) through partial updates only. Legacy handlers carry them in the
     // full config and still get the reset.
     if (!this.usesNativeOrVirtualDetector()) {
-      this.enableContextMenu = false;
+      this.enableContextMenu = undefined;
       this._touchAction = undefined;
       this._userSelect = undefined;
     }
@@ -1071,10 +1075,16 @@ export default abstract class GestureHandler implements IGestureHandler {
     this._shouldResetProgress = value;
   }
 
-  public get enableContextMenu() {
-    return this._enableContextMenu;
+  // `undefined` keeps the browser's context menu, unless the gesture listens to
+  // the right mouse button (see `GestureHandlerWebDelegate`).
+  protected get defaultEnableContextMenu(): boolean | undefined {
+    return undefined;
   }
-  protected set enableContextMenu(value) {
+
+  public get enableContextMenu(): boolean | undefined {
+    return this._enableContextMenu ?? this.defaultEnableContextMenu;
+  }
+  protected set enableContextMenu(value: boolean | undefined) {
     this._enableContextMenu = value;
   }
 
