@@ -21,6 +21,7 @@ import MouseButtonsExample from './hover_mouse/mouse_buttons';
 import StylusDataExample from './hover_mouse/stylus_data';
 import AnimatedExample from './showcase/animated';
 import BottomSheetExample from './showcase/bottom_sheet';
+import GalleryExample from './showcase/gallery';
 import NestedTextExample from './showcase/nested_text/nested_text';
 import OverlapExample from './showcase/overlap';
 import SharedValueExample from './showcase/shared_value';
@@ -76,6 +77,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Overlap', component: OverlapExample },
       { name: 'Animated', component: AnimatedExample },
       { name: 'Timer', component: TimerExample },
+      { name: 'Gallery', component: GalleryExample },
     ],
   },
   {
