@@ -102,7 +102,17 @@ static const NSTimeInterval pointerStoppedInterval = 0.04;
 #if !TARGET_OS_OSX && !TARGET_OS_TV
 - (void)tryUpdateStylusData:(UIEvent *)event
 {
-  UITouch *touch = [[event allTouches] anyObject];
+  // The Pencil touch among this recognizer's own touches: a touch elsewhere on the screen must not hide it.
+  UITouch *touch = nil;
+  for (UITouch *candidate in [event touchesForGestureRecognizer:self]) {
+    if (candidate.type == UITouchTypePencil) {
+      touch = candidate;
+      break;
+    }
+  }
+  if (touch == nil) {
+    touch = [[event allTouches] anyObject];
+  }
 
   if (touch.type != UITouchTypePencil) {
     return;
