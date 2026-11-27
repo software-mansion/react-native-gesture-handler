@@ -421,9 +421,7 @@
 
 - (void)animateUnderlayToOpacity:(float)toOpacity duration:(NSTimeInterval)durationMs
 {
-  if ([self shouldReduceMotion]) {
-    durationMs = 0;
-  }
+  // Not shortened under Reduce Motion: an opacity fade is not motion (see animateTarget).
   // Only sync the model from the presentation layer when an animation is actually
   // in flight.
   CALayer *presentation = _underlayLayer.presentationLayer;
@@ -510,9 +508,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                 scale:(CGFloat)scale
              duration:(NSTimeInterval)durationMs
 {
-  if ([self shouldReduceMotion]) {
-    durationMs = 0;
-  }
+  // Reduce Motion drops the scale animation, which is motion, but keeps the
+  // opacity fade, which is the press feedback: the transform snaps instead.
+  BOOL reduceMotion = [self shouldReduceMotion];
   CALayer *layer = target.layer;
   CALayer *presentation = layer.presentationLayer;
   NSTimeInterval snapThresholdMs = [self minFrameDurationMs];
@@ -545,6 +543,13 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     return;
   }
 
+  if (reduceMotion && [self hasScaleAnimation]) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
+    [CATransaction commit];
+  }
+
   NSTimeInterval duration = durationMs / 1000.0;
   [UIView animateWithDuration:duration
                         delay:0
@@ -553,7 +558,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                      if ([self hasOpacityAnimation]) {
                        target.alpha = opacity;
                      }
-                     if ([self hasScaleAnimation]) {
+                     if ([self hasScaleAnimation] && !reduceMotion) {
                        target.layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
                      }
                    }
@@ -578,6 +583,13 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     return;
   }
 
+  if (reduceMotion && [self hasScaleAnimation]) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
+    [CATransaction commit];
+  }
+
   NSTimeInterval duration = durationMs / 1000.0;
   [NSAnimationContext
       runAnimationGroup:^(NSAnimationContext *context) {
@@ -587,7 +599,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         if ([self hasOpacityAnimation]) {
           target.animator.alphaValue = opacity;
         }
-        if ([self hasScaleAnimation]) {
+        if ([self hasScaleAnimation] && !reduceMotion) {
           target.layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
         }
       }
@@ -670,9 +682,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                             duration:strongSelf->_tapAnimationOutDuration];
       }
     });
-    NSTimeInterval scheduledDelay = [self shouldReduceMotion] ? 0 : remaining;
     dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(scheduledDelay * NSEC_PER_MSEC)),
+        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)),
         dispatch_get_main_queue(),
         _pendingPressOutBlock);
   }
