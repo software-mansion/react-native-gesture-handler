@@ -109,6 +109,15 @@
 - (void)mouseUp:(NSEvent *)event
 {
   [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+
+  // The recognizer turns Began on mouseDown even when the gesture hasn't been activated, and AppKit
+  // doesn't end it when the mouse goes up. While it stays Began, AppKit treats it as in progress and
+  // fails the next click on any other view. A gesture that was activated stays active until it's
+  // ended through the state manager.
+  if (_gestureHandler.lastState != RNGestureHandlerStateActive &&
+      (self.state == NSGestureRecognizerStateBegan || self.state == NSGestureRecognizerStateChanged)) {
+    self.state = NSGestureRecognizerStateCancelled;
+  }
 }
 
 #endif
