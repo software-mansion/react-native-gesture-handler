@@ -288,6 +288,22 @@ describe('GestureHandlerWebDelegate click after activation', () => {
     expect(isClickStopped(view)).toBe(true);
   });
 
+  test('keeps stopping the click of a press that starts before the previous cleanup', () => {
+    const view = createClickView();
+    const pan = createHandler(PanGestureHandler, view);
+
+    press(view);
+    pan.delegate.onActivationAccepted();
+    release();
+    // The next press arrives before the cleanup of the previous one runs.
+    press(view);
+    pan.delegate.onActivationAccepted();
+    jest.runAllTimers();
+    release();
+
+    expect(isClickStopped(view)).toBe(true);
+  });
+
   test('lets the next click through when the release sends no click', () => {
     const view = createClickView();
     const pan = createHandler(PanGestureHandler, view);

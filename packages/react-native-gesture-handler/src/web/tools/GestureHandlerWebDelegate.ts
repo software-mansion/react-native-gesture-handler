@@ -388,6 +388,9 @@ export class GestureHandlerWebDelegate
 
   private onPointerPressed = (event: PointerEvent): void => {
     if (this.pressedPointers.size === 0) {
+      // A new press starts a new sequence, the click of the previous one can
+      // no longer come. Its activation installs a new blocker if needed.
+      this.unblockClick();
       document.addEventListener('pointerup', this.onPointerReleased, CAPTURE);
       document.addEventListener(
         'pointercancel',
