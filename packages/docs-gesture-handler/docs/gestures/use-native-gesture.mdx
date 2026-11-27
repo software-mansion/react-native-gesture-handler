@@ -64,7 +64,7 @@ function Rectangle({ color, scrollGesture }: RectangleProps) {
 }
 
 export default function App() {
-  const nativeGesture = useNativeGesture({});
+  const nativeGesture = useNativeGesture({ disallowInterruption: true });
 
   return (
     <GestureHandlerRootView>
