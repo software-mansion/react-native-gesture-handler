@@ -1,6 +1,5 @@
 import { ActionType } from '../../../ActionType';
 import { MouseButton } from '../../../handlers/gestureHandlerCommon';
-import { PointerType } from '../../../PointerType';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule.web';
 import { DEFAULT_TOUCH_ACTION, DEFAULT_USER_SELECT } from '../../constants';
 import type GestureHandler from '../../handlers/GestureHandler';
@@ -8,7 +7,6 @@ import type IGestureHandler from '../../handlers/IGestureHandler';
 import LongPressGestureHandler from '../../handlers/LongPressGestureHandler';
 import NativeViewGestureHandler from '../../handlers/NativeViewGestureHandler';
 import PanGestureHandler from '../../handlers/PanGestureHandler';
-import { EventTypes } from '../../interfaces';
 import GestureHandlerOrchestrator from '../GestureHandlerOrchestrator';
 import { GestureHandlerWebDelegate } from '../GestureHandlerWebDelegate';
 import NodeManager from '../NodeManager';
@@ -216,6 +214,21 @@ describe('GestureHandlerWebDelegate click after activation', () => {
     ).gestureHandlers = [];
   });
 
+  // The pointer events land outside this empty rect, so only the delegate
+  // reacts to them, the handler does not start recognizing.
+  function createClickView() {
+    return Object.assign(createView(), {
+      getBoundingClientRect: () => ({
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: 0,
+        height: 0,
+      }),
+    });
+  }
+
   function createHandler(
     Handler: typeof PanGestureHandler | typeof NativeViewGestureHandler,
     view: EventTarget,
@@ -227,24 +240,20 @@ describe('GestureHandlerWebDelegate click after activation', () => {
     return handler;
   }
 
-  // Activates the handler the way a drag does, with the pointer still down.
-  function activateWithPointerDown(handler: GestureHandler) {
-    handler.tracker.addToTracker({
-      x: 0,
-      y: 0,
-      offsetX: 0,
-      offsetY: 0,
-      pointerId: 1,
-      eventType: EventTypes.DOWN,
-      pointerType: PointerType.MOUSE,
-      time: 0,
+  function pointerEvent(type: string, pointerId: number) {
+    return Object.assign(new Event(type), {
+      pointerId,
+      clientX: 100,
+      clientY: 100,
     });
-    handler.delegate.onActivate();
   }
 
-  function release(handler: GestureHandler) {
-    handler.tracker.removeFromTracker(1);
-    document.dispatchEvent(new Event('pointerup'));
+  function press(view: EventTarget, pointerId = 1) {
+    view.dispatchEvent(pointerEvent('pointerdown', pointerId));
+  }
+
+  function release(pointerId = 1) {
+    document.dispatchEvent(pointerEvent('pointerup', pointerId));
   }
 
   function isClickStopped(view: EventTarget) {
@@ -253,75 +262,98 @@ describe('GestureHandlerWebDelegate click after activation', () => {
     return event.defaultPrevented;
   }
 
-  test('stops the click that ends the pointer sequence', () => {
-    const view = createView();
+  test('stops the click that ends the press', () => {
+    const view = createClickView();
     const pan = createHandler(PanGestureHandler, view);
 
-    activateWithPointerDown(pan);
-    release(pan);
+    press(view);
+    pan.delegate.onActivationAccepted();
+    release();
 
     expect(isClickStopped(view)).toBe(true);
     expect(isClickStopped(view)).toBe(false);
   });
 
-  test('lets the next click through when the release sends no click', () => {
-    const view = createView();
+  test('keeps stopping the click until the last pointer is released', () => {
+    const view = createClickView();
     const pan = createHandler(PanGestureHandler, view);
 
-    activateWithPointerDown(pan);
-    release(pan);
+    press(view, 1);
+    press(view, 2);
+    pan.delegate.onActivationAccepted();
+    release(2);
+    jest.runAllTimers();
+    release(1);
+
+    expect(isClickStopped(view)).toBe(true);
+  });
+
+  test('lets the next click through when the release sends no click', () => {
+    const view = createClickView();
+    const pan = createHandler(PanGestureHandler, view);
+
+    press(view);
+    pan.delegate.onActivationAccepted();
+    release();
     jest.runAllTimers();
 
     expect(isClickStopped(view)).toBe(false);
   });
 
-  test('lets the click of a new press through', () => {
-    const view = createView();
+  test('does not stop the click after an activation without a press', () => {
+    const view = createClickView();
     const pan = createHandler(PanGestureHandler, view);
 
-    // For example a pan driven by the wheel, active while no button is down.
-    activateWithPointerDown(pan);
-    document.dispatchEvent(new Event('pointerdown'));
+    // For example hover, a pan driven by the wheel, or a tap that activates
+    // once the pointer is released.
+    pan.delegate.onActivationAccepted();
 
     expect(isClickStopped(view)).toBe(false);
   });
 
   test('does not stop the click when cancelsJSResponder is false', () => {
-    const view = createView();
+    const view = createClickView();
     const pan = createHandler(PanGestureHandler, view, {
       cancelsJSResponder: false,
     });
 
-    activateWithPointerDown(pan);
-    release(pan);
-
-    expect(isClickStopped(view)).toBe(false);
-  });
-
-  test('does not stop the click of a handler activated on release', () => {
-    const view = createView();
-    const pan = createHandler(PanGestureHandler, view);
-
-    pan.delegate.onActivate();
+    press(view);
+    pan.delegate.onActivationAccepted();
+    release();
 
     expect(isClickStopped(view)).toBe(false);
   });
 
   test('does not stop the click of a native handler', () => {
-    const view = createView();
+    const view = createClickView();
     const native = createHandler(NativeViewGestureHandler, view);
 
-    activateWithPointerDown(native);
-    release(native);
+    press(view);
+    native.delegate.onActivationAccepted();
+    release();
+
+    expect(isClickStopped(view)).toBe(false);
+  });
+
+  test('does not stop the click when the activation is not accepted', () => {
+    const view = createClickView();
+    const pan = createHandler(PanGestureHandler, view);
+
+    // The handler reports activation, but the orchestrator never makes it
+    // active, for example because it waits for a tap that succeeds.
+    press(view);
+    pan.delegate.onActivate();
+    release();
 
     expect(isClickStopped(view)).toBe(false);
   });
 
   test('detaching the handler removes the click listener', () => {
-    const view = createView();
+    const view = createClickView();
     const pan = createHandler(PanGestureHandler, view);
 
-    activateWithPointerDown(pan);
+    press(view);
+    pan.delegate.onActivationAccepted();
     pan.detach();
 
     expect(isClickStopped(view)).toBe(false);

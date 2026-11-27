@@ -229,6 +229,7 @@ export default class GestureHandlerOrchestrator {
     handler.active = true;
     handler.shouldResetProgress = true;
     handler.activationIndex = this.activationIndex++;
+    handler.delegate.onActivationAccepted();
 
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
       if (this.shouldHandlerBeCancelledBy(this.gestureHandlers[i], handler)) {

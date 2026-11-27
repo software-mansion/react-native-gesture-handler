@@ -21,6 +21,7 @@ export interface GestureHandlerDelegate<TComponent, THandler> {
 
   onBegin(): void;
   onActivate(): void;
+  onActivationAccepted(): void;
   onEnd(): void;
   onCancel(): void;
   onFail(): void;

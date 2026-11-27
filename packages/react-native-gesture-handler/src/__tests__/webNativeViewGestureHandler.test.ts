@@ -92,6 +92,7 @@ function createHandler(
     onCancel: jest.fn(),
     onEnd: jest.fn(),
     onEnabledChange: jest.fn(),
+    onActivationAccepted: jest.fn(),
     updateDOM: jest.fn(),
   } as unknown as GestureHandlerDelegate<unknown, IGestureHandler>;
 

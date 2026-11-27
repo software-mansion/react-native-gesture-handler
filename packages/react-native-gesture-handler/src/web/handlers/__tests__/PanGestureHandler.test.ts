@@ -86,6 +86,7 @@ function createHandler(eventManagers: EventManager<unknown>[] = []) {
     ),
     onBegin: jest.fn(),
     onActivate: jest.fn(),
+    onActivationAccepted: jest.fn(),
     onFail: jest.fn(),
     onCancel: jest.fn(),
     onEnd: jest.fn(),
