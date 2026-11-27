@@ -1655,6 +1655,37 @@ static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
   return str;
 }
 
+#if !TARGET_OS_TV
+// This button is the accessibility element, but React Native implements the
+// accessibility actions on the RNGestureHandlerButtonComponentView it sits in
+// (its superview), which is not an element itself. Hand them on so they keep
+// working.
+- (BOOL)accessibilityActivate
+{
+  return [self.superview accessibilityActivate] || [super accessibilityActivate];
+}
+
+- (BOOL)accessibilityPerformMagicTap
+{
+  return [self.superview accessibilityPerformMagicTap];
+}
+
+- (BOOL)accessibilityPerformEscape
+{
+  return [self.superview accessibilityPerformEscape];
+}
+
+- (void)accessibilityIncrement
+{
+  [self.superview accessibilityIncrement];
+}
+
+- (void)accessibilityDecrement
+{
+  [self.superview accessibilityDecrement];
+}
+#endif
+
 #else
 
 - (void)mountChildComponentView:(RNGHUIView *)childComponentView index:(NSInteger)index
