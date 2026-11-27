@@ -62,6 +62,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private _enableContextMenu?: boolean | undefined = undefined;
   private _activeCursor?: ActiveCursor | undefined = undefined;
+  private _cancelsJSResponder = true;
   private _touchAction?: TouchAction | undefined = undefined;
   private _userSelect?: UserSelect | undefined = undefined;
   private needsDOMUpdate = false;
@@ -839,6 +840,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       this._activeCursor = config.activeCursor;
     }
 
+    if (config.cancelsJSResponder !== undefined) {
+      this._cancelsJSResponder = config.cancelsJSResponder;
+    }
+
     // An explicit `null` clears the value, so the handler's default applies again.
     if (config.enableContextMenu !== undefined) {
       this.enableContextMenu = config.enableContextMenu ?? undefined;
@@ -966,6 +971,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.forAnimated = false;
     this.forReanimated = false;
     this._activeCursor = undefined;
+    this._cancelsJSResponder = true;
 
     // On the v3 path these belong to the detector, which sends them (or their
     // defaults) through partial updates only. Legacy handlers carry them in the
@@ -1090,6 +1096,10 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public get activeCursor() {
     return this._activeCursor;
+  }
+
+  public get cancelsJSResponder() {
+    return this._cancelsJSResponder;
   }
 
   public get touchAction() {

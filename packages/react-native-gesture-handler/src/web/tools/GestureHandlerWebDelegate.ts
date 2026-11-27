@@ -24,6 +24,8 @@ import PointerEventManager from './PointerEventManager';
 import ScrollEventManager from './ScrollEventManager';
 import WheelEventManager from './WheelEventManager';
 
+const CAPTURE = { capture: true };
+
 interface DefaultViewStyles {
   userSelect: string;
   touchAction: string;
@@ -44,6 +46,9 @@ export class GestureHandlerWebDelegate
 
   private areContextMenuListenersAdded = false;
   private wasContextMenuEnabled = false;
+
+  private isBlockingClick = false;
+  private unblockClickTimeout: ReturnType<typeof setTimeout> | null = null;
 
   init(viewRef: number, handler: IGestureHandler): void {
     if (!viewRef) {
@@ -98,6 +103,7 @@ export class GestureHandlerWebDelegate
   }
 
   detach(): void {
+    this.unblockClick();
     this.restoreDefaultViewStyles();
 
     this.defaultViewStyles = {
@@ -341,7 +347,85 @@ export class GestureHandlerWebDelegate
     ) {
       this.view.style.cursor = this.gestureHandler.activeCursor;
     }
+
+    if (this.shouldBlockClick()) {
+      this.blockClick();
+    }
   }
+
+  // On Android and iOS an active handler cancels the JS responder, so a
+  // Pressable under it is not pressed. On web that press comes from the DOM
+  // `click` sent after the pointer is released, so stop that click instead.
+  private shouldBlockClick(): boolean {
+    return (
+      this.gestureHandler.cancelsJSResponder &&
+      // A native handler wraps an element that works through that click, for
+      // example a switch.
+      this.gestureHandler.name !== SingleGestureName.Native &&
+      // A tap activates once the pointer is released, the click that follows
+      // belongs to it.
+      this.gestureHandler.tracker.trackedPointersCount > 0
+    );
+  }
+
+  private blockClick(): void {
+    this.ensureView(this.view);
+
+    if (this.isBlockingClick) {
+      return;
+    }
+
+    this.isBlockingClick = true;
+    this.view.addEventListener('click', this.stopClick, CAPTURE);
+    // A handler can also activate without a pressed button (wheel, hover), so
+    // the next press must not lose its click.
+    document.addEventListener('pointerdown', this.unblockClick, CAPTURE);
+    document.addEventListener('pointerup', this.scheduleUnblockClick, CAPTURE);
+    document.addEventListener(
+      'pointercancel',
+      this.scheduleUnblockClick,
+      CAPTURE
+    );
+  }
+
+  private stopClick = (event: MouseEvent): void => {
+    event.preventDefault();
+    event.stopPropagation();
+    this.unblockClick();
+  };
+
+  // The click is dispatched right after the release, before a timeout runs,
+  // so it still reaches `stopClick`. Without a click, this removes the listener.
+  private scheduleUnblockClick = (): void => {
+    if (this.unblockClickTimeout === null) {
+      this.unblockClickTimeout = setTimeout(this.unblockClick, 0);
+    }
+  };
+
+  private unblockClick = (): void => {
+    if (this.unblockClickTimeout !== null) {
+      clearTimeout(this.unblockClickTimeout);
+      this.unblockClickTimeout = null;
+    }
+
+    if (!this.isBlockingClick) {
+      return;
+    }
+
+    this.isBlockingClick = false;
+    this.view?.removeEventListener('click', this.stopClick, CAPTURE);
+    document.removeEventListener('pointerdown', this.unblockClick, CAPTURE);
+    document.removeEventListener(
+      'pointerup',
+      this.scheduleUnblockClick,
+      CAPTURE
+    );
+    document.removeEventListener(
+      'pointercancel',
+      this.scheduleUnblockClick,
+      CAPTURE
+    );
+  };
 
   onEnd(): void {
     this.tryResetCursor();
@@ -356,6 +440,7 @@ export class GestureHandlerWebDelegate
   }
 
   public destroy(): void {
+    this.unblockClick();
     this.removeContextMenuListeners();
 
     this.eventManagers.forEach((manager) => {
