@@ -43,6 +43,7 @@ export interface Config extends Record<string, ConfigArgs> {
   shouldCancelWhenOutside?: boolean | undefined;
   userSelect?: UserSelect | undefined;
   activeCursor?: ActiveCursor | undefined;
+  cancelsJSResponder?: boolean | undefined;
   mouseButton?: MouseButton | undefined;
   enableContextMenu?: boolean | null | undefined;
   touchAction?: TouchAction | undefined;

@@ -34,6 +34,7 @@ export default interface IGestureHandler {
   readonly pointerType: PointerType;
   readonly enableContextMenu: boolean | undefined;
   readonly activeCursor?: ActiveCursor | undefined;
+  readonly cancelsJSResponder: boolean;
   readonly touchAction?: TouchAction | undefined;
   readonly userSelect?: UserSelect | undefined;
 
