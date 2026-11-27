@@ -1,0 +1,371 @@
+diff --git a/Common/cpp/worklets/NativeModules/JSIWorkletsModuleProxy.cpp b/Common/cpp/worklets/NativeModules/JSIWorkletsModuleProxy.cpp
+index 54ffc1e45ad82477a2c817d6d14d4ff640f9ddde..df51539aa7866aebe27b85f08fb9e140a7e841ca 100644
+--- a/Common/cpp/worklets/NativeModules/JSIWorkletsModuleProxy.cpp
++++ b/Common/cpp/worklets/NativeModules/JSIWorkletsModuleProxy.cpp
+@@ -1,5 +1,9 @@
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/Compat/Holders.h>
+ #include <worklets/Compat/StableApi.h>
+ #include <worklets/NativeModules/JSIWorkletsModuleProxy.h>
+diff --git a/Common/cpp/worklets/NativeModules/WorkletsModuleProxy.cpp b/Common/cpp/worklets/NativeModules/WorkletsModuleProxy.cpp
+index 340f8177378a2dd95ce34f46208010ee4d48dae0..6a5aa18726dc5137b3593e9e82316b9570cdc0d0 100644
+--- a/Common/cpp/worklets/NativeModules/WorkletsModuleProxy.cpp
++++ b/Common/cpp/worklets/NativeModules/WorkletsModuleProxy.cpp
+@@ -6,7 +6,11 @@
+ #include <worklets/WorkletRuntime/RuntimeData.h>
+ #include <worklets/WorkletRuntime/UIRuntimeDecorator.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <memory>
+ #include <stdexcept>
+diff --git a/Common/cpp/worklets/NativeModules/WorkletsModuleProxyInitializer.cpp b/Common/cpp/worklets/NativeModules/WorkletsModuleProxyInitializer.cpp
+index 2baae837c15d970eb132433b03fd6798aca5dcd8..a3f9d5ee3f289e7989c0b3262e5b424840789bbf 100644
+--- a/Common/cpp/worklets/NativeModules/WorkletsModuleProxyInitializer.cpp
++++ b/Common/cpp/worklets/NativeModules/WorkletsModuleProxyInitializer.cpp
+@@ -1,6 +1,10 @@
+ #include <worklets/NativeModules/WorkletsModuleProxyInitializer.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <exception>
+ #include <future>
+diff --git a/Common/cpp/worklets/Registries/WorkletRuntimeRegistry.h b/Common/cpp/worklets/Registries/WorkletRuntimeRegistry.h
+index b7a5e2a214baeb5f27162aca9b0d7b840811c3a9..68fc5370ec056ccb6df40e9b6947a3ce9a9f6592 100644
+--- a/Common/cpp/worklets/Registries/WorkletRuntimeRegistry.h
++++ b/Common/cpp/worklets/Registries/WorkletRuntimeRegistry.h
+@@ -1,7 +1,11 @@
+ #pragma once
+ 
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <set>
+ #include <shared_mutex>
+diff --git a/Common/cpp/worklets/SharedItems/MemoryManager.cpp b/Common/cpp/worklets/SharedItems/MemoryManager.cpp
+index 83b98534ac87cd576f26fc67d88bcaa9d2062c86..2f7484f63553080d2351a00c6c4c598cae947a51 100644
+--- a/Common/cpp/worklets/SharedItems/MemoryManager.cpp
++++ b/Common/cpp/worklets/SharedItems/MemoryManager.cpp
+@@ -1,5 +1,9 @@
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/SharedItems/MemoryManager.h>
+ #include <worklets/SharedItems/Serializable/Serializable.h>
+ #include <worklets/WorkletRuntime/WorkletRuntime.h>
+diff --git a/Common/cpp/worklets/SharedItems/MemoryManager.h b/Common/cpp/worklets/SharedItems/MemoryManager.h
+index cf971ae0fca9c4cdd3cb81010d89c00bc12ee2d2..994bddcec02b393e20cc582598950e654bf23486 100644
+--- a/Common/cpp/worklets/SharedItems/MemoryManager.h
++++ b/Common/cpp/worklets/SharedItems/MemoryManager.h
+@@ -1,7 +1,11 @@
+ #pragma once
+ 
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/SharedItems/Serializable/CustomSerializable.h>
+ #include <worklets/SharedItems/Serializable/Serializable.h>
+ #include <worklets/WorkletRuntime/WorkletRuntime.h>
+diff --git a/Common/cpp/worklets/SharedItems/Serializable/CustomSerializable.cpp b/Common/cpp/worklets/SharedItems/Serializable/CustomSerializable.cpp
+index b222a8f150565fa28111bf51c1d921ae6c114faa..996d1b102fe976e15e181682b8c4c6e8b4261e74 100644
+--- a/Common/cpp/worklets/SharedItems/Serializable/CustomSerializable.cpp
++++ b/Common/cpp/worklets/SharedItems/Serializable/CustomSerializable.cpp
+@@ -1,5 +1,9 @@
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/SharedItems/Serializable/CustomSerializable.h>
+ 
+ #include <memory>
+diff --git a/Common/cpp/worklets/SharedItems/Serializable/Serializable.cpp b/Common/cpp/worklets/SharedItems/Serializable/Serializable.cpp
+index 48861455428ca7be00dc0e28dddac8eed689ba15..a84cae1d13b4e9a400fcd76dc36674194c215fa9 100644
+--- a/Common/cpp/worklets/SharedItems/Serializable/Serializable.cpp
++++ b/Common/cpp/worklets/SharedItems/Serializable/Serializable.cpp
+@@ -1,5 +1,9 @@
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/SharedItems/Serializable/RetainingSerializable.h>
+ #include <worklets/SharedItems/Serializable/Serializable.h>
+ #include <worklets/SharedItems/Serializable/SerializableArray.h>
+diff --git a/Common/cpp/worklets/SharedItems/Serializable/SerializableMap.cpp b/Common/cpp/worklets/SharedItems/Serializable/SerializableMap.cpp
+index 8171636ea197318cbd61757a46b16aac2271a259..5841d9c1ffd29beed261feb0b92a1b0459f6d330 100644
+--- a/Common/cpp/worklets/SharedItems/Serializable/SerializableMap.cpp
++++ b/Common/cpp/worklets/SharedItems/Serializable/SerializableMap.cpp
+@@ -1,5 +1,9 @@
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/SharedItems/Serializable/SerializableMap.h>
+ 
+ #include <memory>
+diff --git a/Common/cpp/worklets/SharedItems/Serializable/SerializableRemoteFunction.cpp b/Common/cpp/worklets/SharedItems/Serializable/SerializableRemoteFunction.cpp
+index fe5307a7bf75e5322c85272bb41f95e4e823a77c..6158bfa3c33bbe7d52d874d2c62fda78922a5f10 100644
+--- a/Common/cpp/worklets/SharedItems/Serializable/SerializableRemoteFunction.cpp
++++ b/Common/cpp/worklets/SharedItems/Serializable/SerializableRemoteFunction.cpp
+@@ -1,5 +1,9 @@
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/SharedItems/Serializable/Serializable.h>
+ #include <worklets/SharedItems/Serializable/SerializableRemoteFunction.h>
+ #include <worklets/WorkletRuntime/RuntimeManager.h>
+diff --git a/Common/cpp/worklets/SharedItems/Serializable/SerializableWorklet.cpp b/Common/cpp/worklets/SharedItems/Serializable/SerializableWorklet.cpp
+index cf1f3f74ab9404526e6a2b7b22a8355bc7c55d6f..4038f8c1d290224d7f29c737d95399c4cb2faefe 100644
+--- a/Common/cpp/worklets/SharedItems/Serializable/SerializableWorklet.cpp
++++ b/Common/cpp/worklets/SharedItems/Serializable/SerializableWorklet.cpp
+@@ -1,5 +1,9 @@
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/SharedItems/Serializable/RetainingSerializable.h>
+ #include <worklets/SharedItems/Serializable/SerializableWorklet.h>
+ 
+diff --git a/Common/cpp/worklets/SharedItems/Synchronizable.h b/Common/cpp/worklets/SharedItems/Synchronizable.h
+index e64bb789d4680c3b93ffe331f1be8fa3e90eff6b..e391caacba02dd843b5d3e856494f7eac226b804 100644
+--- a/Common/cpp/worklets/SharedItems/Synchronizable.h
++++ b/Common/cpp/worklets/SharedItems/Synchronizable.h
+@@ -1,7 +1,11 @@
+ #pragma once
+ 
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/SharedItems/Serializable/Serializable.h>
+ #include <worklets/SharedItems/SynchronizableAccess.h>
+ 
+diff --git a/Common/cpp/worklets/Tools/JSScheduler.cpp b/Common/cpp/worklets/Tools/JSScheduler.cpp
+index 43c80519b9f173ff1a0945e064dc6be026af9dbd..e8ab0458e851bae092baff226c411ff4be7a64eb 100644
+--- a/Common/cpp/worklets/Tools/JSScheduler.cpp
++++ b/Common/cpp/worklets/Tools/JSScheduler.cpp
+@@ -1,4 +1,8 @@
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/Tools/JSScheduler.h>
+ 
+ #include <utility>
+diff --git a/Common/cpp/worklets/Tools/JSScheduler.h b/Common/cpp/worklets/Tools/JSScheduler.h
+index 6a7ac99278a4c39977fb5cc2d7d5c74828ddb353..d277b7f6eb35c9ea6e73dc76611bc2111666466a 100644
+--- a/Common/cpp/worklets/Tools/JSScheduler.h
++++ b/Common/cpp/worklets/Tools/JSScheduler.h
+@@ -1,6 +1,10 @@
+ #pragma once
+ 
++#if __has_include(<React/CallInvoker.h>)
++#include <React/CallInvoker.h>
++#else
+ #include <ReactCommon/CallInvoker.h>
++#endif
+ #include <jsi/jsi.h>
+ 
+ #include <memory>
+diff --git a/Common/cpp/worklets/Tools/ScriptBuffer.h b/Common/cpp/worklets/Tools/ScriptBuffer.h
+index e3b934704c5e508c07c3b0ae97b1118d4a45be23..cfc8baece0039dee7c0ce6dadba2bf2150e023d6 100644
+--- a/Common/cpp/worklets/Tools/ScriptBuffer.h
++++ b/Common/cpp/worklets/Tools/ScriptBuffer.h
+@@ -2,7 +2,11 @@
+ 
+ #include <jsi/jsi.h>
+ 
++#if __has_include(<React/JSBigString.h>)
++#include <React/JSBigString.h>
++#else
+ #include <cxxreact/JSBigString.h>
++#endif
+ 
+ #include <memory>
+ #include <utility>
+diff --git a/Common/cpp/worklets/Tools/SingleInstanceChecker.h b/Common/cpp/worklets/Tools/SingleInstanceChecker.h
+index b5b0adee3a5bdc49f3531d925537db979ea5a959..13546629468efa558b48a419e02c569cc6946536 100644
+--- a/Common/cpp/worklets/Tools/SingleInstanceChecker.h
++++ b/Common/cpp/worklets/Tools/SingleInstanceChecker.h
+@@ -2,7 +2,11 @@
+ 
+ #ifndef NDEBUG
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <cxxabi.h>
+ 
+diff --git a/Common/cpp/worklets/Tools/UIScheduler.h b/Common/cpp/worklets/Tools/UIScheduler.h
+index 1ea3e8e4d3724040f80bdd28b8c29cc2af09501b..6d0afcdbf5aace5956c069443f69701e2c1363a8 100644
+--- a/Common/cpp/worklets/Tools/UIScheduler.h
++++ b/Common/cpp/worklets/Tools/UIScheduler.h
+@@ -2,7 +2,11 @@
+ 
+ #include <worklets/Tools/ThreadSafeQueue.h>
+ 
++#if __has_include(<React/CallInvoker.h>)
++#include <React/CallInvoker.h>
++#else
+ #include <ReactCommon/CallInvoker.h>
++#endif
+ 
+ #include <atomic>
+ 
+diff --git a/Common/cpp/worklets/Tools/WorkletsJSIUtils.cpp b/Common/cpp/worklets/Tools/WorkletsJSIUtils.cpp
+index 1e4a73bbd4344cf4e1c9f3b8f3e805d96f871ed2..979c601850ffe2d85f08685d41cc8d77dce4a7bc 100644
+--- a/Common/cpp/worklets/Tools/WorkletsJSIUtils.cpp
++++ b/Common/cpp/worklets/Tools/WorkletsJSIUtils.cpp
+@@ -1,6 +1,10 @@
+ #include <worklets/Tools/WorkletsJSIUtils.h>
+ 
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <memory>
+ #include <sstream>
+diff --git a/Common/cpp/worklets/Tools/WorkletsJSIUtils.h b/Common/cpp/worklets/Tools/WorkletsJSIUtils.h
+index 131d7a271fb8f14b240f0711f2cf654de86c2cd9..5eac18e050edcbf15a6921c76567db7dc37ac53b 100644
+--- a/Common/cpp/worklets/Tools/WorkletsJSIUtils.h
++++ b/Common/cpp/worklets/Tools/WorkletsJSIUtils.h
+@@ -1,7 +1,11 @@
+ #pragma once
+ 
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <string>
+ #include <tuple>
+ #include <type_traits>
+diff --git a/Common/cpp/worklets/WorkletRuntime/WorkletHermesRuntime.h b/Common/cpp/worklets/WorkletRuntime/WorkletHermesRuntime.h
+index 86ddd7446e85e863d0851b74c9e641d77e877909..d24d81f87b8cb9fac85934bde5a8a66c97f4a553 100644
+--- a/Common/cpp/worklets/WorkletRuntime/WorkletHermesRuntime.h
++++ b/Common/cpp/worklets/WorkletRuntime/WorkletHermesRuntime.h
+@@ -3,7 +3,11 @@
+ #include <hermes/hermes.h>
+ #include <jsi/decorator.h>
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ 
+ #include <atomic>
+ #include <memory>
+diff --git a/Common/cpp/worklets/WorkletRuntime/WorkletRuntime.h b/Common/cpp/worklets/WorkletRuntime/WorkletRuntime.h
+index 6d2ac97da38fa389c2540862ee755d44d0047a62..fa3f9217ef2ce551d51bb45d846f421b679dc8b1 100644
+--- a/Common/cpp/worklets/WorkletRuntime/WorkletRuntime.h
++++ b/Common/cpp/worklets/WorkletRuntime/WorkletRuntime.h
+@@ -1,7 +1,11 @@
+ #pragma once
+ 
+ #include <jsi/jsi.h>
++#if __has_include(<React/Debug.h>)
++#include <React/Debug.h>
++#else
+ #include <react/debug/react_native_assert.h>
++#endif
+ #include <worklets/RunLoop/AsyncQueue.h>
+ #include <worklets/RunLoop/AsyncQueueImpl.h>
+ #include <worklets/RunLoop/EventLoop.h>
+diff --git a/android/CMakeLists.txt b/android/CMakeLists.txt
+index e1f364139d81b6759fd8ed5f1e3a9a8546ee80bf..74e6bc34e00e404e0036adb98c33377e062ab486 100644
+--- a/android/CMakeLists.txt
++++ b/android/CMakeLists.txt
+@@ -59,6 +59,8 @@ target_compile_options(
+ 
+ include("${REACT_NATIVE_DIR}/ReactCommon/cmake-utils/react-native-flags.cmake")
+ target_compile_reactnative_options(worklets PUBLIC)
++# JScriptBufferWrapper uses RecoverableError, a "for frameworks" RN API.
++target_compile_definitions(worklets PRIVATE RN_ALLOW_FRAMEWORKS)
+ 
+ # includes
+ target_include_directories(worklets PUBLIC "${COMMON_CPP_DIR}"
+diff --git a/android/src/main/cpp/worklets/android/JScriptBufferWrapper.h b/android/src/main/cpp/worklets/android/JScriptBufferWrapper.h
+index abe6449dca082bcf4b1f2f7602551e547eae546f..c6aa2bec54f36d8af2b0f49146e23204b148f1a2 100644
+--- a/android/src/main/cpp/worklets/android/JScriptBufferWrapper.h
++++ b/android/src/main/cpp/worklets/android/JScriptBufferWrapper.h
+@@ -1,7 +1,6 @@
+ #pragma once
+ 
+ #include <fbjni/fbjni.h>
+-#include <jsireact/JSIExecutor.h>
+ #include <react/jni/JSLoader.h>
+ #include <worklets/Tools/ScriptBuffer.h>
+ 
+diff --git a/apple/worklets/apple/AssertJavaScriptQueue.h b/apple/worklets/apple/AssertJavaScriptQueue.h
+index a3f622241ccbe9b2088ceb9834823ee5c472b956..b8f273974e1d04593e7dae723cf3728abd07dd7f 100644
+--- a/apple/worklets/apple/AssertJavaScriptQueue.h
++++ b/apple/worklets/apple/AssertJavaScriptQueue.h
+@@ -1,5 +1,9 @@
+ #import <Foundation/Foundation.h>
++#if __has_include(<React/Debug.h>)
++#import <React/Debug.h>
++#else
+ #import <react/debug/react_native_assert.h>
++#endif
+ 
+ // Copied from RCTJSThreadManager.mm
+ static NSString *const RCTJSThreadName = @"com.facebook.react.runtime.JavaScript";
+diff --git a/apple/worklets/apple/AssertTurboModuleManagerQueue.h b/apple/worklets/apple/AssertTurboModuleManagerQueue.h
+index 93fa5a9ef56f18e159f37b285ae6dec867ddf01a..7f8e978cec55ad09a20976ceb884bf49fe6ca0a2 100644
+--- a/apple/worklets/apple/AssertTurboModuleManagerQueue.h
++++ b/apple/worklets/apple/AssertTurboModuleManagerQueue.h
+@@ -2,7 +2,11 @@
+ 
+ #import <cstring>
+ 
++#if __has_include(<React/Debug.h>)
++#import <React/Debug.h>
++#else
+ #import <react/debug/react_native_assert.h>
++#endif
+ 
+ constexpr auto turboModuleManagerQueueLabel = "com.meta.react.turbomodulemanager.queue";
+ 
